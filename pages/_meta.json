@@ -1,15 +1,135 @@
 {
-  "index": "Introduction",
-  "another": "Another Page",
-  "advanced": "Advanced (A Folder)",
-  "about": {
-    "title": "About",
-    "type": "page"
+  "index": {
+    "title": "Getting started",
+    "hidden": true,
+    "type": "_"
   },
-  "contact": {
-    "title": "Contact ↗",
+  "introduction": "Introduction",
+  "features": "Features",
+  "services-separator": {
+    "title": "Services",
+    "type": "separator"
+  },
+  "event-store": {
+    "title": "Event store",
+    "href": "/event-store"
+  },
+  "object-storage": {
+    "title": "Object storage",
+    "href": "/object-storage"
+  },
+  "databases": {
+    "title": "Databases",
+    "href": "/databases"
+  },
+  "protocol-separator": {
+    "title": "Protocol",
+    "type": "separator"
+  },
+  "apis": {
+    "title": "APIs",
+    "href": "/apis"
+  },
+  "architecture": {
+    "title": "Architecture",
+    "href": "/architecture"
+  },
+  "clis": {
+    "title": "CLIs",
+    "href": "/clis"
+  },
+  "contracts": {
+    "title": "Contracts",
+    "href": "/contracts"
+  },
+  "local": {
+    "title": "Local",
+    "href": "/local"
+  },
+  "operators": {
+    "title": "Operators",
+    "href": "/operators"
+  },
+  "community-separator": {
+    "title": "Community",
+    "type": "separator"
+  },
+  "community": "Community",
+  "blog": {
+    "title": "Blog ↗",
+    "href": "https://blog.textile.io",
+    "newWindow": true
+  },
+  "nav-services": {
+    "title": "Services",
+    "type": "menu",
+    "items": {
+      "event-store": {
+        "title": "Event store",
+        "href": "/event-store"
+      },
+      "object-storage": {
+        "title": "Object storage",
+        "href": "/object-storage"
+      },
+      "databases": {
+        "title": "Databases",
+        "href": "/databases"
+      }
+    }
+  },
+  "nav-protocol": {
+    "title": "Protocol",
+    "type": "menu",
+    "items": {
+      "apis": {
+        "title": "APIs",
+        "href": "/apis"
+      },
+      "architecture": {
+        "title": "Architecture",
+        "href": "/architecture"
+      },
+      "clis": {
+        "title": "CLIs",
+        "href": "/clis"
+      },
+      "contracts": {
+        "title": "Contracts",
+        "href": "/contracts"
+      },
+      "local": {
+        "title": "Local",
+        "href": "/local"
+      },
+      "operators": {
+        "title": "Operators",
+        "href": "/operators"
+      }
+    }
+  },
+  "nav-community": {
+    "title": "Community",
+    "type": "menu",
+    "items": {
+      "contributing": {
+        "title": "Contributing",
+        "href": "/community/contributing"
+      },
+      "object-storage": {
+        "title": "Ecosystem",
+        "href": "/community/ecosystem"
+      },
+      "databases": {
+        "title": "Points program",
+        "href": "/community/points-program"
+      }
+    }
+  },
+  "nav-playground": {
+    "title": "Playground ↗",
     "type": "page",
-    "href": "https://twitter.com/shuding_",
+    "href": "https://blog.textile.io",
     "newWindow": true
   }
 }

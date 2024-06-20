@@ -1,7 +1,7 @@
 {
-  "name": "nextra-docs-template",
+  "name": "adm-docs",
   "version": "0.0.1",
-  "description": "Nextra docs template",
+  "description": "Official developer documentation for the ADM protocol",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,14 +9,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shuding/nextra-docs-template.git"
+    "url": "git+https://github.com/todo/docs.git"
   },
-  "author": "Shu Ding <g@shud.in>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/shuding/nextra-docs-template/issues"
-  },
-  "homepage": "https://github.com/shuding/nextra-docs-template#readme",
+  "license": "MIT AND Apache-2.0",
   "dependencies": {
     "next": "^13.0.6",
     "nextra": "latest",

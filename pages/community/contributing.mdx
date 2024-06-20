@@ -1,0 +1,123 @@
+---
+title: Contributing
+description: Best practices when contributing to the ADM docs or the codebase.
+keywords: contributing, docs, best practices
+---
+
+import Image from "next/image";
+import { Cards, Card, FileTree, Steps, Tabs } from "nextra/components";
+
+If creating any MDX content, check out [the built-in features](https://fumadocs.vercel.app/docs/ui), some of which are described below.
+
+_TODO_
+
+## Style guide
+
+- use sentence case for headings (i.e., `This is a heading` vs `This Is A Heading`)
+- use "onchain" and "offchain" instead of "on-chain" and "off-chain"
+- etc (add more?)
+
+## Frontmatter
+
+the frontmatter is used to set the title, description, and keywords for the page. the title is used for the page title, the description is used for the meta description, and the keywords are used for SEO. the frontmatter should be at the top of the file and should be in the format:
+
+```yaml
+---
+title: Title here
+description: Description here
+keywords: keyword1, keyword2, keyword3
+---
+```
+
+## Sidebars
+
+if editing the sidebar, adjust the `meta.json` file with the path to the new file. note that `---Title---` is used to create a new section in the sidebar, and you can use `...` operators for auto-filling the pages. also, if you have a "nested" set of pages, the index page can be titled "Overview" because the `meta.json` file lets you set a custom header. otherwise, for one-off pages (e.g., those without a custom sidebar) should have a title that matches the page title.
+
+## Cards
+
+`<Cards>` are useful for layout / links. use a `<Cards>` with nested `<Card>` components:
+
+<Cards>
+
+<Card title="TODO" href="/" />
+
+</Cards>
+
+## Steps
+
+steps are useful for guides—and be sure to space them properly to avoid rendering issues. use a `<Steps>` with nested headings and content:
+
+<Steps>
+
+### Step 1
+
+This is a step
+
+</Steps>
+
+## Icons
+
+icons can be defined by component name in docs frontmatter via [`lucide-react`](https://lucide.dev/guide/packages/lucide-react) —e.g., `icon: HomeIcon`
+
+## Folder structure
+
+use the `FileTree` component to display a folder structure. you can nest folders and files within the component:
+
+```
+<FileTree>
+  <FileTree.Folder name="my-folder" defaultOpen>
+    <FileTree.File name="my-file.json" />
+    <FileTree.Folder name="nested">
+      <FileTree.File name="other-file.json" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+```
+
+<FileTree>
+  <FileTree.Folder name="my-folder" defaultOpen>
+    <FileTree.File name="my-file.json" />
+    <FileTree.Folder name="nested" defaultOpen>
+      <FileTree.File name="other-file.json" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
+## Package install tab
+
+for installation instructions, use the `npm2yarn` code block annotation with the package name as the content. this will add tabs for `npm`, `yarn`, etc.
+
+```sh npm2yarn
+npm i my-package
+```
+
+## General tabs
+
+similarly, Tabs can be created for custom tabs that display different content. the attributes are optional but let you pass around a shared `id` so other tabs follow changes in the active tab, the `items` list, the default tab in the list, and `persistent` to store the reference in local storage
+
+<Tabs items={["JavaScript", "Rust"]}>
+  <Tabs.Tab>Javascript is cool</Tabs.Tab>
+  <Tabs.Tab>Rust is fast</Tabs.Tab>
+</Tabs>
+
+## Math
+
+you can use math using a codeblock that has `math` as the language—e.g., `c = \pm\sqrt{a^2 + b^2}`:
+
+```math
+c = \pm\sqrt{a^2 + b^2}
+```
+
+## Images
+
+You can use the Next `Image` component to display images, or use the standard markdown syntax for images. This presumes the path is under the `public` directory, but relative paths are also supported.
+
+```
+import Image from 'next/image'
+
+<Image src="/img/textile-logo.png" alt="Textile" width={100} height={100} />
+
+![Hello](/img/textile-logo.png)
+```
+
+<Image src="/img/textile-logo.png" alt="Textile" width={100} height={100} />

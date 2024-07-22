@@ -1,0 +1,136 @@
+# Local
+
+Like in most cases, a local environment is usually the best start. It makes exploring and playing around with different setups easier.
+
+### Video tutorial
+
+To make things easier, we’ve prepared a short Youtube step-by-step guide. 
+
+https://www.youtube.com/watch?v=8embizFvI-U
+
+## Requirements
+
+In order to run OrbisDB you need to set up 3 main components:
+
+- Ceramic Node
+- PostgreSQL
+- OrbisDB Node
+
+If you want to know the role of each components, check out our architecture overview (link).
+
+### 0) NodeJS
+
+OrbisDB and Ceramic utilize NodeJS and its native package manager, so you need to have them installed before continuin.
+
+You can do so using one of the [package managers](https://nodejs.org/en/download/package-manager) or running a [NodeJS installer](https://nodejs.org/en/download/prebuilt-installer).
+
+Alternatively, if you need to manage multiple NodeJS versions due to your other projects, NVM (*Node Version Manager*) is recommended ([MacOS](https://github.com/nvm-sh/nvm), [Linux](https://github.com/nvm-sh/nvm), [Windows](https://github.com/coreybutler/nvm-windows)).
+
+### 1) Ceramic
+
+Since OrbisDB is built on top of Ceramic’s event protocol, it makes sense to start by setting up your Ceramic Node.
+
+> Ceramic **does not officially support Windows**. You follow the setup using [Windows WSL](https://canonical-ubuntu-wsl.readthedocs-hosted.com/en/latest/guides/install-ubuntu-wsl2/). Alternatively, you can use a Managed Ceramic Node (link) or check out Orbis Studio (link) for a fully managed experience powered by Orbis.
+> 
+
+You can check out Ceramic’s official [quickstart](https://developers.ceramic.network/docs/protocol/js-ceramic/guides/ceramic-nodes/running-locally).
+
+#### Installing Ceramic
+
+In order to get the required package installed, run the following in your Terminal
+
+```bash
+npm install -g @ceramicnetwork/cli
+```
+
+This command utilizes NPM (Node Package Manager) which is installed alongside NodeJS.
+The command installs Ceramic’s software globally.
+
+#### Running Ceramic
+
+After installing Ceramic using the above command, you’re able to run Ceramic by pasting the following in your Terminal
+
+```bash
+ceramic daemon
+```
+
+This command will run a Ceramic Node locally, exposed locally on port `7007`. 
+The Node will be connected to **Ceramic’s Testnet**. 
+
+To verify that the Ceramic Node is running, visit http://localhost:7007/api/v0/node/healthcheck.
+The text should say `Alive!`.
+
+### 2) PostgreSQL
+
+OrbisDB’s indexing is backed by PostgreSQL - the most popular open source database.
+
+You can install PostgreSQL by using the [appropriate installer](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads) for your OS. Here’s some tutorials to make the process even easier to understand - [MacOS](https://www.postgresqltutorial.com/postgresql-getting-started/install-postgresql-macos/), [Linux](https://www.postgresqltutorial.com/postgresql-getting-started/install-postgresql-linux/), [Windows](https://www.postgresqltutorial.com/postgresql-getting-started/install-postgresql/).
+
+Alternatively, you can start with a free managed PostgreSQL database, such as [Supabase](https://supabase.com/), [Neon](https://neon.tech/) or [Fly.io](https://fly.io/).
+
+### 3) OrbisDB
+
+In order to run the actual OrbisDB Node, you need to download it from our [Github](https://github.com/OrbisWeb3/orbisdb).
+You can do so by using Git or by downloading the repository as a ZIP file.
+
+## Download using Git
+
+If you have [Git installed](https://git-scm.com/downloads), you can run the following in your Terminal
+
+```bash
+git clone https://github.com/OrbisWeb3/orbisdb.git
+```
+
+This will download (clone) the entire OrbisDB repository into a folder named `orbisdb`. The location of the folder will depend on the place you ran the command from.
+
+## Downloading as a .zip
+
+You can download the OrbisDB repository as a .zip file by [clicking here](https://github.com/OrbisWeb3/orbisdb/archive/refs/heads/master.zip). 
+Once downloaded, you can extract and move the folder to your liking - just remember where it is.
+
+#### Installing dependencies
+
+OrbisDB, like Ceramic, is powered by NodeJS. It requires a couple 3rd party packages to get running. To do so, open your Terminal in the folder you placed OrbisDB and run the following
+
+```bash
+npm install
+```
+
+This command will install all *required* packages to get the OrbisDB Node running
+
+#### Running OrbisDB
+
+Finally, open up your Terminal in the folder you placed OrbisDB files into (the same one you ran the above command from) and run the following
+
+```bash
+npm run dev
+```
+
+This command will spin up an OrbisDB Node on locally on port `7008`.
+
+If everything went well, you should be able to navigate to the OrbisDB UI by visiting http://localhost:7008.
+
+#### Configuring the Node
+
+Once running, our OrbisDB UI Wizard will guide you through the process. For a bit more help, check out our Dashboard Setting up (link) guide.
+
+## Summary
+
+To run OrbisDB you need to do the following
+
+1. Install [NodeJS 20](https://nodejs.org/en/download/prebuilt-installer)+
+2. Install and run [Ceramic](https://developers.ceramic.network/docs/protocol/js-ceramic/guides/ceramic-nodes/running-locally)
+3. Install and run [PostgreSQL](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
+4. Download, install and run [OrbisDB](https://github.com/OrbisWeb3/orbisdb)
+
+Finally, with everything completed, you should be able to navigate to the OrbisDB UI by visiting http://localhost:7008.
+
+## Docker **`Coming soon`**
+
+We are working on Docker images to simplify the setup process with prebuilt binaries and bundled options.
+
+## Alternatives to running locally
+
+If you feel a bit overwhelmed by the steps, you can try exploring OrbisDB via OrbisDB Studio (link), our free shared instances that’s ready to go - no setup required.
+
+If you still want to have a dedicated instance, but don’t want to go through all the trouble of setting it up, you should check out our Managed section.

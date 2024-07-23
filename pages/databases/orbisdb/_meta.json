@@ -1,8 +1,8 @@
 {
-  "index": "Overview",
   "introduction": "Introduction",
   "setting-up": "Setting up",
   "managing-data": "Managing Data",
   "plugins": "Plugins",
-  "dashboard-reference": "Dashboard Reference"
+  "dashboard-reference": "Dashboard Reference",
+  "sdk-reference": "SDK Reference"
 }

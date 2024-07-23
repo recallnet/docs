@@ -1,0 +1,69 @@
+---
+title: Overview
+description: A command line interface for interacting with Basin object storage and accounts.
+---
+
+import { Steps } from "nextra/components";
+
+<Steps>
+
+## Installation
+
+To install the CLI, you'll need to download it from source, build, and install it.
+
+```sh
+git clone https://github.com/textileio/basin.git
+cd basin
+make install
+```
+
+Once installed, you can run the `adm` command from your terminal.
+
+```sh
+adm --help
+```
+
+## Configuration
+
+There are two flags required for the majority of the `adm` subcommands:
+
+- `--network`: Specify the chain location with RPC presets and settings that map to either `mainnet`, `testnet`, or `devnet`.
+- `--private-key`: A wallet private key (ECDSA, secp256k1) for signing transactions.
+
+As a best practice, you should create a `.env` file with the following and run `source .env` to ensure the commands load these variables. The default network is `testnet`, so it's not necessary to set the variable unless you're developing locally (`devnet`).
+
+```
+PRIVATE_KEY=your_private_key
+NETWORK=testnet
+```
+
+Each of the following sections includes examples that presume you've completed this setup step. Thus, the `--private-key` and `--network` flags will not be shown in most demonstrations.
+
+One small note on all the getter methods and the `--height` flag:
+
+- By default, it uses the latest `committed` block on the network.
+- You can also specify `pending` including any pending state changes
+- For historical queries, you can a specific block number to query the data.
+
+Also, all commands that send mutating transactions default to broadcasting them in `commit` mode, but `sync` and `async` modes are also possible.
+
+## Prerequisites
+
+All data is signed onchain as transactions, so you'll need to set up an account (ECDSA, secp256k1) to use Basin. The Basin `account` subcommand can help with this step and the others mentioned below. You'll want to make sure your account is funded with FIL so that you can pay to execute an object storage transaction. You can use the faucet: [here](https://faucet.calibnet.chainsafe-fil.io/funds.html).
+
+{/* TODO: update faucet to Basin-hosted one */}
+
+When you `deposit` funds from the parent rootnet (Filecoin Calibration) to the child subnet (Basin), it will register your account on the subnet. If you ever want to move funds back to the parent, the `withdraw` command can be used. Note these differ from moving funds intra-subnet, which requires you to use the `transfer` command. These are described in more detail below.
+
+</Steps>
+
+## Next steps
+
+Head over to the [commands](/object-storage/cli/commands) page to learn more about the available commands. You can watch the video below to see a quick demo of the CLI in action!
+
+{/* TODO: fix video formatting issues on resize */}
+
+<div className="w-full">
+  <br />
+  <iframe className="w-full aspect-video" width="100%" height="500px" title="Basin CLI" src="https://drive.google.com/file/d/1Vd56asjYEMWYOtjgQNRLk9YoXiofJTeh/preview" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+</div>

@@ -8,8 +8,9 @@
     "type": "separator"
   },
   "index": "Overview",
-  "concepts": "Concepts",
-  "usage": "Usage",
+  "introduction": "Introduction",
+  "cli": "CLI",
+  "rust-sdk": "Rust SDK",
   "guides": "Guides",
   "reference": "Reference"
 }

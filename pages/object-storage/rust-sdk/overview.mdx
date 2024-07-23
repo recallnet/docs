@@ -1,0 +1,199 @@
+---
+title: Overview
+description: Rust SDK for Basin object storage.
+---
+
+## Overview
+
+The Basin SDK is a Rust library that provides a simple interface for interacting with the Basin object storage system. It is designed to be easy to use and flexible, allowing you to build applications that interact with Basin in a variety of ways.
+
+There are two primary crates that are used in tandem with the Basin SDK crate. All three _may_ be required, depending on the use case, so let's break down what each crate does:
+
+- `adm_provider`: Provides the means to interact with the Basin object storage system via a chain and object provider.
+- `adm_signer`: A transaction signer to help manage sending transactions to the subnet.
+- `adm_sdk`: The Basin SDK itself, which provides a simple interface for interacting with Basin and uses the other two crates to do so.
+
+## Installation
+
+To use the Basin SDK in your Rust project, add the following dependencies to your `Cargo.toml` file:
+
+```toml
+adm_provider = { git = "https://github.com/textileio/basin.git", rev = "9d790ef961731f2331eda0d45d5494d73e85c0ad" }
+adm_sdk = { git = "https://github.com/textileio/basin.git", rev = "9d790ef961731f2331eda0d45d5494d73e85c0ad" }
+adm_signer = { git = "https://github.com/textileio/basin.git", rev = "9d790ef961731f2331eda0d45d5494d73e85c0ad" }
+```
+
+Be sure to replace the revision hash with the latest version in the repo for the most up-to-date versions!
+
+### Additional dependencies
+
+For the sake of these examples, you'll also want to make sure you add the following to you `Cargo.toml`. The `fendermint_actor_machine` will later be used to define the write options for the object store (e.g., only owner can write, etc.), so this is most likely something you'll want to include.
+
+```toml
+fendermint_actor_machine = { git = "https://github.com/textileio/ipc.git", rev = "89c3871b8ba7eaf30e05ef0f29b6e3fb5c5789d7" }
+```
+
+For the example below, we'll also use the following; `tokio` is used for async file operations, and `async-tempfile` is used to create temporary files.
+
+```toml
+async-tempfile = "0.6.0"
+tokio = { version = "1.37.0", features = ["fs", "macros", "rt-multi-thread"] }
+```
+
+## Signer & provider setup
+
+The most basic usage will likely involve connecting to the network, creating an object store, and then adding or getting objects. To create an object store, you'll need to use the `JsonRpcProvider` from the `adm_provider` crate plus various `adm_sdk` types.
+
+Here's a simple example. The `signer.init_sequence` call is optional, but without it, you'll run into issues with out of sync sequences (nonces). It's best to call it unless you're firing many transactions at once.
+
+```rust
+use adm_provider::json_rpc::JsonRpcProvider;
+use adm_sdk::{
+    machine::{objectstore::ObjectStore, objectstore::QueryOptions, Machine},
+    network::Network,
+};
+use fendermint_actor_machine::WriteAccess;
+
+#[tokio::main]
+async fn main() {
+    let network = Network::Testnet.init();
+    let provider =
+        JsonRpcProvider::new_http(network.rpc_url()?, None, Some(network.object_api_url()?))?;
+    let file = async_tempfile::TempFile::new().await?;
+
+    signer.init_sequence(&provider).await?;
+}
+```
+
+## Creating an object store
+
+To create an object store, you'll need to use the `ObjectStore::new` method, which takes a provider, signer, desired write access controls, and custom gas parameters.
+
+```rust
+let (os, _) = ObjectStore::new(
+    &provider,
+    &mut signer,
+    WriteAccess::OnlyOwner,
+    Default::default(),
+).await?;
+```
+
+Note the second value returned is the onchain transaction that created the object store.
+
+## Adding an object
+
+We can extend the example above to add an object to the object store. The `add` method is used to add an object to the object store given a provider, signer, the object's desired key (e.g., `my/key`), and options.
+
+```rust
+use tokio::io::{AsyncSeekExt, AsyncWriteExt};
+
+// ...
+
+let file = async_tempfile::TempFile::new().await?;
+file.write_all("hello world".as_bytes()).await?;
+file.flush().await?;
+file.rewind().await?;
+
+let tx = os
+    .add(&provider, &mut signer, "my/key", file, Default::default())
+    .await?;
+```
+
+For reference, a transaction includes the status, hash, height, gas used, and the CID.
+
+```json
+{
+  "status": "committed",
+  "hash": "D09C9563A16CFBAF9323DE83FCE795D17D20F16DFC543E8593CD13997ED0B04C",
+  "height": "1127838",
+  "gas_used": 5484543,
+  "data": "bafy2bzacedxeu3g3uazqpn2ln7yvyfhc6ilj3vi5bf3h6usvygsxaub7paws4"
+}
+```
+
+## Listing an object
+
+To list an object, you can use the `list` method. This method comes with available query options to refine your results:
+
+- `prefix`: The prefix of the keys you want to list.
+- `delimiter`: The delimiter to use when listing keys.
+- `offset`: The offset to start listing keys.
+- `limit`: The maximum number of keys to list.
+- `height`: The height of the object store to list keys from (defaults to the latest committed height).
+
+```rust
+let options = QueryOptions {
+    prefix: "my/".to_string(),
+    delimiter: "/".to_string(),
+    offset: 0,
+    limit: req.limit.unwrap_or_default(),
+    height: Default::default(),
+};
+let list = os.query(&provider, options).await?;
+```
+
+This will give you a list of all objects and any other common prefixes down the tree.
+
+```json
+{
+  "common_prefixes": [],
+  "objects": [
+    {
+      "key": "my/key",
+      "value": {
+        "cid": "bafybeid3weurg3gvyoi7nisadzolomlvoxoppe2sesktnpvdve3256n5tq",
+        "metadata": {},
+        "resolved": true,
+        "size": 5
+      }
+    }
+  ]
+}
+```
+
+## Getting an object
+
+TODO
+
+## Deleting an object
+
+TODO
+
+## Network interactions
+
+You can review the `adm_sdk::network` module for more information on network interactions. Below are some notable values you may want to use. Note these are subject to change as the network is in its early stages, so always check the latest values in the crate. Utility methods exist on the `adm_sdm::network::Network` struct to fetch these values dynamically.
+
+```rust
+const TESTNET_SUBNET_ID: &str = "/r314159/t410fbslswn3rqrpdjoozbuoll6mnnfsolbp2wi3vbmi"; // Chain ID: 649564385343980
+const LOCALNET_SUBNET_ID: &str = "/r314159/t410f726d2jv6uj4mpkcbgg5ndlpp3l7dd5rlcpgzkoi";
+const DEVNET_SUBNET_ID: &str = "test";
+
+const TESTNET_RPC_URL: &str = "https://api.n1.testnet.basin.storage";
+const LOCALNET_RPC_URL: &str = "http://127.0.0.1:26657";
+
+const RPC_TIMEOUT: Duration = Duration::from_secs(60);
+
+const TESTNET_EVM_RPC_URL: &str = "https://evm-api.n1.testnet.basin.storage";
+const TESTNET_EVM_GATEWAY_ADDRESS: &str = "0x77aa40b105843728088c0132e43fc44348881da8";
+const TESTNET_EVM_REGISTRY_ADDRESS: &str = "0x74539671a1d2f1c8f200826baba665179f53a1b7";
+
+const TESTNET_PARENT_EVM_RPC_URL: &str = "https://api.calibration.node.glif.io/rpc/v1";
+const TESTNET_PARENT_EVM_GATEWAY_ADDRESS: &str = "0x129682c2ae89d8157Ad46Ea402E13f81C1C2e2d0";
+const TESTNET_PARENT_EVM_REGISTRY_ADDRESS: &str = "0x7Eb0a3511BB5DB2b5f945e6EB801Cb3Be9238c42";
+
+const TESTNET_OBJECT_API_URL: &str = "https://object-api.n1.testnet.basin.storage";
+const LOCALNET_OBJECT_API_URL: &str = "http://127.0.0.1:8001";
+
+pub const TESTNET_FAUCET_API_URL: &str = "https://faucet.testnet.basin.storage";
+```
+
+For example, you'll notice the subnet ID has a string value. Its hex encoded value can be found with an RPC call to the EVM provider URL:
+
+```sh
+curl https://evm-api.n1.testnet.basin.storage/ \
+-X POST \
+-H "Content-Type: application/json" \
+-d '{"method":"eth_chainId","params":[],"id":1,"jsonrpc":"2.0"}'
+```
+
+You can use these values in any wallet configuration, such as MetaMask, to interact with the network directly!

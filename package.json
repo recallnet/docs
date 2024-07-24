@@ -1,7 +1,7 @@
 {
   "name": "adm-docs",
   "version": "0.0.1",
-  "description": "Official developer documentation for the ADM protocol",
+  "description": "Official developer documentation for the Hoku protocol",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

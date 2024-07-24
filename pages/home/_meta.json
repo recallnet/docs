@@ -1,0 +1,65 @@
+{
+  "index": {
+    "title": "Getting started",
+    "display": "hidden"
+  },
+  "introduction": "Introduction",
+  "features": "Features",
+  "services-separator": {
+    "title": "Services",
+    "type": "separator"
+  },
+  "event-store": {
+    "title": "Event Store",
+    "href": "/event-store"
+  },
+  "object-storage": {
+    "title": "Object Store",
+    "href": "/object-storage"
+  },
+  "databases": {
+    "title": "Databases",
+    "href": "/databases"
+  },
+  "protocol-separator": {
+    "title": "Protocol",
+    "type": "separator"
+  },
+  "apis": {
+    "title": "APIs",
+    "href": "/apis"
+  },
+  "architecture": {
+    "title": "Architecture",
+    "href": "/architecture"
+  },
+  "clis": {
+    "title": "CLIs",
+    "href": "/clis"
+  },
+  "contracts": {
+    "title": "Contracts",
+    "href": "/contracts"
+  },
+  "local": {
+    "title": "Local",
+    "href": "/local"
+  },
+  "operators": {
+    "title": "Operators",
+    "href": "/operators"
+  },
+  "community-separator": {
+    "title": "Community",
+    "type": "separator"
+  },
+  "community": {
+    "title": "Community",
+    "href": "/community"
+  },
+  "blog": {
+    "title": "Blog ↗",
+    "href": "https://blog.textile.io",
+    "newWindow": true
+  }
+}

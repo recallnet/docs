@@ -1,0 +1,15 @@
+{
+  "<-": {
+    "title": "Back to home",
+    "href": "/home"
+  },
+  "-": {
+    "title": "Operators",
+    "type": "separator"
+  },
+  "index": "Overview",
+  "core": "Core",
+  "event-store": "Event Store",
+  "object-storage": "Object Store",
+  "advanced": "Advanced"
+}

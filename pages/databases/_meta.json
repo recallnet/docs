@@ -1,5 +1,12 @@
 {
-  "orbisdb": "OrbisDB",
+  "<-": {
+    "title": "Back to home",
+    "href": "/home"
+  },
+  "-": {
+    "title": "Databases",
+    "type": "separator"
+  },
   "index": "Overview",
   "concepts": "Concepts",
   "usage": "Usage",

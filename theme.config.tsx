@@ -53,11 +53,10 @@ const config: DocsThemeConfig = {
   ),
   sidebar: {
     titleComponent({ title, type, route }) {
-      console.log(route);
       const { asPath } = useRouter();
-      console.log(asPath);
+
       if (
-        asPath === "/" ||
+        asPath === "/home" ||
         asPath === "/features" ||
         asPath === "/introduction"
       ) {

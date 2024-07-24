@@ -6,11 +6,11 @@
   "introduction": {
     "title": "Introduction",
     "href": "/home/introduction",
-    "display": "show"
+    "display": "normal"
   },
   "features": {
     "title": "Features",
     "href": "/home/features",
-    "display": "show"
+    "display": "normal"
   }
 }

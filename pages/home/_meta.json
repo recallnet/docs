@@ -1,8 +1,7 @@
 {
   "index": {
     "title": "Getting started",
-    "hidden": true,
-    "type": "_"
+    "display": "hidden"
   },
   "introduction": "Introduction",
   "features": "Features",

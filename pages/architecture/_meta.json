@@ -4,12 +4,11 @@
     "href": "/home"
   },
   "-": {
-    "title": "Event Store",
+    "title": "Architecture",
     "type": "separator"
   },
   "index": "Overview",
   "concepts": "Concepts",
-  "usage": "Usage",
-  "guides": "Guides",
-  "reference": "Reference"
+  "machines": "Machines",
+  "subnets": "Subnets"
 }

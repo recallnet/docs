@@ -4,8 +4,7 @@
     "href": "/home"
   },
   "-": {
-    "title": "APIs",
+    "title": "Local",
     "type": "separator"
-  },
-  "index": "Overview"
+  }
 }

@@ -4,12 +4,12 @@
     "href": "/home"
   },
   "-": {
-    "title": "Event Store",
+    "title": "CLIs",
     "type": "separator"
   },
   "index": "Overview",
-  "concepts": "Concepts",
   "usage": "Usage",
-  "guides": "Guides",
+  "accumulator": "Accumulator",
+  "object-store": "Object Store",
   "reference": "Reference"
 }

@@ -3,14 +3,93 @@
     "type": "page",
     "display": "hidden"
   },
-  "introduction": {
-    "title": "Introduction",
-    "href": "/home/introduction",
-    "display": "normal"
+  "nav-services": {
+    "title": "Services",
+    "type": "menu",
+    "display": "normal",
+    "items": {
+      "event-store": {
+        "title": "Event store",
+        "href": "/event-store"
+      },
+      "object-storage": {
+        "title": "Object storage",
+        "href": "/object-storage"
+      },
+      "databases": {
+        "title": "Databases",
+        "href": "/databases"
+      }
+    }
   },
-  "features": {
-    "title": "Features",
-    "href": "/home/features",
-    "display": "normal"
-  }
+  "nav-protocol": {
+    "title": "Protocol",
+    "type": "menu",
+    "display": "normal",
+    "items": {
+      "apis": {
+        "title": "APIs",
+        "href": "/apis"
+      },
+      "architecture": {
+        "title": "Architecture",
+        "href": "/architecture"
+      },
+      "clis": {
+        "title": "CLIs",
+        "href": "/clis"
+      },
+      "contracts": {
+        "title": "Contracts",
+        "href": "/contracts"
+      },
+      "local": {
+        "title": "Local",
+        "href": "/local"
+      },
+      "operators": {
+        "title": "Operators",
+        "href": "/operators"
+      }
+    }
+  },
+  "nav-community": {
+    "title": "Community",
+    "type": "menu",
+    "display": "normal",
+    "items": {
+      "contributing": {
+        "title": "Contributing",
+        "href": "/community/contributing"
+      },
+      "object-storage": {
+        "title": "Ecosystem",
+        "href": "/community/ecosystem"
+      },
+      "databases": {
+        "title": "Points program",
+        "href": "/community/points-program"
+      }
+    }
+  },
+  "nav-playground": {
+    "title": "Playground ↗",
+    "type": "page",
+    "display": "normal",
+    "href": "https://blog.textile.io",
+    "newWindow": true
+  },
+  "introduction": "Introduction",
+  "features": "Features",
+  "apis": "APIs",
+  "architecture": "Architecture",
+  "clis": "CLIs",
+  "community": "Community",
+  "contracts": "Contracts",
+  "databases": "Databases",
+  "event-store": "Event Store",
+  "home": "Home",
+  "local": "Local",
+  "object-storage": "Object Store",
+  "operators": "Operators"
 }

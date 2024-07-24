@@ -11,5 +11,15 @@
   "concepts": "Concepts",
   "usage": "Usage",
   "guides": "Guides",
-  "reference": "Reference"
+  "reference": "Reference",
+  "--": {
+    "title": "OrbisDB",
+    "type": "separator"
+  },
+  "orbisdb-introduction": "Introduction",
+  "orbisdb-setting-up": "Setting up",
+  "orbisdb-managing-data": "Managing Data",
+  "orbisdb-plugins": "Plugins",
+  "orbisdb-dashboard-reference": "Dashboard Reference",
+  "orbisdb-sdk-reference": "SDK Reference"
 }

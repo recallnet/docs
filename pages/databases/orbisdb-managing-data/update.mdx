@@ -4,18 +4,18 @@ Once written, data can be updated. This is basic database functionality and it's
 
 ## Flow of data
 
-Check out Writing data (link), since the same logic is being used to update it.\
-The underlying Ceramic data is updated and picked up by OrbisDB instances subscribed to its Models (link).
+Check out [Writing data](/databases/orbisdb-managing-data/insert), since the same logic is being used to update it.\
+The underlying Ceramic data is updated and picked up by OrbisDB instances subscribed to its [Models](/databases/orbisdb-managing-data/models).
 
-The indexing process includes Context (link) checks, validation done by Plugins (link), etc.\
+The indexing process includes [Context](/databases/orbisdb-managing-data/contexts) checks, validation done by [Plugins](/databases/orbisdb-plugins), etc.\
 Indexed data is then queried from OrbisDB directly, but is linked to the underlying Ceramic data via the Stream ID.
 
 ## `UPDATE` in OrbisDB
 
-Data updates may happen when explicitly requested by the user or due to Account Relation (link) restrictions.\
+Data updates may happen when explicitly requested by the user or due to [Account Relation](/databases/orbisdb-managing-data/models#account-relation) restrictions.\
 When trying to write new data with `single` or `set` Account Relation constraints, the already existing data is updated instead.
 
-All update operations are handled by the `update` [SDK method](https://www.notion.so/UPDATE-351a65cfd54e401385996025f54602f2?pvs=21) (link).
+All update operations are handled by the `update` [SDK method](/databases/orbisdb-sdk-reference/update).
 
 ### Code example
 
@@ -55,14 +55,14 @@ const result = await orbis
 
 ## Summary
 
-When updating data the same flow applies as it does when writing data (link).\
+When updating data the same flow applies as it does when [writing data](/databases/orbisdb-managing-data/insert).\
 Ceramic is used as the source of truth from which OrbisDB Nodes index updated data.\
 Run an update query using `orbis.update` and you're ready to go.
 
 The general flow when updating data looks like this:
 
 1. End user triggers and signs the update (SDK)
-    1. Alternatively, the user tries to create a new entry using a Model that has `single` or `set` Account Relation (link) contraints
+    1. Alternatively, the user tries to create a new entry using a Model that has `single` or `set` [Account Relation](/databases/orbisdb-managing-data/models#account-relation) contraints
 2. The data is sent to Ceramic by the end user directly (SDK)
 3. OrbisDB picks up and processes Ceramic events
 4. Plugins are used to validate and enrich the data

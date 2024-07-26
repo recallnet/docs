@@ -6,7 +6,7 @@ Models help OrbisDB and other applications in the ecosystem understand the data 
 ## Definition
 
 Models are a Ceramic-native concept used to determine the way data is created and how it relates to other data.\
-They utilize JSON Schema (link) to define data types, validation rules and the overall shape of data.\
+They utilize [JSON Schema](https://json-schema.org/) to define data types, validation rules and the overall shape of data.\
 Models also contain additional information, such as `relations` which help build robust relational data systems.
 
 A basic Model definition is as follows
@@ -71,7 +71,7 @@ It's due to this common property between the two that OrbisDB creates **a table 
 OrbisDB subscribes to Models in the same fashion consumers subscribe to topics.
 
 Bear this in mind when creating your Models and treat them as `CREATE TABLE` statements.\
-Combine them with Contexts (link) to create composable organized data.
+Combine them with [Contexts](/databases/orbisdb-managing-data/contexts) to create composable organized data.
 
 There's a lot of Models already out there, so you might want to reconsider creating your own.\
 Check out the most popular Models using [Cerscan](https://cerscan.com/mainnet/leaderboard).

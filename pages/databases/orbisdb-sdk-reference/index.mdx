@@ -14,7 +14,7 @@ npm install @useorbis/db-sdk
 
 OrbisDB requires some basic configuration to work, mainly Ceramic and OrbisDB node gateways.\
 There's a slight difference based on the type of an instance you're connecting to.\
-Learn more about instance types [here](https://www.notion.so/Overview-fbc65a9a0356485a993b0cab190779f3?pvs=21) (link).
+Learn more about instance types [here](/databases/orbisdb-setting-up).
 
 ### Dedicated instance
 
@@ -43,14 +43,14 @@ const db = new OrbisDB({
 
 ### Shared instance
 
-When using a shared instance, such as OrbisDB Studio (link), you must provide an environment to connect to.
+When using a shared instance, such as [OrbisDB Studio](/databases/orbisdb-setting-up/managed-studio), you must provide an environment to connect to.
 
 #### Environments
 
 Shared OrbisDB instances are multi-tenant nodes that can host multiple, isolated, projects on a single node.\
 All environments share the same underlying hardware, network and Ceramic node, but are logically separate with isolated databases, admins and configurations.
 
-> You can find your [OrbisDB Studio](https://www.notion.so/Managed-Studio-be33efc2124e4f3583ab10a1639c45b1?pvs=21) (link) gateways on the home (Contexts) page.\
+> You can find your [OrbisDB Studio](/databases/orbisdb-setting-up/managed-studio) gateways on the home (Contexts) page.\
 > If you're using a 3rd party provider, they should provide the information.
 
 ```tsx

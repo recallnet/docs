@@ -8,7 +8,7 @@ We made sure to build multiple ways for users to explore their data.
 Unlike writes and updates, querying data from OrbisDB does not rely on Ceramic.\
 Once data gets indexed, it is served directly from your OrbisDB instance.\
 Your application and users will interface with OrbisDB directly to query data and get the results they need.\
-This can be done using our Data dashboard (link), SDK with an ORM-like interface or GraphQL.
+This can be done using our [Data dashboard](/databases/orbisdb-dashboard-reference), SDK with an ORM-like interface or GraphQL.
 
 ## `SELECT` in OrbisDB
 
@@ -26,7 +26,7 @@ You can start exploring your OrbisDB data by visiting the `Data` section of your
 Here you'll see all the tables (Models) that are currently being indexed.\
 You can browse them directly or use our `Editor` to write custom SQL or GraphQL queries.
 
-Check out more in our Dashboard reference (link).
+Check out more in our [Dashboard reference](/databases/orbisdb-dashboard-reference).
 
 ### ORM-like SDK
 
@@ -36,7 +36,7 @@ While not an ORM, OrbisDB SDK comes with a simple query builder.\
 This allows you to programmatically build SQL queries without having to know any SQL in the first place.\
 Queries get serialized as JSON and sent over a public REST API.
 
-Check out our [SDK reference](https://www.notion.so/SELECT-0683b157b72640deaa24b70994db9041?pvs=21) (link) to explore more advanced queries, operators and more.
+Check out our [SDK reference](/databases/orbisdb-sdk-reference/select) to explore more advanced queries, operators and more.
 
 #### Query builder `SELECT`
 
@@ -104,7 +104,7 @@ This can be used in combination with existing GraphQL clients to enable a famili
 SQL has been around for decades and it's grown into an extremely robust way of querying data.\
 Relational data model are coupled with concepts such as joins, foreign keys and others.
 
-We will only briefly touch on some in this section, but you can check out Advanced queries (link) for more information.
+We will only briefly touch on some in this section, but you can check out [Advanced queries](/databases/orbisdb-managing-data/advanced) for more information.
 
 ### Joins
 
@@ -112,26 +112,26 @@ Joins enable you to, well, *join* data across multiple tables (Models).\
 This is the core concept of relational data, as data across tables often relates to each other in one way or another.\
 They aren't (yet) built into our SDK query builder, but they are available via raw SQL queries and GraphQL.
 
-You can read more about Joins in our Advanced queries section (link).
+You can read more about Joins in our [Advanced queries](/databases/orbisdb-managing-data/advanced) section.
 
 ### Views
 
 Views allow you to name commonly used queries (including joins, filters, etc).\
 You can use them as any other table and you can access them through all the OrbisDB query methods.
 
-Learn how to create Views in our Advanced queries section (link).
+Learn how to create Views in our [Advanced queries](/databases/orbisdb-managing-data/advanced) section.
 
 ### Indexes
 
 When accessing data, the database engine (PostgreSQL) needs to go through *all* the rows in your table before finding the result. This isn't efficient, especially as your datasets grow.\
 Indexes create a “cache” of sorts that can be used to quickly determine which rows match your query, without having to go through all the entries.
 
-OrbisDB creates some indexes automatically, you can find out more in our Advanced queries section (link).
+OrbisDB creates some indexes automatically, you can find out more in our [Advanced queries](/databases/orbisdb-managing-data/advanced) section.
 
 ## Summary
 
 When querying data, you and your users are interfacing with OrbisDB directly.\
-Owners can do this using our built-in Data dashboard (link), or use an SDK paired with ORM-like and GraphQL interfaces.
+Owners can do this using our built-in [Data dashboard](/databases/orbisdb-dashboard-reference), or use an SDK paired with ORM-like and GraphQL interfaces.
 
 The flow is as follows
 1. User interacts with the OrbisDB directly

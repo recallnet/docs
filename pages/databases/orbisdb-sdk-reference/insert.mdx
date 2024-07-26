@@ -1,9 +1,9 @@
 # `INSERT`
 
 When writing data to OrbisDB, users are interacting with the underlying decentralized data network, Ceramic.\
-Find out more about the data flow in our [Writing data section](https://www.notion.so/Writing-data-INSERT-8d1fae8016d94393ad439feeb3c9f7ff?pvs=21) (link).
+Find out more about the data flow in our [Writing data section](/databases/orbisdb-managing-data/insert).
 
-> Before using the methods, make sure to [initialize](https://www.notion.so/Getting-started-12a929384dd644fd9618b2d8e62ddda9?pvs=21) (link) your OrbisDB SDK and [authenticate](https://www.notion.so/Authentication-f3a5e09fa5ae4dda832b2c627b37757b?pvs=21) (link) the user.
+> Before using the methods, make sure to [initialize](/databases/orbisdb-sdk-reference) your OrbisDB SDK and [authenticate](/databases/orbisdb-sdk-reference/auth) the user.
 
 ## Syntax
 
@@ -54,7 +54,7 @@ console.log(success)
 
 ## Contexts
 
-`INSERT` statements can be scoped to a [Context](https://www.notion.so/Contexts-Spaces-481a6351b87048688f028dbb755bfaed?pvs=21) (link) by using `.context()`.
+`INSERT` statements can be scoped to a [Context](/databases/orbisdb-managing-data/contexts) by using `.context()`.
 
 ```tsx
 const result = await orbis
@@ -112,7 +112,7 @@ console.log(statement.runs)
 
 ## Local validation
 
-All insert statements can be validated against their Models (link) locally.\
+All insert statements can be validated against their [Models](/databases/orbisdb-managing-data/models) locally.\
 This requires postponed execution syntax.\
 Local validation is not required, it's just a quality-of-life feature.\
 Data validation is ultimately done by the Ceramic node you're writing the data to.

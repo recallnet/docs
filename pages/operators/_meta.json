@@ -4,12 +4,10 @@
     "href": "/home"
   },
   "-": {
-    "title": "Operators",
+    "title": "Node operators",
     "type": "separator"
   },
   "index": "Overview",
-  "core": "Core",
-  "event-store": "Event Store",
-  "object-storage": "Object Store",
-  "advanced": "Advanced"
+  "setup": "Setup & installation",
+  "local": "Local development"
 }

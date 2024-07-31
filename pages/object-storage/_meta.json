@@ -8,7 +8,7 @@
     "type": "separator"
   },
   "index": "Overview",
-  "introduction": "Introduction",
+  "concepts": "Concepts",
   "cli": "CLI",
   "rust-sdk": "Rust SDK",
   "guides": "Guides",

@@ -27,28 +27,16 @@
     "type": "menu",
     "display": "normal",
     "items": {
-      "apis": {
-        "title": "APIs",
-        "href": "/apis"
-      },
       "architecture": {
         "title": "Architecture",
         "href": "/architecture"
       },
-      "clis": {
-        "title": "CLIs",
-        "href": "/clis"
-      },
-      "contracts": {
-        "title": "Contracts",
-        "href": "/contracts"
-      },
-      "local": {
-        "title": "Local",
-        "href": "/local"
+      "network": {
+        "title": "Contracts & RPCs",
+        "href": "/network"
       },
       "operators": {
-        "title": "Operators",
+        "title": "Node operators",
         "href": "/operators"
       }
     }
@@ -58,38 +46,28 @@
     "type": "menu",
     "display": "normal",
     "items": {
+      "point-program": {
+        "title": "Points program",
+        "href": "/home/points-program"
+      },
+      "ecosystem": {
+        "title": "Ecosystem",
+        "href": "/home/ecosystem"
+      },
       "contributing": {
         "title": "Contributing",
-        "href": "/community/contributing"
-      },
-      "object-storage": {
-        "title": "Ecosystem",
-        "href": "/community/ecosystem"
-      },
-      "databases": {
-        "title": "Points program",
-        "href": "/community/points-program"
+        "href": "/home/contributing"
       }
     }
   },
-  "nav-playground": {
-    "title": "Playground ↗",
-    "type": "page",
-    "display": "normal",
-    "href": "https://blog.textile.io",
-    "newWindow": true
-  },
+  "home": "Home",
   "introduction": "Introduction",
   "features": "Features",
-  "apis": "APIs",
-  "architecture": "Architecture",
-  "clis": "CLIs",
-  "community": "Community",
-  "contracts": "Contracts",
+  "event-store": "Event store",
+  "object-storage": "Object storage",
   "databases": "Databases",
-  "event-store": "Event Store",
-  "home": "Home",
-  "local": "Local",
-  "object-storage": "Object Store",
-  "operators": "Operators"
+  "architecture": "Architecture",
+  "network": "Contracts & RPCs",
+  "operators": "Node operators",
+  "community": "Community"
 }

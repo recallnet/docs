@@ -1,0 +1,98 @@
+---
+title: Setup & installation
+description: Install prerequisites and build the Hoku binaries.
+---
+
+import { Callout, Cards, Card, FileTree, Steps, Tabs } from "nextra/components";
+
+This page outlines how to install the necessary dependencies that precede building and installing the underlying Hoku
+binaries. If you already have these installed on your machine, you can proceed to the
+[local development](/operators/local) page.
+
+## Dependencies
+
+### Linux
+
+```shell
+sudo apt update && sudo apt install build-essential libssl-dev mesa-opencl-icd ocl-icd-opencl-dev gcc git bzr jq pkg-config curl clang hwloc libhwloc-dev wget ca-certificates gnupg -y
+```
+
+### macOS
+
+- Install Xcode from App Store or terminal: `xcode-select --install`
+- Install Homebrew: [here](https://brew.sh)
+- Install dependencies: `brew install jq`
+
+## Install Rust
+
+```shell
+curl https://sh.rustup.rs -sSf | sh -s -- -y
+```
+
+## Install `cargo make`
+
+```shell
+cargo install cargo-make
+```
+
+## Install `toml-cli`
+
+```shell
+cargo install toml-cli
+```
+
+## Install Foundry
+
+```shell
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+```
+
+## Install Node
+
+```shell
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+source "$HOME/.bashrc" # This step will vary by OS
+nvm install --default lts/*
+```
+
+## Install Docker
+
+### Ubuntu
+
+```shell
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Remove the need to use sudo
+getent group docker || sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+
+# Test running docker without sudo
+docker ps
+```
+
+### macOS
+
+See the official Docker docs: [here](https://docs.docker.com/desktop/install/mac-install).
+
+## Source env
+
+This step will vary by OS and shell. For example, in bash:
+
+```shell
+source ${HOME}/.bashrc
+```

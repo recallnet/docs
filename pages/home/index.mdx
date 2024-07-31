@@ -1,23 +1,36 @@
 ---
 title: Hoku documentation
-# sidebar_label: Home
-# icon: Home
-description: Data availability network for onchain object storage & event streaming.
+description: Continuous data services for sourcing, storing, and monetizing data.
 ---
 
-<br />
-
-# Hoku documentation
-
 import { Cards, Card } from "nextra/components";
+import Image from "next/image";
+import LandingSvg from "../../components/LandingSvg";
 
-ADM is _the_ collaborative cloud—a decentralized network built to solve problems around sourcing, storing, and monetizing data for data-hungry applications and users such as AI agents.
+<div className="nx-flex nx-gap-4 nx-mt-10">
+  <div className="nx-flex-1">
+    Hoku is _the_ collaborative cloud—a decentralized network built to solve problems for data-hungry applications and users (e.g., DePINs, ML workloads, AI agents) and move beyond static datasets by providing continuously updated data sinks.
+
+    Powered by a general purpose *data overlay* protocol, anyone can openly spawn and use core services to help store, manage, expose, and consume data through flexible interfaces:
+
+    - **Basin**: Enhanced object storage for simple & scalable data.
+    - **Ceramic**: Edge data synchronization & storage, along with privacy features.
+    - **Databases**: Query engines on top of the core services, including OrbisDB & Tableland.
+
+    </div>
+
+  <div className="nx-flex nx-flex-1 nx-w-full nx-h-screen nx-justify-center nx-items-center">
+    <LandingSvg />
+  </div>
+</div>
 
 ## Get started
 
 <Cards>
-  <Card title="TODO" href="/" />
-  <Card title="TODO" href="/" />
-  <Card title="TODO" href="/" />
-  <Card title="TODO" href="/" />
+  <Card title="Introduction" href="/home/introduction" />
+  <Card title="Object storage" href="/object-storage" />
+  <Card title="Event store" href="/event-store" />
+  <Card title="Databases" href="/databases" />
+  <Card title="Protocol architecture" href="/architecture" />
+  <Card title="Local development" href="/local" />
 </Cards>

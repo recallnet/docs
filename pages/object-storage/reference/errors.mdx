@@ -5,7 +5,9 @@ description: A list of common Basin errors and their solutions.
 
 ## Actor cannot be found
 
-An actor _must_ be registered on a subnet before it can be used. Basin runs on a subnet, which is a separate chain on top of the "root" Filecoin chain. Accounts only exist there if they've been sent a transaction on the subnet, which effectively "creates" the account on the subnet with underlying FVM EVM account manager logic.
+An actor _must_ be registered on a subnet before it can be used. Basin runs on a subnet, which is a separate chain on
+top of the "root" Filecoin chain. Accounts only exist there if they've been sent a transaction on the subnet, which
+effectively "creates" the account on the subnet with underlying FVM EVM account manager logic.
 
 ```
 Error: failed to init sequence; actor ... cannot be found

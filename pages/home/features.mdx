@@ -1,9 +1,80 @@
 ---
-title: Features
-description: Description here
+title: Hoku usage
+description: Review the protocols overarching features and constraints.
 keywords: features, costs, limits
 ---
 
-_TODO_
+import { Callout } from "nextra/components";
 
-include costs, limits, and general features of what the protocol gives developers
+## Features
+
+Hoku is designed to break down data barriers and enable new data-driven applications by addressing the following:
+
+- **Demand side of data**: Hoku is for developers, organizations, and machines who wish to _gain access to data and
+  request data transformations_ in exchange for a fee (e.g., AI).
+- **Supply side of data**: Hoku is for data _and_ infrastructure providers who wish to _store data_, and eventually
+  _provide access to_ and _transform data_ for monetization purposes (e.g., DePIN).
+- **Security and infra providers**: Hoku is for general participants interested in helping to _ensure access_ to the
+  world’s data (e.g., node operators).
+
+### Flexible, programmable VM / execution
+
+- The Hoku chain supports a blended _native_ VM / execution environment for programming and running onchain data
+  products using either of the below, while maintaining full composability:
+
+  - Filecoin Virtual Machine (FVM) in Rust for high performance computing.
+  - Ethereum Virtual Machine (EVM) in Solidity for simpler, more familiar web3 framework.
+
+- By supporting both the EVM and FVM, Hoku brings the best of both worlds together and gives the large cohort of
+  existing Ethereum developers the ability to, for the first time, utilize the same data and storage primitives as FVM
+  developers.
+
+### Lightening-fast settlement & consensus
+
+- A **hierarchical subnet architecture** and layered consensus model that enables scalable, cost-effective storage and
+  compute, competitive with traditional cloud providers.
+- Offchain service integrations, like Ceramic and Basin, allow **offchain data to be settled onchain** in an efficient
+  manner and with **consensus over data state**.
+
+### Native Data Availability
+
+- Hoku introduces a new _data overlay_ service that is custom built for use cases revolving around **storing and
+  managing large files with high throughput** in a decentralized fashion.
+- It's a system for permissionlessly storing and serving data that powers products and workflows within the ecosystem,
+  removing the need for centralized hosting and storage middleware.
+- It guarantees high availability of data, allowing customers to access their data at any time without significant
+  downtime.
+
+### Network-level access control
+
+- Sophisticated **access control mechanisms** that don’t rely solely on encryption to protect data.
+- Fine-grained access to subsets of data on a per-application basis—giving developers the interoperability and
+  portability enabled by decentralization without sacrificing privacy.
+- Physical-access control can be further combined with the advanced encryption and zero-knowledge techniques being
+  developed across the crypto ecosystem to provide a level of security thus far unseen in the web3 space.
+
+## Services
+
+At launch, there are four primary offerings available:
+
+- **Basin**: Object storage with S3-compatability.
+- **Ceramic**: Edge data sourcing and storage.
+- **OrbisDB**: SQL database for application builders.
+- **Tableland**: Onchain SQL database for EVM-driven data.
+
+You can learn more about each of these and how to use them throughout this documentation.
+
+## Limits
+
+There are a few limitations to be aware of when building on Hoku. Keep in mind that services like Basin and Ceramic have
+their own constraints, which are detailed in their respective sections.
+
+- **Maximum data size**: 1 GiB (arbitrary constraint during testnet phase).
+- **Throughput (TPS)**: Hundreds of transactions per second.
+
+<Callout type="warning">
+
+Note: TPS is rough estimate and may vary based on network conditions. The node design is still under heavy development,
+optimizations are being made, and benchmarked tests are yet to be finalized.
+
+</Callout>

@@ -15,17 +15,17 @@ As they are a part of the original Ceramic event, Contexts will be used to deter
 ## Isolation
 
 Contexts are used for more than organization, they also serve as a level of isolation.\
-**Plugins** (link) **are defined on Context** **basis**, allowing for granular control over things like access gating, data validation, metadata and more.
+[Plugins](/databases/orbisdb-plugins) are defined on Context basis, allowing for granular control over things like access gating, data validation, metadata and more.
 
 ## Use cases
 
 OrbisDB Contexts are often used to define projects or apps, as well as their internal data organization.\
-An example may be an AI training app (Context) which separates datasets (Sub-Contexts) based on semantics or source, even though they share the same data model (link).
+An example may be an AI training app (Context) which separates datasets (Sub-Contexts) based on semantics or source, even though they share the same [data model](/databases/orbisdb-managing-data/models).
 
 ## Managing Contexts
 
 Context management is currently done through the OrbisDB Dashboard, only.\
-To learn how to utilize them, check out the Dashboard Reference (link).
+To learn how to utilize them, check out the [Dashboard Reference](/databases/orbisdb-dashboard-reference).
 
 ## Contexts in OrbisDB
 
@@ -34,4 +34,4 @@ This field will be used when writing or reading data from a specific Context and
 
 When using the SDK, an additional `context` param can be passed.\
 This will automatically be used in the read or write query to filter or write data to the specified Context.\
-Check out more in the SDK Reference (link).
+Check out more in the [SDK Reference](/databases/orbisdb-sdk-reference).

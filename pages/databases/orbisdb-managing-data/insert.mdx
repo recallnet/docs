@@ -8,9 +8,9 @@ OrbisDB is built on top of Ceramic, a decentralized event store.\
 In order to inherit Ceramic's properties such as data ownership, integrity and verifiability, we use Ceramic as our ingestion layer.
 
 When writing data to OrbisDB, end users interact with Ceramic directly, making them the true controllers - nobody else can modify their data.\
-You also need to specify the Model (link) to which the data will adhere.
+You also need to specify the [Model](/databases/orbisdb-managing-data/models) to which the data will adhere.
 
-Once written to Ceramic, all OrbisDB instances subscribed to a Model used will get a notification and begin the indexing process. This includes Context (link) checks, validation done by Plugins (link), etc.
+Once written to Ceramic, all OrbisDB instances subscribed to a Model used will get a notification and begin the indexing process. This includes [Context](/databases/orbisdb-managing-data/contexts) checks, validation done by [Plugins](/databases/orbisdb-plugins), etc.
 
 Indexed data is then queried from OrbisDB directly, but is linked to the underlying Ceramic data via the `Stream ID`.
 
@@ -22,7 +22,7 @@ Two main sources of writes exist in OrbisDB: users and plugins.
 
 This is the main way data gets written to OrbisDB, as it represents your end users.\
 Thanks to the SDK abstraction, there's a simple ORM-like approach to writing data.\
-To write the data, you'll be using `insert` and `insertBulk` [methods](https://www.notion.so/INSERT-40d18395a30d47c580ee08467ab570a3?pvs=21) (link).
+To write the data, you'll be using `insert` and `insertBulk` [methods](/databases/orbisdb-sdk-reference/insert).
 
 ### Plugins
 
@@ -31,20 +31,20 @@ This data is signed by your node and can be used for purposes such as bringing d
 
 Example Plugins using this functionality: CSV Uploader and API Data Source.
 
-To learn more about Plugins click here (link).
+To learn more about Plugins [click here](/databases/orbisdb-plugins).
 
 ### Encrypted data
 
 Since OrbisDB uses Ceramic as its ingestion layer, **all data needs to be encrypted client-side** - before being written to Ceramic.\
-OrbisDB will respect the Model (link) definition when indexing the data, however, it will be indexed as-is.\
+OrbisDB will respect the [Model](/databases/orbisdb-managing-data/models) definition when indexing the data, however, it will be indexed as-is.\
 No decryption attempts will be made.\
-Decryption will have to happen client-side or via Plugins (link).
+Decryption will have to happen client-side or via [Plugins](/databases/orbisdb-plugins).
 
 An example of a client-side decentralized encryption scheme is [Lit Protocol](https://www.litprotocol.com/).
 
 ### Code examples
 
-> Model aliases (link) can be used when writing data, allowing for a better developer experience
+> [Model aliases](/databases/orbisdb-managing-data/models) can be used when writing data, allowing for a better developer experience
 
 #### Single insert
 

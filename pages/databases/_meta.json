@@ -3,15 +3,7 @@
     "title": "Back to home",
     "href": "/home"
   },
-  "-": {
-    "title": "Databases",
-    "type": "separator"
-  },
   "index": "Overview",
-  "concepts": "Concepts",
-  "usage": "Usage",
-  "guides": "Guides",
-  "reference": "Reference",
   "--": {
     "title": "OrbisDB",
     "type": "separator"
@@ -21,5 +13,10 @@
   "orbisdb-managing-data": "Managing Data",
   "orbisdb-plugins": "Plugins",
   "orbisdb-dashboard-reference": "Dashboard Reference",
-  "orbisdb-sdk-reference": "SDK Reference"
+  "orbisdb-sdk-reference": "SDK Reference",
+  "-": {
+    "title": "Tableland",
+    "type": "separator"
+  },
+  "tableland": "Overview"
 }

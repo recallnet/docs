@@ -7,8 +7,8 @@
     "title": "Architecture",
     "type": "separator"
   },
-  "index": "Overview",
-  "concepts": "Concepts",
-  "machines": "Machines",
-  "subnets": "Subnets"
+  "index": "Subnets",
+  "consensus": "State & consensus",
+  "data-contracts": "Data contracts",
+  "state-channels": "Data state channels"
 }

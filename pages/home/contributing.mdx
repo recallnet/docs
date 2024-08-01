@@ -1,0 +1,228 @@
+---
+title: Contributing
+description: Best practices when contributing to the Hoku docs or the codebase.
+keywords: contributing, docs, best practices
+---
+
+import Image from "next/image";
+import { Callout, Cards, Card, FileTree, Steps, Tabs } from "nextra/components";
+
+This page outlines best practices for contributing to the Hoku docs or the codebase. If you're looking to contribute to
+source code, check out our GitHub repository [here](https://github.com/hokunetwork). For docs contributions, this site
+is built with [Nextra](https://nextra.site/docs) and uses many of its built-in features, some of which are described
+below.
+
+## Prose & best practices
+
+- Use sentence case for headings (e.g., `This is a heading` vs. `This Is A Heading`).
+- Use single word `onchain` and `offchain` instead of the hyphenated `on-chain` and `off-chain`.
+- Internal pages should use an absolute link instead of relative (it makes it easier to reorganize content).
+
+## Frontmatter
+
+Frontmatter is used to set the title and description for the page upon rendering and should be at the top of the file in
+the format below. The `title` and `description` **must** exist for every page; `keywords` are optional and used in SEO.
+
+```mdx
+---
+title: Title here
+description: Description here
+keywords: keyword1, keyword2, keyword3
+---
+```
+
+## Headings
+
+Use `##` (or lower) for headings, and do not use a single `#` for the top-level heading since it's reserved for the page
+title, which gets rendered from what's defined in the frontmatter's `title`.
+
+## Code blocks
+
+Code blocks can take a language, line highlighting, click-to-copy functionality, and filenames. The example below will
+highlight lines 1 and 3, include a name for the file, and make sure the snippet is copyable:
+
+````mdx copy
+```txt {1,3} filename="hello.txt" copy
+hello my
+name
+is Hoku
+```
+````
+
+```txt {1,3} filename="hello.txt" copy
+hello my
+name
+is Hoku
+```
+
+A regex can be used to highlight specific sections and could use `{/hello my/}` to replace the `{1,3}` and only
+highlight the relevant parts from line 1.
+
+```txt {/hello my/} filename="hello.txt" copy
+hello my
+name
+is Hoku
+```
+
+## Sidebars
+
+To adjust the sidebar, each folder has a `_meta.json` file with follows the
+[Nextra convention](https://nextra.site/docs/docs-theme/page-configuration) with a couple of tweaks. The "root" and
+"nested" sidebar files differ slightly, and the root page shouldn't require much adjusting since these are "core" pages
+that won't change often. The general structure defines navbar elements and any non-nested pages that should appear on
+the docs landing page.
+
+```json filename="pages/_meta.json"
+{
+  "*": {
+    "type": "page",
+    "display": "hidden"
+  },
+  "nav-page": {
+    "title": "My nested folder",
+    "type": "menu",
+    "display": "normal",
+    "items": {
+      "nested": {
+        "title": "My nested page",
+        "href": "/nested"
+      }
+    }
+  },
+  "introduction": "Introduction"
+}
+```
+
+For the nested page, it should have a `<-` key, which maps to the root `/home` page link, and then it should have the
+overall nested sidebar page title. The remaining
+
+```json filename="pages/nested/_meta.json"
+{
+  "<-": { "title": "Back to home", "href": "/home" },
+  "-": { "title": "My nested page", "type": "separator" },
+  "index": "Overview"
+}
+```
+
+## Cards
+
+`<Cards>` are useful for links that guide the user to primary resources. Use a `<Cards>` with nested `<Card>`
+components:
+
+```mdx
+<Cards>
+
+<Card title="My card" href="/" />
+
+</Cards>
+```
+
+<Cards>
+
+<Card title="My card" href="/" />
+
+</Cards>
+
+## Callouts
+
+A `<Callout>` can be used to draw attention to important information. Four types are possible: `default`, `info`,
+`warning`, or `error`.
+
+```mdx
+<Callout type="default">
+
+Some info.
+
+</Callout>
+```
+
+<Callout type="default">
+
+Some info.
+
+</Callout>
+
+## Steps
+
+Steps are useful for guides—and be sure to space them properly and use the correct headings to avoid rendering issues!
+Use a `<Steps>` with nested `###` (h3) and place the content below the heading:
+
+<Steps>
+
+### Step 1
+
+This is a step
+
+</Steps>
+
+## Folder structure
+
+Use the `FileTree` component to display a folder structure, which lets you render nested folders and files:
+
+```
+<FileTree>
+  <FileTree.Folder name="my-folder" defaultOpen>
+    <FileTree.File name="my-file.json" />
+    <FileTree.Folder name="nested">
+      <FileTree.File name="other-file.json" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+```
+
+<FileTree>
+  <FileTree.Folder name="my-folder" defaultOpen>
+    <FileTree.File name="my-file.json" />
+    <FileTree.Folder name="nested" defaultOpen>
+      <FileTree.File name="other-file.json" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
+## Package install tab
+
+For JavaScript package installation instructions, use the `npm2yarn` code block annotation with the package name as the
+content. This will add tabs for `npm`, `yarn`, etc.
+
+```sh npm2yarn
+npm i my-package
+```
+
+## Tabs
+
+Similarly, `Tabs` can be created for custom tabs to display `items` and their respective content.
+
+```mdx
+<Tabs items={["JavaScript", "Rust"]}>
+  <Tabs.Tab>Javascript is cool</Tabs.Tab>
+  <Tabs.Tab>Rust is fast</Tabs.Tab>
+</Tabs>
+```
+
+<Tabs items={["JavaScript", "Rust"]}>
+  <Tabs.Tab>Javascript is cool</Tabs.Tab>
+  <Tabs.Tab>Rust is fast</Tabs.Tab>
+</Tabs>
+
+## Images
+
+You can use the Next `Image` component to display images, or use the standard markdown syntax for images. This presumes
+the path is under the `public` directory, but relative paths are also supported.
+
+```
+import Image from 'next/image'
+
+<Image src="/img/textile-logo.png" alt="Textile" width={100} height={100} />
+
+![Hello](/img/textile-logo.png)
+```
+
+<Image src="/img/textile-logo.png" alt="Textile" width={100} height={100} />
+
+## Math
+
+Math is supported with a codeblock that has `math` as the language—e.g., `c = \pm\sqrt{a^2 + b^2}`:
+
+```math
+c = \pm\sqrt{a^2 + b^2}
+```

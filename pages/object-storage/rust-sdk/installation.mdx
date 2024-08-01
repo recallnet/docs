@@ -1,0 +1,53 @@
+---
+title: Installation
+description: Set up the Basin SDK in your Rust environment.
+keywords: Basin, Rust SDK, object storage
+---
+
+The Basin SDK is a Rust library that provides a simple interface for interacting with the Basin object storage system.
+It is designed to be easy to use and flexible, allowing you to build applications that interact with Basin in a variety
+of ways.
+
+There are two primary crates that are used in tandem with the Basin SDK crate. All three _may_ be required, depending on
+the use case, so let's break down what each crate does:
+
+- `adm_provider`: Provides the means to interact with the Basin object storage system via a chain and object provider.
+- `adm_signer`: A transaction signer to help manage sending transactions to the subnet.
+- `adm_sdk`: The Basin SDK itself, which provides a simple interface for interacting with Basin and uses the other two
+  crates to do so.
+
+## Installation
+
+To use the Basin SDK in your Rust project, add the following dependencies to your `Cargo.toml` file:
+
+```toml
+adm_provider = { git = "https://github.com/textileio/basin.git", rev = "9d790ef961731f2331eda0d45d5494d73e85c0ad" }
+adm_sdk = { git = "https://github.com/textileio/basin.git", rev = "9d790ef961731f2331eda0d45d5494d73e85c0ad" }
+adm_signer = { git = "https://github.com/textileio/basin.git", rev = "9d790ef961731f2331eda0d45d5494d73e85c0ad" }
+```
+
+Be sure to replace the revision hash with the latest version in the repo for the most up-to-date code!
+
+## Additional dependencies
+
+For the sake of these examples, you'll also want to make sure you add the following to you `Cargo.toml`. The
+`fendermint_actor_machine` will later be used to define the write options for the object store (e.g., only owner can
+write, etc.), so this is most likely something you'll want to include.
+
+```toml
+fendermint_actor_machine = { git = "https://github.com/textileio/ipc.git", rev = "89c3871b8ba7eaf30e05ef0f29b6e3fb5c5789d7" }
+```
+
+We'll also use the following, which are common for handling asynchronous network operations:
+
+- `tokio`: Async file operations.
+- `async-tempfile`: Create async temporary files when adding or getting objects.
+
+```toml
+async-tempfile = "0.6.0"
+tokio = { version = "1.37.0", features = ["fs", "macros", "rt-multi-thread"] }
+```
+
+## Next steps
+
+Continue onward to see how to connect to the network and interact with object stores!

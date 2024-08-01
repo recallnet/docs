@@ -1,0 +1,36 @@
+---
+title: RPC URLs
+description: Hoku nodes expose various RPCs for interacting with the network.
+---
+
+import { Callout } from "nextra/components";
+
+To interact with a subnet, you can use the provided RPC URLs below. These are public endpoints for Hoku nodes ran by the
+core team.
+
+<Callout type="warning">
+
+The Hoku network is still under development, so these values are subject to change. Review our GitHub repository to
+validate the values are correct.
+
+</Callout>
+
+## Testnet
+
+| Description    | Value                                         |
+| -------------- | --------------------------------------------- |
+| IPC RPC        | `https://api.n1.testnet.basin.storage`        |
+| Subnet EVM RPC | `https://evm-api.n1.testnet.basin.storage`    |
+| Parent EVM RPC | `https://api.calibration.node.glif.io/rpc/v1` |
+| Object API     | `https://object-api.n1.testnet.basin.storage` |
+
+## Local development
+
+| Description    | Value                    |
+| -------------- | ------------------------ |
+| IPC RPC        | `http://127.0.0.1:26657` |
+| Subnet EVM RPC | `http://127.0.0.1:8545`  |
+| Parent EVM RPC | N/A                      |
+| Object API     | `http://127.0.0.1:8001`  |
+
+Note: Since no "parent" chain is used in a local-only network, there's no parent RPC URL for local development.

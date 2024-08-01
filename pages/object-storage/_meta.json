@@ -9,7 +9,8 @@
   },
   "index": "Overview",
   "concepts": "Concepts",
-  "usage": "Usage",
+  "cli": "CLI",
+  "rust-sdk": "Rust SDK",
   "guides": "Guides",
   "reference": "Reference"
 }

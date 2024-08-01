@@ -1,0 +1,17 @@
+/* `Back to home` sidebar arrow */
+.back-to-home::before {
+  content: "←";
+  margin-right: 0.5rem;
+}
+
+/* Reduce sidebar separator bottom margin via its parent `li` */
+li:has(.separator-span) {
+  margin-bottom: 0;
+}
+
+/* The first nested index page's pagination (footer) displays `Back to home`,
+which has no clickable link/href, and the sidebar has a button to do this. So,
+we simply hide it from being shown to the user. */
+a[title="Back to home"] {
+  display: none;
+}

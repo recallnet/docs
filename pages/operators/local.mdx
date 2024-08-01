@@ -1,0 +1,142 @@
+---
+title: Running a local subnet
+description: Leverage a Dockerized multi-node setup for development.
+---
+
+import { Callout, Tabs } from "nextra/components";
+
+This page walks through how to spin up a local Hoku network with Docker and presumes you've done the steps described in
+the preceding [setup page](/operators/setup).
+
+## Setup
+
+All scripts use `cargo make` to start Docker containers, volumes, and a Docker network. Before getting started, make
+sure that Docker is running by checking the status of the Docker daemon:
+
+```sh
+docker ps
+```
+
+If it's not running, start it:
+
+<Tabs items={["macOS", "Linux"]}>
+
+  <Tabs.Tab>
+
+    Make sure the [Docker Desktop app](https://www.docker.com/products/docker-desktop/) is installed, and then open it.
+
+    ```sh
+    open /Applications/Docker.app
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+    Use `systemctl` to start the daemon.
+
+    ```sh
+    sudo systemctl start docker
+    ```
+
+  </Tabs.Tab>
+</Tabs>
+
+Make sure you're currently in the `ipc` repository's root directory (from the previous setup and installation step).
+We'll be running the local network from the `scripts` folder.
+
+The `setup.sh` script will create new validator private keys and a `genesis.json` config, and move them to the IPC
+config folder (`~/.ipc`). You only need to run `setup.sh` once on your machine.
+
+```shell
+./scripts/deploy_subnet_no_parent/setup.sh
+```
+
+Now, you can start the three-node `localnet`!
+
+## Start
+
+Starting the network handles the build and installation of a few key binaries that help run the underlying network:
+`ipc-cli`, `fendermint`, and `cometbft`. The IPC contracts take _a while_ (5-10 minutes) to compile the first time.
+
+```shell
+./scripts/deploy_subnet_no_parent/start.sh
+```
+
+<Callout>
+
+If you run into a build error, try running `cargo update time`.
+
+</Callout>
+
+### Logs
+
+Use `docker ps` to list the network's containers. Each validator has four containers.
+
+Check validator 0's CometBFT logs:
+
+```shell
+docker logs validator-0-cometbft
+```
+
+Check validator 0's Fendermint logs:
+
+```shell
+docker logs validator-0-fendermint
+```
+
+You should see blocks being produced at ~1 per second.
+
+### Ports
+
+For reference, the following ports are used by the local subnet:
+
+- CometBFT RPC: 26657, 26757, 26857
+- CometBFT p2p: 26656, 26756, 26856
+- EVM API: 8545, 8645, 8745
+- Resolver: 26655, 26755, 26855
+- Objects: 8001, 8002, 8003
+- Prometheus host: 9090
+- Prometheus metrics: 9184, 9185, 9186
+
+### Usage with Hoku SDK & CLI
+
+In a real subnet anchored to an EVM chain, users deposit funds into the subnet from the EVM chain. This creates their
+account in the subnet FVM. Since `localnet` isn't anchored to an EVM-chain (this may change in the future by using
+Hardhat), all accounts must be added at genesis. To make our lives easier, we reuse the validator keys for development.
+
+The `start.sh` script prints the hex-encoded private key for each validator. You can use these keys with the
+[SDK and CLI](/object-storage).
+
+You'll want to create an `.env` file that specifies the `NETWORK` as `localnet` (this is defined as `testnet` by
+default):
+
+```txt
+export NETWORK=localnet
+export PRIVATE_KEY=<hex_encoded_private_key>
+```
+
+Then, source it before using the clients:
+
+```shell
+source .env
+```
+
+For example, you can now run `adm os create` with the [CLI](/object-storage/cli).
+
+## Restart
+
+Rebuild and restart all validators. Consensus will restart from the last committed block. If you've made changes to
+actors, you'll have to _stop and start_ instead of restarting because the actor code is committed to the chain during
+genesis.
+
+```shell
+./scripts/deploy_subnet_no_parent/restart.sh
+```
+
+## Stop
+
+Stops all validators and deletes all data.
+
+```shell
+./scripts/deploy_subnet_no_parent/stop.sh
+```

@@ -1,8 +1,106 @@
 ---
 title: Concepts
-description: Description here
+description: Getting started with basic network concepts.
 ---
 
-_TODO_
+import { Callout } from "nextra/components";
 
-key concepts
+Basin's object storage takes advantage of Hoku's subnet scaling infrastructure to enable fast and cost-effective storage
+of large amounts of data. Basin's usage pattern generally consists of two components:
+
+- Creating an object store (with certain permissions on who can write data).
+- Adding, listing, getting, and deleting objects.
+
+These key-value stores allow you to push and retrieve data in a familiar S3-like fashion. They support byte range
+requests and advanced queries based on key prefix, delimiter, offset, and limit. Internally, the state of an object
+store is represented in a flexible and extensible way to represent complex data structures.
+
+## Contracts
+
+The interface is implemented as a _data_ contract, deployed on a subnet. Data is represented as an onchain CID within a
+contract's state, and the actual data is stored offchain in a node's local (networked) block store. Spawning new object
+stores is handled with a general factory smart contract, which the various Basin interfaces (SDK, CLI) call under the
+hood.
+
+More generally, there are two types of contracts on Hoku network: **_data_** contracts, and **_smart_** contracts. The
+two differ in how what they can handle and related intents.
+
+### Data contract
+
+A _data_ contract is an [FVM contract](https://docs.filecoin.io/basics/the-blockchain/actors) used to store and manage
+data on the Filecoin network. The FVM has a Wasm runtime, so data contracts are written in Rust and then compiled to
+Wasm. Thus, these have more flexible and data-oriented programmatic control, so they're called "data contracts" to help
+distinguish them from EVM smart contracts.
+
+### Smart contract
+
+A _smart_ contract is a "traditional" EVM contract, most commonly written in Solidity. These expose EVM-specific types,
+state access, and functionality, but they lack the more robust features that a Wasm runtime supports.
+
+## Detached payloads
+
+Basin uses the concept of a _detached payload_ asynchronous sync mechanism, which is a transaction that includes a CID
+reference to an object, but does not include the object data itself. When a detached payload is added to the chain,
+validators are required to download the object data from the network and verify that it matches the CID reference. This
+ensures that all validators have a copy of the object data and can verify the integrity of the object store state.
+
+## Accounts & addresses
+
+Accounts (ECDSA, secp256k1) are used to send data-carrying transactions as you would on any blockchain system. Thus, all
+mutations are onchain transactions within a subnet, so funds are required to pay for writes. Since Basin is built on top
+of Filecoin's FVM, the addresses can follow a _slightly_ different convention than a purely EVM-based account system.
+
+### EVM compatibility
+
+Generally, you can use EVM-style (i.e., `0x` prefixed) accounts for user operations (writes, etc.), but an object
+storage _data contract_ is represented as an FVM-style address.
+
+<Callout type="info">
+
+This is being further researched to create a consistent experience. In the future, you'll likely only need to think
+about EVM-style addresses.
+
+</Callout>
+
+### FVM compatibility
+
+Under the hood, EVM accounts and addresses are represented differently than data contract addresses. Here's a quick
+primer on how FVM addresses work:
+
+- Addresses are prefixed with a network identifier: `t` for Filecoin testnet, or `f` for Filecoin mainnet, and there are
+  five different address types denoted by the second character in the address string: `t0`/`f0` up to `t4`/`f4`.
+- If you're coming from the EVM world, you'll mostly see two types in Hoku:
+  - `t2`/`f2`: Any data contract that gets deployed, such as an object store.
+  - `t4`/`f4`: A namespaced contract address, and `t410`/`f410` is a specifalized namespace for Ethereum-compatible
+    addresses (wallets _and_ smart contracts) on the FVM.
+- Namely, each `t410...`/`f410...` address is equivalent to a `0x` address; the hex address is
+  [encoded in the FVM address string](https://docs.filecoin.io/smart-contracts/filecoin-evm-runtime/address-types#converting-to-a-0x-style-address).
+
+Once your EVM-style account is registered on a subnet, the `0x` and its corresponding `t410...`/`f410...` addresses can
+be used interchangeably on Basin subnets.
+
+## Access control
+
+Currently, there are two types of write-access controls: only-owner or public access. For example, you can create an
+object store that you, and _only_ you, can write to—gated by signatures from your private key. Or, you can have "allow
+all" access where anyone can write data.
+
+This is being further refined, and there will be more robust access control mechanisms soon.
+
+## Broadcast modes
+
+There are three ways in which transactions can be broadcasted to the network: `commit`, `sync`, and `async`. Here's a
+quick overview of each:
+
+- `commit`: Wait until the transaction is delivered and final (default behavior).
+- `sync`: Wait only for the result of a local transaction pre-check, but don’t wait for it to be delivered to all
+  validators (i.e., added risk the transaction may fail during delivery).
+- `async`: Does not wait at all. You will not see errors in your terminal (i.e., added risk the transaction may fail
+  during delivery).
+
+## Chain RPCs & funds
+
+Since Basin is built on top of Filecoin, you must have FIL in your account to interact with the network. Hoku is
+currently only live on the Filecoin Calibration network, so you can get tFIL via the faucet
+[here](https://faucet.calibnet.chainsafe-fil.io/funds.html). For reference, Filecoin chain information can be found
+[here](https://chainlist.org/?search=filecoin&testnets=true).

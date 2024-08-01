@@ -1,0 +1,704 @@
+---
+title: Commands
+description: Learn how to use the Basin CLI.
+---
+
+import { Callout } from "nextra/components";
+
+## Global options
+
+All the global flags can also be passed as all-caps, snake case environment variables (e.g., `--rpc-url` => `RPC_URL`)
+that are set and sourced in a `.env` file.
+
+| Flag              | Description                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------------ |
+| `-n`, `--network` | Network presets for subnet and RPC: `mainnet`, `testnet`, or `devnet` (default: `testnet`) |
+| `-s`, `--subnet`  | The ID of the target subnet.                                                               |
+| `--rpc-url`       | Node CometBFT RPC URL.                                                                     |
+| `-v, --verbosity` | Logging verbosity (`0`: error; `1`: warn; `2`: info; `3`: debug; `4`: trace).              |
+| `-q, --quiet`     | Silence logging (default: `false`).                                                        |
+| `-h, --help`      | Print help.                                                                                |
+| `-V, --version`   | Print version.                                                                             |
+
+## Account management
+
+Interaction with the Hoku network requires an account (ECDSA, secp256k1). As with any blockchain system, an account can
+be created at will, receive / transfer funds, and send transactions. Recall that on Filecoin, and EVM `0x` prefixed
+address is equivalent to a `t410...`/`f410...` address, which is a special namespace that enables for EVM-compatiablity
+in the FVM.
+
+The `account` command allows you to execute these actions within the Hoku network:
+
+```
+adm account
+```
+
+The following subcommands are available:
+
+- `create`: Create a new account with a private key.
+- `info`: Get account information (address, sequence, balance).
+- `deposit`: Deposit funds into a subnet from its parent.
+- `withdraw`: Withdraw funds from a subnet to its parent.
+- `transfer`: Transfer funds to another account in a subnet.
+
+### Create an account
+
+Create a new account from a random seed.
+
+```
+adm account create
+```
+
+This command logs a JSON object to stdout with three properties: the private key, public key, and its corresponding
+FVM-converted address.
+
+**Example:**
+
+Create a new private key:
+
+```
+> adm account create
+
+{
+  "private_key": "d5020dd0b12d4d8d8793ff0edbaa29bd7197879ddf82d475b7e9a6a34de765b0",
+  "address": "0xc37ab532c1409900520a92e04a6c0482394d3133",
+  "fvm_address": "t410fyn5lkmwbicmqauqkslqeu3aeqi4u2mjturajlui"
+}
+```
+
+- Optionally, pipe its output into a file to store the key and metadata:
+
+```
+> adm account create > account.json
+```
+
+### Get account info
+
+Get account information, such as its address, sequence, and balance.
+
+```
+adm account info {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
+```
+
+This commands logs a JSON object to stdout: its public key, FVM address, current sequence (nonce), current subnet
+balance, and its balance on the parent subnet.
+
+| Flag                   | Required?                | Description                                                           |
+| ---------------------- | ------------------------ | --------------------------------------------------------------------- |
+| `-p, --private-key`    | Yes, if no `address`     | Wallet private key (ECDSA, secp256k1) for signing transactions.       |
+| `-a, --address`        | Yes, if no `private-key` | Account address; the signer's address is used if no address is given. |
+| `--height`             | No                       | Query at a specific block height (default: `committed`).              |
+| `--evm-rpc-api`        | No                       | The Ethereum API RPC HTTP endpoint.                                   |
+| `--evm-rpc-timeout`    | No                       | Timeout for calls to the Ethereum API (default: `60 seconds`).        |
+| `--evm-rpc-auth-token` | No                       | Bearer token for any Authorization header.                            |
+| `--evm-gateway`        | No                       | The gateway contract address.                                         |
+| `--evm-registry`       | No                       | The registry contract address.                                        |
+
+**Example:**
+
+Get account info for a specific address:
+
+```
+> adm account info \
+--address 0x4D5286d81317E284Cd377cB98b478552Bbe641ae
+
+{
+  "address": "0x4d5286d81317e284cd377cb98b478552bbe641ae",
+  "fvm_address": "0x4d5286d81317e284cd377cb98b478552bbe641ae",
+  "sequence": 5,
+  "balance": "0.2",
+  "parent_balance": "108.263573407968179933"
+}
+```
+
+### Deposit funds
+
+Deposit funds into a subnet from its parent.
+
+```
+adm account deposit [--to <TO>] <AMOUNT>
+```
+
+Think of the `deposit` command as a typical transfer but _only_ from a parent to a child subnet. Both a transfer _out
+of_ and _within_ a subnet are handled differently.
+
+| Positionals | Description                      |
+| ----------- | -------------------------------- |
+| `<AMOUNT>`  | The amount to transfer (in FIL). |
+
+Optionally, you can pass the `--to` flag to deposit funds from the parent to a specific address on the child, but if you
+don't, the funds will be deposited to the address corresponding to the provided private key. If the `--network` flag is
+set, it will handle all the required `--evm-...` flag presets for you, but you _can_ override them with your own values.
+
+| Flag                   | Required? | Description                                                                       |
+| ---------------------- | --------- | --------------------------------------------------------------------------------- |
+| `-p, --private-key`    | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                   |
+| `--to <TO>`            | No        | The recipient account address (if not present, defaults to the signer's address). |
+| `--evm-rpc-api`        | No        | The Ethereum API RPC HTTP endpoint.                                               |
+| `--evm-rpc-timeout`    | No        | Timeout for calls to the Ethereum API (default: `60 seconds`).                    |
+| `--evm-rpc-auth-token` | No        | Bearer token for any Authorization header.                                        |
+| `--evm-gateway`        | No        | The gateway contract address.                                                     |
+| `--evm-registry`       | No        | The registry contract address.                                                    |
+
+**Examples:**
+
+- Deposit funds to the signer's address:
+
+```
+> adm account deposit 0.1
+
+{
+  "transactionHash": "0xcc7fdf8057dd9f024582b24fce2abe0f5e0c01f1e925fb52bd002c4456333bfc",
+  "transactionIndex": "0x2",
+  "blockHash": "0xdc623f489bb53aaa16186818858c63a5e4e694ed1b798fddae9f96b8d16b4e4b",
+  "blockNumber": "0x18b456",
+  "from": "0x181c2d11DbB674147Ba53F2cf26Cf6DF9d9cc0aC",
+  "to": "0x728f3b71ebd1358973abce325fe45f7f701ea7e6",
+  "cumulativeGasUsed": "0x0",
+  "gasUsed": "0x41a8748",
+  "contractAddress": null,
+  "logs": [
+    {
+      "address": "0x728f3b71ebd1358973abce325fe45f7f701ea7e6",
+      "topics": [
+        "0xfdd39ce2560484814971f663392e78ae37dc62ba184b3370d830371dd271a8b7",
+        "0x000000000000000000000000fdf8c3fb4af3b0c60f7128d2dce1281fdfa9ca6d"
+      ],
+      "data": "0x0000...",
+      "blockHash": "0xdc623f489bb53aaa16186818858c63a5e4e694ed1b798fddae9f96b8d16b4e4b",
+      "blockNumber": "0x18b456",
+      "transactionHash": "0xcc7fdf8057dd9f024582b24fce2abe0f5e0c01f1e925fb52bd002c4456333bfc",
+      "transactionIndex": "0x2",
+      "logIndex": "0x0",
+      "removed": false
+    }
+  ],
+  "status": "0x1",
+  "root": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "logsBloom": "0xffaf...",
+  "type": "0x2",
+  "effectiveGasPrice": "0x6fbefce0"
+}
+```
+
+- Deposit funds to some other, non-signer address:
+
+```
+> adm account deposit --to 0x181c2d11DbB674147Ba53F2cf26Cf6DF9d9cc0aC 0.1
+```
+
+### Withdraw funds
+
+Withdraw funds from a subnet to its parent.
+
+```
+adm account withdraw [--to <TO>] <AMOUNT>
+```
+
+The `withdraw` command is the opposite of a `deposit`. It's somewhat like a typical transfer but _only_ from a child
+subnet to its parent.
+
+| Positionals | Description                      |
+| ----------- | -------------------------------- |
+| `<AMOUNT>`  | The amount to transfer (in FIL). |
+
+Optionally, you can pass the `--to` flag to withdraw subnet funds to a specific address on the parent, but if you don't,
+the funds will be withdrawn to the address corresponding to the provided private key. If the `--network` flag is set, it
+will handle all the required `--evm-...` flag presets for you, but you _can_ override them with your own values.
+
+| Flag                   | Required? | Description                                                                       |
+| ---------------------- | --------- | --------------------------------------------------------------------------------- |
+| `-p, --private-key`    | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                   |
+| `--to <TO>`            | No        | The recipient account address (if not present, defaults to the signer's address). |
+| `--evm-rpc-api`        | No        | The Ethereum API RPC HTTP endpoint.                                               |
+| `--evm-rpc-timeout`    | No        | Timeout for calls to the Ethereum API (default: `60 seconds`).                    |
+| `--evm-rpc-auth-token` | No        | Bearer token for any Authorization header.                                        |
+| `--evm-gateway`        | No        | The gateway contract address.                                                     |
+| `--evm-registry`       | No        | The registry contract address.                                                    |
+
+**Examples:**
+
+- Withdraw funds to the signer's address:
+
+```
+> adm account withdraw 0.1
+
+{
+  "transactionHash": "0xb098e39c4b358e5f55cd6f2db941092ff50b46d99db53c34101cac3f0f65f20d",
+  "transactionIndex": "0x0",
+  "blockHash": "0x3ebcd0c3b94a5076fffbeef95fd23cdd764a222679450e451dac6ce28b601eb2",
+  "blockNumber": "0x19532",
+  "from": "0x181c2d11DbB674147Ba53F2cf26Cf6DF9d9cc0aC",
+  "to": "0x77aa40b105843728088c0132e43fc44348881da8",
+  "cumulativeGasUsed": "0x5e63fa3",
+  "gasUsed": "0x5e63fa3",
+  "contractAddress": null,
+  "logs": [],
+  "status": "0x1",
+  "root": "0x341c4ad32b230e66cdc5bf75e522934defa276afb88d705ce52a34336655b3a1",
+  "logsBloom": "0x0000...",
+  "type": "0x2",
+  "effectiveGasPrice": "0x0"
+}
+```
+
+- Withdraw funds to some other, non-signer address:
+
+```
+> adm account withdraw --to 0x181c2d11DbB674147Ba53F2cf26Cf6DF9d9cc0aC 0.1
+```
+
+### Transfer funds
+
+Transfer funds to another account in a subnet.
+
+```
+adm account transfer --to <TO> <AMOUNT>
+```
+
+| Positionals | Description                      |
+| ----------- | -------------------------------- |
+| `<AMOUNT>`  | The amount to transfer (in FIL). |
+
+The `--to` flag is the destination address within the subnet that you want to send funds to. If the `--network` flag is
+set, it will handle all the required `--evm-...` flag presets for you, but you _can_ override them with your own values.
+
+| Flag                   | Required? | Description                                                     |
+| ---------------------- | --------- | --------------------------------------------------------------- |
+| `-p, --private-key`    | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions. |
+| `--to <TO>`            | Yes       | The recipient account address.                                  |
+| `--evm-rpc-api`        | No        | The Ethereum API RPC HTTP endpoint.                             |
+| `--evm-rpc-timeout`    | No        | Timeout for calls to the Ethereum API (default: `60 seconds`).  |
+| `--evm-rpc-auth-token` | No        | Bearer token for any Authorization header.                      |
+| `--evm-gateway`        | No        | The gateway contract address.                                   |
+| `--evm-registry`       | No        | The registry contract address.                                  |
+
+**Example:**
+
+```
+> adm account transfer \
+--to 0x4D5286d81317E284Cd377cB98b478552Bbe641ae \
+0.1
+
+{
+  "transactionHash": "0x814759e167906ffc65dd20c6ceb4cdd42e5f64f9af7ca5bcd2ac1ea365ce715d",
+  "transactionIndex": "0x0",
+  "blockHash": "0xf496f8f9bdfb909696513411f01abd72184446a9c846f6016a85c9601294d4d0",
+  "blockNumber": "0x1a7d2",
+  "from": "0x181c2d11DbB674147Ba53F2cf26Cf6DF9d9cc0aC",
+  "to": "0x4d5286d81317e284cd377cb98b478552bbe641ae",
+  "cumulativeGasUsed": "0x18f28a",
+  "gasUsed": "0x18f28a",
+  "contractAddress": null,
+  "logs": [],
+  "status": "0x1",
+  "root": "0x05b06003f5986d96409d53af89e0d1ad44b8f8487254beb6bef20cda0d7e0874",
+  "logsBloom": "0x0000...",
+  "type": "0x2",
+  "effectiveGasPrice": "0x410"
+}
+```
+
+<Callout type="default">
+
+When you transfer funds from an account that already exists on the subnet to an account that doesn't exist, the
+recipient will effectively be created. This is faster than depositing funds into the new account from rootnet to subnet
+since subnet block times are much shorter.
+
+</Callout>
+
+## Data contracts
+
+Data contracts are the core building blocks of the Hoku network. The `machine` command allows you to retrieve data
+contract information relative to a specific address. This helps track which `ObjectStore` or `Accumulator` contracts are
+tied to your account, which are later used in the `objectstore` and `accumulator` subcommands.
+
+### Get contract info
+
+Get data contract metadata at a specific address.
+
+```
+adm machine info <ADDRESS>
+```
+
+| Positionals | Description            |
+| ----------- | ---------------------- |
+| `<ADDRESS>` | Data contract address. |
+
+| Flag       | Required? | Description                                              |
+| ---------- | --------- | -------------------------------------------------------- |
+| `--height` | No        | Query at a specific block height (default: `committed`). |
+
+**Example:**
+
+```
+> adm machine info t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa
+
+{
+    "kind": "ObjectStore",
+    "owner": "0x4d5286d81317e284cd377cb98b478552bbe641ae"
+}
+```
+
+## Object store
+
+Interact with an object store data contract using either the `objectstore` or aliased `os` subcommand:
+
+```
+adm objectstore <SUBCOMMAND>
+adm os <SUBCOMMAND>
+```
+
+The `objectstore` subcommand has the following subcommands:
+
+- `create`: Create a new object store data contract.
+- `list`: List object stores by owner in a subnet.
+- `add`: Add an object into the object store.
+- `get`: Get an object from the object store.
+- `delete`: Delete an object from the object store.
+- `query`: Query objects in the object store.
+
+When you create objects, the `key` is a custom identifier that, by default, uses the `/` delimiter to create a key-based
+hierarchy. The value is the data you want to store, which can be a file path. A best practice is to decide on a key
+naming convention that makes sense for your data, such as `<namespace>/<id>` or similar. The hierarchical structure of
+the key allows for easy retrieval of data by prefixes, which is explained below (see the `query` subcommand).
+
+### Create
+
+Create a new object store data contract.
+
+```
+adm objectstore create
+```
+
+| Flag                | Required? | Description                                                               |
+| ------------------- | --------- | ------------------------------------------------------------------------- |
+| `-p, --private-key` | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.           |
+| `--public-write`    | No        | Allow **_public, open_** write access to the object store.                |
+| `--gas-limit`       | No        | Gas limit for the transaction.                                            |
+| `--gas-fee-cap`     | No        | Maximum gas fee for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL). |
+| `--gas-premium`     | No        | Gas premium for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL).     |
+| `--sequence`        | No        | Sequence (i.e., nonce) for the transaction.                               |
+
+**Example:**
+
+```
+> adm objectstore create
+
+{
+  "address": "t2pefhfyobx2tdgznhcf2anr6p34z2rgso2ix7x5y",
+  "tx": {
+    "gas_used": 15004808,
+    "hash": "3999595D0F74F912323F0F545204BE9D0605CE741275120E553FA395E64DA48D",
+    "height": "7964"
+  }
+}
+```
+
+### List object stores
+
+List object stores by owner in a subnet.
+
+```
+adm objectstore list {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
+```
+
+You must pass _either_ the `--private-key` or `--address` flag. An address must be in the delegated `t410` or `0x`
+format.
+
+- `adm objectstore list --private-key <PRIVATE_KEY>`: Query with a private key (or read from your `.env` file).
+- `adm objectstore list --address <ADDRESS>`: Query a `t410` or `0x` address.
+
+| Flag                | Required?                | Description                                                           |
+| ------------------- | ------------------------ | --------------------------------------------------------------------- |
+| `-p, --private-key` | Yes, if no `address`     | Wallet private key (ECDSA, secp256k1) for signing transactions.       |
+| `-a, --address`     | Yes, if no `private-key` | Account address; the signer's address is used if no address is given. |
+| `--height`          | No                       | Query at a specific block height (default: `committed`).              |
+
+**Examples:**
+
+Query data contracts by:
+
+- A hex address:
+
+```
+> adm objectstore list \
+--address 0x4D5286d81317E284Cd377cB98b478552Bbe641ae
+
+[
+  {
+    "address": "t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa",
+    "kind": "ObjectStore"
+  },
+  {
+    "address": "t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa",
+    "kind": "ObjectStore"
+  }
+]
+```
+
+- Its equivalent `t410` address:
+
+```
+> adm objectstore list \
+--address t410fjvjinwatc7rijtjxps4ywr4fkk56mqnolzpcnrq
+```
+
+- At a specific block height (note how at this older height, there were fewer data contracts created than the most
+  recent `committed` height above):
+
+```
+> adm objectstore list --height 114345
+[
+  {
+    "address": "t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa",
+    "kind": "ObjectStore"
+  }
+]
+```
+
+### Add an object
+
+Add an object with a key prefix.
+
+```
+adm objectstore add \
+--address <ADDRESS> \
+--key <KEY> \
+[INPUT]
+```
+
+The `INPUT` can be a file path.
+
+| Flag                   | Required? | Description                                                                           |
+| ---------------------- | --------- | ------------------------------------------------------------------------------------- |
+| `-p, --private-key`    | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                       |
+| `-a, --address`        | Yes       | Object store data contract address.                                                   |
+| `-k, --key`            | Yes       | Key of the object to upload.                                                          |
+| `-o, --overwrite`      | No        | Overwrite the object if it already exists.                                            |
+| `-b, --broadcast-mode` | No        | Broadcast mode for the transaction: `commit`, `sync`, or `async` (default: `commit`). |
+| `--gas-limit`          | No        | Gas limit for the transaction.                                                        |
+| `--gas-fee-cap`        | No        | Maximum gas fee for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL).             |
+| `--gas-premium`        | No        | Gas premium for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL).                 |
+| `--sequence`           | No        | Sequence (i.e., nonce) for the transaction.                                           |
+
+**Examples:**
+
+- Push a file to the object store:
+
+```
+> adm objectstore add \
+--address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
+--key "my/object" \
+./hello.json
+
+{
+  "status": "committed",
+  "hash": "48BD1767DC5739C1EABB25FBC8E6718E3E8DE95FB7EE74D13895F2E9D9F5E00A",
+  "height": "358569",
+  "gas_used": 4784697,
+  "data": "bafy2bzacebnjpu5e3ushfu2weqvmtvk7vnndg4fkqsbr4zub52cyekcix7l4o"
+}
+```
+
+### Get an object
+
+Get an object from the object store data contract.
+
+```
+adm objectstore get --address <ADDRESS> <KEY>
+```
+
+| Positionals | Description               |
+| ----------- | ------------------------- |
+| `<KEY>`     | Key of the object to get. |
+
+Note that when you retrieve the object, it will be written to stdout.
+
+| Flag               | Required? | Description                                                                                                   |
+| ------------------ | --------- | ------------------------------------------------------------------------------------------------------------- |
+| `-a, --address`    | Yes       | Object store data contract address.                                                                           |
+| `--object-api-url` | No        | Node Object API URL.                                                                                          |
+| `--range`          | No        | Range of bytes to get from the object (format: `"start-end"`; inclusive). Example: "0-99" => first 100 bytes. |
+| `--height`         | No        | Query at a specific block height (default: `committed`).                                                      |
+
+**Examples:**
+
+- Get an object and write to stdout (default behavior):
+
+```
+> adm objectstore get \
+--address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
+"my/object"
+
+{"hello":"world"}
+```
+
+- Download the output to a file by piping the output:
+
+```
+> adm objectstore get \
+--address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
+"my/object" > downloaded.json
+```
+
+- Range request for a subset of bytes:
+
+```
+> adm objectstore get \
+--address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
+--range "10-14" \
+"my/object"
+
+world
+```
+
+### Delete an object
+
+Delete an object from the object store.
+
+```
+adm objectstore delete \
+--address <ADDRESS> \
+<KEY>
+```
+
+| Positionals | Description               |
+| ----------- | ------------------------- |
+| `<KEY>`     | Key of the object to get. |
+
+Similar to when you `add` an object, you can specify gas settings or alter the broadcast mode.
+
+| Flag                   | Required? | Description                                                                           |
+| ---------------------- | --------- | ------------------------------------------------------------------------------------- |
+| `-p, --private-key`    | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                       |
+| `-a, --address`        | Yes       | Object store data contract address.                                                   |
+| `--object-api-url`     | No        | Node Object API URL.                                                                  |
+| `-b, --broadcast-mode` | No        | Broadcast mode for the transaction: `commit`, `sync`, or `async` (default: `commit`). |
+| `--gas-limit`          | No        | Gas limit for the transaction.                                                        |
+| `--gas-fee-cap`        | No        | Maximum gas fee for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL).             |
+| `--gas-premium`        | No        | Gas premium for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL).                 |
+| `--sequence`           | No        | Sequence (i.e., nonce) for the transaction.                                           |
+
+**Example:**
+
+- Delete an existing object:
+
+```
+> adm objectstore delete \
+--address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
+"my/object"
+
+{
+  "status": "committed",
+  "hash": "C718E2E7A4BC4DC0E6AB705698E8950CE3EBEADEC3268206145E5A109E76FBB4",
+  "height": "358561",
+  "gas_used": 4739569,
+  "data": "bafy2bzaceamp42wmmgr2g2ymg46euououzfyck7szknvfacqscohrvaikwfay"
+}
+```
+
+### Query objects
+
+Query across all objects in the store.
+
+```
+adm objectstore query --address <ADDRESS>
+```
+
+Performing a `query` lists all keys that match a given prefix _up to and including the delimiter_. If the key supplies a
+delimiter, then the results stop there—essentially, listing subfolders, but none lower. Think of it as you would when
+listing files in a directory. If you list the contents of a folder, you'll see all subfolders, but you won't see the
+contents of one of those subfolders.
+
+For example, if you have the keys `my/object`, `my/data`, and `my/object/child`, and you query for the prefix `my/`, you
+will get the objects at `my/object` and `my/data` but not `my/object/child` since its "nested" under the prefix
+`my/object/` (note: inclusive of the `/` at the end).
+
+| Flag              | Required? | Description                                                                        |
+| ----------------- | --------- | ---------------------------------------------------------------------------------- |
+| `-a, --address`   | Yes       | Object store data contract address.                                                |
+| `-p, --prefix`    | No        | The prefix to filter objects by (defaults to empty string).                        |
+| `-d, --delimiter` | No        | The delimiter used to define object hierarchy (default: `/`).                      |
+| `-o, --offset`    | No        | The offset from which to start listing objects (default: `0`)                      |
+| `-l, --limit`     | No        | The maximum number of objects to list, where `0` indicates max (10k)(default: `0`) |
+| `--height`        | No        | Query at a specific block height (default: `committed`).                           |
+
+**Examples:**
+
+- Get all objects but without any filtering. Since the object keys have a delimiter included, you'll see the common
+  prefix `my/`, but no objects are listed since the "root" is the prefix:
+
+```
+> adm objectstore query \
+--address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa
+
+{
+  "objects": [],
+  "common_prefixes": [
+    "my/"
+  ]
+}
+```
+
+- Get all objects under a specific prefix. In this case, the response will include all objects under the `my/` prefix,
+  and since there are no "child" objects that match `my/` (e.g., `my/object/child`), the `common_prefixes` array will be
+  empty, so you know there are no more sub-objects to list:
+
+```
+> adm objectstore query \
+--address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
+--prefix "my/"
+
+{
+  "objects": [
+    {
+      "key": "my/object",
+      "value": {
+        "cid": "bafybeiffndsajwhk3lwjewwdxqntmjm4b5wxaaanokonsggenkbw6slwk4",
+        "resolved": true,
+        "size": 6,
+        "metadata": {}
+      }
+    }
+  ],
+  "common_prefixes": []
+}
+```
+
+- Get all objects and "ignore" the delimiter. Here, an arbitrary `"*"` symbol is used as the delimiter; it's been chosen
+  since it doesn't exist in the example's keys that are used. Thus, this effectively lists all objects in the store
+  because the delimiter isn't in the keys, so the `common_prefixes` array will be empty. The response will be the same
+  as above.
+
+```
+> adm objectstore query \
+--address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
+--delimiter "*"
+```
+
+- Get all objects and filter by a prefix with offset and limit. In the example above, the `"my/data"` object was created
+  _after_ `"my/object"`, so it will be the first object listed after offsetting by `1`:
+
+```
+> adm objectstore query \
+--address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
+--delimiter "/" \
+--prefix "my/" \
+--offset 1 \
+--limit 1
+
+{
+  "objects": [
+    {
+      "key": "my/data",
+      "value": {
+        "kind": "external",
+        "content": "bafybeigdp2yqaqdbfhltvxdt3m5xmsrbvzyvtjrz5klhee33vpr5hdnpou",
+        "resolved": true
+      }
+    }
+  ],
+  "common_prefixes": []
+}
+```

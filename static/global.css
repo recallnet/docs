@@ -4,6 +4,12 @@
   margin-right: 0.5rem;
 }
 
+/* If the first nested sidebar element following the `back-to-home` button is
+*not* a separator, add additional top margin to the `li` for better spacing */
+li:has(.back-to-home) + li:not(li:has(.separator-span)) {
+  margin-top: 1em;
+}
+
 /* Reduce sidebar separator bottom margin via its parent `li` */
 li:has(.separator-span) {
   margin-bottom: 0;

@@ -32,7 +32,7 @@ const result = await orbis
 
 ```tsx
 const { success, errors } = await orbis
-    .bulkInsert("MODEL_ID" | "MODEL_ALIAS")
+    .insertBulk("MODEL_ID" | "MODEL_ALIAS")
     .values(
         {
             column: value,
@@ -142,7 +142,7 @@ const result = await insertStatement.run()
 
 ```tsx
 const insertStatement = await orbis
-    .bulkInsert("MODEL_ID" | "MODEL_ALIAS")
+    .insertBulk("MODEL_ID" | "MODEL_ALIAS")
     .values(
         {
             column: value,

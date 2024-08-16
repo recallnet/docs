@@ -72,7 +72,7 @@ const result = await orbis
 // orbis.connectUser has been used to authenticate the user
 
 const { success, errors } = await orbis
-    .bulkInsert("MODEL_ID" | "MODEL_ALIAS")
+    .insertBulk("MODEL_ID" | "MODEL_ALIAS")
     .values(
         {
             column: value,

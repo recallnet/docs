@@ -1,0 +1,85 @@
+---
+title: Publish
+description: Description here
+---
+
+import { Steps, Callout } from "nextra/components";
+
+# Produce
+
+<Callout>
+Just getting started? Check out our Getting Connected Guide to get your client setup
+This document assumes that you've already followed our [installation guide](/event-store/)
+</Callout>
+
+Let's explore how to use Ceramic to send messages between clients. If you've followed our [Getting Started guide](docs-getting-started), you should have a `CeramicClient` connected to a Ceramic node, as well as a `DID` that can sign and publish events. We'll use these to create new signed events and submit them to the Ceramic network.
+
+In the examples below, the `CeramicClient` is stored in a variable named `ceramic`, and the DID used for publishing is in a variable named `publisherDID`. If you've used different names, please adjust the examples to match your preferences.
+
+## Publishing events
+
+The `CeramicClient` includes a few methods for event publishing, most of which are convenience wrappers around the fundamental `postEvent` method.
+
+### `postEvent`
+
+The foundational method for publishing events is `postEvent`, which accepts a binary event payload that's been encoded into a string using the [multibase encoding standard][ref-multibase].
+
+The event payload is a Content Archive or [CAR][ref-car], which contains "blocks" of content-addressed data, including the event data and the signature from the publisher's DID. Soon we'll learn how to produce events in the correct format, but for the example below, we'll assume that you have already created an event and encoded it to a multibase string in the variable `encodedEvent`:
+
+```tsx
+await ceramic.postEvent(encodedEvent)
+
+```
+
+The `postEvent` method returns a `Promise<void>` which resolves with no value on success, or throws an `Exception` if the event submission fails. Because event ids are deterministic, there's no need to wait for a response to know the identifier of the event. See the [event ids][docs-event-ids] documentation for more about determining the id for an event or stream.
+
+### `postEventCAR`
+
+A convenience wrapper around [`postEvent`](https://www.notion.so/AES-Docs-3cc94cbd965843288f7d8190010d6249?pvs=21) which accepts a [CAR][ref-car] JavaScript object and encodes it to the string format that `postEvent` expects.
+
+```tsx
+import { eventToCAR } from '@ceramic-sdk/events'
+
+// assume that we have an `eventData` object and an `eventCodec` that
+// can encode and decode events of a particular type
+const eventCAR = eventToCAR(eventCodec, eventData)
+
+await ceramic.postEventCAR(eventCAR)
+
+```
+
+### `postEventType`
+
+The `postEventType` method accepts event data in an arbitrary format (type `unknown`), and uses a [codeco][ref-codeco] `Codec` to convert the event data into a properly encoded CAR, which it then passes into [`postEvent`](https://www.notion.so/AES-Docs-3cc94cbd965843288f7d8190010d6249?pvs=21).
+
+```tsx
+// assume that we have an `eventData` object and an `eventCodec` that
+// can encode and decode events of a particular type
+
+await ceramic.postEventType(eventCodec, eventData)
+
+```
+
+If you need access to the event data in CAR format before submitting it for publication, for example to record the event id locally, you can call the `eventToCAR` method from the `@ceramic-sdk/events` package and send the result to [`postEventCAR`](https://www.notion.so/AES-Docs-3cc94cbd965843288f7d8190010d6249?pvs=21).
+
+In the [Creating Events](https://www.notion.so/AES-Docs-3cc94cbd965843288f7d8190010d6249?pvs=21) section below, we'll see some of the built-in `Codec`s provided by the `@ceramic-sdk/events` package, which can handle common event structures like Model and Document creation and update events.
+
+_TODO_
+
+publish / produce
+
+<Steps>
+  
+### Hello
+
+```js
+console.log("hello");
+```
+
+### World
+
+```js
+console.log("world");
+```
+
+</Steps>

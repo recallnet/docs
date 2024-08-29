@@ -1,18 +1,16 @@
 ---
 title: Produce
-description: Produce Events on a Stream
+description: Produce Events on a stream
 ---
 
 import { Steps, Callout } from "nextra/components";
 
-# Produce
-
 <Callout>
 Just getting started? Check out our Getting Connected Guide to get your client setup
-This document assumes that you've already followed our [installation guide](/event-store/)
+This document assumes that you've already followed our [installation guide](/event-store/usage/installation)
 </Callout>
 
-Let's explore how to use Ceramic to send messages between clients. If you've followed our [Getting Started guide](docs-getting-started), you should have a `CeramicClient` connected to a Ceramic node, as well as a `DID` that can sign and publish events. We'll use these to create new signed events and submit them to the Ceramic network.
+Let's explore how to use Ceramic to send messages between clients. If you've followed our [Getting Started guide](/event-store/usage/installation), you should have a `CeramicClient` connected to a Ceramic node, as well as a `DID` that can sign and publish events. We'll use these to create new signed events and submit them to the Ceramic network.
 
 In the examples below, the `CeramicClient` is stored in a variable named `ceramic`, and the DID used for publishing is in a variable named `publisherDID`. If you've used different names, please adjust the examples to match your preferences.
 
@@ -35,7 +33,7 @@ The `postEvent` method returns a `Promise<void>` which resolves with no value on
 
 ### `postEventCAR`
 
-A convenience wrapper around [`postEvent`](https://www.notion.so/AES-Docs-3cc94cbd965843288f7d8190010d6249?pvs=21) which accepts a [CAR][ref-car] JavaScript object and encodes it to the string format that `postEvent` expects.
+A convenience wrapper around [`postEvent`](#postevent) which accepts a [CAR][ref-car] JavaScript object and encodes it to the string format that `postEvent` expects.
 
 ```tsx
 import { eventToCAR } from '@ceramic-sdk/events'
@@ -50,7 +48,9 @@ await ceramic.postEventCAR(eventCAR)
 
 ### `postEventType`
 
-The `postEventType` method accepts event data in an arbitrary format (type `unknown`), and uses a [codeco][ref-codeco] `Codec` to convert the event data into a properly encoded CAR, which it then passes into [`postEvent`](https://www.notion.so/AES-Docs-3cc94cbd965843288f7d8190010d6249?pvs=21).
+**This is the method most users will want to use to produce events on a stream.**
+
+The `postEventType` method accepts event data in an arbitrary format, and uses a [codeco](https://github.com/ceramicnetwork/codeco) `Codec` to convert the event data into a properly encoded CAR, which it then passes into [`postEvent`](#postevent).
 
 ```tsx
 // assume that we have an `eventData` object and an `eventCodec` that
@@ -60,26 +60,138 @@ await ceramic.postEventType(eventCodec, eventData)
 
 ```
 
-If you need access to the event data in CAR format before submitting it for publication, for example to record the event id locally, you can call the `eventToCAR` method from the `@ceramic-sdk/events` package and send the result to [`postEventCAR`](https://www.notion.so/AES-Docs-3cc94cbd965843288f7d8190010d6249?pvs=21).
+If you need access to the event data in CAR format before submitting it for publication, for example to record the event id locally, you can call the `eventToCAR` method from the `@ceramic-sdk/events` package and send the result to [`postEventCAR`](#posteventcar).
 
-In the [Creating Events](https://www.notion.so/AES-Docs-3cc94cbd965843288f7d8190010d6249?pvs=21) section below, we'll see some of the built-in `Codec`s provided by the `@ceramic-sdk/events` package, which can handle common event structures like Model and Document creation and update events.
+In the [Creating Events](#creating-events) section below, we'll see some of the built-in `Codec`s provided by the `@ceramic-sdk/events` package, which can handle common event structures like Model and Document creation and update events.
 
-_TODO_
+## Creating Events
 
-publish / produce
+Events can be constructed from either a string representation or a Content Addressable aRchive (CAR) file. The `@ceramic-sdk/events` package provides two main functions for this purpose: `eventFromString` and `eventFromCAR`.
+
+### `signEvent`
+
+The `signEvent` function is used to create a signed Ceramic event. It takes a DID (Decentralized Identifier), a payload, and optional JWS creation options, and returns a `SignedEvent`.
 
 <Steps>
-  
-### Hello
+### Import functions and create a DID
 
-```js
-console.log("hello");
+```typescript
+import { getAuthenticatedDID } from '@didtools/key-did'
+import { InitEventPayload, signEvent } from '@ceramic-sdk/events'
+
+// Create an authenticated DID
+const did = await getAuthenticatedDID(new Uint8Array(32))
 ```
 
-### World
+### Construct an event payload
 
-```js
-console.log("world");
+```typescript
+// Create an event payload
+const eventPayload: InitEventPayload = {
+  data: null,
+  header: {
+    controllers: [did.id],
+    model: 'yourModelStreamID',
+    sep: 'test',
+  },
+}
+```
+
+### Sign the payload
+
+```typescript
+// Encode the payload
+const encodedPayload = InitEventPayload.encode(eventPayload)
+
+// Sign the event
+const signedEvent = await signEvent(did, encodedPayload)
+
+console.log(signedEvent)
+```
+</Steps>
+
+### `eventFromString`
+
+The `eventFromString` function allows you to construct a Ceramic event from a string representation. This is useful when you have received event data as a string, typically encoded in base64.
+
+<Steps>
+
+### Import functions
+
+```typescript
+import { eventFromString, InitEventPayload } from '@ceramic-sdk/events'
+```
+
+### Decode the event
+
+```typescript
+// Assuming you have a base64 encoded string representation of an event
+const encodedEvent = 'base64EncodedEventString'
+
+// Decode the event
+const decodedEvent = eventFromString(InitEventPayload, encodedEvent)
+```
+
+### Inspect the decoded event
+
+```typescript
+// The decodedEvent will be either a SignedEvent or an InitEventPayload
+if (SignedEvent.is(decodedEvent)) {
+  console.log('This is a signed event')
+} else {
+  console.log('This is an unsigned event payload')
+}
+```
+
+</Steps>
+
+### `eventFromCAR`
+
+The `eventFromCAR` function allows you to construct a Ceramic event from a Content Addressable aRchive (CAR).
+
+<Steps>
+
+### Import functions and set up a DID
+
+```typescript
+import { 
+  InitEventPayload, 
+  eventFromCAR, 
+  encodeEventToCAR, 
+  signedEventToCAR, 
+  SignedEvent 
+} from '@ceramic-sdk/events'
+import { getAuthenticatedDID } from '@didtools/key-did'
+import { randomStreamID } from '@ceramic-sdk/identifiers'
+import { asDIDString } from '@didtools/codecs'
+import { signEvent } from '@ceramic-sdk/events'
+
+// Create an authenticated DID
+const did = await getAuthenticatedDID(new Uint8Array(32))
+```
+
+### Construct and sign the CAR
+
+```typescript
+// Create a test event payload
+const testEventPayload: InitEventPayload = {
+  data: null,
+  header: {
+    controllers: [asDIDString(did.id)],
+    model: randomStreamID(),
+    sep: 'test',
+  },
+}
+
+// Encode the test payload
+const encodedTestPayload = InitEventPayload.encode(testEventPayload)
+const signedEvent = await signEvent(did, encodedTestPayload)
+```
+
+### Construct the event
+
+```typescript
+const event = eventFromCAR(InitEventPayload, unsignedCAR)
 ```
 
 </Steps>

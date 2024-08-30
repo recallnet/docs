@@ -26,7 +26,6 @@ The event payload is a Content Archive or [CAR][ref-car], which contains "blocks
 
 ```tsx
 await ceramic.postEvent(encodedEvent)
-
 ```
 
 The `postEvent` method returns a `Promise<void>` which resolves with no value on success, or throws an `Exception` if the event submission fails. Because event ids are deterministic, there's no need to wait for a response to know the identifier of the event. See the [event ids][docs-event-ids] documentation for more about determining the id for an event or stream.

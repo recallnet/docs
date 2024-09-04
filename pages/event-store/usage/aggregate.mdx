@@ -1,26 +1,49 @@
 ---
 title: Aggregate
-description: Description here
+description: Aggregate events in the Hoku Event Store
 ---
 
-import { Steps } from "nextra/components";
+import { Steps, Callout } from "nextra/components";
 
-_TODO_
+<Callout>
+Just getting started? Check out our Getting Connected Guide to get your client setup
+This document assumes that you've already followed our [installation guide](/event-store/usage/installation)
+</Callout>
 
-aggregations
+Streaming systems are invaluable in modern data architectures due to their ability to process and analyze data in real-time as it flows through a system. One of the primary use cases that makes streaming systems so powerful is aggregation. By continuously processing incoming events, streaming systems allow for the dynamic creation and updating of aggregate views, providing up-to-the-moment insights without the need for batch processing. This real-time aggregation capability enables applications to maintain live dashboards, detect anomalies instantly, and make data-driven decisions with minimal latency. The Hoku Event Store offers powerful aggregation capabilities suitable for a variety of workloads.
 
-<Steps>
-  
-### Hello
+<Callout type="info">
+The Hoku Event Store's predecessor, [Ceramic](https://ceramic.network), leverages aggregations to power a unique, composable application database, aptly named [ComposeDB](https://composedb.js.org/). In ComposeDB, a stream represents an instance of a data model, with the events in that stream representing mutations to the underlying record. By aggregating the updates to a record, we can materialize its state at any point in its history.
+</Callout>
 
-```js
-console.log("hello");
+## Aggregation library
+
+<Callout type="warning">This functionality is coming to the SDK soon. The following code is all for illustrative purposes only and the function signatures are likely to change.</Callout>
+
+The Hoku Event Store SDK offers a higher level API for aggregations referred to as the _aggregation library_. The aggregation library will expose a simple stateless API for performing aggregations over streams. For those familiar with streaming aggregations of map-reduce style aggregation pipelines, it will be familliar.
+
+With the aggregation library, users will implement aggregators roughly matching a reducer:
+
+```typescript
+function aggregator(streamID: string, state: MyState, event: Event) {
+    /* Apply event to your existing state for streamID */
+}
+
+function updateState(streamId: string, update: (x: MyState) => MyState) {
+    /* Apply an update to the existing state of the aggregation */
+}
+
+ceramic.reduce(aggregator, getState);
 ```
 
-### World
+However, to make this easier to use, the aggregation library will provide a suite of stateless aggregators that perform common aggregations on a user's behalf. As in the case of [ComposeDB](https://composedb.js.org), users attempting to materialize records might want to use a [JSON-patch](https://jsonpatch.com/) aggregator. Leveraging it will look something like this:
 
-```js
-console.log("world");
+```typescript
+import { jsonPatchAggregator } from '@ceramic-sdk/aggregation';
+
+function updateState(streamId: string, update: (x: MyState) => MyState) {
+    /* Apply an update to the existing state of the aggregation */
+}
+
+ceramic.reduce(jsonPatchAggregator, updateState);
 ```
-
-</Steps>

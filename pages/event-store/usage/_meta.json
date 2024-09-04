@@ -1,6 +1,6 @@
 {
   "installation": "Installation",
-  "publish": "Publish",
-  "subscribe": "Subscribe",
+  "produce": "Produce",
+  "consume": "Consume",
   "aggregate": "Aggregation"
 }

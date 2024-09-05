@@ -17,7 +17,7 @@ S3-compatibility. Let's walk through how to set it up and use it with something 
 First, clone the repo:
 
 ```sh
-git clone https://github.com/textileio/basin-s3
+git clone https://github.com/hokunet/basin-s3
 ```
 
 Then, install the adapter binary:
@@ -37,7 +37,7 @@ Starting the Basin S3 adapter uses port `8014` by default. There are three requi
 - `--secret-key`: An S3 secret key (e.g., `SKEXAMPLES3S`)
 
 ```sh
- --private-key [your_private_key] --access-key AKEXAMPLES3S --secret-key SKEXAMPLES3S
+s3s_basin --private-key [your_private_key] --access-key AKEXAMPLES3S --secret-key SKEXAMPLES3S
 ```
 
 The access key and secret aren't used for anything other than matching the MinIO client configuration.

@@ -4,9 +4,17 @@
     "href": "/home"
   },
   "-": {
-    "title": "Network configuration",
+    "title": "Network",
     "type": "separator"
   },
-  "index": "Contract & chain info",
-  "rpcs": "RPC URLs"
+  "index": "Overview",
+  "contracts": "Contracts & chain info",
+  "--": {
+    "title": "RPC URLs",
+    "type": "separator"
+  },
+  "rpcs": "Overview",
+  "api-objects": "IPC API",
+  "api-evm": "EVM API",
+  "api-ipc": "Objects API"
 }

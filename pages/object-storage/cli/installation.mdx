@@ -12,59 +12,33 @@ import { Steps } from "nextra/components";
 You'll need to download the source code, build, and install the CLI.
 
 ```sh
-git clone https://github.com/textileio/basin.git
+git clone https://github.com/hokunet/rust-hoku.git
 cd basin
 make install
 ```
 
-Once installed, you can run the `adm` command from your terminal.
+Once installed, you can run the `hoku` command from your terminal.
 
 ```sh
-adm --help
+hoku --help
 ```
 
 ### Configuration
 
-There are two flags required for the majority of the `adm` subcommands:
+There are two flags required for the majority of the `hoku` subcommands:
 
-- `--network`: Specify the chain location with RPC presets and settings that map to either `mainnet`, `testnet`, or
-  `devnet`.
+- `--network`: Specify the chain location with RPC presets and settings that map to either `mainnet` (not available),
+  `testnet`, `localnet`, or `devnet`.
 - `--private-key`: A wallet private key (ECDSA, secp256k1) for signing transactions.
 
 As a best practice, you should create a `.env` file with the following and run `source .env` to ensure the commands load
-these variables. The default network is `testnet`, so it's not necessary to set the variable unless you're developing
-locally (`devnet`).
+these variables. The default network is `testnet`, so it's not necessary to set the network variable unless you're
+developing elsewhere (e.g., local development uses `localnet`).
 
 ```txt filename=".env"
 PRIVATE_KEY=your_private_key
 NETWORK=testnet
 ```
-
-Each of the following sections includes examples that presume you've completed this setup step. Thus, the
-`--private-key` and `--network` flags will not be shown in most demonstrations.
-
-One small note on all the getter methods and the `--height` flag:
-
-- By default, it uses the latest `committed` block on the network.
-- You can also specify `pending` including any pending state changes
-- For historical queries, you can a specific block number to query the data.
-
-Also, all commands that send mutating transactions default to broadcasting them in `commit` mode, but `sync` and `async`
-modes are also possible.
-
-### Prerequisites
-
-All data is signed onchain as transactions, so you'll need to set up an account (ECDSA, secp256k1) to use Basin. The
-Basin `account` subcommand can help with this step and the others mentioned below. You'll want to make sure your account
-is funded with FIL so that you can pay to execute an object storage transaction. You can use the faucet:
-[here](https://faucet.calibnet.chainsafe-fil.io/funds.html).
-
-{/* TODO: update faucet to Basin-hosted one */}
-
-When you `deposit` funds from the parent rootnet (Filecoin Calibration) to the child subnet (Basin), it will register
-your account on the subnet. If you ever want to move funds back to the parent, the `withdraw` command can be used. Note
-these differ from moving funds intra-subnet, which requires you to use the `transfer` command. These are described in
-more detail below.
 
 </Steps>
 

@@ -5,35 +5,55 @@ description: Learn how to use the Basin CLI.
 
 import { Callout } from "nextra/components";
 
+The Hoku CLI is a command-line interface for interacting with the Hoku network. It allows you to manage your accounts,
+interact with smart contracts, and manage your data that gets stored on the network.
+
 ## Global options
 
-All the global flags can also be passed as all-caps, snake case environment variables (e.g., `--rpc-url` => `RPC_URL`)
-that are set and sourced in a `.env` file.
+All the global flags can also be passed as all-caps, snake case environment variables (e.g., `--network` => `NETWORK`,
+`--rpc-url` => `RPC_URL`, etc.) that are set, or create and source them in a `env` file.
 
-| Flag              | Description                                                                                |
-| ----------------- | ------------------------------------------------------------------------------------------ |
-| `-n`, `--network` | Network presets for subnet and RPC: `mainnet`, `testnet`, or `devnet` (default: `testnet`) |
-| `-s`, `--subnet`  | The ID of the target subnet.                                                               |
-| `--rpc-url`       | Node CometBFT RPC URL.                                                                     |
-| `-v, --verbosity` | Logging verbosity (`0`: error; `1`: warn; `2`: info; `3`: debug; `4`: trace).              |
-| `-q, --quiet`     | Silence logging (default: `false`).                                                        |
-| `-h, --help`      | Print help.                                                                                |
-| `-V, --version`   | Print version.                                                                             |
+| Flag              | Description                                                                                           |
+| ----------------- | ----------------------------------------------------------------------------------------------------- |
+| `-n`, `--network` | Network presets for subnet and RPC: `mainnet`, `testnet`, `localnet`,or `devnet` (default: `testnet`) |
+| `-s`, `--subnet`  | The ID of the target subnet.                                                                          |
+| `--rpc-url`       | Node CometBFT RPC URL.                                                                                |
+| `-v, --verbosity` | Logging verbosity (`0`: error; `1`: warn; `2`: info; `3`: debug; `4`: trace).                         |
+| `-q, --quiet`     | Silence logging (default: `false`).                                                                   |
+| `-h, --help`      | Print help.                                                                                           |
+| `-V, --version`   | Print version.                                                                                        |
+
+### Environment variables
+
+The following environment variables are required for the majority of the `hoku` subcommands:
+
+- `PRIVATE_KEY`: A wallet private key (ECDSA, secp256k1) for signing transactions.
+- `NETWORK`: Specify the chain location with RPC presets and settings that map to either `mainnet` (not available),
+  `testnet`, `localnet`, or `devnet`.
+
+As such, the examples below omit these flags and presume that you've already set them.
 
 ## Account management
 
 Interaction with the Hoku network requires an account (ECDSA, secp256k1). As with any blockchain system, an account can
-be created at will, receive / transfer funds, and send transactions. Recall that on Filecoin, and EVM `0x` prefixed
-address is equivalent to a `t410...`/`f410...` address, which is a special namespace that enables for EVM-compatiablity
-in the FVM.
+be created at will, transfer funds, and send transactions. Recall that Hoku runs on a polyglot execution environment,
+supporting both EVM and WASM. Accounts work a bit different than pure EVM environments because the account is "unknown"
+to the chain until a transaction is sent to it. A transaction can be a deposit, `withdrawal`, or (intra-subnet)
+transfer.
 
-The `account` command allows you to execute these actions within the Hoku network:
+Generally, you should _always_ opt for using an EVM `0x` address when you run account commands. EVM accounts are also
+mapped to the WASM environment's address space, which is an address that gets prefixed with `t410...` (or `f410...` on
+mainnet) and
+[specially encoded](https://docs.filecoin.io/smart-contracts/filecoin-evm-runtime/address-types#ethereum-address-manager)
+for full EVM-compatability in the WASM runtime.
+
+The `account` command allows you to execute various subcommands:
 
 ```
-adm account
+hoku account
 ```
 
-The following subcommands are available:
+The following `account` subcommands are available:
 
 - `create`: Create a new account with a private key.
 - `info`: Get account information (address, sequence, balance).
@@ -46,18 +66,18 @@ The following subcommands are available:
 Create a new account from a random seed.
 
 ```
-adm account create
+hoku account create
 ```
 
-This command logs a JSON object to stdout with three properties: the private key, public key, and its corresponding
-FVM-converted address.
+This command logs a JSON object to stdout with three properties: the private key, EVM public key, and its corresponding
+WASM compatible address.
 
 **Example:**
 
 Create a new private key:
 
 ```
-> adm account create
+> hoku account create
 
 {
   "private_key": "d5020dd0b12d4d8d8793ff0edbaa29bd7197879ddf82d475b7e9a6a34de765b0",
@@ -66,48 +86,49 @@ Create a new private key:
 }
 ```
 
-- Optionally, pipe its output into a file to store the key and metadata:
+- Optionally, pipe its output into a file to store the keys:
 
 ```
-> adm account create > account.json
+> hoku account create > account.json
 ```
 
 ### Get account info
 
-Get account information, such as its address, sequence, and balance.
+Get account information, such as its address, nonce, and balance.
 
 ```
-adm account info {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
+hoku account info {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
 ```
 
-This commands logs a JSON object to stdout: its public key, FVM address, current sequence (nonce), current subnet
-balance, and its balance on the parent subnet.
+This commands logs a JSON object to stdout: its public key, addresses, current sequence (nonce), current subnet balance,
+and its balance on the parent subnet.
 
 | Flag                   | Required?                | Description                                                           |
 | ---------------------- | ------------------------ | --------------------------------------------------------------------- |
 | `-p, --private-key`    | Yes, if no `address`     | Wallet private key (ECDSA, secp256k1) for signing transactions.       |
 | `-a, --address`        | Yes, if no `private-key` | Account address; the signer's address is used if no address is given. |
 | `--height`             | No                       | Query at a specific block height (default: `committed`).              |
-| `--evm-rpc-api`        | No                       | The Ethereum API RPC HTTP endpoint.                                   |
+| `--evm-rpc-url`        | No                       | The Ethereum API RPC HTTP endpoint.                                   |
 | `--evm-rpc-timeout`    | No                       | Timeout for calls to the Ethereum API (default: `60 seconds`).        |
 | `--evm-rpc-auth-token` | No                       | Bearer token for any Authorization header.                            |
 | `--evm-gateway`        | No                       | The gateway contract address.                                         |
 | `--evm-registry`       | No                       | The registry contract address.                                        |
+| `--evm-supply-source`  | No                       | The supply source contract address.                                   |
 
 **Example:**
 
 Get account info for a specific address:
 
 ```
-> adm account info \
+> hoku account info \
 --address 0x4D5286d81317E284Cd377cB98b478552Bbe641ae
 
 {
   "address": "0x4d5286d81317e284cd377cb98b478552bbe641ae",
-  "fvm_address": "0x4d5286d81317e284cd377cb98b478552bbe641ae",
-  "sequence": 5,
-  "balance": "0.2",
-  "parent_balance": "108.263573407968179933"
+  "fvm_address": "t410fjvjinwatc7rijtjxps4ywr4fkk56mqnolzpcnrq",
+  "sequence": 0,
+  "balance": "1.0",
+  "parent_balance": "327.239162949816051546"
 }
 ```
 
@@ -116,25 +137,28 @@ Get account info for a specific address:
 Deposit funds into a subnet from its parent.
 
 ```
-adm account deposit [--to <TO>] <AMOUNT>
+hoku account deposit [--to <TO>] <AMOUNT>
 ```
 
-Think of the `deposit` command as a typical transfer but _only_ from a parent to a child subnet. Both a transfer _out
-of_ and _within_ a subnet are handled differently.
+Think of the `deposit` command as transferring funds from a parent to a child subnet. If you want to build on Hoku, you
+start by moving funds from the parent L1 (rootnet) to the Hoku subnet. This goes through a smart contract (i.e., the
+gateway contract) call that locks the funds in a smart contract on the parent, later minting them to the address on the
+subnet (i.e., a bridging flow).
 
-| Positionals | Description                      |
-| ----------- | -------------------------------- |
-| `<AMOUNT>`  | The amount to transfer (in FIL). |
+| Positionals | Description             |
+| ----------- | ----------------------- |
+| `<AMOUNT>`  | The amount to transfer. |
 
-Optionally, you can pass the `--to` flag to deposit funds from the parent to a specific address on the child, but if you
-don't, the funds will be deposited to the address corresponding to the provided private key. If the `--network` flag is
-set, it will handle all the required `--evm-...` flag presets for you, but you _can_ override them with your own values.
+Optionally, you can pass the `--to` flag to deposit funds from the parent to a specific address on the child. If you
+don't specify anything, the funds will be deposited to the address corresponding to the provided private key. Note that
+the global `--network` flag (defaults to `testnet`) will set all of the `--evm-...` presets for you, but you _can_
+override them with your own values, if needed.
 
 | Flag                   | Required? | Description                                                                       |
 | ---------------------- | --------- | --------------------------------------------------------------------------------- |
 | `-p, --private-key`    | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                   |
 | `--to <TO>`            | No        | The recipient account address (if not present, defaults to the signer's address). |
-| `--evm-rpc-api`        | No        | The Ethereum API RPC HTTP endpoint.                                               |
+| `--evm-rpc-url`        | No        | The Ethereum API RPC HTTP endpoint.                                               |
 | `--evm-rpc-timeout`    | No        | Timeout for calls to the Ethereum API (default: `60 seconds`).                    |
 | `--evm-rpc-auth-token` | No        | Bearer token for any Authorization header.                                        |
 | `--evm-gateway`        | No        | The gateway contract address.                                                     |
@@ -145,7 +169,7 @@ set, it will handle all the required `--evm-...` flag presets for you, but you _
 - Deposit funds to the signer's address:
 
 ```
-> adm account deposit 0.1
+> hoku account deposit 10
 
 {
   "transactionHash": "0xcc7fdf8057dd9f024582b24fce2abe0f5e0c01f1e925fb52bd002c4456333bfc",
@@ -184,7 +208,7 @@ set, it will handle all the required `--evm-...` flag presets for you, but you _
 - Deposit funds to some other, non-signer address:
 
 ```
-> adm account deposit --to 0x181c2d11DbB674147Ba53F2cf26Cf6DF9d9cc0aC 0.1
+> hoku account deposit --to 0x181c2d11DbB674147Ba53F2cf26Cf6DF9d9cc0aC 10
 ```
 
 ### Withdraw funds
@@ -192,25 +216,26 @@ set, it will handle all the required `--evm-...` flag presets for you, but you _
 Withdraw funds from a subnet to its parent.
 
 ```
-adm account withdraw [--to <TO>] <AMOUNT>
+hoku account withdraw [--to <TO>] <AMOUNT>
 ```
 
-The `withdraw` command is the opposite of a `deposit`. It's somewhat like a typical transfer but _only_ from a child
-subnet to its parent.
+The `withdraw` command is the opposite of a `deposit`. It moves funds from a subnet to its parent, which happens through
+a smart contract call that unlocks the funds in the smart contract on the parent. Note that the global `--network` flag
+(defaults to `testnet`) will set all of the `--evm-...` presets for you, but you _can_ override them with your own
+values, if needed.
 
-| Positionals | Description                      |
-| ----------- | -------------------------------- |
-| `<AMOUNT>`  | The amount to transfer (in FIL). |
+| Positionals | Description             |
+| ----------- | ----------------------- |
+| `<AMOUNT>`  | The amount to transfer. |
 
-Optionally, you can pass the `--to` flag to withdraw subnet funds to a specific address on the parent, but if you don't,
-the funds will be withdrawn to the address corresponding to the provided private key. If the `--network` flag is set, it
-will handle all the required `--evm-...` flag presets for you, but you _can_ override them with your own values.
+Similarly, you can pass the `--to` flag to withdraw subnet funds to a specific address on the parent, but if you don't,
+the funds will be withdrawn to the address corresponding to the provided private key.
 
 | Flag                   | Required? | Description                                                                       |
 | ---------------------- | --------- | --------------------------------------------------------------------------------- |
 | `-p, --private-key`    | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                   |
 | `--to <TO>`            | No        | The recipient account address (if not present, defaults to the signer's address). |
-| `--evm-rpc-api`        | No        | The Ethereum API RPC HTTP endpoint.                                               |
+| `--evm-rpc-url`        | No        | The Ethereum API RPC HTTP endpoint.                                               |
 | `--evm-rpc-timeout`    | No        | Timeout for calls to the Ethereum API (default: `60 seconds`).                    |
 | `--evm-rpc-auth-token` | No        | Bearer token for any Authorization header.                                        |
 | `--evm-gateway`        | No        | The gateway contract address.                                                     |
@@ -221,7 +246,7 @@ will handle all the required `--evm-...` flag presets for you, but you _can_ ove
 - Withdraw funds to the signer's address:
 
 ```
-> adm account withdraw 0.1
+> hoku account withdraw 10
 
 {
   "transactionHash": "0xb098e39c4b358e5f55cd6f2db941092ff50b46d99db53c34101cac3f0f65f20d",
@@ -245,29 +270,31 @@ will handle all the required `--evm-...` flag presets for you, but you _can_ ove
 - Withdraw funds to some other, non-signer address:
 
 ```
-> adm account withdraw --to 0x181c2d11DbB674147Ba53F2cf26Cf6DF9d9cc0aC 0.1
+> hoku account withdraw --to 0x181c2d11DbB674147Ba53F2cf26Cf6DF9d9cc0aC 10
 ```
 
 ### Transfer funds
 
-Transfer funds to another account in a subnet.
+Transfer funds to another account within a subnet.
 
 ```
-adm account transfer --to <TO> <AMOUNT>
+hoku account transfer --to <TO> <AMOUNT>
 ```
 
-| Positionals | Description                      |
-| ----------- | -------------------------------- |
-| `<AMOUNT>`  | The amount to transfer (in FIL). |
+| Positionals | Description             |
+| ----------- | ----------------------- |
+| `<AMOUNT>`  | The amount to transfer. |
 
-The `--to` flag is the destination address within the subnet that you want to send funds to. If the `--network` flag is
-set, it will handle all the required `--evm-...` flag presets for you, but you _can_ override them with your own values.
+The `--to` flag is the destination address within the subnet that you want to send funds to. Note that the global
+`--network` flag (defaults to `testnet`) will set all of the `--evm-...` presets for you, but you _can_ override them
+with your own values, if needed. This transaction happens fully _within_ the subnet (and does not interact with the
+rootnet).
 
 | Flag                   | Required? | Description                                                     |
 | ---------------------- | --------- | --------------------------------------------------------------- |
 | `-p, --private-key`    | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions. |
 | `--to <TO>`            | Yes       | The recipient account address.                                  |
-| `--evm-rpc-api`        | No        | The Ethereum API RPC HTTP endpoint.                             |
+| `--evm-rpc-url`        | No        | The Ethereum API RPC HTTP endpoint.                             |
 | `--evm-rpc-timeout`    | No        | Timeout for calls to the Ethereum API (default: `60 seconds`).  |
 | `--evm-rpc-auth-token` | No        | Bearer token for any Authorization header.                      |
 | `--evm-gateway`        | No        | The gateway contract address.                                   |
@@ -276,9 +303,9 @@ set, it will handle all the required `--evm-...` flag presets for you, but you _
 **Example:**
 
 ```
-> adm account transfer \
+> hoku account transfer \
 --to 0x4D5286d81317E284Cd377cB98b478552Bbe641ae \
-0.1
+10
 
 {
   "transactionHash": "0x814759e167906ffc65dd20c6ceb4cdd42e5f64f9af7ca5bcd2ac1ea365ce715d",
@@ -301,29 +328,105 @@ set, it will handle all the required `--evm-...` flag presets for you, but you _
 
 <Callout type="default">
 
-When you transfer funds from an account that already exists on the subnet to an account that doesn't exist, the
-recipient will effectively be created. This is faster than depositing funds into the new account from rootnet to subnet
-since subnet block times are much shorter.
+When you `transfer` funds from an account that already exists on the subnet to an account that doesn't exist, the
+recipient will effectively be created. Thus, it's much faster (a couple of seconds) than a `deposit` or `withdraw`,
+which require a two-step process that eventually settles on the rootnet.
 
 </Callout>
 
-## Data contracts
+## Credits
 
-Data contracts are the core building blocks of the Hoku network. The `machine` command allows you to retrieve data
-contract information relative to a specific address. This helps track which `ObjectStore` or `Accumulator` contracts are
-tied to your account, which are later used in the `objectstore` and `accumulator` subcommands.
-
-### Get contract info
-
-Get data contract metadata at a specific address.
+Manage credits for your account and sponsoring storage for contracts.
 
 ```
-adm machine info <ADDRESS>
+hoku credit <SUBCOMMAND>
 ```
 
-| Positionals | Description            |
-| ----------- | ---------------------- |
-| `<ADDRESS>` | Data contract address. |
+### Buy credits
+
+Buy credits for an account.
+
+```
+hoku credit buy <AMOUNT>
+```
+
+| Positionals | Description                                                       |
+| ----------- | ----------------------------------------------------------------- |
+| `<AMOUNT>`  | The amount of credits to purchase using the subnet's native coin. |
+
+| Flag                   | Required? | Description                                                                           |
+| ---------------------- | --------- | ------------------------------------------------------------------------------------- |
+| `-p, --private-key`    | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                       |
+| `--to <TO>`            | No        | The recipient account address (if not present, defaults to the signer's address).     |
+| `-b, --broadcast-mode` | No        | Broadcast mode for the transaction: `commit`, `sync`, or `async` (default: `commit`). |
+| `--gas-limit`          | No        | Gas limit for the transaction.                                                        |
+| `--gas-fee-cap`        | No        | Maximum gas fee for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL).             |
+| `--gas-premium`        | No        | Gas premium for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL).                 |
+| `--sequence`           | No        | Sequence (i.e., nonce) for the transaction.                                           |
+
+You'll see three values in the `data` field of the response:
+
+- `credit_free`: The number of credits available to spend—equivalent to the amount of credits purchased and not yet
+  committed to storing data.
+- `credit_committed`: The number of credits committed to storing data.
+- `last_debit_epoch`: The epoch (block height) at which the account last had credits debited.
+
+**Example:**
+
+- Buy $10^(17)$ credits with 0.1 native coins.
+
+```
+> hoku credit buy 0.1
+
+{
+  "status": "committed",
+  "hash": "842AAC5A189543486B00D7A4FC594477C0E9F63623EA677B5AC85F27568BC31A",
+  "height": "791907",
+  "gas_used": 11114885,
+  "data": {
+    "credit_free": "100000000000000000",
+    "credit_committed": "0",
+    "last_debit_epoch": 791907
+  }
+}
+```
+
+### Get credit balance
+
+Get the credit balance for an account.
+
+```
+hoku credit balance
+```
+
+| Flag                | Required?                | Description                                                           |
+| ------------------- | ------------------------ | --------------------------------------------------------------------- |
+| `-p, --private-key` | Yes, if no `address`     | Wallet private key (ECDSA, secp256k1) for signing transactions.       |
+| `-a, --address`     | Yes, if no `private-key` | Account address; the signer's address is used if no address is given. |
+| `--height`          | No                       | Query at a specific block height (default: `committed`).              |
+
+- **Example:**
+
+```
+> hoku credit balance
+
+{
+  "credit_free": "100000000000000000",
+  "credit_committed": "0",
+  "last_debit_epoch": 791907
+}
+```
+
+### Stats
+
+Get the credit stats for a subnet.
+
+```
+hoku credit stats
+```
+
+This is more of a subnet-wide view, as opposed to an account-specific view. It's helpful because it shows the total
+number of credits sold and committed, number of accounts that have bought credits, and the credit debit rate.
 
 | Flag       | Required? | Description                                              |
 | ---------- | --------- | -------------------------------------------------------- |
@@ -332,26 +435,133 @@ adm machine info <ADDRESS>
 **Example:**
 
 ```
-> adm machine info t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa
+> hoku credit stats
 
 {
-    "kind": "ObjectStore",
-    "owner": "0x4d5286d81317e284cd377cb98b478552bbe641ae"
+  "balance": "28.1",
+  "credit_sold": "28100000000000000000",
+  "credit_committed": "196953720372",
+  "credit_debited": "77309514267",
+  "credit_debit_rate": 1,
+  "num_accounts": 8
 }
 ```
 
-## Object store
+## Storage information
 
-Interact with an object store data contract using either the `objectstore` or aliased `os` subcommand:
+Get the storage stats and information.
 
 ```
-adm objectstore <SUBCOMMAND>
-adm os <SUBCOMMAND>
+hoku storage
+```
+
+### Get storage usage
+
+Get the storage usage for an account.
+
+```
+hoku storage usage
+```
+
+| Flag                | Required?                | Description                                                           |
+| ------------------- | ------------------------ | --------------------------------------------------------------------- |
+| `-p, --private-key` | Yes, if no `address`     | Wallet private key (ECDSA, secp256k1) for signing transactions.       |
+| `-a, --address`     | Yes, if no `private-key` | Account address; the signer's address is used if no address is given. |
+| `--height`          | No                       | Query at a specific block height (default: `committed`).              |
+
+The response will define `capacity_used` in bytes.
+
+- **Example:**
+
+```
+> hoku storage usage
+
+{
+  "capacity_used": "0"
+}
+```
+
+### Subnet storage stats
+
+Get the credit stats for a subnet.
+
+```
+hoku storage stats
+```
+
+This is a subnet-wide view that describes the total amount of storage available and the amount of storage that is
+currently in use.
+
+| Flag       | Required? | Description                                              |
+| ---------- | --------- | -------------------------------------------------------- |
+| `--height` | No        | Query at a specific block height (default: `committed`). |
+
+The response includes the following values:
+
+- `capacity_free`: The total free capacity in bytes (e.g., 1073741824 bytes = 1 GiB).
+- `capacity_used`: The total used capacity in bytes.
+- `num_blobs`: The total number of blobs in the subnet.
+- `num_resolving`: The total number of resolving (non-expiry) blobs in the subnet.
+
+**Example:**
+
+```
+> hoku storage stats
+
+{
+  "capacity_free": "1073741824",
+  "capacity_used": "1391267",
+  "num_blobs": 4,
+  "num_resolving": 0
+}
+```
+
+## Contracts
+
+Contracts are the core building blocks of the Hoku network. The `machine` command allows you to retrieve data contract
+information relative to a specific address. This helps track which bucket or accumulator contracts are tied to your
+account, which are later used in the `objectstore` and `accumulator` subcommands described below.
+
+### Get contract info
+
+Get contract metadata at a specific address.
+
+```
+hoku machine info <ADDRESS>
+```
+
+| Positionals | Description       |
+| ----------- | ----------------- |
+| `<ADDRESS>` | Contract address. |
+
+| Flag       | Required? | Description                                              |
+| ---------- | --------- | -------------------------------------------------------- |
+| `--height` | No        | Query at a specific block height (default: `committed`). |
+
+**Example:**
+
+```
+> hoku machine info t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi
+
+{
+  "kind": "ObjectStore",
+  "owner": "0x4d5286d81317e284cd377cb98b478552bbe641ae",
+  "metadata": {}
+}
+```
+
+## Buckets
+
+Interact with a bucket contract using either the `objectstore` or aliased `os` subcommand:
+
+```
+hoku objectstore <SUBCOMMAND>
+hoku os <SUBCOMMAND>
 ```
 
 The `objectstore` subcommand has the following subcommands:
 
-- `create`: Create a new object store data contract.
+- `create`: Create a new Bucket contract.
 - `list`: List object stores by owner in a subnet.
 - `add`: Add an object into the object store.
 - `get`: Get an object from the object store.
@@ -365,16 +575,18 @@ the key allows for easy retrieval of data by prefixes, which is explained below 
 
 ### Create
 
-Create a new object store data contract.
+Create a new Bucket contract.
 
 ```
-adm objectstore create
+hoku objectstore create
 ```
 
 | Flag                | Required? | Description                                                               |
 | ------------------- | --------- | ------------------------------------------------------------------------- |
 | `-p, --private-key` | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.           |
 | `--public-write`    | No        | Allow **_public, open_** write access to the object store.                |
+| `-m, --metadata`    | No        | User-defined metadata.                                                    |
+| `--buy-credit`      | No        | The amount of tokens to spend on credit for the object store.             |
 | `--gas-limit`       | No        | Gas limit for the transaction.                                            |
 | `--gas-fee-cap`     | No        | Maximum gas fee for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL). |
 | `--gas-premium`     | No        | Gas premium for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL).     |
@@ -383,14 +595,14 @@ adm objectstore create
 **Example:**
 
 ```
-> adm objectstore create
+> hoku objectstore create
 
 {
-  "address": "t2pefhfyobx2tdgznhcf2anr6p34z2rgso2ix7x5y",
+  "address": "t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi",
   "tx": {
-    "gas_used": 15004808,
-    "hash": "3999595D0F74F912323F0F545204BE9D0605CE741275120E553FA395E64DA48D",
-    "height": "7964"
+    "hash": "EC2ADFDD47F7E740C417E3BAEF2240CD5431C57F3389BF80A4B219D7B1486000",
+    "height": "789471",
+    "gas_used": 18058885
   }
 }
 ```
@@ -400,14 +612,14 @@ adm objectstore create
 List object stores by owner in a subnet.
 
 ```
-adm objectstore list {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
+hoku objectstore list {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
 ```
 
 You must pass _either_ the `--private-key` or `--address` flag. An address must be in the delegated `t410` or `0x`
 format.
 
-- `adm objectstore list --private-key <PRIVATE_KEY>`: Query with a private key (or read from your `.env` file).
-- `adm objectstore list --address <ADDRESS>`: Query a `t410` or `0x` address.
+- `hoku objectstore list --private-key <PRIVATE_KEY>`: Query with a private key (or read from your `.env` file).
+- `hoku objectstore list --address <ADDRESS>`: Query a `t410` or `0x` address.
 
 | Flag                | Required?                | Description                                                           |
 | ------------------- | ------------------------ | --------------------------------------------------------------------- |
@@ -422,37 +634,28 @@ Query data contracts by:
 - A hex address:
 
 ```
-> adm objectstore list \
+> hoku objectstore list \
 --address 0x4D5286d81317E284Cd377cB98b478552Bbe641ae
 
 [
   {
-    "address": "t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa",
-    "kind": "ObjectStore"
-  },
-  {
-    "address": "t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa",
-    "kind": "ObjectStore"
+    "address": "t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi",
+    "kind": "ObjectStore",
+    "metadata": {}
   }
 ]
-```
-
-- Its equivalent `t410` address:
-
-```
-> adm objectstore list \
---address t410fjvjinwatc7rijtjxps4ywr4fkk56mqnolzpcnrq
 ```
 
 - At a specific block height (note how at this older height, there were fewer data contracts created than the most
   recent `committed` height above):
 
 ```
-> adm objectstore list --height 114345
+> hoku objectstore list --height 789471
 [
   {
-    "address": "t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa",
-    "kind": "ObjectStore"
+    "address": "t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi",
+    "kind": "ObjectStore",
+    "metadata": {}
   }
 ]
 ```
@@ -462,7 +665,7 @@ Query data contracts by:
 Add an object with a key prefix.
 
 ```
-adm objectstore add \
+hoku objectstore add \
 --address <ADDRESS> \
 --key <KEY> \
 [INPUT]
@@ -473,8 +676,10 @@ The `INPUT` can be a file path.
 | Flag                   | Required? | Description                                                                           |
 | ---------------------- | --------- | ------------------------------------------------------------------------------------- |
 | `-p, --private-key`    | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                       |
-| `-a, --address`        | Yes       | Object store data contract address.                                                   |
+| `-a, --address`        | Yes       | Bucket contract address.                                                              |
 | `-k, --key`            | Yes       | Key of the object to upload.                                                          |
+| `-m, --metadata`       | No        | User-defined metadata.                                                                |
+| `--ttl`                | No        | Object time-to-live (TTL) duration.                                                   |
 | `-o, --overwrite`      | No        | Overwrite the object if it already exists.                                            |
 | `-b, --broadcast-mode` | No        | Broadcast mode for the transaction: `commit`, `sync`, or `async` (default: `commit`). |
 | `--gas-limit`          | No        | Gas limit for the transaction.                                                        |
@@ -487,9 +692,9 @@ The `INPUT` can be a file path.
 - Push a file to the object store:
 
 ```
-> adm objectstore add \
---address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
---key "my/object" \
+> hoku objectstore add \
+--address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+--key "hello/world" \
 ./hello.json
 
 {
@@ -503,10 +708,10 @@ The `INPUT` can be a file path.
 
 ### Get an object
 
-Get an object from the object store data contract.
+Get an object from the bucket contract.
 
 ```
-adm objectstore get --address <ADDRESS> <KEY>
+hoku objectstore get --address <ADDRESS> <KEY>
 ```
 
 | Positionals | Description               |
@@ -517,7 +722,7 @@ Note that when you retrieve the object, it will be written to stdout.
 
 | Flag               | Required? | Description                                                                                                   |
 | ------------------ | --------- | ------------------------------------------------------------------------------------------------------------- |
-| `-a, --address`    | Yes       | Object store data contract address.                                                                           |
+| `-a, --address`    | Yes       | Bucket contract address.                                                                                      |
 | `--object-api-url` | No        | Node Object API URL.                                                                                          |
 | `--range`          | No        | Range of bytes to get from the object (format: `"start-end"`; inclusive). Example: "0-99" => first 100 bytes. |
 | `--height`         | No        | Query at a specific block height (default: `committed`).                                                      |
@@ -527,9 +732,9 @@ Note that when you retrieve the object, it will be written to stdout.
 - Get an object and write to stdout (default behavior):
 
 ```
-> adm objectstore get \
---address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
-"my/object"
+> hoku objectstore get \
+--address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+"hello/world"
 
 {"hello":"world"}
 ```
@@ -537,18 +742,18 @@ Note that when you retrieve the object, it will be written to stdout.
 - Download the output to a file by piping the output:
 
 ```
-> adm objectstore get \
---address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
-"my/object" > downloaded.json
+> hoku objectstore get \
+--address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+"hello/world" > downloaded.json
 ```
 
 - Range request for a subset of bytes:
 
 ```
-> adm objectstore get \
---address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
+> hoku objectstore get \
+--address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
 --range "10-14" \
-"my/object"
+"hello/world"
 
 world
 ```
@@ -558,7 +763,7 @@ world
 Delete an object from the object store.
 
 ```
-adm objectstore delete \
+hoku objectstore delete \
 --address <ADDRESS> \
 <KEY>
 ```
@@ -572,7 +777,7 @@ Similar to when you `add` an object, you can specify gas settings or alter the b
 | Flag                   | Required? | Description                                                                           |
 | ---------------------- | --------- | ------------------------------------------------------------------------------------- |
 | `-p, --private-key`    | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                       |
-| `-a, --address`        | Yes       | Object store data contract address.                                                   |
+| `-a, --address`        | Yes       | Bucket contract address.                                                              |
 | `--object-api-url`     | No        | Node Object API URL.                                                                  |
 | `-b, --broadcast-mode` | No        | Broadcast mode for the transaction: `commit`, `sync`, or `async` (default: `commit`). |
 | `--gas-limit`          | No        | Gas limit for the transaction.                                                        |
@@ -585,9 +790,9 @@ Similar to when you `add` an object, you can specify gas settings or alter the b
 - Delete an existing object:
 
 ```
-> adm objectstore delete \
---address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
-"my/object"
+> hoku objectstore delete \
+--address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+"hello/world"
 
 {
   "status": "committed",
@@ -603,7 +808,7 @@ Similar to when you `add` an object, you can specify gas settings or alter the b
 Query across all objects in the store.
 
 ```
-adm objectstore query --address <ADDRESS>
+hoku objectstore query --address <ADDRESS>
 ```
 
 Performing a `query` lists all keys that match a given prefix _up to and including the delimiter_. If the key supplies a
@@ -611,13 +816,13 @@ delimiter, then the results stop there—essentially, listing subfolders, but no
 listing files in a directory. If you list the contents of a folder, you'll see all subfolders, but you won't see the
 contents of one of those subfolders.
 
-For example, if you have the keys `my/object`, `my/data`, and `my/object/child`, and you query for the prefix `my/`, you
-will get the objects at `my/object` and `my/data` but not `my/object/child` since its "nested" under the prefix
-`my/object/` (note: inclusive of the `/` at the end).
+For example, if you have the keys `hello/world`, `hello/data`, and `hello/world/child`, and you query for the prefix
+`hello/`, you will get the objects at `hello/world` and `hello/data` but not `hello/world/child` since its "nested"
+under the prefix `hello/world/` (note: inclusive of the `/` at the end).
 
 | Flag              | Required? | Description                                                                        |
 | ----------------- | --------- | ---------------------------------------------------------------------------------- |
-| `-a, --address`   | Yes       | Object store data contract address.                                                |
+| `-a, --address`   | Yes       | Bucket contract address.                                                           |
 | `-p, --prefix`    | No        | The prefix to filter objects by (defaults to empty string).                        |
 | `-d, --delimiter` | No        | The delimiter used to define object hierarchy (default: `/`).                      |
 | `-o, --offset`    | No        | The offset from which to start listing objects (default: `0`)                      |
@@ -627,33 +832,33 @@ will get the objects at `my/object` and `my/data` but not `my/object/child` sinc
 **Examples:**
 
 - Get all objects but without any filtering. Since the object keys have a delimiter included, you'll see the common
-  prefix `my/`, but no objects are listed since the "root" is the prefix:
+  prefix `hello/`, but no objects are listed since the "root" is the prefix:
 
 ```
-> adm objectstore query \
---address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa
+> hoku objectstore query \
+--address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi
 
 {
   "objects": [],
   "common_prefixes": [
-    "my/"
+    "hello/"
   ]
 }
 ```
 
-- Get all objects under a specific prefix. In this case, the response will include all objects under the `my/` prefix,
-  and since there are no "child" objects that match `my/` (e.g., `my/object/child`), the `common_prefixes` array will be
-  empty, so you know there are no more sub-objects to list:
+- Get all objects under a specific prefix. In this case, the response will include all objects under the `hello/`
+  prefix, and since there are no "child" objects that match `hello/` (e.g., `hello/world/child`), the `common_prefixes`
+  array will be empty, so you know there are no more sub-objects to list:
 
 ```
-> adm objectstore query \
---address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
---prefix "my/"
+> hoku objectstore query \
+--address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+--prefix "hello/"
 
 {
   "objects": [
     {
-      "key": "my/object",
+      "key": "hello/world",
       "value": {
         "cid": "bafybeiffndsajwhk3lwjewwdxqntmjm4b5wxaaanokonsggenkbw6slwk4",
         "resolved": true,
@@ -672,26 +877,27 @@ will get the objects at `my/object` and `my/data` but not `my/object/child` sinc
   as above.
 
 ```
-> adm objectstore query \
---address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
+> hoku objectstore query \
+--address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
 --delimiter "*"
 ```
 
-- Get all objects and filter by a prefix with offset and limit. In the example above, the `"my/data"` object was created
-  _after_ `"my/object"`, so it will be the first object listed after offsetting by `1`:
+- Get all objects and filter by a prefix with offset and limit. In the example above, lets say a `"hello/data"` object
+  was created _after_ `"hello/world"`. When we query the bucket, it will be the first object listed since we're
+  offsetting by `1`:
 
 ```
-> adm objectstore query \
---address t2weumc7otsi3kniwjgy2xnemws5jpi3vmbnxg4fa \
+> hoku objectstore query \
+--address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
 --delimiter "/" \
---prefix "my/" \
+--prefix "hello/" \
 --offset 1 \
 --limit 1
 
 {
   "objects": [
     {
-      "key": "my/data",
+      "key": "hello/data",
       "value": {
         "kind": "external",
         "content": "bafybeigdp2yqaqdbfhltvxdt3m5xmsrbvzyvtjrz5klhee33vpr5hdnpou",

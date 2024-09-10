@@ -12,6 +12,7 @@
   },
   "introduction": "Introduction",
   "features": "Features",
+  "use-cases": "Use cases",
   "services-separator": {
     "title": "Services",
     "type": "separator"
@@ -27,6 +28,14 @@
   "databases": {
     "title": "Databases",
     "href": "/databases"
+  },
+  "guides-separator": {
+    "title": "Guides",
+    "type": "separator"
+  },
+  "tutorials": {
+    "title": "Tutorials",
+    "href": "/tutorials"
   },
   "protocol-separator": {
     "title": "Protocol",

@@ -4,7 +4,7 @@
     "display": "hidden"
   },
   "nav-services": {
-    "title": "Services",
+    "title": "Data services",
     "type": "menu",
     "display": "normal",
     "items": {
@@ -19,6 +19,17 @@
       "databases": {
         "title": "Databases",
         "href": "/databases"
+      }
+    }
+  },
+  "nav-guides": {
+    "title": "Guides",
+    "type": "menu",
+    "display": "normal",
+    "items": {
+      "tutorials": {
+        "title": "Tutorials",
+        "href": "/tutorials"
       }
     }
   },
@@ -63,11 +74,13 @@
   "home": "Home",
   "introduction": "Introduction",
   "features": "Features",
+  "use-cases": "Use cases",
   "event-store": "Event store",
   "object-storage": "Object storage",
   "databases": "Databases",
+  "tutorials": "Guides",
   "architecture": "Architecture",
-  "network": "Contracts & RPCs",
+  "network": "APIs & contracts",
   "operators": "Node operators",
   "community": "Community"
 }

@@ -1,9 +1,9 @@
 ---
 title: Examples
-description: A series of Basin SDK examples.
+description: A series of Hoku SDK examples.
 ---
 
-The Basin SDK can be used to interact with both accounts and the actual object storage layer. This page outlines a
+The Hoku SDK can be used to interact with both accounts and the actual object storage layer. This page outlines a
 handful of example for different use cases.
 
 ## Creating a new account
@@ -13,8 +13,8 @@ use ethers::utils::hex::ToHexExt;
 use fendermint_vm_actor_interface::eam::EthAddress;
 use fvm_shared::address::Address;
 
-use adm_sdk::network::Network;
-use adm_signer::key::random_secretkey;
+use hoku_sdk::network::Network;
+use hoku_signer::key::random_secretkey;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -44,8 +44,8 @@ use anyhow::anyhow;
 use ethers::utils::hex::ToHexExt;
 use fvm_shared::econ::TokenAmount;
 
-use adm_sdk::{account::Account, network::Network};
-use adm_signer::{key::parse_secret_key, AccountKind, Signer, Wallet};
+use hoku_sdk::{account::Account, network::Network};
+use hoku_signer::{key::parse_secret_key, AccountKind, Signer, Wallet};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -96,8 +96,8 @@ use std::env;
 use anyhow::anyhow;
 use ethers::utils::hex::ToHexExt;
 
-use adm_sdk::{account::Account, network::Network};
-use adm_signer::{key::parse_secret_key, AccountKind, Signer, Wallet};
+use hoku_sdk::{account::Account, network::Network};
+use hoku_signer::{key::parse_secret_key, AccountKind, Signer, Wallet};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -139,13 +139,13 @@ use rand::{thread_rng, Rng};
 use tokio::io::{AsyncReadExt, AsyncSeekExt, AsyncWriteExt};
 use tokio::time::{sleep, Duration};
 
-use adm_provider::json_rpc::JsonRpcProvider;
-use adm_sdk::machine::objectstore::{AddOptions, GetOptions, QueryOptions};
-use adm_sdk::{
+use hoku_provider::json_rpc::JsonRpcProvider;
+use hoku_sdk::machine::objectstore::{AddOptions, GetOptions, QueryOptions};
+use hoku_sdk::{
     machine::{objectstore::ObjectStore, Machine},
     network::Network,
 };
-use adm_signer::{key::parse_secret_key, AccountKind, Wallet};
+use hoku_signer::{key::parse_secret_key, AccountKind, Wallet};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

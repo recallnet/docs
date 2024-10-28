@@ -19,6 +19,7 @@
     "type": "separator"
   },
   "ceramic-user-data": "Storing User Data",
+  "ceramic-data-labeling": "Data Labeling",
   "orbisdb-separator": {
     "title": "OrbisDB",
     "type": "separator"

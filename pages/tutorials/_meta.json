@@ -18,7 +18,8 @@
     "title": "Ceramic",
     "type": "separator"
   },
-  "ceramic-ml": "Machine learning pipeline",
+  "ceramic-user-data": "Storing User Data",
+  "ceramic-data-labeling": "Data Labeling",
   "orbisdb-separator": {
     "title": "OrbisDB",
     "type": "separator"

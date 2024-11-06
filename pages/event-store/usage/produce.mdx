@@ -76,7 +76,8 @@ The `signEvent` function is used to create a signed Ceramic event. It takes a DI
 
 ```typescript
 import { getAuthenticatedDID } from '@didtools/key-did'
-import { InitEventPayload, signEvent } from '@ceramic-sdk/events'
+import { StreamID } from "@ceramicnetwork/streamid";
+import { InitEventPayload, signEvent, signedEventToCAR } from '@ceramic-sdk/events'
 
 // Create an authenticated DID
 const did = await getAuthenticatedDID(new Uint8Array(32))
@@ -90,7 +91,7 @@ const eventPayload: InitEventPayload = {
   data: null,
   header: {
     controllers: [did.id],
-    model: 'yourModelStreamID',
+    model: StreamID.fromString('yourModelStreamID'),
     sep: 'test',
   },
 }
@@ -106,6 +107,12 @@ const encodedPayload = InitEventPayload.encode(eventPayload)
 const signedEvent = await signEvent(did, encodedPayload)
 
 console.log(signedEvent)
+```
+
+### Encode the Signed Event as CAR
+```typescript
+// Convert to an acceptable client payload for client.postEventCAR
+const signedEventAsCar = signedEventToCAR(signedEvent)
 ```
 </Steps>
 

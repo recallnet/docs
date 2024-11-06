@@ -135,10 +135,10 @@ npm install --save @ceramic-sdk/events @ceramic-sdk/identifiers @ceramic-sdk/htt
 ```typescript
 import { CeramicClient } from '@ceramic-sdk/http-client';
 
-const client = new CeramicClient('http://localhost:5101');
+const client = new CeramicClient({url: 'http://localhost:5101'});
 
 // Now some calls!
-const response = client.getVersion();
+const response = await client.getVersion();
 
 // Confirm it matches the version you just installed
 console.log(response.version);

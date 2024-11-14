@@ -2,5 +2,5 @@
   "installation": "Installation",
   "produce": "Produce",
   "consume": "Consume",
-  "aggregate": "Aggregation"
+  "query": "Query"
 }

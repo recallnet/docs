@@ -61,17 +61,61 @@ These parquet files containing Ceramic events are stored in Hoku's Object Storag
 
 ## Data Pipeline
 
-Each event in a Ceramic Event stream contains a `data` payload, which can contain any sequence of bytes. Some applications may want to simply consume each event as it comes in and respond to them individually. For example, suppose you have a network-connected temperature sensor and only care about the most recent reading. In that case, your application will need to read from a table of events that makes it clear which value most recently arrived on the stream.
+The pipeline architecture processes Ceramic data through a series of transformations that define features and enable diverse functionalities. Data enters the system via its API and is first stored in the raw_events table. It then undergoes sequential transformations that generate intermediate tables, each designed to organize and enrich the data. These tables, with schemas treated as public APIs, provide structured access and support specific query patterns for interacting with the data using Flight SQL.
 
-Ceramic nodes facilitate this flow by exposing events across a data pipeline which represents various table `states`. While developers can easily craft custom data pipelines to fit their data transformation requirements, the two table states Ceramic nodes expose out-of-the-box are `conclusion feed` and `document state`. Ceramic does so by exposing a Flight SQL endpoint which developers can query directly using the Ceramic SDK, or by bringing their own preferred query engine.
+```mermaid
+graph LR;
+    raw_events;
+    streams;
+    chain_proofs;
+    conclusion_events;
+    model_schemas;
+    event_states;
+    stream_tips;
+    stream_states;
 
-### Conclusion Feed
+    raw_events --> conclusion_events;
+    streams --> conclusion_events;
+    chain_proofs --> conclusion_events;
+    conclusion_events --> event_states;
+    model_schemas --> event_states;
+    event_states --> stream_tips;
+    stream_tips --> stream_states;
+```
 
-The `conclusion feed` table contains the raw events with their corresponding CAR files, allowing developers to interact with Ceramic events without any conflict-resolving behavior. 
+### raw_events
 
-### Document State
+The raw_events table contains the raw event data from Ceramic streams, including the corresponding CAR files. This table enables direct interaction with event data for validation and further processing.
 
-As the name suggests, this table allows developers to query the aggregated state of each document. In other words, applications that need to query the latest state of a document would reference the contents of this table.
+### streams
+
+The streams table provides identifying information for each stream, such as its type, controller, and dimensions. It serves as a central reference for understanding and querying stream metadata.
+
+### chain_proofs
+
+The chain_proofs table contains records of on-chain proofs for events, supporting verification and validation processes. (Schema and population details are TBD.)
+
+### conclusion_events
+
+The conclusion_events table holds transformed event data with resolved dimensions, controller information, and validated signatures, facilitating pre-aggregated queries and stream ordering.
+
+### model_schemas
+
+The model_schemas table contains fully resolved schemas for models, supporting schema validation and providing a reference for stream structure. (Further schema and population details are TBD.)
+
+### event_states
+
+The event_states table tracks the document state at each event within a stream, providing access to the complete history and enabling validation against model schemas.
+
+### stream_tips
+
+The stream_tips table identifies the current tips of streams, representing the latest unresolved states for developers working on conflict resolution systems.
+
+### stream_states
+
+The stream_states table provides the canonical state for each stream after applying conflict resolution, offering a reliable snapshot of stream data for consumers.
+
+*For a more detailed breakdown of each table, please visit the [Pipeline Architecture](https://github.com/ceramicnetwork/rust-ceramic/pipeline/DESIGN.md) overview.*
 
 ### Models & Documents
 

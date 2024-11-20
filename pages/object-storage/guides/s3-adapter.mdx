@@ -5,8 +5,9 @@ description: Use existing S3 tooling with Basin.
 
 import { Callout, Steps } from "nextra/components";
 
-The `basin_s3` adapter is a simple S3-compatible adapter that allows you to use the Basin object storage system with
-S3-compatibility. Let's walk through how to set it up and use it with something like MinIO.
+The `basin_s3` adapter is a simple S3-compatible adapter that allows you to use the Basin object
+storage system with S3-compatibility. Let's walk through how to set it up and use it with something
+like MinIO.
 
 ### Setup
 
@@ -32,7 +33,8 @@ This should make `basin_s3` available in your path.
 
 Starting the Basin S3 adapter uses port `8014` by default. There are three required flags:
 
-- `--private-key`: Hex encoded, Ethereum-style private key (ECDSA, secp256k1) for sending transactions.
+- `--private-key`: Hex encoded, Ethereum-style private key (ECDSA, secp256k1) for sending
+  transactions.
 - `--access-key`: An S3 access key (e.g,. `AKEXAMPLES3S`)
 - `--secret-key`: An S3 secret key (e.g., `SKEXAMPLES3S`)
 
@@ -40,20 +42,22 @@ Starting the Basin S3 adapter uses port `8014` by default. There are three requi
 s3s_basin --private-key [your_private_key] --access-key AKEXAMPLES3S --secret-key SKEXAMPLES3S
 ```
 
-The access key and secret aren't used for anything other than matching the MinIO client configuration.
+The access key and secret aren't used for anything other than matching the MinIO client
+configuration.
 
 <Callout type="info">
 
-If you do not already have a private key, you can generate one with the Basin CLI. You also _must_ make sure your
-account exists on the subnet, which requires you have deposited funds into your subnet account. Neglecting this step
-will lead to errors like `failed to init sequence; actor ... cannot be found`.
+If you do not already have a private key, you can generate one with the Basin CLI. You also _must_
+make sure your account exists on the subnet, which requires you have deposited funds into your
+subnet account. Neglecting this step will lead to errors like
+`failed to init sequence; actor ... cannot be found`.
 
 </Callout>
 
 ### Run the S3 client
 
-You can now use an S3-compatible client like MinIO to interact with Basin. First, make sure you have the MinIO client
-installed, such as with Homebrew on Mac:
+You can now use an S3-compatible client like MinIO to interact with Basin. First, make sure you have
+the MinIO client installed, such as with Homebrew on Mac:
 
 ```sh
 brew install minio/stable/mc
@@ -88,16 +92,17 @@ This will create the bucket under you `basin` alias.
 
 <Callout type="info">
 
-Currently, the bucket is created as a smart contract and defined by its address. You'll need to check what the bucket's
-_actual_ name is and _not_ use the `basin/my-store` as defined in the step above. You can do this with `mc ls basin`,
-and the bucket name should look like `t2plsrxwxx33snruvkk7xthvl35m6azrlqecjbvjy`.
+Currently, the bucket is created as a smart contract and defined by its address. You'll need to
+check what the bucket's _actual_ name is and _not_ use the `basin/my-store` as defined in the step
+above. You can do this with `mc ls basin`, and the bucket name should look like
+`t2plsrxwxx33snruvkk7xthvl35m6azrlqecjbvjy`.
 
 </Callout>
 
 ### Write & read data
 
-You can write to the address that identifies the bucket, where you'd replace `t2pl...` with your system-defined bucket
-name:
+You can write to the address that identifies the bucket, where you'd replace `t2pl...` with your
+system-defined bucket name:
 
 ```
 mc put ./test.txt basin/t2plsrxwxx33snruvkk7xthvl35m6azrlqecjbvjy/world
@@ -114,9 +119,9 @@ mc get basin/t2plsrxwxx33snruvkk7xthvl35m6azrlqecjbvjy/world ./downloaded-test.t
 
 ## Next steps
 
-You can now use Basin with any S3-compatible tooling! This example walked through how to use it with some S3-compatible
-CLI tool, but its compatibility extends to any S3-compatible client or library (e.g.,
-[ClickHouse](https://clickhouse.com/), etc.).
+You can now use Basin with any S3-compatible tooling! This example walked through how to use it with
+some S3-compatible CLI tool, but its compatibility extends to any S3-compatible client or library
+(e.g., [ClickHouse](https://clickhouse.com/), etc.).
 
 We also created a demo video on how to do this, too!
 

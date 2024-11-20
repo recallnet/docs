@@ -5,122 +5,135 @@ description: Getting started with basic network concepts.
 
 import { Callout } from "nextra/components";
 
-Buckets are object stores that take advantage of Hoku's subnet scaling infrastructure to enable fast and cost-effective
-storage of large amounts of data. Basin's usage pattern generally consists of two components:
+Buckets are object stores that take advantage of Hoku's subnet scaling infrastructure to enable fast
+and cost-effective storage of large amounts of data. Basin's usage pattern generally consists of two
+components:
 
 - Creating an object store (with certain permissions on who can write data).
 - Adding, listing, getting, and deleting objects.
 
-These key-value stores allow you to push and retrieve data in a familiar S3-like fashion. They support byte range
-requests and advanced queries based on key prefix, delimiter, offset, and limit. Internally, the state of an object
-store is represented in a flexible and extensible way to represent complex data structures.
+These key-value stores allow you to push and retrieve data in a familiar S3-like fashion. They
+support byte range requests and advanced queries based on key prefix, delimiter, offset, and limit.
+Internally, the state of an object store is represented in a flexible and extensible way to
+represent complex data structures.
 
 ## Contracts
 
-The interface is implemented as a _contract_, deployed on a subnet. Data is represented as an onchain hash within a
-contract's state, and the actual data is stored offchain in a node's local (networked) block store. Spawning new object
-stores is handled with a general factory smart contract, which the various Basin interfaces (SDK, CLI) call under the
-hood.
+The interface is implemented as a _contract_, deployed on a subnet. Data is represented as an
+onchain hash within a contract's state, and the actual data is stored offchain in a node's local
+(networked) block store. Spawning new object stores is handled with a general factory smart
+contract, which the various Basin interfaces (SDK, CLI) call under the hood.
 
-More generally, there are two types of contracts on Hoku network: **_WASM_** contracts, and EVM **_smart_** contracts.
-The two differ in how what they can handle and related intents.
+More generally, there are two types of contracts on Hoku network: **_WASM_** contracts, and EVM
+**_smart_** contracts. The two differ in how what they can handle and related intents.
 
 ### WASM contract
 
-A _WASM_ contract is an [WASM runtime contract](https://docs.filecoin.io/basics/the-blockchain/actors) used to store and
-manage data with low-level control. The polyglot execution runtime allows WASM contracts to be written in Rust (or other
-languages) and then compiled accordingly. Thus, these have more flexible and data-oriented programmatic control, so
-they're called "WASM contracts" to help distinguish them from EVM smart contracts.
+A _WASM_ contract is an
+[WASM runtime contract](https://docs.filecoin.io/basics/the-blockchain/actors) used to store and
+manage data with low-level control. The polyglot execution runtime allows WASM contracts to be
+written in Rust (or other languages) and then compiled accordingly. Thus, these have more flexible
+and data-oriented programmatic control, so they're called "WASM contracts" to help distinguish them
+from EVM smart contracts.
 
 ### Smart contract
 
-A _smart_ contract is a "traditional" EVM contract, most commonly written in Solidity. These expose EVM-specific types,
-state access, and functionality, but they lack the more robust features that a WASM runtime supports.
+A _smart_ contract is a "traditional" EVM contract, most commonly written in Solidity. These expose
+EVM-specific types, state access, and functionality, but they lack the more robust features that a
+WASM runtime supports.
 
 ## Accounts & addresses
 
-Accounts (ECDSA, secp256k1) are used to send data-carrying transactions as you would on any blockchain system. Thus, all
-mutations are onchain transactions within a subnet, so funds are required to pay for writes. Since Basin is built on top
-of Filecoin's FVM, the addresses can follow a _slightly_ different convention than a purely EVM-based account system.
+Accounts (ECDSA, secp256k1) are used to send data-carrying transactions as you would on any
+blockchain system. Thus, all mutations are onchain transactions within a subnet, so funds are
+required to pay for writes. Since Basin is built on top of Filecoin's FVM, the addresses can follow
+a _slightly_ different convention than a purely EVM-based account system.
 
 ### EVM compatibility
 
-Generally, you can use EVM-style (i.e., `0x` prefixed) accounts for user operations (writes, etc.). WASM contracts, such
-as object stores, are represented as WASM-style addresses (e.g., `t2...`/`f2...`).
+Generally, you can use EVM-style (i.e., `0x` prefixed) accounts for user operations (writes, etc.).
+WASM contracts, such as object stores, are represented as WASM-style addresses (e.g.,
+`t2...`/`f2...`).
 
 <Callout type="info">
 
-This is being further researched to create a consistent experience. In the future, you'll likely only need to think
-about EVM-style addresses.
+This is being further researched to create a consistent experience. In the future, you'll likely
+only need to think about EVM-style addresses.
 
 </Callout>
 
 ### WASM compatibility
 
-Under the hood, EVM accounts and addresses are represented differently than WASM contract addresses. Here's a quick
-primer on how WASM addresses work:
+Under the hood, EVM accounts and addresses are represented differently than WASM contract addresses.
+Here's a quick primer on how WASM addresses work:
 
-- Addresses are prefixed with a network identifier: `t` for Filecoin testnet, or `f` for Filecoin mainnet, and there are
-  five different address types denoted by the second character in the address string: `t0`/`f0` up to `t4`/`f4`.
+- Addresses are prefixed with a network identifier: `t` for Filecoin testnet, or `f` for Filecoin
+  mainnet, and there are five different address types denoted by the second character in the address
+  string: `t0`/`f0` up to `t4`/`f4`.
 - If you're coming from the EVM world, you'll mostly see two types in Hoku:
   - `t2`/`f2`: Any WASM contract that gets deployed, such as an object store.
-  - `t4`/`f4`: A namespaced contract address, and `t410`/`f410` is a specifalized namespace for Ethereum-compatible
-    addresses (wallets _and_ smart contracts) on the FVM.
+  - `t4`/`f4`: A namespaced contract address, and `t410`/`f410` is a specifalized namespace for
+    Ethereum-compatible addresses (wallets _and_ smart contracts) on the FVM.
 - Namely, each `t410...`/`f410...` address is equivalent to a `0x` address; the hex address is
   [encoded in the FVM address string](https://docs.filecoin.io/smart-contracts/filecoin-evm-runtime/address-types#converting-to-a-0x-style-address).
 
-Once your EVM-style account is registered on a subnet, the `0x` and its corresponding `t410...`/`f410...` addresses can
-be used interchangeably on Basin subnets.
+Once your EVM-style account is registered on a subnet, the `0x` and its corresponding
+`t410...`/`f410...` addresses can be used interchangeably on Basin subnets.
 
 ## Access control
 
-Currently, there are two types of write-access controls: only-owner or public access. For example, you can create an
-object store that you, and _only_ you, can write to—gated by signatures from your private key. Or, you can have "allow
-all" access where anyone can write data.
+Currently, there are two types of write-access controls: only-owner or public access. For example,
+you can create an object store that you, and _only_ you, can write to—gated by signatures from your
+private key. Or, you can have "allow all" access where anyone can write data.
 
 This is being further refined, and there will be more robust access control mechanisms soon.
 
 ## Credits
 
-Credits are a useful mechanism to predictably manage storage costs and avoid surprises, and they are used to pay for all
-storage within the Hoku network. You can sponsor (delegate) your credits to contracts on the network, and whenever data
-is written to a contract, credits are debited from your credit balance upon ongoing debit epochs (sparse block heights).
-It allows for more fine-grained accounting because 1 subnet native coin = $10^(18)$ credits.
+Credits are a useful mechanism to predictably manage storage costs and avoid surprises, and they are
+used to pay for all storage within the Hoku network. You can sponsor (delegate) your credits to
+contracts on the network, and whenever data is written to a contract, credits are debited from your
+credit balance upon ongoing debit epochs (sparse block heights). It allows for more fine-grained
+accounting because 1 subnet native coin = $10^(18)$ credits.
 
-The native subnet token is used for creating _contracts_, like buckets, but whenever _data is written_ to a contract,
-credits are used.
+The native subnet token is used for creating _contracts_, like buckets, but whenever _data is
+written_ to a contract, credits are used.
 
-Thus, you **MUST have credits** to store data on Hoku. For example, to add an object to a bucket, you spend credits that
-allocate storage space for the object, including [TTL](#time-to-live-ttl) parameters, and credits will automatically get
-withdrawn from your credit balance as storage continues.
+Thus, you **MUST have credits** to store data on Hoku. For example, to add an object to a bucket,
+you spend credits that allocate storage space for the object, including [TTL](#time-to-live-ttl)
+parameters, and credits will automatically get withdrawn from your credit balance as storage
+continues.
 
-You can manage your credits with the `hoku credit` command, further described in the [credits](#credits) section below.
+You can manage your credits with the `hoku credit` command, further described in the
+[credits](#credits) section below.
 
 <Callout>
 
-You'll see the phrase "native coin" or "native token" used throughout the documentation. A Hoku subnet doesn't really
-"care" what the native coin is; it simply uses the concept of a token as a medium of exchange for chain transactions. In
-practice, the parent rootnet specifies a _supply source_ upon subnet creation, dictating how you move funds into or out
-of the subnet through deposits and withdrawals. By default, Hoku subnets simply use the parent chain's native token as
-the supply source, and moving funds into a subnet just bridges the native token from the parent chain to the subnet.
+You'll see the phrase "native coin" or "native token" used throughout the documentation. A Hoku
+subnet doesn't really "care" what the native coin is; it simply uses the concept of a token as a
+medium of exchange for chain transactions. In practice, the parent rootnet specifies a _supply
+source_ upon subnet creation, dictating how you move funds into or out of the subnet through
+deposits and withdrawals. By default, Hoku subnets simply use the parent chain's native token as the
+supply source, and moving funds into a subnet just bridges the native token from the parent chain to
+the subnet.
 
 </Callout>
 
 ## Broadcasting transactions
 
-Commands that write data will broadcast a transaction to the network. You'll see a `--broadcast-mode` flag that can be
-set to the following values:
+Commands that write data will broadcast a transaction to the network. You'll see a
+`--broadcast-mode` flag that can be set to the following values:
 
 - `commit`: Wait until the transaction is delivered and final (note: this is the default behavior).
-- `sync`: Wait only for the result of a local transaction pre-check, but don’t wait for it to be delivered to all
-  validators (i.e., added risk the transaction may fail during delivery).
-- `async`: Does not wait at all. You will not see errors in your terminal (i.e., added risk the transaction may fail
-  during delivery).
+- `sync`: Wait only for the result of a local transaction pre-check, but don’t wait for it to be
+  delivered to all validators (i.e., added risk the transaction may fail during delivery).
+- `async`: Does not wait at all. You will not see errors in your terminal (i.e., added risk the
+  transaction may fail during delivery).
 
 ## Querying state
 
-Many of the read-only commands let you pass a `--height` option to query the chain's state at a specific block height.
-The following describes the three possible values you can use:
+Many of the read-only commands let you pass a `--height` option to query the chain's state at a
+specific block height. The following describes the three possible values you can use:
 
 - `committed`: The latest committed block (note: this is the default behavior).
 - `pending`: Consider pending state changes in the query.
@@ -128,17 +141,18 @@ The following describes the three possible values you can use:
 
 ## Time-to-live (TTL)
 
-A few operations—like uploading objects to buckets—have a time-to-live (TTL) value (denoted by the `--ttl` flag). It's
-primarily used for objects stored in buckets.
+A few operations—like uploading objects to buckets—have a time-to-live (TTL) value (denoted by the
+`--ttl` flag). It's primarily used for objects stored in buckets.
 
-The TTL value you set represents how long the object will be stored in the network before it is garbage collected and
-deleted. If a TTL is specified, credits will be reserved for the duration, after which the object will be deleted. If a
-TTL is not specified, the object will be continuously renewed about every hour. If the owner's free credit balance is
-exhausted, the object will be deleted.
+The TTL value you set represents how long the object will be stored in the network before it is
+garbage collected and deleted. If a TTL is specified, credits will be reserved for the duration,
+after which the object will be deleted. If a TTL is not specified, the object will be continuously
+renewed about every hour. If the owner's free credit balance is exhausted, the object will be
+deleted.
 
 ## Chain RPCs & funds
 
-Since Basin is built on top of Filecoin, you must have FIL in your account to interact with the network. Hoku is
-currently only live on the Filecoin Calibration network, so you can get tFIL via the faucet
-[here](https://faucet.calibnet.chainsafe-fil.io/funds.html). For reference, Filecoin chain information can be found
-[here](https://chainlist.org/?search=filecoin&testnets=true).
+Since Basin is built on top of Filecoin, you must have FIL in your account to interact with the
+network. Hoku is currently only live on the Filecoin Calibration network, so you can get tFIL via
+the faucet [here](https://faucet.calibnet.chainsafe-fil.io/funds.html). For reference, Filecoin
+chain information can be found [here](https://chainlist.org/?search=filecoin&testnets=true).

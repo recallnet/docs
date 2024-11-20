@@ -3,16 +3,18 @@ title: Usage
 description: Understand the basics for connecting to Hoku and using object stores.
 ---
 
-The most basic usage will likely involve connecting to the network, creating an object store, and then adding or getting
-objects. This page walks through each step and provides examples to help you get started.
+The most basic usage will likely involve connecting to the network, creating an object store, and
+then adding or getting objects. This page walks through each step and provides examples to help you
+get started.
 
 ## Signer & provider setup
 
-To create an object store, you'll need to use the `JsonRpcProvider` from the `hoku_provider` crate plus various
-`hoku_sdk` types.
+To create an object store, you'll need to use the `JsonRpcProvider` from the `hoku_provider` crate
+plus various `hoku_sdk` types.
 
-Here's a simple example. The `signer.init_sequence` call is optional, but without it, you'll run into issues with out of
-sync sequences (nonces). **It's best to call `init_sequence` unless you're firing many transactions at once.**
+Here's a simple example. The `signer.init_sequence` call is optional, but without it, you'll run
+into issues with out of sync sequences (nonces). **It's best to call `init_sequence` unless you're
+firing many transactions at once.**
 
 ```rust
 use hoku_provider::json_rpc::JsonRpcProvider;
@@ -35,9 +37,9 @@ async fn main() {
 
 ## Creating an object store
 
-To create an object store, you'll need to use the `ObjectStore::new` method, which takes a provider, signer, desired
-write access controls, and custom gas parameters. Currently, only two `WriteAccess` options are available: `OnlyOwner`
-or `Public`.
+To create an object store, you'll need to use the `ObjectStore::new` method, which takes a provider,
+signer, desired write access controls, and custom gas parameters. Currently, only two `WriteAccess`
+options are available: `OnlyOwner` or `Public`.
 
 ```rust
 async fn main() {
@@ -56,9 +58,10 @@ Note the second value returned is the onchain transaction that created the objec
 
 ## Adding an object
 
-We can extend the example above to add an object to the object store. The `add` method is used to add an object to the
-object store given a provider, signer, the object's desired key (e.g., `my/key`), and options that control its behavior.
-For example, you can add other metadata to an object or specify how to handle overwriting an existing object.
+We can extend the example above to add an object to the object store. The `add` method is used to
+add an object to the object store given a provider, signer, the object's desired key (e.g.,
+`my/key`), and options that control its behavior. For example, you can add other metadata to an
+object or specify how to handle overwriting an existing object.
 
 ```rust {3}
 use hoku_sdk::{
@@ -106,14 +109,15 @@ For reference, a transaction includes the status, hash, height, gas used, and th
 
 ## Querying objects
 
-To list an object, you can use the `query` method. This method comes with available query options to refine your
-results:
+To list an object, you can use the `query` method. This method comes with available query options to
+refine your results:
 
 - `prefix`: The prefix of the keys you want to list.
 - `delimiter`: The delimiter to use when listing keys.
 - `offset`: The offset to start listing keys.
 - `limit`: The maximum number of keys to list.
-- `height`: The height of the object store to list keys from (defaults to the latest committed height).
+- `height`: The height of the object store to list keys from (defaults to the latest committed
+  height).
 
 ```rust {3}
 use hoku_sdk::{
@@ -159,11 +163,12 @@ This will give you a list of all objects and any other common prefixes down the 
 
 ## Getting an object
 
-You can use the `get` method to retrieve data and download the actual contents. A few options are available to refine
-your results:
+You can use the `get` method to retrieve data and download the actual contents. A few options are
+available to refine your results:
 
 - `bytes`: Range request bytes as a dash-separated string (e.g., `"0-99"` gets the first 100 bytes).
-- `height`: The height of the object store to list keys from (defaults to the latest committed height).
+- `height`: The height of the object store to list keys from (defaults to the latest committed
+  height).
 - `show_progress`: Visually show the download progress (useful with CLI tools).
 
 ```rust {3}
@@ -197,9 +202,9 @@ async fn main() {
 
 ## Deleting an object
 
-Lastly, since buckets are a fully mutable store, you can delete an object using the `delete` method. It takes similar
-parameters as adding an object. The default options are generally used, which let you specify the broadcast mode and gas
-parameters.
+Lastly, since buckets are a fully mutable store, you can delete an object using the `delete` method.
+It takes similar parameters as adding an object. The default options are generally used, which let
+you specify the broadcast mode and gas parameters.
 
 ```rust
 async fn main() {
@@ -215,12 +220,12 @@ The response will be similar to the `add` example above.
 
 ## Network interactions
 
-You can review the `hoku_sdk::network` module for more information or check out the network configuration docs. Utility
-methods exist on the `hoku_sdk::network::Network` struct to fetch network values dynamically, so there's not necessarily
-a need to hardcode them yourself anywhere.
+You can review the `hoku_sdk::network` module for more information or check out the network
+configuration docs. Utility methods exist on the `hoku_sdk::network::Network` struct to fetch
+network values dynamically, so there's not necessarily a need to hardcode them yourself anywhere.
 
-For example, you'll notice the subnet ID has a string value. Its hex encoded value can be found with an RPC call to the
-EVM provider URL:
+For example, you'll notice the subnet ID has a string value. Its hex encoded value can be found with
+an RPC call to the EVM provider URL:
 
 ```sh copy
 curl https://evm-testnet-validator-0.3box.io \
@@ -229,4 +234,5 @@ curl https://evm-testnet-validator-0.3box.io \
 -d '{"method":"eth_chainId","params":[],"id":1,"jsonrpc":"2.0"}'
 ```
 
-You can use these values in any wallet configuration, such as MetaMask, to interact with the subnet directly!
+You can use these values in any wallet configuration, such as MetaMask, to interact with the subnet
+directly!

@@ -6,45 +6,58 @@ description: Consume events from a stream
 import { Steps, Callout } from "nextra/components";
 
 <Callout>
-Just getting started? Check out our Getting Connected Guide to get your client setup
-This document assumes that you've already followed our [installation guide](/event-store/usage/installation)
+  Just getting started? Check out our Getting Connected Guide to get your client setup This document
+  assumes that you've already followed our [installation guide](/event-store/usage/installation)
 </Callout>
 
-Let's explore how use Ceramic to read messages from a stream. Ceramic nodes in the Hoku network subscribe to data by expressing an [interest](/event-store/concepts#interests) in a given data model. This interest is broadcast to the node's peers in the network, who will then initiate periodic synchronization of all data conforming to that model via [Recon](#), a protocol tailor-made for the efficient synchronization of large sets of events.
+Let's explore how use Ceramic to read messages from a stream. Ceramic nodes in the Hoku network
+subscribe to data by expressing an [interest](/event-store/concepts#interests) in a given data
+model. This interest is broadcast to the node's peers in the network, who will then initiate
+periodic synchronization of all data conforming to that model via [Recon](#), a protocol tailor-made
+for the efficient synchronization of large sets of events.
 
 ## Consuming events
 
-First, we'll learn how to register an interest. Then we'll learn how to read events matching our interests. Finally, we'll learn about some extra methods to fetch specific events from your ceramic-one node.
+First, we'll learn how to register an interest. Then we'll learn how to read events matching our
+interests. Finally, we'll learn about some extra methods to fetch specific events from your
+ceramic-one node.
 
 ### `registerInterestModel`
 
-This method allows end users to register interest in a specific data model within the Ceramic network. The model's identifier is, itself, the ID of a stream that defines its schema.
+This method allows end users to register interest in a specific data model within the Ceramic
+network. The model's identifier is, itself, the ID of a stream that defines its schema.
 
 ```typescript
 // My moddel stream ID
-const modelId = 'kjzl6hvfrbw6c5i55ks5m4hhyuh0jylw4g7x0asndu97i7luts4dfzvm35oev65';
+const modelId = "kjzl6hvfrbw6c5i55ks5m4hhyuh0jylw4g7x0asndu97i7luts4dfzvm35oev65";
 
 // Listen to all events written to instances of this modela
 await ceramic.registerInterestModel(model);
 ```
 
-Upon success, the function won't return anything, but it will throw if there's an issue. You're now ready to read events from streams tied to this schema!
+Upon success, the function won't return anything, but it will throw if there's an issue. You're now
+ready to read events from streams tied to this schema!
 
 ### `getEventsFeed`
 
-This method allows users to poll for new events that match their interests. It follows a typical pagination screen, in which users may specify `limit`, the maxinum number of results to return in a given query, and `resumeAt` an opaque token that the ceramic-one node can use to determine where the user left off in their last read.
+This method allows users to poll for new events that match their interests. It follows a typical
+pagination screen, in which users may specify `limit`, the maxinum number of results to return in a
+given query, and `resumeAt` an opaque token that the ceramic-one node can use to determine where the
+user left off in their last read.
 
 <Steps>
 
 ### Prepare your request parameters
 
-Let's assume I want to read 50 events matching my interests. Both of these parameters are optional, but we'll define them to illustrate their purpose. If no limit is defined, the SDK will retrieve all new events from the resume token.
+Let's assume I want to read 50 events matching my interests. Both of these parameters are optional,
+but we'll define them to illustrate their purpose. If no limit is defined, the SDK will retrieve all
+new events from the resume token.
 
 ```typescript
 const params: EventFeedParams = {
-    limit: 50,
-    resumeAt: 'myResumeToken' // The resumeToken returned from the last call to `getEventsFeed`
-}
+  limit: 50,
+  resumeAt: "myResumeToken", // The resumeToken returned from the last call to `getEventsFeed`
+};
 ```
 
 ### Get a batch of events
@@ -57,12 +70,12 @@ If there is an issue, `getEventsFeed` will throw. Otherwise, you'll get an objec
 
 ```typescript
 type EventsFeed = {
-    events: {
-        id: string;
-        data?: string;
-    }[];
-    resumeToken: string;
-}
+  events: {
+    id: string;
+    data?: string;
+  }[];
+  resumeToken: string;
+};
 ```
 
 </Steps>
@@ -77,9 +90,9 @@ This is the most straightforward of the event fetching methods. It returns an ev
 
 ```typescript
 type Event = {
-    id: string;
-    data?: string;
-}
+  id: string;
+  data?: string;
+};
 ```
 
 To fetch an event by it's id, we use `getEvent`
@@ -101,7 +114,7 @@ const data = await ceramic.getEventData(myEventId);
 This is equivalent to
 
 ```typescript
-ceramic.getEvent(myEventId).then(event => event.data);
+ceramic.getEvent(myEventId).then((event) => event.data);
 ```
 
 #### `getEventCAR`
@@ -116,7 +129,8 @@ const data = await ceramic.getEventCAR(myEventId);
 
 #### `getEventType`
 
-This method is useful for cases where you know the schema of the payload. To use it, you must have a [codeco](https://github.com/ceramicnetwork/codeco) codec handy.
+This method is useful for cases where you know the schema of the payload. To use it, you must have a
+[codeco](https://github.com/ceramicnetwork/codeco) codec handy.
 
 ```typescript
 type MyPayload = /* ... */;

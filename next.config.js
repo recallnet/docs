@@ -3,8 +3,8 @@ const withNextra = require("nextra")({
   themeConfig: "./theme.config.tsx",
   latex: true,
   images: {
-    unoptimized: true, 
-  }
+    unoptimized: true,
+  },
 });
 
 module.exports = withNextra({

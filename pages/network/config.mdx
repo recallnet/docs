@@ -19,9 +19,9 @@ The corresponding chain ID for this subnet ID is the following:
 - Hex: `0x24ec67e7279ec`
 
 Note the subnet ID can be converted to its integer value by taking the
-[FNV](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function) hash (64 bit) of the subnet ID string
-representation, modulo the maximum chain ID value (`4503599627370476`, as defined in
-[EIP-2294](https://eips.ethereum.org/EIPS/eip-2294)).
+[FNV](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function) hash (64 bit) of
+the subnet ID string representation, modulo the maximum chain ID value (`4503599627370476`, as
+defined in [EIP-2294](https://eips.ethereum.org/EIPS/eip-2294)).
 
 ### Contracts
 
@@ -42,5 +42,5 @@ representation, modulo the maximum chain ID value (`4503599627370476`, as define
 
 ### Contracts
 
-Local development has no notion of a "parent" subnet, so there are are no gateway nor registry contracts required. This
-setup is being further explored to enable parent-child local development.
+Local development has no notion of a "parent" subnet, so there are are no gateway nor registry
+contracts required. This setup is being further explored to enable parent-child local development.

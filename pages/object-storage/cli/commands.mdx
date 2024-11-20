@@ -5,13 +5,15 @@ description: Learn how to use the Basin CLI.
 
 import { Callout } from "nextra/components";
 
-The Hoku CLI is a command-line interface for interacting with the Hoku network. It allows you to manage your accounts,
-interact with smart contracts, and manage your data that gets stored on the network.
+The Hoku CLI is a command-line interface for interacting with the Hoku network. It allows you to
+manage your accounts, interact with smart contracts, and manage your data that gets stored on the
+network.
 
 ## Global options
 
-All the global flags can also be passed as all-caps, snake case environment variables (e.g., `--network` => `NETWORK`,
-`--rpc-url` => `RPC_URL`, etc.) that are set, or create and source them in a `env` file.
+All the global flags can also be passed as all-caps, snake case environment variables (e.g.,
+`--network` => `NETWORK`, `--rpc-url` => `RPC_URL`, etc.) that are set, or create and source them in
+a `env` file.
 
 | Flag              | Description                                                                                           |
 | ----------------- | ----------------------------------------------------------------------------------------------------- |
@@ -28,22 +30,22 @@ All the global flags can also be passed as all-caps, snake case environment vari
 The following environment variables are required for the majority of the `hoku` subcommands:
 
 - `PRIVATE_KEY`: A wallet private key (ECDSA, secp256k1) for signing transactions.
-- `NETWORK`: Specify the chain location with RPC presets and settings that map to either `mainnet` (not available),
-  `testnet`, `localnet`, or `devnet`.
+- `NETWORK`: Specify the chain location with RPC presets and settings that map to either `mainnet`
+  (not available), `testnet`, `localnet`, or `devnet`.
 
 As such, the examples below omit these flags and presume that you've already set them.
 
 ## Account management
 
-Interaction with the Hoku network requires an account (ECDSA, secp256k1). As with any blockchain system, an account can
-be created at will, transfer funds, and send transactions. Recall that Hoku runs on a polyglot execution environment,
-supporting both EVM and WASM. Accounts work a bit different than pure EVM environments because the account is "unknown"
-to the chain until a transaction is sent to it. A transaction can be a deposit, `withdrawal`, or (intra-subnet)
-transfer.
+Interaction with the Hoku network requires an account (ECDSA, secp256k1). As with any blockchain
+system, an account can be created at will, transfer funds, and send transactions. Recall that Hoku
+runs on a polyglot execution environment, supporting both EVM and WASM. Accounts work a bit
+different than pure EVM environments because the account is "unknown" to the chain until a
+transaction is sent to it. A transaction can be a deposit, `withdrawal`, or (intra-subnet) transfer.
 
-Generally, you should _always_ opt for using an EVM `0x` address when you run account commands. EVM accounts are also
-mapped to the WASM environment's address space, which is an address that gets prefixed with `t410...` (or `f410...` on
-mainnet) and
+Generally, you should _always_ opt for using an EVM `0x` address when you run account commands. EVM
+accounts are also mapped to the WASM environment's address space, which is an address that gets
+prefixed with `t410...` (or `f410...` on mainnet) and
 [specially encoded](https://docs.filecoin.io/smart-contracts/filecoin-evm-runtime/address-types#ethereum-address-manager)
 for full EVM-compatability in the WASM runtime.
 
@@ -69,8 +71,8 @@ Create a new account from a random seed.
 hoku account create
 ```
 
-This command logs a JSON object to stdout with three properties: the private key, EVM public key, and its corresponding
-WASM compatible address.
+This command logs a JSON object to stdout with three properties: the private key, EVM public key,
+and its corresponding WASM compatible address.
 
 **Example:**
 
@@ -100,8 +102,8 @@ Get account information, such as its address, nonce, and balance.
 hoku account info {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
 ```
 
-This commands logs a JSON object to stdout: its public key, addresses, current sequence (nonce), current subnet balance,
-and its balance on the parent subnet.
+This commands logs a JSON object to stdout: its public key, addresses, current sequence (nonce),
+current subnet balance, and its balance on the parent subnet.
 
 | Flag                   | Required?                | Description                                                           |
 | ---------------------- | ------------------------ | --------------------------------------------------------------------- |
@@ -140,19 +142,19 @@ Deposit funds into a subnet from its parent.
 hoku account deposit [--to <TO>] <AMOUNT>
 ```
 
-Think of the `deposit` command as transferring funds from a parent to a child subnet. If you want to build on Hoku, you
-start by moving funds from the parent L1 (rootnet) to the Hoku subnet. This goes through a smart contract (i.e., the
-gateway contract) call that locks the funds in a smart contract on the parent, later minting them to the address on the
-subnet (i.e., a bridging flow).
+Think of the `deposit` command as transferring funds from a parent to a child subnet. If you want to
+build on Hoku, you start by moving funds from the parent L1 (rootnet) to the Hoku subnet. This goes
+through a smart contract (i.e., the gateway contract) call that locks the funds in a smart contract
+on the parent, later minting them to the address on the subnet (i.e., a bridging flow).
 
 | Positionals | Description             |
 | ----------- | ----------------------- |
 | `<AMOUNT>`  | The amount to transfer. |
 
-Optionally, you can pass the `--to` flag to deposit funds from the parent to a specific address on the child. If you
-don't specify anything, the funds will be deposited to the address corresponding to the provided private key. Note that
-the global `--network` flag (defaults to `testnet`) will set all of the `--evm-...` presets for you, but you _can_
-override them with your own values, if needed.
+Optionally, you can pass the `--to` flag to deposit funds from the parent to a specific address on
+the child. If you don't specify anything, the funds will be deposited to the address corresponding
+to the provided private key. Note that the global `--network` flag (defaults to `testnet`) will set
+all of the `--evm-...` presets for you, but you _can_ override them with your own values, if needed.
 
 | Flag                   | Required? | Description                                                                       |
 | ---------------------- | --------- | --------------------------------------------------------------------------------- |
@@ -219,17 +221,18 @@ Withdraw funds from a subnet to its parent.
 hoku account withdraw [--to <TO>] <AMOUNT>
 ```
 
-The `withdraw` command is the opposite of a `deposit`. It moves funds from a subnet to its parent, which happens through
-a smart contract call that unlocks the funds in the smart contract on the parent. Note that the global `--network` flag
-(defaults to `testnet`) will set all of the `--evm-...` presets for you, but you _can_ override them with your own
-values, if needed.
+The `withdraw` command is the opposite of a `deposit`. It moves funds from a subnet to its parent,
+which happens through a smart contract call that unlocks the funds in the smart contract on the
+parent. Note that the global `--network` flag (defaults to `testnet`) will set all of the
+`--evm-...` presets for you, but you _can_ override them with your own values, if needed.
 
 | Positionals | Description             |
 | ----------- | ----------------------- |
 | `<AMOUNT>`  | The amount to transfer. |
 
-Similarly, you can pass the `--to` flag to withdraw subnet funds to a specific address on the parent, but if you don't,
-the funds will be withdrawn to the address corresponding to the provided private key.
+Similarly, you can pass the `--to` flag to withdraw subnet funds to a specific address on the
+parent, but if you don't, the funds will be withdrawn to the address corresponding to the provided
+private key.
 
 | Flag                   | Required? | Description                                                                       |
 | ---------------------- | --------- | --------------------------------------------------------------------------------- |
@@ -285,10 +288,10 @@ hoku account transfer --to <TO> <AMOUNT>
 | ----------- | ----------------------- |
 | `<AMOUNT>`  | The amount to transfer. |
 
-The `--to` flag is the destination address within the subnet that you want to send funds to. Note that the global
-`--network` flag (defaults to `testnet`) will set all of the `--evm-...` presets for you, but you _can_ override them
-with your own values, if needed. This transaction happens fully _within_ the subnet (and does not interact with the
-rootnet).
+The `--to` flag is the destination address within the subnet that you want to send funds to. Note
+that the global `--network` flag (defaults to `testnet`) will set all of the `--evm-...` presets for
+you, but you _can_ override them with your own values, if needed. This transaction happens fully
+_within_ the subnet (and does not interact with the rootnet).
 
 | Flag                   | Required? | Description                                                     |
 | ---------------------- | --------- | --------------------------------------------------------------- |
@@ -328,9 +331,10 @@ rootnet).
 
 <Callout type="default">
 
-When you `transfer` funds from an account that already exists on the subnet to an account that doesn't exist, the
-recipient will effectively be created. Thus, it's much faster (a couple of seconds) than a `deposit` or `withdraw`,
-which require a two-step process that eventually settles on the rootnet.
+When you `transfer` funds from an account that already exists on the subnet to an account that
+doesn't exist, the recipient will effectively be created. Thus, it's much faster (a couple of
+seconds) than a `deposit` or `withdraw`, which require a two-step process that eventually settles on
+the rootnet.
 
 </Callout>
 
@@ -366,8 +370,8 @@ hoku credit buy <AMOUNT>
 
 You'll see three values in the `data` field of the response:
 
-- `credit_free`: The number of credits available to spend—equivalent to the amount of credits purchased and not yet
-  committed to storing data.
+- `credit_free`: The number of credits available to spend—equivalent to the amount of credits
+  purchased and not yet committed to storing data.
 - `credit_committed`: The number of credits committed to storing data.
 - `last_debit_epoch`: The epoch (block height) at which the account last had credits debited.
 
@@ -425,8 +429,9 @@ Get the credit stats for a subnet.
 hoku credit stats
 ```
 
-This is more of a subnet-wide view, as opposed to an account-specific view. It's helpful because it shows the total
-number of credits sold and committed, number of accounts that have bought credits, and the credit debit rate.
+This is more of a subnet-wide view, as opposed to an account-specific view. It's helpful because it
+shows the total number of credits sold and committed, number of accounts that have bought credits,
+and the credit debit rate.
 
 | Flag       | Required? | Description                                              |
 | ---------- | --------- | -------------------------------------------------------- |
@@ -489,8 +494,8 @@ Get the credit stats for a subnet.
 hoku storage stats
 ```
 
-This is a subnet-wide view that describes the total amount of storage available and the amount of storage that is
-currently in use.
+This is a subnet-wide view that describes the total amount of storage available and the amount of
+storage that is currently in use.
 
 | Flag       | Required? | Description                                              |
 | ---------- | --------- | -------------------------------------------------------- |
@@ -518,9 +523,10 @@ The response includes the following values:
 
 ## Contracts
 
-Contracts are the core building blocks of the Hoku network. The `machine` command allows you to retrieve data contract
-information relative to a specific address. This helps track which bucket or accumulator contracts are tied to your
-account, which are later used in the `objectstore` and `accumulator` subcommands described below.
+Contracts are the core building blocks of the Hoku network. The `machine` command allows you to
+retrieve data contract information relative to a specific address. This helps track which bucket or
+accumulator contracts are tied to your account, which are later used in the `objectstore` and
+`accumulator` subcommands described below.
 
 ### Get contract info
 
@@ -568,10 +574,11 @@ The `objectstore` subcommand has the following subcommands:
 - `delete`: Delete an object from the object store.
 - `query`: Query objects in the object store.
 
-When you create objects, the `key` is a custom identifier that, by default, uses the `/` delimiter to create a key-based
-hierarchy. The value is the data you want to store, which can be a file path. A best practice is to decide on a key
-naming convention that makes sense for your data, such as `<namespace>/<id>` or similar. The hierarchical structure of
-the key allows for easy retrieval of data by prefixes, which is explained below (see the `query` subcommand).
+When you create objects, the `key` is a custom identifier that, by default, uses the `/` delimiter
+to create a key-based hierarchy. The value is the data you want to store, which can be a file path.
+A best practice is to decide on a key naming convention that makes sense for your data, such as
+`<namespace>/<id>` or similar. The hierarchical structure of the key allows for easy retrieval of
+data by prefixes, which is explained below (see the `query` subcommand).
 
 ### Create
 
@@ -615,10 +622,11 @@ List object stores by owner in a subnet.
 hoku objectstore list {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
 ```
 
-You must pass _either_ the `--private-key` or `--address` flag. An address must be in the delegated `t410` or `0x`
-format.
+You must pass _either_ the `--private-key` or `--address` flag. An address must be in the delegated
+`t410` or `0x` format.
 
-- `hoku objectstore list --private-key <PRIVATE_KEY>`: Query with a private key (or read from your `.env` file).
+- `hoku objectstore list --private-key <PRIVATE_KEY>`: Query with a private key (or read from your
+  `.env` file).
 - `hoku objectstore list --address <ADDRESS>`: Query a `t410` or `0x` address.
 
 | Flag                | Required?                | Description                                                           |
@@ -646,8 +654,8 @@ Query data contracts by:
 ]
 ```
 
-- At a specific block height (note how at this older height, there were fewer data contracts created than the most
-  recent `committed` height above):
+- At a specific block height (note how at this older height, there were fewer data contracts created
+  than the most recent `committed` height above):
 
 ```
 > hoku objectstore list --height 789471
@@ -811,14 +819,15 @@ Query across all objects in the store.
 hoku objectstore query --address <ADDRESS>
 ```
 
-Performing a `query` lists all keys that match a given prefix _up to and including the delimiter_. If the key supplies a
-delimiter, then the results stop there—essentially, listing subfolders, but none lower. Think of it as you would when
-listing files in a directory. If you list the contents of a folder, you'll see all subfolders, but you won't see the
-contents of one of those subfolders.
+Performing a `query` lists all keys that match a given prefix _up to and including the delimiter_.
+If the key supplies a delimiter, then the results stop there—essentially, listing subfolders, but
+none lower. Think of it as you would when listing files in a directory. If you list the contents of
+a folder, you'll see all subfolders, but you won't see the contents of one of those subfolders.
 
-For example, if you have the keys `hello/world`, `hello/data`, and `hello/world/child`, and you query for the prefix
-`hello/`, you will get the objects at `hello/world` and `hello/data` but not `hello/world/child` since its "nested"
-under the prefix `hello/world/` (note: inclusive of the `/` at the end).
+For example, if you have the keys `hello/world`, `hello/data`, and `hello/world/child`, and you
+query for the prefix `hello/`, you will get the objects at `hello/world` and `hello/data` but not
+`hello/world/child` since its "nested" under the prefix `hello/world/` (note: inclusive of the `/`
+at the end).
 
 | Flag              | Required? | Description                                                                        |
 | ----------------- | --------- | ---------------------------------------------------------------------------------- |
@@ -831,8 +840,8 @@ under the prefix `hello/world/` (note: inclusive of the `/` at the end).
 
 **Examples:**
 
-- Get all objects but without any filtering. Since the object keys have a delimiter included, you'll see the common
-  prefix `hello/`, but no objects are listed since the "root" is the prefix:
+- Get all objects but without any filtering. Since the object keys have a delimiter included, you'll
+  see the common prefix `hello/`, but no objects are listed since the "root" is the prefix:
 
 ```
 > hoku objectstore query \
@@ -846,9 +855,10 @@ under the prefix `hello/world/` (note: inclusive of the `/` at the end).
 }
 ```
 
-- Get all objects under a specific prefix. In this case, the response will include all objects under the `hello/`
-  prefix, and since there are no "child" objects that match `hello/` (e.g., `hello/world/child`), the `common_prefixes`
-  array will be empty, so you know there are no more sub-objects to list:
+- Get all objects under a specific prefix. In this case, the response will include all objects under
+  the `hello/` prefix, and since there are no "child" objects that match `hello/` (e.g.,
+  `hello/world/child`), the `common_prefixes` array will be empty, so you know there are no more
+  sub-objects to list:
 
 ```
 > hoku objectstore query \
@@ -871,10 +881,10 @@ under the prefix `hello/world/` (note: inclusive of the `/` at the end).
 }
 ```
 
-- Get all objects and "ignore" the delimiter. Here, an arbitrary `"*"` symbol is used as the delimiter; it's been chosen
-  since it doesn't exist in the example's keys that are used. Thus, this effectively lists all objects in the store
-  because the delimiter isn't in the keys, so the `common_prefixes` array will be empty. The response will be the same
-  as above.
+- Get all objects and "ignore" the delimiter. Here, an arbitrary `"*"` symbol is used as the
+  delimiter; it's been chosen since it doesn't exist in the example's keys that are used. Thus, this
+  effectively lists all objects in the store because the delimiter isn't in the keys, so the
+  `common_prefixes` array will be empty. The response will be the same as above.
 
 ```
 > hoku objectstore query \
@@ -882,9 +892,9 @@ under the prefix `hello/world/` (note: inclusive of the `/` at the end).
 --delimiter "*"
 ```
 
-- Get all objects and filter by a prefix with offset and limit. In the example above, lets say a `"hello/data"` object
-  was created _after_ `"hello/world"`. When we query the bucket, it will be the first object listed since we're
-  offsetting by `1`:
+- Get all objects and filter by a prefix with offset and limit. In the example above, lets say a
+  `"hello/data"` object was created _after_ `"hello/world"`. When we query the bucket, it will be
+  the first object listed since we're offsetting by `1`:
 
 ```
 > hoku objectstore query \

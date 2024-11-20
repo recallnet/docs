@@ -4,18 +4,18 @@ description: Set up the Hou SDK in your Rust environment.
 keywords: buckets, Rust SDK, object storage
 ---
 
-The Hoku SDK is a Rust library that provides a simple interface for interacting with the Hoku buckets object storage
-system. It is designed to be easy to use and flexible, allowing you to build applications that interact with buckets in
-a variety of ways.
+The Hoku SDK is a Rust library that provides a simple interface for interacting with the Hoku
+buckets object storage system. It is designed to be easy to use and flexible, allowing you to build
+applications that interact with buckets in a variety of ways.
 
-There are two primary crates that are used in tandem with the Hoku SDK crate. All three _may_ be required, depending on
-the use case, so let's break down what each crate does:
+There are two primary crates that are used in tandem with the Hoku SDK crate. All three _may_ be
+required, depending on the use case, so let's break down what each crate does:
 
-- `hoku_provider`: Provides the means to interact with the buckets object storage system via a chain and object
-  provider.
+- `hoku_provider`: Provides the means to interact with the buckets object storage system via a chain
+  and object provider.
 - `hoku_signer`: A transaction signer to help manage sending transactions to the subnet.
-- `hoku_sdk`: The Hoku SDK itself, which provides a simple interface for interacting with Hoku and uses the other two
-  crates to do so.
+- `hoku_sdk`: The Hoku SDK itself, which provides a simple interface for interacting with Hoku and
+  uses the other two crates to do so.
 
 ## Installation
 
@@ -27,13 +27,15 @@ hoku_sdk = { git = "https://github.com/hokunet/rust-hoku.git" }
 hoku_signer = { git = "https://github.com/hokunet/rust-hoku.git" }
 ```
 
-Be sure to replace the revision hash with the latest version in the repo for the most up-to-date code!
+Be sure to replace the revision hash with the latest version in the repo for the most up-to-date
+code!
 
 ## Additional dependencies
 
-For the sake of these examples, you'll also want to make sure you add the following to you `Cargo.toml`. The
-`fendermint_actor_machine` will later be used to define the write options for the object store (e.g., only owner can
-write, etc.), so this is most likely something you'll want to include.
+For the sake of these examples, you'll also want to make sure you add the following to you
+`Cargo.toml`. The `fendermint_actor_machine` will later be used to define the write options for the
+object store (e.g., only owner can write, etc.), so this is most likely something you'll want to
+include.
 
 ```toml
 fendermint_actor_machine = { git = "https://github.com/hokunet/ipc.git", rev = "9775e566800413314f6d7f6e6c2176a20c9120bd" }

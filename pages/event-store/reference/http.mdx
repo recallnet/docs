@@ -6,29 +6,38 @@ description: The Hoku Event Store HTTP API
 import { Callout } from "nextra/components";
 
 <Callout>
-Just getting started? Check out our Getting Connected Guide to get your client setup
-This document assumes that you've already followed our [installation guide](/event-store/usage/installation)
+  Just getting started? Check out our Getting Connected Guide to get your client setup This document
+  assumes that you've already followed our [installation guide](/event-store/usage/installation)
 </Callout>
 
 <Callout type="info">
-This document describes the underlying HTPT API leveraged by the Hoku Event Store SDK. This is primarily for reference purposes, but will be useful for anyone wishing to build their own client libraries for Hoku Event Store.
+  This document describes the underlying HTPT API leveraged by the Hoku Event Store SDK. This is
+  primarily for reference purposes, but will be useful for anyone wishing to build their own client
+  libraries for Hoku Event Store.
 </Callout>
 
-Ceramic nodes provide an HTTP API that exposes the core functionality of the node to applications, including the official command line tools. The JavaScript Ceramic SDK uses the HTTP API to interact with the Ceramic network, and it is a good reference for those interested in developing client SDKs in other languages.
+Ceramic nodes provide an HTTP API that exposes the core functionality of the node to applications,
+including the official command line tools. The JavaScript Ceramic SDK uses the HTTP API to interact
+with the Ceramic network, and it is a good reference for those interested in developing client SDKs
+in other languages.
 
-In the examples below, we'll use `curl` to make requests to a [ceramic-one](https://github.com/ceramicnetwork/rust-ceramic) node, similar to the following:
+In the examples below, we'll use `curl` to make requests to a
+[ceramic-one](https://github.com/ceramicnetwork/rust-ceramic) node, similar to the following:
 
 ```jsx
 curl $CERAMIC_API/feed/events
 ```
 
-For easier copy and paste, we'll save the base URL of the node's HTTP API into an environment variable called `CERAMIC_API` in our shell. For “bash-like” shells, run this to target a node running on the local machine with its default port:
+For easier copy and paste, we'll save the base URL of the node's HTTP API into an environment
+variable called `CERAMIC_API` in our shell. For “bash-like” shells, run this to target a node
+running on the local machine with its default port:
 
 ```jsx
 CERAMIC_API=http://localhost:8080/ceramic
 ```
 
-If you are targeting a remote node or are running on a different port, please replace the URL as needed.
+If you are targeting a remote node or are running on a different port, please replace the URL as
+needed.
 
 ## Event Ids and Payloads
 
@@ -41,13 +50,22 @@ The Ceramic event API returns event objects with the following structure:
 }
 ```
 
-The `data` field contains the binary event payload encoded as a multibase string. Multibase is a “self describing” format for encoding binary data into strings using various alphabets and encoding conventions.
+The `data` field contains the binary event payload encoded as a multibase string. Multibase is a
+“self describing” format for encoding binary data into strings using various alphabets and encoding
+conventions.
 
-The binary data is a Content Archive (or “CAR”), which is a data format defined by the InterPlanetary Linked Data (”IPLD”) project. CARs contain a collection of content-addressed binary “blocks,” which can be linked together using the Content Identifier (or “CID”) of each block.
+The binary data is a Content Archive (or “CAR”), which is a data format defined by the
+InterPlanetary Linked Data (”IPLD”) project. CARs contain a collection of content-addressed binary
+“blocks,” which can be linked together using the Content Identifier (or “CID”) of each block.
 
-The links between blocks form a graph with one block at the “root” of the graph, meaning that all the other blocks are reachable by following links from the root block. The CID of this root block is the ID of the event. The `id` field of the event object JSON object shown above is the string-encoded CID of the event's root block.
+The links between blocks form a graph with one block at the “root” of the graph, meaning that all
+the other blocks are reachable by following links from the root block. The CID of this root block is
+the ID of the event. The `id` field of the event object JSON object shown above is the
+string-encoded CID of the event's root block.
 
-The inner structure of the CAR, including the format of the data within blocks, can vary depending on the type of event and is not detailed here. (TODO: link to docs on model & document event structures)
+The inner structure of the CAR, including the format of the data within blocks, can vary depending
+on the type of event and is not detailed here. (TODO: link to docs on model & document event
+structures)
 
 ## Usage
 
@@ -57,7 +75,8 @@ _How to use the Ceramic HTTP API._
 
 **`GET /events/{event_id}`**
 
-To retrieve a single event, send a GET request to `/events/{event_id}`, where `{event_id}` is the string-encoded CID of the event's root block.
+To retrieve a single event, send a GET request to `/events/{event_id}`, where `{event_id}` is the
+string-encoded CID of the event's root block.
 
 ```jsx
 curl $CERAMIC_API/events/$MY_EVENT_ID
@@ -65,7 +84,8 @@ curl $CERAMIC_API/events/$MY_EVENT_ID
 
 **Response:**
 
-On success, returns a JSON event object as [described above](https://www.notion.so/Hoku-Docs-3cc94cbd965843288f7d8190010d6249?pvs=21):
+On success, returns a JSON event object as
+[described above](https://www.notion.so/Hoku-Docs-3cc94cbd965843288f7d8190010d6249?pvs=21):
 
 ```jsx
 {
@@ -78,7 +98,10 @@ On success, returns a JSON event object as [described above](https://www.notion.
 
 The `/feed` endpoints provide access to the feed of all events flowing through the ceramic node.
 
-As a consumer, you do not need to maintain a persistent connection to the node in order to receive all events. Instead, you supply a “resume token” with each request to the `GET /feed/events` endpoint, and the node will respond with all events that follow the resume token's place in the event stream's history. 
+As a consumer, you do not need to maintain a persistent connection to the node in order to receive
+all events. Instead, you supply a “resume token” with each request to the `GET /feed/events`
+endpoint, and the node will respond with all events that follow the resume token's place in the
+event stream's history.
 
 **`GET /feed/events`**
 
@@ -90,7 +113,8 @@ curl $CERAMIC_API/feed/events?resumeAt="token-from-previous-response"
 
 **Parameters**:
 
-- `resumeAt` - a resume token that specifies what point in the feed to resume from. This can be obtained from a previous response to `/feed/events`, or from the `/feed/resumeToken` endpoint.
+- `resumeAt` - a resume token that specifies what point in the feed to resume from. This can be
+  obtained from a previous response to `/feed/events`, or from the `/feed/resumeToken` endpoint.
 - `limit` (optional) - the maximum number of events to return. Defaults to ten thousand.
 
 **Response**:
@@ -111,11 +135,15 @@ Returns a JSON object with the following structure:
 
 The `events` array contains event JSON objects as [described above](#event-ids-and-payloads).
 
-The `resumeToken` in the response can be used as the `resumeAt` parameter for a subsequent call to `/feed/events` to obtain the next page of results.
+The `resumeToken` in the response can be used as the `resumeAt` parameter for a subsequent call to
+`/feed/events` to obtain the next page of results.
 
-**`GET /feed/resumeToken`** 
+**`GET /feed/resumeToken`**
 
-When you first subscribe to the event feed, you will not have a resume token to supply as the `resumeAt` parameter for the `/feed/events` endpoint. To obtain the initial token, make a GET request to `/feed/resumeToken` to receive a token for the current “tip” of the feed. Effectively, this lets you start the feed from “right now.”
+When you first subscribe to the event feed, you will not have a resume token to supply as the
+`resumeAt` parameter for the `/feed/events` endpoint. To obtain the initial token, make a GET
+request to `/feed/resumeToken` to receive a token for the current “tip” of the feed. Effectively,
+this lets you start the feed from “right now.”
 
 ```jsx
 curl $CERAMIC_API/feed/resumeToken
@@ -123,7 +151,8 @@ curl $CERAMIC_API/feed/resumeToken
 
 **Response:**
 
-Returns a JSON object with a `resumeToken` string field that can be used as the `resumeAt` parameter for the `/feed/events` endpoint.
+Returns a JSON object with a `resumeToken` string field that can be used as the `resumeAt` parameter
+for the `/feed/events` endpoint.
 
 ```jsx
 {
@@ -133,7 +162,8 @@ Returns a JSON object with a `resumeToken` string field that can be used as the 
 
 ### Publishing Events
 
-You can publish events to the Ceramic network by sending a POST request to `/events` . The request payload must be a JSON object with a string `data` field:
+You can publish events to the Ceramic network by sending a POST request to `/events` . The request
+payload must be a JSON object with a string `data` field:
 
 ```jsx
 {
@@ -141,11 +171,15 @@ You can publish events to the Ceramic network by sending a POST request to `/eve
 }
 ```
 
-The `data` field must contain a multibase-encoded Content Archive (CAR) of event data, as [described above](#event-ids-and-payloads).
+The `data` field must contain a multibase-encoded Content Archive (CAR) of event data, as
+[described above](#event-ids-and-payloads).
 
 **Response:**
 
-Because event ids are deterministic and depend only on the event data, it is assumed that clients will compute the event id as part of the process of constructing events. As such, there is no need to return an event id on publication, and the `POST /events` endpoint returns a 200 status code with no response body on success.
+Because event ids are deterministic and depend only on the event data, it is assumed that clients
+will compute the event id as part of the process of constructing events. As such, there is no need
+to return an event id on publication, and the `POST /events` endpoint returns a 200 status code with
+no response body on success.
 
 ### Register an Interest
 
@@ -169,7 +203,9 @@ The API provides a few endpoints that return status information about the node.
 
 ### Liveness
 
-You can “ping” the node to check that it’s operational by sending a GET request to `/liveness` which will return a 200 status code with no response body if the node is in good health. If there’s a problem, it will return a 500 response with an object containing an error `message`:
+You can “ping” the node to check that it’s operational by sending a GET request to `/liveness` which
+will return a 200 status code with no response body if the node is in good health. If there’s a
+problem, it will return a 500 response with an object containing an error `message`:
 
 ```jsx
 {
@@ -179,7 +215,8 @@ You can “ping” the node to check that it’s operational by sending a GET re
 
 ### Version
 
-You can retrieve the version of the node by sending a GET request to `/version` which will return a JSON object with a `version` string field:
+You can retrieve the version of the node by sending a GET request to `/version` which will return a
+JSON object with a `version` string field:
 
 ```jsx
 {
@@ -191,4 +228,7 @@ You can retrieve the version of the node by sending a GET request to `/version` 
 
 ### Heap statistics
 
-The `/debug/heap` endpoint returns heap usage statistics for the Ceramic node, which may be useful when debugging a node's performance and resource utilization. On success, a GET request to `/debug/heap` will return profiling information as a binary payload in the [`pprof` format.](https://github.com/google/pprof/tree/main/proto)
+The `/debug/heap` endpoint returns heap usage statistics for the Ceramic node, which may be useful
+when debugging a node's performance and resource utilization. On success, a GET request to
+`/debug/heap` will return profiling information as a binary payload in the
+[`pprof` format.](https://github.com/google/pprof/tree/main/proto)

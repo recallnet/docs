@@ -5,15 +5,22 @@ description: Getting Started With the Ceramic SDK
 
 import { Steps } from "nextra/components";
 
-The [Ceramic SDK](https://github.com/ceramicstudio/ceramic-sdk) enables user to interact with the Ceramic's primitive APIs for creating streams as well as producing events on streams, consuming events from streams, and aggregating stream state. Find it on GitHub at https://github.com/ceramicstudio/ceramic-sdk.
+The [Ceramic SDK](https://github.com/ceramicstudio/ceramic-sdk) enables user to interact with the
+Ceramic's primitive APIs for creating streams as well as producing events on streams, consuming
+events from streams, and aggregating stream state. Find it on GitHub at
+https://github.com/ceramicstudio/ceramic-sdk.
 
-The SDK is written in TypeScript and published to NPM as `@ceramic-sdk`, with a handful of useful sub-packages:
+The SDK is written in TypeScript and published to NPM as `@ceramic-sdk`, with a handful of useful
+sub-packages:
 
-- `@ceramic-sdk/events`: Utilities for creating and signing events that comply to the [Hoku Event Store standards.](https://developers.ceramic.network/docs/protocol/js-ceramic/streams/event-log)
-- `@ceramic-sdk/http-client`: A simple client for [ceramic-one's](https://github.com/ceramicnetwork/rust-ceramic) HTTP APIs.
+- `@ceramic-sdk/events`: Utilities for creating and signing events that comply to the
+  [Hoku Event Store standards.](https://developers.ceramic.network/docs/protocol/js-ceramic/streams/event-log)
+- `@ceramic-sdk/http-client`: A simple client for
+  [ceramic-one's](https://github.com/ceramicnetwork/rust-ceramic) HTTP APIs.
 - `@ceramic-sdk/identifiers`: A handful of useful types for identifying streams and events.
 
-The Ceramic SDK needs a [ceramic-one](https://github.com/ceramicnetwork/rust-ceramic) daemon to connect to.
+The Ceramic SDK needs a [ceramic-one](https://github.com/ceramicnetwork/rust-ceramic) daemon to
+connect to.
 
 Let's get them all installed!
 
@@ -133,9 +140,9 @@ npm install --save @ceramic-sdk/events @ceramic-sdk/identifiers @ceramic-sdk/htt
 ### Set up your client
 
 ```typescript
-import { CeramicClient } from '@ceramic-sdk/http-client';
+import { CeramicClient } from "@ceramic-sdk/http-client";
 
-const client = new CeramicClient({url: 'http://localhost:5101'});
+const client = new CeramicClient({ url: "http://localhost:5101" });
 
 // Now some calls!
 const response = await client.getVersion();

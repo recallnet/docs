@@ -88,12 +88,12 @@ the final state is committed to the blockchain by recording the final root hash 
 
 ## End-to-end flow
 
-In Hoku, data references are represented as CIDs on-chain (within a machine’s state). In most cases, the actual data is
-stored _off-chain_, in a node's local (networked) blockstore. The actual storage layout etc is an implementation detail
+In Hoku, data references are represented as CIDs onchain (within a machine’s state). In most cases, the actual data is
+stored _offchain_, in a node's local (networked) blockstore. The actual storage layout etc is an implementation detail
 of the Hoku node, though in practice, this currently uses an IPFS-style blockstore. During normal chain operation, nodes
 are instructed to fetch object data as part of the normal consensus process. However, the default CometBFT consensus
 process has no builtin mechanism to ensure that all validators (or a quorum) has actually downloaded the data before the
-data is referenced (by CID) on-chain.
+data is referenced (by CID) onchain.
 
 To address this, Hoku leverages data state channels, and the concept of a _detached payload_. A detached payload is a
 transaction that includes a CID reference to some data, but does not include the data itself. When a detached payload is
@@ -195,7 +195,7 @@ graph LR
 ```
 
 The leader of a given consensus round checks the vote tally for quorum (in practice, the block producer must also check
-on-chain state for "resolved" as well as the in-memory vote tally), based on the power table (stake) within the subnet.
+onchain state for "resolved" as well as the in-memory vote tally), based on the power table (stake) within the subnet.
 If a quorum is reached, the leader injects an _implicit transaction_ into the proposal, which is validated by the other
 validators based on their view of the vote tally. Finally, during execution of this transaction, the object is marked as
 "resolved". Querying the object store at this point will show resolved status. The whole process is asynchronous, and

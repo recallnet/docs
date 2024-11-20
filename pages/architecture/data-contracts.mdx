@@ -79,7 +79,7 @@ support byte range requests and advanced queries based on key prefix, delimiter,
 ```mermaid
 graph TD
   subgraph State["State"]
-    subgraph Chain["On-Chain"]
+    subgraph Chain["Onchain"]
       subgraph Metadata["Metadata (Hamt)"]
           Root -->|Foo Key| FooCid["Foo Cid"]
           Root -->|Bar Key| BarBlock["Bar Blob"]
@@ -90,7 +90,7 @@ graph TD
       end
       FooCid -->|CID| FooBlob
     end
-    subgraph External["Off-chain"]
+    subgraph External["Offchain"]
       subgraph Other["Blockstore"]
         BazBlob["Baz Blob"]
       end

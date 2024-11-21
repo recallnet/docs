@@ -163,11 +163,11 @@ parity blocks for new incoming data, the new data must be combined (XOR) with pa
 Hoku takes advantage of this process by requiring validators to alpha entangle new chunks of data
 with past chunks, to create a self-repairing data lattice.
 
-Each new data file/blob that is added to a Hoku object storage machine via a detached payload
-transaction has already been chunked into fixed size chunks, and forms a content-addressable DAG.
-Each data chunk within the DAG, including intermediate nodes of the tree, have a unique hash address
-(i.e., CID). As each chunk is ingested into the system it is entangled with a pseudorandomly
-selected past chunk from the existing data lattice.
+Each new data file/blob that is added to a Hoku bucket machine via a detached payload transaction
+has already been chunked into fixed size chunks, and forms a content-addressable DAG. Each data
+chunk within the DAG, including intermediate nodes of the tree, have a unique hash address (i.e.,
+CID). As each chunk is ingested into the system it is entangled with a pseudorandomly selected past
+chunk from the existing data lattice.
 
 <Callout>
 
@@ -182,17 +182,16 @@ One of the stated goals of Hoku is to support custom time-to-live (TTL) data lif
 This is in contrast to existing data availability solutions, where there are very well-defined and
 fixed TTL requirements. Again, we leverage the entanglement process to our advantage to
 [support varying TTL requirements](https://www.researchgate.net/publication/328416034_Practical_erasure_codes_for_storage_systems_The_study_of_entanglement_codes_an_approach_that_propagates_redundancy_to_increase_reliability_and_performance)
-within an object storage machine.
+within a bucket.
 
-Each new file or blob added to a object store is required to have an associated _retention policy_
-as part of its object metadata. Given that time in Hoku is measured in block time, this retention
-policy is specified as a TTL in blocks (e.g., TTL = 5). For a file/blob added at block 10, with a
-TTL of (at least) 5 blocks, we then assign it to _retention group_ 15. When entangling data,
-validators must always entangle incoming data (and associated chunks) with pseudorandom chunks from
-the correct retention group (or a retention group with a longer TTL). This ensures that data that
-should remain “available” together are physically and semantically grouped. If it is not possible to
-entangle a given data chunk with other data from its intended retention group (e.g., due to lack of
-preexisting data), it can be entangled with data in a later group, or with itself (creating a
-so-called _closed_ entanglement) in the worst case. Note that this process must be done in
-conjunction with the deterministic blockweave based approach to selecting recall/entanglement
-blocks.
+Each new file or blob added to a bucket is required to have an associated _retention policy_ as part
+of its object metadata. Given that time in Hoku is measured in block time, this retention policy is
+specified as a TTL in blocks (e.g., TTL = 5). For a file/blob added at block 10, with a TTL of (at
+least) 5 blocks, we then assign it to _retention group_ 15. When entangling data, validators must
+always entangle incoming data (and associated chunks) with pseudorandom chunks from the correct
+retention group (or a retention group with a longer TTL). This ensures that data that should remain
+“available” together are physically and semantically grouped. If it is not possible to entangle a
+given data chunk with other data from its intended retention group (e.g., due to lack of preexisting
+data), it can be entangled with data in a later group, or with itself (creating a so-called _closed_
+entanglement) in the worst case. Note that this process must be done in conjunction with the
+deterministic blockweave based approach to selecting recall/entanglement blocks.

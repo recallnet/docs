@@ -17,9 +17,9 @@
     "title": "Services",
     "type": "separator"
   },
-  "object-storage": {
-    "title": "Object storage",
-    "href": "/object-storage"
+  "basin": {
+    "title": "Basin",
+    "href": "/basin"
   },
   "event-store": {
     "title": "Event store",

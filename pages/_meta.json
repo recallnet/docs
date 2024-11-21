@@ -12,9 +12,9 @@
         "title": "Event store",
         "href": "/event-store"
       },
-      "object-storage": {
-        "title": "Object storage",
-        "href": "/object-storage"
+      "basin": {
+        "title": "Basin",
+        "href": "/basin"
       },
       "databases": {
         "title": "Databases",
@@ -76,7 +76,7 @@
   "features": "Features",
   "use-cases": "Use cases",
   "event-store": "Event store",
-  "object-storage": "Object storage",
+  "basin": "Basin",
   "databases": "Databases",
   "tutorials": "Guides",
   "architecture": "Architecture",

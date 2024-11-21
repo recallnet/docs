@@ -1,18 +1,18 @@
 ---
 title: Installation
 description: Set up the Hou SDK in your Rust environment.
-keywords: buckets, Rust SDK, object storage
+keywords: buckets, Rust SDK, object storage, basin, bucket
 ---
 
-The Hoku SDK is a Rust library that provides a simple interface for interacting with the Hoku
-buckets object storage system. It is designed to be easy to use and flexible, allowing you to build
-applications that interact with buckets in a variety of ways.
+The Hoku SDK is a Rust library that provides a simple interface for interacting with Hoku buckets.
+It is designed to be easy to use and flexible, allowing you to build applications that interact with
+buckets in a variety of ways.
 
 There are two primary crates that are used in tandem with the Hoku SDK crate. All three _may_ be
 required, depending on the use case, so let's break down what each crate does:
 
-- `hoku_provider`: Provides the means to interact with the buckets object storage system via a chain
-  and object provider.
+- `hoku_provider`: Provides the means to interact with the bucket storage system via a chain and
+  object provider.
 - `hoku_signer`: A transaction signer to help manage sending transactions to the subnet.
 - `hoku_sdk`: The Hoku SDK itself, which provides a simple interface for interacting with Hoku and
   uses the other two crates to do so.

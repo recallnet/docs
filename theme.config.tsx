@@ -1,44 +1,23 @@
 import React from "react";
 import { DocsThemeConfig, useConfig } from "nextra-theme-docs";
 import { useRouter } from "next/router";
+import LogoSvg from "./components/LogoSvg";
 
 const config: DocsThemeConfig = {
   logo: (
     <>
-      <svg
-        version="1.0"
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <g fill="currentColor" stroke="none">
-          <circle cx="12" cy="12" r="2" />
-          <circle cx="6" cy="6" r="1" />
-          <circle cx="18" cy="6" r="1" />
-          <circle cx="6" cy="18" r="1" />
-          <circle cx="18" cy="18" r="1" />
-          <g x1="12" y1="12" strokeWidth="0.5">
-            <line x2="6" y2="6" />
-            <line x2="18" y2="6" />
-            <line x2="6" y2="18" />
-            <line x2="18" y2="18" />
-          </g>
-          <path d="M11 2h2v4h-2zM11 18h2v4h-2zM2 11h4v2H2zM18 11h4v2h-4z" />
-        </g>
-      </svg>
-      <span style={{ marginLeft: ".4em", fontWeight: 800 }}>Hoku docs</span>
+      <LogoSvg />
+      <span style={{ marginLeft: ".4em", fontWeight: 500 }}>DOCS</span>
     </>
   ),
   project: {
-    link: "https://github.com/hokunetwork",
+    link: "https://github.com/hokunet",
   },
   darkMode: true,
   chat: {
     // link: "https://discord.com/hokunetwork",
   },
-  docsRepositoryBase: "https://github.com/hokunetwork/docs",
+  docsRepositoryBase: "https://github.com/hokunet/docs",
   editLink: {
     text: "Edit this page on GitHub →",
   },

@@ -11,27 +11,34 @@ network.
 
 ## Global options
 
-All the global flags can also be passed as all-caps, snake case environment variables (e.g.,
-`--network` => `NETWORK`, `--rpc-url` => `RPC_URL`, etc.) that are set, or create and source them in
-a `env` file.
+All the global flags can also be passed as all-caps (prefixed with `HOKU_`), snake case environment
+variables that are set, or create and source them in a `env` file. For example, `--network` =>
+`HOKU_NETWORK`, `--private-key` => `HOKU_PRIVATE_KEY`, etc.
 
-| Flag              | Description                                                                                           |
-| ----------------- | ----------------------------------------------------------------------------------------------------- |
-| `-n`, `--network` | Network presets for subnet and RPC: `mainnet`, `testnet`, `localnet`,or `devnet` (default: `testnet`) |
-| `-s`, `--subnet`  | The ID of the target subnet.                                                                          |
-| `--rpc-url`       | Node CometBFT RPC URL.                                                                                |
-| `-v, --verbosity` | Logging verbosity (`0`: error; `1`: warn; `2`: info; `3`: debug; `4`: trace).                         |
-| `-q, --quiet`     | Silence logging (default: `false`).                                                                   |
-| `-h, --help`      | Print help.                                                                                           |
-| `-V, --version`   | Print version.                                                                                        |
+-n, --network <NETWORK> Network presets for subnet and RPC URLs [env: HOKU_NETWORK=] [default:
+ignition]
+[possible values: mainnet, testnet, localnet, devnet, ignition] -s, --subnet <SUBNET> The ID of the
+target subnet [env: HOKU_SUBNET=] --rpc-url <RPC_URL> Node CometBFT RPC URL [env: HOKU_RPC_URL=] -v,
+--verbosity... Logging verbosity (repeat for more verbose logging) [env: HOKU_LOG_VERBOSITY=] -q, --quiet
+Silence logging [env: HOKU_LOG_QUIET=] -h, --help Print help (see more with '--help')
+
+| Flag              | Description                                                                                                        | Env. variable      |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------ |
+| `-n`, `--network` | Network presets for subnet and RPC: `mainnet`, `ignition`, `testnet`, `localnet`,or `devnet` (default: `ignition`) | HOKU_NETWORK       |
+| `-s`, `--subnet`  | The ID of the target subnet.                                                                                       | HOKU_SUBNET        |
+| `--rpc-url`       | Node CometBFT RPC URL.                                                                                             | HOKU_RPC_URL       |
+| `-v, --verbosity` | Logging verbosity (none: error; `-v`: warn; `-vv`: info; `-vvv`: debug; `-vvvv`: trace).                           | HOKU_LOG_VERBOSITY |
+| `-q, --quiet`     | Silence logging (default: `false`).                                                                                | HOKU_LOG_QUIET     |
+| `-h, --help`      | Print help.                                                                                                        | -                  |
+| `-V, --version`   | Print version.                                                                                                     | -                  |
 
 ### Environment variables
 
 The following environment variables are required for the majority of the `hoku` subcommands:
 
-- `PRIVATE_KEY`: A wallet private key (ECDSA, secp256k1) for signing transactions.
-- `NETWORK`: Specify the chain location with RPC presets and settings that map to either `mainnet`
-  (not available), `testnet`, `localnet`, or `devnet`.
+- `HOKU_PRIVATE_KEY`: A wallet private key (ECDSA, secp256k1) for signing transactions.
+- `HOKU_NETWORK`: Specify the chain location with RPC presets and settings that map to either
+  `mainnet` (not available), `ignition`, `testnet`, `localnet`, or `devnet`.
 
 As such, the examples below omit these flags and presume that you've already set them.
 
@@ -153,7 +160,7 @@ on the parent, later minting them to the address on the subnet (i.e., a bridging
 
 Optionally, you can pass the `--to` flag to deposit funds from the parent to a specific address on
 the child. If you don't specify anything, the funds will be deposited to the address corresponding
-to the provided private key. Note that the global `--network` flag (defaults to `testnet`) will set
+to the provided private key. Note that the global `--network` flag (defaults to `ignition`) will set
 all of the `--evm-...` presets for you, but you _can_ override them with your own values, if needed.
 
 | Flag                   | Required? | Description                                                                       |
@@ -223,7 +230,7 @@ hoku account withdraw [--to <TO>] <AMOUNT>
 
 The `withdraw` command is the opposite of a `deposit`. It moves funds from a subnet to its parent,
 which happens through a smart contract call that unlocks the funds in the smart contract on the
-parent. Note that the global `--network` flag (defaults to `testnet`) will set all of the
+parent. Note that the global `--network` flag (defaults to `ignition`) will set all of the
 `--evm-...` presets for you, but you _can_ override them with your own values, if needed.
 
 | Positionals | Description             |
@@ -289,8 +296,8 @@ hoku account transfer --to <TO> <AMOUNT>
 | `<AMOUNT>`  | The amount to transfer. |
 
 The `--to` flag is the destination address within the subnet that you want to send funds to. Note
-that the global `--network` flag (defaults to `testnet`) will set all of the `--evm-...` presets for
-you, but you _can_ override them with your own values, if needed. This transaction happens fully
+that the global `--network` flag (defaults to `ignition`) will set all of the `--evm-...` presets
+for you, but you _can_ override them with your own values, if needed. This transaction happens fully
 _within_ the subnet (and does not interact with the rootnet).
 
 | Flag                   | Required? | Description                                                     |
@@ -338,7 +345,7 @@ the rootnet.
 
 </Callout>
 
-## Credits
+## Credit
 
 Manage credits for your account and sponsoring storage for contracts.
 
@@ -346,7 +353,7 @@ Manage credits for your account and sponsoring storage for contracts.
 hoku credit <SUBCOMMAND>
 ```
 
-### Buy credits
+### Buy credit
 
 Buy credits for an account.
 
@@ -377,7 +384,7 @@ You'll see three values in the `data` field of the response:
 
 **Example:**
 
-- Buy $10^(17)$ credits with 0.1 native coins.
+- Buy credits with 0.1 native coins (displayed with $10^(17)$ units).
 
 ```
 > hoku credit buy 0.1
@@ -393,6 +400,108 @@ You'll see three values in the `data` field of the response:
     "last_debit_epoch": 791907
   }
 }
+```
+
+### Approve credit
+
+Approve a credit amount for a bucket.
+
+```
+hoku credit approve [OPTIONS] --receiver <RECEIVER>
+```
+
+| Flag                    | Required? | Description                                                                                                                         |
+| ----------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `-p, --private-key`     | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                                                                     |
+| `--receiver <RECEIVER>` | Yes       | The receiver account address.                                                                                                       |
+| `--caller <CALLER>`     | No        | Restrict the approval to a caller address, e.g., a bucket. The receiver will only be able to use the approval via a caller contract |
+| `--limit <LIMIT>`       | No        | Credit approval limit. If specified, the approval becomes invalid once the committed credits reach the specified limit              |
+| `--ttl <TTL>`           | No        | Credit approval time-to-live epochs. If specified, the approval becomes invalid after this duration                                 |
+
+**Example:**
+
+- Approve a receiver to use credits for any buckets created by the approver (i.e., the account
+  making the approval).
+
+```
+> hoku credit approve --receiver 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
+
+{
+  "status": "committed",
+  "hash": "F84A5A4B78ACF7D88010F0C6C78ADB6D4643FB246E06502B16C265B91F5780B0",
+  "height": "15139",
+  "gas_used": 9956584,
+  "data": {
+    "committed": "0"
+  }
+}
+```
+
+- Approve a receiver to use credits for a specific bucket.
+
+```
+> hoku credit approve \
+--receiver 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65 \
+--caller t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi
+```
+
+- Approve a receiver to use credits for a specific bucket and both a TTL and a credit limit.
+
+```
+> hoku credit approve \
+--receiver 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65 \
+--caller t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+--ttl 3600 \
+--limit 10
+
+{
+  "status": "committed",
+  "hash": "858EA764A6D739B2285D05FE582ECD53B55D3162A363AC025219D337D16741E6",
+  "height": "15255",
+  "gas_used": 12041282,
+  "data": {
+    "limit": "10",
+    "expiry": 18855,
+    "committed": "0"
+  }
+}
+```
+
+### Revoke credit
+
+Revoke a credit amount for a bucket.
+
+```
+hoku credit revoke [OPTIONS] --receiver <RECEIVER>
+```
+
+| Flag                    | Required? | Description                                                                                                                         |
+| ----------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `-p, --private-key`     | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                                                                     |
+| `--receiver <RECEIVER>` | Yes       | The receiver account address.                                                                                                       |
+| `--caller <CALLER>`     | No        | Restrict the approval to a caller address, e.g., a bucket. The receiver will only be able to use the approval via a caller contract |
+
+**Example:**
+
+- Revoke a receiver's approval, disabling credit usage.
+
+```
+> hoku credit revoke --receiver
+
+{
+  "status": "committed",
+  "hash": "DA227ABACDCC9CDD559547485F106D79BAB81E0A93C3789B8E0A5AF23617D0A5",
+  "height": "15287",
+  "gas_used": 10150699
+}
+```
+
+- If a required caller was initially set, it must be provided to revoke the approval.
+
+```
+> hoku credit revoke \
+--receiver 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65 \
+--caller t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi
 ```
 
 ### Get credit balance
@@ -421,7 +530,7 @@ hoku credit balance
 }
 ```
 
-### Stats
+### Get credit stats
 
 Get the credit stats for a subnet.
 
@@ -525,7 +634,7 @@ The response includes the following values:
 
 Contracts are the core building blocks of the Hoku network. The `machine` command allows you to
 retrieve data contract information relative to a specific address. This helps track which bucket or
-accumulator contracts are tied to your account, which are later used in the `objectstore` and
+accumulator contracts are tied to your account, which are later used in the `bucket` and
 `accumulator` subcommands described below.
 
 ### Get contract info
@@ -550,7 +659,7 @@ hoku machine info <ADDRESS>
 > hoku machine info t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi
 
 {
-  "kind": "ObjectStore",
+  "kind": "Bucket",
   "owner": "0x4d5286d81317e284cd377cb98b478552bbe641ae",
   "metadata": {}
 }
@@ -558,21 +667,21 @@ hoku machine info <ADDRESS>
 
 ## Buckets
 
-Interact with a bucket contract using either the `objectstore` or aliased `os` subcommand:
+Interact with a bucket contract using either the `bucket` or aliased `bu` subcommand:
 
 ```
-hoku objectstore <SUBCOMMAND>
-hoku os <SUBCOMMAND>
+hoku bucket <SUBCOMMAND>
+hoku bu <SUBCOMMAND>
 ```
 
-The `objectstore` subcommand has the following subcommands:
+The `bucket` subcommand has the following subcommands:
 
-- `create`: Create a new Bucket contract.
+- `create`: Create a new bucket contract.
 - `list`: List object stores by owner in a subnet.
-- `add`: Add an object into the object store.
-- `get`: Get an object from the object store.
-- `delete`: Delete an object from the object store.
-- `query`: Query objects in the object store.
+- `add`: Add an object into the bucket.
+- `get`: Get an object from the bucket.
+- `delete`: Delete an object from the bucket.
+- `query`: Query objects in the bucket.
 
 When you create objects, the `key` is a custom identifier that, by default, uses the `/` delimiter
 to create a key-based hierarchy. The value is the data you want to store, which can be a file path.
@@ -585,15 +694,15 @@ data by prefixes, which is explained below (see the `query` subcommand).
 Create a new Bucket contract.
 
 ```
-hoku objectstore create
+hoku bucket create
 ```
 
 | Flag                | Required? | Description                                                               |
 | ------------------- | --------- | ------------------------------------------------------------------------- |
 | `-p, --private-key` | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.           |
-| `--public-write`    | No        | Allow **_public, open_** write access to the object store.                |
+| `--public-write`    | No        | Allow **_public, open_** write access to the bucket.                      |
 | `-m, --metadata`    | No        | User-defined metadata.                                                    |
-| `--buy-credit`      | No        | The amount of tokens to spend on credit for the object store.             |
+| `--buy-credit`      | No        | The amount of tokens to spend on credit for the bucket.                   |
 | `--gas-limit`       | No        | Gas limit for the transaction.                                            |
 | `--gas-fee-cap`     | No        | Maximum gas fee for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL). |
 | `--gas-premium`     | No        | Gas premium for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL).     |
@@ -602,7 +711,7 @@ hoku objectstore create
 **Example:**
 
 ```
-> hoku objectstore create
+> hoku bucket create
 
 {
   "address": "t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi",
@@ -619,15 +728,15 @@ hoku objectstore create
 List object stores by owner in a subnet.
 
 ```
-hoku objectstore list {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
+hoku bucket list {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
 ```
 
 You must pass _either_ the `--private-key` or `--address` flag. An address must be in the delegated
 `t410` or `0x` format.
 
-- `hoku objectstore list --private-key <PRIVATE_KEY>`: Query with a private key (or read from your
-  `.env` file).
-- `hoku objectstore list --address <ADDRESS>`: Query a `t410` or `0x` address.
+- `hoku bucket list --private-key <PRIVATE_KEY>`: Query with a private key (or read from your `.env`
+  file).
+- `hoku bucket list --address <ADDRESS>`: Query a `t410` or `0x` address.
 
 | Flag                | Required?                | Description                                                           |
 | ------------------- | ------------------------ | --------------------------------------------------------------------- |
@@ -642,13 +751,13 @@ Query data contracts by:
 - A hex address:
 
 ```
-> hoku objectstore list \
+> hoku bucket list \
 --address 0x4D5286d81317E284Cd377cB98b478552Bbe641ae
 
 [
   {
     "address": "t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi",
-    "kind": "ObjectStore",
+    "kind": "Bucket",
     "metadata": {}
   }
 ]
@@ -658,11 +767,11 @@ Query data contracts by:
   than the most recent `committed` height above):
 
 ```
-> hoku objectstore list --height 789471
+> hoku bucket list --height 789471
 [
   {
     "address": "t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi",
-    "kind": "ObjectStore",
+    "kind": "Bucket",
     "metadata": {}
   }
 ]
@@ -673,10 +782,10 @@ Query data contracts by:
 Add an object with a key prefix.
 
 ```
-hoku objectstore add \
+hoku bucket add \
 --address <ADDRESS> \
 --key <KEY> \
-[INPUT]
+[FILE_PATH]
 ```
 
 The `INPUT` can be a file path.
@@ -697,13 +806,20 @@ The `INPUT` can be a file path.
 
 **Examples:**
 
-- Push a file to the object store:
+Push a file to the bucket—and note the path must be absolute. We can create a file with the
+following contents:
 
 ```
-> hoku objectstore add \
+echo '{"hello":"world"}' > ~/hello.json
+```
+
+And then push it to the bucket:
+
+```
+> hoku bucket add \
 --address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
 --key "hello/world" \
-./hello.json
+~/hello.json
 
 {
   "status": "committed",
@@ -719,7 +835,7 @@ The `INPUT` can be a file path.
 Get an object from the bucket contract.
 
 ```
-hoku objectstore get --address <ADDRESS> <KEY>
+hoku bucket get --address <ADDRESS> <KEY>
 ```
 
 | Positionals | Description               |
@@ -740,7 +856,7 @@ Note that when you retrieve the object, it will be written to stdout.
 - Get an object and write to stdout (default behavior):
 
 ```
-> hoku objectstore get \
+> hoku bucket get \
 --address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
 "hello/world"
 
@@ -750,7 +866,7 @@ Note that when you retrieve the object, it will be written to stdout.
 - Download the output to a file by piping the output:
 
 ```
-> hoku objectstore get \
+> hoku bucket get \
 --address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
 "hello/world" > downloaded.json
 ```
@@ -758,7 +874,7 @@ Note that when you retrieve the object, it will be written to stdout.
 - Range request for a subset of bytes:
 
 ```
-> hoku objectstore get \
+> hoku bucket get \
 --address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
 --range "10-14" \
 "hello/world"
@@ -768,10 +884,10 @@ world
 
 ### Delete an object
 
-Delete an object from the object store.
+Delete an object from the bucket.
 
 ```
-hoku objectstore delete \
+hoku bucket delete \
 --address <ADDRESS> \
 <KEY>
 ```
@@ -798,7 +914,7 @@ Similar to when you `add` an object, you can specify gas settings or alter the b
 - Delete an existing object:
 
 ```
-> hoku objectstore delete \
+> hoku bucket delete \
 --address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
 "hello/world"
 
@@ -816,7 +932,7 @@ Similar to when you `add` an object, you can specify gas settings or alter the b
 Query across all objects in the store.
 
 ```
-hoku objectstore query --address <ADDRESS>
+hoku bucket query --address <ADDRESS>
 ```
 
 Performing a `query` lists all keys that match a given prefix _up to and including the delimiter_.
@@ -844,7 +960,7 @@ at the end).
   see the common prefix `hello/`, but no objects are listed since the "root" is the prefix:
 
 ```
-> hoku objectstore query \
+> hoku bucket query \
 --address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi
 
 {
@@ -861,7 +977,7 @@ at the end).
   sub-objects to list:
 
 ```
-> hoku objectstore query \
+> hoku bucket query \
 --address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
 --prefix "hello/"
 
@@ -870,10 +986,13 @@ at the end).
     {
       "key": "hello/world",
       "value": {
-        "cid": "bafybeiffndsajwhk3lwjewwdxqntmjm4b5wxaaanokonsggenkbw6slwk4",
-        "resolved": true,
-        "size": 6,
-        "metadata": {}
+        "hash": "cuk3b7gp7d5epf6ybuw4wzyr7jnqufzpjbhh7p6st6wxhooufzxq",
+        "recovery_hash": "64g5u27toipv52hjbs4p34nvis2v3zkslr7lgzliocsz3gzzddoa",
+        "size": 18,
+        "expiry": 15408,
+        "metadata": {
+          "content-type": "application/octet-stream"
+        }
       }
     }
   ],
@@ -887,7 +1006,7 @@ at the end).
   `common_prefixes` array will be empty. The response will be the same as above.
 
 ```
-> hoku objectstore query \
+> hoku bucket query \
 --address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
 --delimiter "*"
 ```
@@ -897,7 +1016,7 @@ at the end).
   the first object listed since we're offsetting by `1`:
 
 ```
-> hoku objectstore query \
+> hoku bucket query \
 --address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
 --delimiter "/" \
 --prefix "hello/" \
@@ -909,12 +1028,44 @@ at the end).
     {
       "key": "hello/data",
       "value": {
-        "kind": "external",
-        "content": "bafybeigdp2yqaqdbfhltvxdt3m5xmsrbvzyvtjrz5klhee33vpr5hdnpou",
-        "resolved": true
+        "hash": "cuk3b7gp7d5epf6ybuw4wzyr7jnqufzpjbhh7p6st6wxhooufzxq",
+        "recovery_hash": "64g5u27toipv52hjbs4p34nvis2v3zkslr7lgzliocsz3gzzddoa",
+        "size": 18,
+        "expiry": 15408,
+        "metadata": {
+          "content-type": "application/octet-stream"
+        }
       }
     }
   ],
   "common_prefixes": []
 }
 ```
+
+## Timehub
+
+Timehubs are an anchoring service, separate from Basin. You can interact with a timehub contract
+using either the `timehub` or aliased `th` subcommand:
+
+```
+hoku timehub <SUBCOMMAND>
+hoku th <SUBCOMMAND>
+```
+
+The `timehub` subcommand has the following subcommands:
+
+- `create`: Create a new timehub.
+- `list`: List timehubs.
+- `push`: Push a value.
+- `leaf`: Get leaf at a given index and height.
+- `count`: Get leaf count at a given height.
+- `peaks`: Get peaks at a given height.
+- `root`: Get root at a given height.
+- `help`: Print this message or the help of the given subcommand(s).
+
+<Callout type="default">
+
+The timehub usage is a work in progress and will be updated in the future. It's fully functional, so
+feel free to follow the commands above as desired.
+
+</Callout>

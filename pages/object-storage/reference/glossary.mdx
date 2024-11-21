@@ -10,16 +10,16 @@ which is a self-describing, content-addressed, and immutable hash determined by 
 For example, a CID might look something like
 `bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi`.
 
-## Data contract
+## Wasm contract
 
-A data contract is a FVM-specific smart contract—also called "actor"—that is used to store and
-manage data on the Filecoin network. Since it has more flexible and data-oriented programmatic
-control, they're called "data contracts" to help distinguish them from EVM smart contracts.
+A wasm contract is an FVM-specific smart contract—also called "actor"—that is used to store and
+manage data on Hoku. These have more flexible and data-oriented programmatic control since they are
+often written in Rust.
 
 ## Detached payload
 
 A piece of data that is stored in Basin with an asynchronous sync mechanism, which is a transaction
-that includes a CID reference to an object, but does not include the object data itself.
+that includes a blake3 hash reference to an object, but does not include the object data itself.
 
 ## EVM
 
@@ -44,3 +44,7 @@ EVM-specific types, state access, and functionality.
 Subnets are smaller, more manageable networks that are are "rooted" on a base chain (Filecoin) and
 operate under their own consensus rules. Basin currently runs on a single subnet, which gives it
 high data throughput and fast finality.
+
+In the future, Basin will support multiple subnets, which will allow for more flexibility and
+decentralization. For example, there could be subnets on top of subnets, each with their own
+consensus rules.

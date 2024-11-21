@@ -35,10 +35,12 @@ code!
 For the sake of these examples, you'll also want to make sure you add the following to you
 `Cargo.toml`. The `fendermint_actor_machine` will later be used to define the write options for the
 object store (e.g., only owner can write, etc.), so this is most likely something you'll want to
-include.
+include. The specific revision hash should match what's defined in the `rust-hoku` repo's
+`Cargo.toml` file
+[here](https://github.com/hokunet/rust-hoku/blob/d442dbe7152717191af7912da7473e4fcacf95e5/Cargo.toml#L77).
 
 ```toml
-fendermint_actor_machine = { git = "https://github.com/hokunet/ipc.git", rev = "9775e566800413314f6d7f6e6c2176a20c9120bd" }
+fendermint_actor_machine = { git = "https://github.com/hokunet/ipc.git", rev = "139782cff4edec919d021c31400661d4cb3ff946" }
 ```
 
 We'll also use the following, which are common for handling asynchronous network operations:

@@ -9,13 +9,13 @@ Buckets are object stores that take advantage of Hoku's subnet scaling infrastru
 and cost-effective storage of large amounts of data. Basin's usage pattern generally consists of two
 components:
 
-- Creating an object store (with certain permissions on who can write data).
+- Creating an bucket (with certain permissions on who can write data).
 - Adding, listing, getting, and deleting objects.
 
 These key-value stores allow you to push and retrieve data in a familiar S3-like fashion. They
 support byte range requests and advanced queries based on key prefix, delimiter, offset, and limit.
-Internally, the state of an object store is represented in a flexible and extensible way to
-represent complex data structures.
+Internally, the state of an bucket is represented in a flexible and extensible way to represent
+complex data structures.
 
 ## Contracts
 
@@ -71,7 +71,7 @@ Here's a quick primer on how WASM addresses work:
   mainnet, and there are five different address types denoted by the second character in the address
   string: `t0`/`f0` up to `t4`/`f4`.
 - If you're coming from the EVM world, you'll mostly see two types in Hoku:
-  - `t2`/`f2`: Any WASM contract that gets deployed, such as an object store.
+  - `t2`/`f2`: Any WASM contract that gets deployed, such as an bucket.
   - `t4`/`f4`: A namespaced contract address, and `t410`/`f410` is a specifalized namespace for
     Ethereum-compatible addresses (wallets _and_ smart contracts) on the FVM.
 - Namely, each `t410...`/`f410...` address is equivalent to a `0x` address; the hex address is
@@ -82,11 +82,17 @@ Once your EVM-style account is registered on a subnet, the `0x` and its correspo
 
 ## Access control
 
-Currently, there are two types of write-access controls: only-owner or public access. For example,
-you can create an object store that you, and _only_ you, can write to—gated by signatures from your
-private key. Or, you can have "allow all" access where anyone can write data.
+Access control is fully managed by credit workflows with approvals and revocations. You start buy
+purchasing credit with an account (i.e., wallet), and once this account creates a bucket, all object
+related storage operations will draw down from these credits.
 
-This is being further refined, and there will be more robust access control mechanisms soon.
+If you want to enable other accounts to write to this bucket, you can use a credit approval to
+enable some other account to draw down from this admin account's credit balance—referred to as the
+"receiver" for the approval. You can also further constrain this by defining a "required caller"
+that, for example, only lets the receiver write data only for a specific bucket.
+
+Revocations follow the same pattern. You can revoke an approval for a receiver, or a receiver and
+caller (e.g., bucket) pair.
 
 ## Credits
 
@@ -152,7 +158,10 @@ deleted.
 
 ## Chain RPCs & funds
 
-Since Basin is built on top of Filecoin, you must have FIL in your account to interact with the
-network. Hoku is currently only live on the Filecoin Calibration network, so you can get tFIL via
-the faucet [here](https://faucet.calibnet.chainsafe-fil.io/funds.html). For reference, Filecoin
-chain information can be found [here](https://chainlist.org/?search=filecoin&testnets=true).
+First, to get HOKU tokens, reach out to the Hoku team.
+
+Since Basin is built on top of Filecoin, you must also have FIL in your account to interact with the
+network if you are bridging HOKU tokens into the subnet. Hoku is currently only live on the Filecoin
+Calibration network. You can get tFIL via the faucet
+[here](https://faucet.calibnet.chainsafe-fil.io/funds.html), and for reference, Filecoin chain
+information can be found [here](https://chainlist.org/?search=filecoin&testnets=true).

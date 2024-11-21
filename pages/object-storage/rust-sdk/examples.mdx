@@ -57,15 +57,15 @@ async fn main() -> anyhow::Result<()> {
     let pk = parse_secret_key(pk_kex)?;
 
     // Use testnet network defaults
-    // Note: The debit account _must_ hold at least 1 Calibration tFIL for the deposit
-    // plus enough to cover the transaction fee.
+    // Note: The debit account _must_ hold at least 1 (Calibration) tHOKU for the deposit
+    // plus enough tFIL to cover the transaction fee.
     // Go to the faucet at https://faucet.calibnet.chainsafe-fil.io/ to get yourself some tFIL.
     let network = Network::Testnet.init();
 
     // Setup local wallet using private key from arg
     let signer = Wallet::new_secp256k1(pk, AccountKind::Ethereum, network.subnet_id()?.parent()?)?;
 
-    // Deposit some calibration funds into the subnet
+    // Deposit some tHOKU (Calibration) funds into the subnet
     // Note: The debit account _must_ have Calibration
     let tx = Account::deposit(
         &signer,
@@ -76,7 +76,7 @@ async fn main() -> anyhow::Result<()> {
     .await?;
 
     println!(
-        "Deposited 1 tFIL to {}",
+        "Deposited 1 tHOKU to {}",
         signer.evm_address()?.encode_hex_with_prefix()
     );
     println!(
@@ -128,36 +128,35 @@ async fn main() -> anyhow::Result<()> {
 }
 ```
 
-## Object storage lifecycle
+## Bucket & object lifecycle
 
 ```rust
+use std::collections::HashMap;
 use std::env;
 
 use anyhow::anyhow;
 use fendermint_actor_machine::WriteAccess;
 use rand::{thread_rng, Rng};
-use tokio::io::{AsyncReadExt, AsyncSeekExt, AsyncWriteExt};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::time::{sleep, Duration};
 
 use hoku_provider::json_rpc::JsonRpcProvider;
-use hoku_sdk::machine::objectstore::{AddOptions, GetOptions, QueryOptions};
-use hoku_sdk::{
-    machine::{objectstore::ObjectStore, Machine},
-    network::Network,
-};
+use hoku_sdk::machine::bucket::{AddOptions, Bucket, GetOptions, QueryOptions};
+use hoku_sdk::{machine::Machine, network::Network};
 use hoku_signer::{key::parse_secret_key, AccountKind, Wallet};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args: Vec<String> = env::args().collect();
-    if args.len() < 2 {
-        return Err(anyhow!("missing hex-encoded private key"));
+    if args.len() != 2 {
+        return Err(anyhow!("Usage: [private key]"));
     }
-    let pk_kex = &args[1];
+
+    let pk_kex = &args[2];
     let pk = parse_secret_key(pk_kex)?;
 
     // Use testnet network defaults
-    let network = Network::Testnet.init();
+    let network = Network::Localnet.init();
 
     // Setup network provider
     let provider =
@@ -167,15 +166,17 @@ async fn main() -> anyhow::Result<()> {
     let mut signer = Wallet::new_secp256k1(pk, AccountKind::Ethereum, network.subnet_id()?)?;
     signer.init_sequence(&provider).await?;
 
-    // Create a new object store
-    let (machine, tx) = ObjectStore::new(
+    // Create a new bucket
+    let (machine, tx) = Bucket::new(
         &provider,
         &mut signer,
+        None,
         WriteAccess::OnlyOwner,
+        HashMap::new(),
         Default::default(),
     )
     .await?;
-    println!("Created new object store {}", machine.address());
+    println!("Created new bucket {}", machine.address());
     println!("Transaction hash: 0x{}", tx.hash);
 
     // Create a temp file to add
@@ -185,11 +186,10 @@ async fn main() -> anyhow::Result<()> {
     rng.fill(&mut random_data[..]);
     file.write_all(&random_data).await?;
     file.flush().await?;
-    file.rewind().await?;
 
-    // Add a file to the object store
+    // Add a file to the bucket
     let key = "foo/my_file";
-    let mut metadata = std::collections::HashMap::new();
+    let mut metadata = HashMap::new();
     metadata.insert("foo".to_string(), "bar".to_string());
     let options = AddOptions {
         overwrite: true,
@@ -197,10 +197,10 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
     let tx = machine
-        .add(&provider, &mut signer, key, file, options)
+        .add_from_path(&provider, &mut signer, key, file.file_path(), options)
         .await?;
     println!(
-        "Added 1MiB file to object store {} with key {}",
+        "Added 1MiB file to bucket {} with key {}",
         machine.address(),
         key,
     );
@@ -214,15 +214,15 @@ async fn main() -> anyhow::Result<()> {
         prefix: "foo/".into(),
         ..Default::default()
     };
+    tokio::time::sleep(Duration::from_secs(2)).await;
     let list = machine.query(&provider, options).await?;
     for (key_bytes, object) in list.objects {
         let key = core::str::from_utf8(&key_bytes).unwrap_or_default();
-        // `resolved` indicates the validators were able to fetch and verify the file
-        let cid = cid::Cid::try_from(object.cid.0)?;
-        println!(
-            "Query result cid: {} (key={}; detached; resolved={})",
-            cid, key, object.resolved
-        );
+        if let Some(object) = object {
+            println!("Query result for key {}: {}", key, object.hash);
+        } else {
+            println!("Query result for key {}: {}", key, "blob is not resolved");
+        }
     }
 
     // Download the actual object at `foo/my_file`

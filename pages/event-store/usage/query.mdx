@@ -43,6 +43,7 @@ npm install --save @ceramic-sdk/flight-sql-client
 
 ```typescript
 import { createFlightSqlClient, ClientOptions } from "@ceramic-sdk/flight-sql-client";
+import { tableFromIPC } from 'apache-arrow'
 
 const OPTIONS: ClientOptions = {
   headers: new Array(),
@@ -61,5 +62,7 @@ const client = await createFlightSqlClient(OPTIONS);
 
 ```typescript
 const data = await client.runQuery("SELECT * FROM conclusion_feed");
+const table = tableFromIPC(buffer);
+console.log(JSON.stringify(table));
 ```
 </Steps>

@@ -42,7 +42,8 @@ npm install --save @ceramic-sdk/flight-sql-client
 ### Create a client instance
 
 ```typescript
-import { CeramicFlightSqlClient, ClientOptions } from "@ceramic-sdk/flight-sql-client";
+import { createFlightSqlClient, ClientOptions } from "@ceramic-sdk/flight-sql-client";
+import { tableFromIPC } from 'apache-arrow'
 
 const OPTIONS: ClientOptions = {
   headers: new Array(),
@@ -53,11 +54,18 @@ const OPTIONS: ClientOptions = {
   host: "127.0.0.1",
   port: 5102,
 };
+
+const client = await createFlightSqlClient(OPTIONS);
 ```
 
 ### Execute a query 
 
 ```typescript
-const data = await getClient().runQuery("SELECT * FROM conclusion_feed");
+// query the event_states table to access aggregated document state
+const data = await client.runQuery("SELECT * FROM event_states");
+
+// deserialize the IPC format into a table
+const table = tableFromIPC(buffer);
+console.log(JSON.stringify(table));
 ```
 </Steps>

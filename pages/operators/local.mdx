@@ -5,10 +5,16 @@ description: Leverage a Dockerized multi-node setup for development.
 
 import { Callout, Tabs } from "nextra/components";
 
-This page walks through how to spin up a local Hoku network with Docker and presumes you've done the
-steps described in the preceding [setup page](/operators/setup).
+This page walks through how to spin up a local Hoku network with either Docker (`localnet`) or on
+your machine (`devnet`) and presumes you've done the steps described in the preceding
+[setup page](/operators/setup).
 
-## Docker
+## Localnet
+
+The following outlines how to run a localnet with Docker. It assumes you've already installed the
+prerequisites and also are in the root of the `ipc` repo.
+
+### Docker
 
 All scripts use `cargo make` to start Docker containers, volumes, and a Docker network. Before
 getting started, make sure that Docker is running by checking the status of the Docker daemon:
@@ -48,8 +54,6 @@ All scripts use `cargo make` to start docker containers, volumes, and a docker n
 `docker ps` to check the status of each container. Also, you **must** run the scripts from the root
 of the repo!
 
-## Localnet
-
 ### Startup & shutdown
 
 A localnet deployments will create a subnet with `anvil` as the rootnet (parent). The scripts will
@@ -81,6 +85,10 @@ Lastly, if you're ready to stop the network, you can run `stop_local.sh`:
 ./scripts/deploy_subnet/stop_local.sh
 ```
 
+Also optional is the `hoku` CLI, which (if installed) will pre-buy credits for all accounts in the
+localnet subnet setup. Follow the instructions in the `rust-hoku` repo to install it:
+[here](https://github.com/hokunet/rust-hoku).
+
 The following outlines general observations for how long the localnet deployment process takes and
 various metrics:
 
@@ -96,6 +104,9 @@ various metrics:
 Deploying a network will log various steps and summary information to the console, including the RPC
 URLs and contracts. If you're running a localnet, it'll also show the available accounts, private
 keys, and respective balances.
+
+Once the startup process is complete, each Docker container will also log its own information to the
+console.
 
 ### Docker containers
 
@@ -127,7 +138,7 @@ it's best to avoid these accounts since nonce race conditions can occur.
 
 ```txt
 Account balances:
-Parent native: 9999 ETH
+Parent native: 10000 ETH
 Parent HOKU:   100 HOKU
 Subnet native: 5000 HOKU
 Subnet credits: 5000000000000000000000
@@ -153,8 +164,8 @@ and `ipc-cli` but with a different value, so it's best to use separate terminal 
 the `hoku` CLI alongside the others.
 
 ```dotenv
-export NETWORK=localnet
-export PRIVATE_KEY=<private_key>
+export HOKU_NETWORK=localnet
+export HOKU_PRIVATE_KEY=<private_key>
 ```
 
 You can now use `hoku` as normal, e.g., `hoku account deposit`, `hoku os create`, etc. Similarly,
@@ -165,9 +176,16 @@ When developing locally, it's ideal to use the `localnet` setup in the `deploy_s
 But `devnet` is much faster to set up and teardown since it doesn't require building Docker images
 or running any networked services, and instead, relies on installed binaries.
 
+## Devnet
+
+The devnet requires you run multiple services manually and have the binaries installed on your host
+machine. At a minimum, you'll need to install CometBFT, Fendermint, and Iroh. Optionally, you can
+also install the EVM RPC service, in case you want to interact with the devnet via EVM RPCs (e.g.,
+deploying Solidity contracts).
+
 ### Build dependencies
 
-The following assumes you're working in the root of this `ipc` repo, and **not** in this `scripts`
+The following assumes you're working in the root of the `ipc` repo, and **not** in this `scripts`
 directory.
 
 #### CometBFT
@@ -204,6 +222,8 @@ make config-devnet
 The keys used here are a bit different from how the `localnet` setup works. The `localnet` relies on
 the `ipc-cli` for much of its logic, whereas the `devnet` relies primarily on the `fendermint` CLI.
 
+#### Accounts
+
 The keys you'll use can be found in the `test-network/keys` directory within this `scripts` folder.
 Only the `alice` key is deterministically coded into the Fendermint startup process. You can export
 any of the keys to a hex encoded EVM format.
@@ -223,54 +243,52 @@ used for `devnet` interactions (e.g., creating buckets, timehubs, writing data, 
 
 #### Startup & shutdown
 
-Finally, start all the services in separate terminal windows. The associated endpoints are shown
-below:
+Finally, start all the services in separate terminal windows in the following order. The associated
+endpoints are shown below.
 
-- Iroh: `http://127.0.0.1:4919`
+1. Iroh: `http://127.0.0.1:4919`
 
-  ```
-  make run-devnet-iroh
-  ```
+```
+make run-devnet-iroh
+```
 
-- Objects API: `http://127.0.0.8001`
+2. Objects API: `http://127.0.0.8001`
 
-  ```
-  make run-devnet-objects
-  ```
+```
+make run-devnet-objects
+```
 
-- Fendermint: `http://127.0.0.1:26658`
+3. Fendermint: `http://127.0.0.1:26658`
 
-  ```
-  make run-devnet-fendermint
-  ```
+```
+make run-devnet-fendermint
+```
 
-- CometBFT: `http://127.0.0.1:26657`
+4. CometBFT: `http://127.0.0.1:26657`
 
-  ```
-  make run-devnet-cometbft
-  ```
+```
+make run-devnet-cometbft
+```
 
-- EVM RPC: `http://127.0.0.1:8545` (this is optional)
+5. EVM RPC: `http://127.0.0.1:8545` (this is optional)
 
-  ```
-  make run-devnet-evm
-  ```
+```
+make run-devnet-evm
+```
 
 Once these are running, you should be able to interact with the `devnet` and _most_ of the expected
-functionality. One thing to be aware of: there's no parent (rootnet), so certain pieces that involve
-parent-child actions will not work. For example, the `hoku` CLI's `account` commands will not work
-since these read from or write to the parent's state.
+functionality. One thing to be aware of: there's no parent (rootnet), so certain parts of the
+protocol (like Solidity contracts) don't happen automatically.
+
+Lastly, keep in mind that if you ever make changes to the core `ipc` codebase and want the devnet to
+use these changes, you'll need to shut these services down (i.e., exit the processes), run `make`,
+and then `make config-devnet` again.
 
 ### Usage
 
-If you _ever_ make changes to any of this codebase—particularly, pieces that `fendermint` uses,
-you'll need to make sure you rebuild everything and install via the `make install` command. Then,
-follow the steps outlined above to get the `devnet` up and running.
-
-If you're using the `rust-hoku` CLI, you must set the `NETWORK` environment variable to `devnet` in
-order to use it. Note that `fendermint`, `ipc-cli`, and `hoku` use the same `NETWORK` flag but with
-varying values, so be sure to open a new terminal window to avoid conflicts if you're using any of
-them simultaneously.
+If you're using the `hoku` CLI, you must set the `HOKU_NETWORK` environment variable to `devnet` in
+order to use it. Note that `fendermint` `ipc-cli` the `NETWORK` flag but with different target
+functionality, so be sure the `HOKU_` prefix is attached.
 
 ```
 export NETWORK=devnet

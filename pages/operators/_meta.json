@@ -3,11 +3,11 @@
     "title": "Back to home",
     "href": "/home"
   },
+  "index": "Overview",
   "-": {
-    "title": "Node operators",
+    "title": "Local development",
     "type": "separator"
   },
-  "index": "Overview",
-  "setup": "Setup & installation",
-  "local": "Local development"
+  "setup": "Setup",
+  "local": "Running locally"
 }

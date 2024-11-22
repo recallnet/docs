@@ -10,6 +10,7 @@
   "index": "Overview",
   "config": "Contracts & chain info",
   "rpcs": "RPC & API URLs",
+  "faucet": "Faucet",
   "--": {
     "title": "RPC & API usage",
     "type": "separator"

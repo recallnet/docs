@@ -4,13 +4,13 @@
     "href": "/home"
   },
   "-": {
-    "title": "Object Store",
+    "title": "Object storage",
     "type": "separator"
   },
   "index": "Overview",
   "concepts": "Concepts",
   "cli": "CLI",
   "rust-sdk": "Rust SDK",
-  "guides": "Guides",
+  "s3": "S3 adapter",
   "reference": "Reference"
 }

@@ -4,17 +4,17 @@
     "display": "hidden"
   },
   "nav-services": {
-    "title": "Data services",
+    "title": "Services",
     "type": "menu",
     "display": "normal",
     "items": {
-      "event-store": {
-        "title": "Event store",
-        "href": "/event-store"
-      },
       "basin": {
         "title": "Basin",
         "href": "/basin"
+      },
+      "event-store": {
+        "title": "Event store",
+        "href": "/event-store"
       },
       "databases": {
         "title": "Databases",

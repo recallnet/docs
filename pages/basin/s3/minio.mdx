@@ -1,6 +1,7 @@
 ---
 title: Using the MinIO CLI
 description: Leverage Basin's S3 adapter with MinIO.
+keywords: minio, object storage, basin, bucket, buckets, web3, s3
 ---
 
 import { Callout, Steps } from "nextra/components";
@@ -56,18 +57,9 @@ Now, you can directly use MinIO to write or read data! Start by creating a bucke
 mc mb basin/my-store
 ```
 
-This will create the bucket called `my-store` under your `basin` alias.
-
-<Callout type="warning">
-
-Bucket usage slightly deviates from how you typically would in S3. This happens due to how the S3
-adapter works alongside Basin by using metadata to help identify the MinIO bucket name and its
-relationship with onchain buckets owned by the creator. To interact with any bucket, the name you
-define is always prefixed by the creator's hex address, delimited by a period.
-
-The general format is `<0x_address>.<bucket_name>`, as shown in the example below.
-
-</Callout>
+This will create the bucket called `my-store` under your `basin` alias. But, recall that the bucket
+will _actually_ get used under `<0x_address>.<bucket_name>`. The step below shows how to check the
+actual bucket name.
 
 ### Check the bucket name
 
@@ -86,7 +78,8 @@ this:
 ```
 
 The `0x90f7...` is the public key of the creator (i.e., the private key you used to start the
-adapter), and `my-store` is the bucket name we defined earlier.
+adapter), and `my-store` is the bucket name we defined earlier. That is, whatever private key you're
+using to run the adapter, simply use its public key as the hex value above.
 
 ### Write & read data
 

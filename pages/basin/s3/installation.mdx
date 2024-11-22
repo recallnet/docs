@@ -1,6 +1,7 @@
 ---
 title: Installation & setup
 description: Use existing S3 tooling alongside the Basin S3 adapter.
+keywords: object storage, basin, bucket, buckets, web3, s3
 ---
 
 import { Callout, Steps } from "nextra/components";
@@ -59,6 +60,19 @@ subnet account. Neglecting this step will lead to errors like
 `failed to init sequence; actor ... cannot be found`.
 
 </Callout>
+
+### Create an aliased bucket
+
+Bucket usage slightly deviates from how you typically would in S3. This happens due to how the S3
+adapter works alongside Basin by using aliases stored in metadata to help identify the bucket name
+and its relationship with onchain buckets owned by the creator. To interact with any bucket, the
+name you define is always prefixed by the creator's public key (i.e., EVM hex address), delimited by
+a period.
+
+The general format is `<0x_address>.<bucket_name>`. For example, if you create a bucket called
+`my-store` with the private key `0x...`, the actual bucket name will be
+`0x90f79bf6eb2c4f870365e785982e1f101e93b906.my-store`. Subsequent examples will describe this in
+more detail with respect to the client that is used.
 
 </Steps>
 

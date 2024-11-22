@@ -100,15 +100,15 @@ _Contracts_ are arbitrary programs that run on the network. The flexible
 etc.) contracts that interact with verifiable offchain data stored in the Hoku datachain. There are
 two types of contracts that anyone can deploy:
 
-- **Buckets**: Key-value object storage for arbitrary data.
-- **Accumulators**: Merklized data structures for onchain data anchoring.
+- **Bucket**: Key-value object storage for arbitrary data.
+- **Timehub**: Merklized data structures for onchain data anchoring.
 
 Namely, these are simply predefined contracts wherein a subnet is aware of the contract type and its
 associated logic. Deploying these contracts occurs through a factory pattern.
 
 <Callout type="info">
 
-You can create new types of contracts that suit your data needs. Buckets and accumulators power the
+You can create new types of contracts that suit your data needs. Buckets and timehubs power the
 existing offchain data services below, which is why they come as part of the core Hoku system.
 
 </Callout>
@@ -119,9 +119,9 @@ Services integrate both onchain and offchain components to facilitate the storag
 large data volumes. Each onchain contract above has a corresponding offchain service that offers an
 interface for facilitating its usage. The first two data services on Hoku include:
 
-- **Ceramic**: Offchain event-log service that relies on the onchain _accumulator_ contract for
+- **Ceramic**: Offchain event-log service that relies on the onchain _timehub_ contract for
   anchoring _events_.
-- **Basin**: Provides an S3-compatible object storage service by utilizing the onchain buckets
+- **Basin**: Provides an S3-compatible object storage service by utilizing the onchain _bucket_
   contract.
 
 An additional layer of data service providers then build on top of the core data services to offer

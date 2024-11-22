@@ -3,6 +3,8 @@ title: CometBFT API
 description: Endpoints for interacting with the Hoku network's CometBFT API.
 ---
 
+import { Callout } from "nextra/components";
+
 Hoku's consensus layer is built with CometBFT (v0.37). Currently, there is no directly exposed
 execution RPC. Instead, all calls flow through this layer—including the EVM RPCs, which are proxied
 to CometBFT before being sent to the Wasm/EVM runtime.

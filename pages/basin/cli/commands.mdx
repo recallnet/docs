@@ -15,13 +15,6 @@ All the global flags can also be passed as all-caps (prefixed with `HOKU_`), sna
 variables that are set, or create and source them in a `env` file. For example, `--network` =>
 `HOKU_NETWORK`, `--private-key` => `HOKU_PRIVATE_KEY`, etc.
 
--n, --network <NETWORK> Network presets for subnet and RPC URLs [env: HOKU_NETWORK=] [default:
-ignition]
-[possible values: mainnet, testnet, localnet, devnet, ignition] -s, --subnet <SUBNET> The ID of the
-target subnet [env: HOKU_SUBNET=] --rpc-url <RPC_URL> Node CometBFT RPC URL [env: HOKU_RPC_URL=] -v,
---verbosity... Logging verbosity (repeat for more verbose logging) [env: HOKU_LOG_VERBOSITY=] -q, --quiet
-Silence logging [env: HOKU_LOG_QUIET=] -h, --help Print help (see more with '--help')
-
 | Flag              | Description                                                                                                        | Env. variable      |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------ |
 | `-n`, `--network` | Network presets for subnet and RPC: `mainnet`, `ignition`, `testnet`, `localnet`,or `devnet` (default: `ignition`) | HOKU_NETWORK       |

@@ -8,7 +8,7 @@ import { Callout, Tabs } from "nextra/components";
 This page walks through how to spin up a local Hoku network with Docker and presumes you've done the
 steps described in the preceding [setup page](/operators/setup).
 
-## Setup
+## Docker
 
 All scripts use `cargo make` to start Docker containers, volumes, and a Docker network. Before
 getting started, make sure that Docker is running by checking the status of the Docker daemon:
@@ -44,101 +44,238 @@ If it's not running, start it:
 Make sure you're currently in the `ipc` repository's root directory (from the previous setup and
 installation step). We'll be running the local network from the `scripts` folder.
 
-The `setup.sh` script will create new validator private keys and a `genesis.json` config, and move
-them to the IPC config folder (`~/.ipc`). You only need to run `setup.sh` once on your machine.
+All scripts use `cargo make` to start docker containers, volumes, and a docker network. You can use
+`docker ps` to check the status of each container. Also, you **must** run the scripts from the root
+of the repo!
+
+## Localnet
+
+### Startup & shutdown
+
+A localnet deployments will create a subnet with `anvil` as the rootnet (parent). The scripts will
+handle localnet validator keys (using the standard `anvil` accounts) and configs in the config
+folder (defaults to `~/.ipc`). In the root of the `ipc` repo, you can run the localnet with the
+following `Makefile` command:
 
 ```shell
-./scripts/deploy_subnet_no_parent/setup.sh
+make run-localnet
 ```
 
-Now, you can start the three-node `localnet`!
-
-## Start
-
-Starting the network handles the build and installation of a few key binaries that help run the
-underlying network: `ipc-cli`, `fendermint`, and `cometbft`. The IPC contracts take _a while_ (5-10
-minutes) to compile the first time.
+Alternatively, the `deploy.sh` can be ran directly. The key callout here is that you **must**
+specify `localnet` (or `local`) as the argument, and it's _not_ possible to pass a specific branch
+as an argument (i.e., it uses whatever branch is currently checked out in the local repo).
 
 ```shell
-./scripts/deploy_subnet_no_parent/start.sh
+./scripts/deploy_subnet/deploy.sh localnet
 ```
 
-<Callout>
-
-If you run into a build error, try running `cargo update time`.
-
-</Callout>
-
-### Logs
-
-Use `docker ps` to list the network's containers. Each validator has four containers.
-
-Check validator 0's CometBFT logs:
+If you want to, for example, skip the build and dependency installation steps, you can do so with:
 
 ```shell
-docker logs validator-0-cometbft
+SKIP_BUILD=true SKIP_DEPENDENCIES=true ./scripts/deploy_subnet/deploy.sh localnet
 ```
 
-Check validator 0's Fendermint logs:
+Lastly, if you're ready to stop the network, you can run `stop_local.sh`:
 
 ```shell
-docker logs validator-0-fendermint
+./scripts/deploy_subnet/stop_local.sh
 ```
 
-You should see blocks being produced at ~1 per second.
+The following outlines general observations for how long the localnet deployment process takes and
+various metrics:
 
-### Ports
+- Deploy + build images: ~7 minutes
+- Deploy with prebuilt images: ~5 minutes (i.e., `SKIP_BUILD=true`)
+- Blocks: ~1 per second
+- Topdown messages: ~2 minutes (e.g., depositing funds from the rootnet)
+- Bottomup messages: ~15 seconds
+- Stopping the network: ~40–45 seconds
 
-For reference, the following ports are used by the local subnet:
+### Logging
 
-- CometBFT RPC: 26657, 26757, 26857
-- CometBFT p2p: 26656, 26756, 26856
-- EVM API: 8545, 8645, 8745
-- Resolver: 26655, 26755, 26855
-- Objects: 8001, 8002, 8003
-- Prometheus host: 9090
-- Prometheus metrics: 9184, 9185, 9186
+Deploying a network will log various steps and summary information to the console, including the RPC
+URLs and contracts. If you're running a localnet, it'll also show the available accounts, private
+keys, and respective balances.
 
-### Usage with Hoku SDK & CLI
+### Docker containers
 
-In a real subnet anchored to an EVM chain, users deposit funds into the subnet from the EVM chain.
-This creates their account in the subnet FVM. Since `localnet` isn't anchored to an EVM-chain (this
-may change in the future by using Hardhat), all accounts must be added at genesis. To make our lives
-easier, we reuse the validator keys for development.
+Use `docker ps` to list the network's containers. Each validator has six containers, and there are a
+few others used across the full network.
 
-The `start.sh` script prints the hex-encoded private key for each validator. You can use these keys
-with the [SDK and CLI](/basin).
+You can check a validator's logs with `docker logs <container-name>`. The following containers are
+created (as shown for validator `0`), and you can replace the `0` with `1` or `2` to inspect the
+other validators:
 
-You'll want to create an `.env` file that specifies the `NETWORK` as `localnet` (this is defined as
-`testnet` by default):
+- `validator-0-fendermint`
+- `validator-0-cometbft`
+- `validator-0-promtail`
+- `validator-0-objects`
+- `validator-0-ethapi`
+- `validator-0-iroh`
+- `prometheus`
+- `grafana`
+- `anvil`
+- `loki`
+
+### Usage
+
+You can test using the subnet with the [`hoku` SDK & CLI](https://github.com/hokunet/rust-hoku).
+Keys _are not_ logged if you're running a testnet. For localnet, keys _are_ logged with their
+corresponding balances. You'll notice the first three accounts correspond to the validators and
+marked as reserved. If you're trying to do non-validator actions (e.g., create a bucket or timehub),
+it's best to avoid these accounts since nonce race conditions can occur.
 
 ```txt
+Account balances:
+Parent native: 9999 ETH
+Parent HOKU:   100 HOKU
+Subnet native: 5000 HOKU
+Subnet credits: 5000000000000000000000
+
+Accounts:
+(0) 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 (reserved)
+(1) 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 (reserved)
+(2) 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc (reserved)
+(3) 0x90f79bf6eb2c4f870365e785982e1f101e93b906 (available)
+...
+
+Private keys:
+(0) ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+(1) 59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+(2) 5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
+(3) 7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6
+...
+```
+
+You can use then these keys with the `hoku` SDK and CLI by creating an `.env` file and sourcing it,
+or by setting the variables in your shell. Keep in mind a `NETWORK` variable is used by `fendermint`
+and `ipc-cli` but with a different value, so it's best to use separate terminal windows when using
+the `hoku` CLI alongside the others.
+
+```dotenv
 export NETWORK=localnet
-export PRIVATE_KEY=<hex_encoded_private_key>
+export PRIVATE_KEY=<private_key>
 ```
 
-Then, source it before using the clients:
+You can now use `hoku` as normal, e.g., `hoku account deposit`, `hoku os create`, etc. Similarly,
+the SDK lets you use the `localnet` by explicitly initializing it with
+`hoku_sdk::network::Network::Localnet.init()`.
 
-```shell
-source .env
+When developing locally, it's ideal to use the `localnet` setup in the `deploy_subnet` directory.
+But `devnet` is much faster to set up and teardown since it doesn't require building Docker images
+or running any networked services, and instead, relies on installed binaries.
+
+### Build dependencies
+
+The following assumes you're working in the root of this `ipc` repo, and **not** in this `scripts`
+directory.
+
+#### CometBFT
+
+Navigate outside this repo and install CometBFT (note: you **must** install v0.37.1 since the latest
+version is not compatible with the rest of the codebase):
+
+```
+git clone https://github.com/cometbft/cometbft.git
+cd cometbft
+git checkout v0.37.1
+make install
 ```
 
-For example, you can now run `adm os create` with the [CLI](/basin/cli).
+#### Fendermint & IPC CLI
 
-## Restart
+The default `make` task will build the contracts, libraries, and CLIs needed to run a `devnet`.
 
-Rebuild and restart all validators. Consensus will restart from the last committed block. If you've
-made changes to actors, you'll have to _stop and start_ instead of restarting because the actor code
-is committed to the chain during genesis.
-
-```shell
-./scripts/deploy_subnet_no_parent/restart.sh
+```
+make
 ```
 
-## Stop
+### Running the devnet
 
-Stops all validators and deletes all data.
+#### Setup
 
-```shell
-./scripts/deploy_subnet_no_parent/stop.sh
+First, configure the `devnet` with the following, which creates some keys and alters the
+configuration located in `~/.fendermint`:
+
 ```
+make config-devnet
+```
+
+The keys used here are a bit different from how the `localnet` setup works. The `localnet` relies on
+the `ipc-cli` for much of its logic, whereas the `devnet` relies primarily on the `fendermint` CLI.
+
+The keys you'll use can be found in the `test-network/keys` directory within this `scripts` folder.
+Only the `alice` key is deterministically coded into the Fendermint startup process. You can export
+any of the keys to a hex encoded EVM format.
+
+From the root of this repo, run the following command, replacing `alice.sk` with the corresponding
+filename and `alice_eth` with a desired name (for files that get created later):
+
+```
+fendermint key into-eth --secret-key ./scripts/test-network/keys/alice.sk --name alice_eth
+```
+
+Since the `alice.sk` will always be the same, the following is consistent across machines and can be
+used for `devnet` interactions (e.g., creating buckets, timehubs, writing data, etc.):
+
+- EVM address: `0xc05fe6b63ffa4b3c518e6ff1e597358ee839db01`
+- Hex private key: `1c323d494d1d069fe4c891350a1ec691c4216c17418a0cb3c7533b143bd2b812`
+
+#### Startup & shutdown
+
+Finally, start all the services in separate terminal windows. The associated endpoints are shown
+below:
+
+- Iroh: `http://127.0.0.1:4919`
+
+  ```
+  make run-devnet-iroh
+  ```
+
+- Objects API: `http://127.0.0.8001`
+
+  ```
+  make run-devnet-objects
+  ```
+
+- Fendermint: `http://127.0.0.1:26658`
+
+  ```
+  make run-devnet-fendermint
+  ```
+
+- CometBFT: `http://127.0.0.1:26657`
+
+  ```
+  make run-devnet-cometbft
+  ```
+
+- EVM RPC: `http://127.0.0.1:8545` (this is optional)
+
+  ```
+  make run-devnet-evm
+  ```
+
+Once these are running, you should be able to interact with the `devnet` and _most_ of the expected
+functionality. One thing to be aware of: there's no parent (rootnet), so certain pieces that involve
+parent-child actions will not work. For example, the `hoku` CLI's `account` commands will not work
+since these read from or write to the parent's state.
+
+### Usage
+
+If you _ever_ make changes to any of this codebase—particularly, pieces that `fendermint` uses,
+you'll need to make sure you rebuild everything and install via the `make install` command. Then,
+follow the steps outlined above to get the `devnet` up and running.
+
+If you're using the `rust-hoku` CLI, you must set the `NETWORK` environment variable to `devnet` in
+order to use it. Note that `fendermint`, `ipc-cli`, and `hoku` use the same `NETWORK` flag but with
+varying values, so be sure to open a new terminal window to avoid conflicts if you're using any of
+them simultaneously.
+
+```
+export NETWORK=devnet
+export PRIVATE_KEY=1c323d494d1d069fe4c891350a1ec691c4216c17418a0cb3c7533b143bd2b812
+```
+
+Similarly, you'll use the `devnet` in the SDK where necessary—e.g.,
+`hoku_sdk::network::Network::Devnet.init()`.

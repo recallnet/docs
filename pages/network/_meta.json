@@ -14,7 +14,7 @@
     "type": "separator"
   },
   "rpcs": "Overview",
-  "api-objects": "IPC API",
   "api-evm": "EVM API",
-  "api-ipc": "Objects API"
+  "api-object": "Object API",
+  "api-cometbft": "CometBFT API"
 }

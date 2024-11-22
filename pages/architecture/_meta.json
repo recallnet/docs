@@ -9,6 +9,6 @@
   },
   "index": "Subnets",
   "consensus": "State & consensus",
-  "data-contracts": "Data contracts",
+  "wasm-contracts": "Wasm contracts",
   "state-channels": "Data state channels"
 }

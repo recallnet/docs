@@ -6,124 +6,137 @@ keywords: features, costs, limits
 
 import { Callout } from "nextra/components";
 
-The Hoku system facilitates new data-driven applications by connecting various participants in the data pipeline through
-a unified, programmable data layer:
+The Hoku system facilitates new data-driven applications by connecting various participants in the
+data pipeline through a unified, programmable data layer:
 
-- **Data producers**: Entities that generate or aggregate data (social media, DePINs, blockchain networks).
-- **Data service providers**: Builders who develop data services (e.g., Basin, Ceramic, indexers, compute).
-- **Infrastructure providers**: Decentralized node operators that operate the network and ensure data availability.
-- **Data consumers**: Users who interact with applications built on Hoku, consuming or generating data.
+- **Data producers**: Entities that generate or aggregate data (social media, DePINs, blockchain
+  networks).
+- **Data service providers**: Builders who develop data services (e.g., Basin, Ceramic, indexers,
+  compute).
+- **Infrastructure providers**: Decentralized node operators that operate the network and ensure
+  data availability.
+- **Data consumers**: Users who interact with applications built on Hoku, consuming or generating
+  data.
 
-All of this is made possible through a modular set of primitives that can be stitched together for flexible use cases.
+All of this is made possible through a modular set of primitives that can be stitched together for
+flexible use cases.
 
 ## Features
 
 ### Flexible, programmable execution
 
-- Supports a **polyglot virtual machine** (VM) used to execute onchain data logic in both EVM and WASM execution
-  runtimes with familiar account patterns and tooling.
-- Existing Ethereum developers (e.g., Solidity) can utilize the same data and storage primitives as WASM (e.g., Rust)
-  developers through VM abstraction layers.
+- Supports a **polyglot virtual machine** (VM) used to execute onchain data logic in both EVM and
+  WASM execution runtimes with familiar account patterns and tooling.
+- Existing Ethereum developers (e.g., Solidity) can utilize the same data and storage primitives as
+  WASM (e.g., Rust) developers through VM abstraction layers.
 
 ### Lightening-fast settlement & consensus
 
-- **Hierarchical subnet architecture** and layered consensus model that enables scalable, cost-effective storage and
-  compute, competitive with traditional cloud providers.
-- Offchain data service integrations, like Ceramic and Basin, allow **offchain data to be settled onchain** in an
-  efficient manner and with **consensus over data state**.
+- **Hierarchical subnet architecture** and layered consensus model that enables scalable,
+  cost-effective storage and compute, competitive with traditional cloud providers.
+- Offchain data service integrations, like Ceramic and Basin, allow **offchain data to be settled
+  onchain** in an efficient manner and with **consensus over data state**.
 
 ### Native data availability
 
-- A new _data availability_ pattern that is custom built for use cases revolving around **storing and managing large
-  files with high throughput** in a decentralized fashion.
-- Permissionlessly store and serve data that powers products and workflows within the ecosystem, removing the need for
-  centralized hosting and storage middleware.
-- Guarantees high availability of data, allowing customers to access their data at any time without significant
-  downtime.
+- A new _data availability_ pattern that is custom built for use cases revolving around **storing
+  and managing large files with high throughput** in a decentralized fashion.
+- Permissionlessly store and serve data that powers products and workflows within the ecosystem,
+  removing the need for centralized hosting and storage middleware.
+- Guarantees high availability of data, allowing customers to access their data at any time without
+  significant downtime.
 
 ### Network-level access control
 
-- Sophisticated **access control mechanisms** that ensure both data producers and consumers have control over who can
-  access their data.
-- Flexible monetization and data collaboration patterns through onchain rules and programmable data access.
+- Sophisticated **access control mechanisms** that ensure both data producers and consumers have
+  control over who can access their data.
+- Flexible monetization and data collaboration patterns through onchain rules and programmable data
+  access.
 
 ## Components
 
-The Hoku datachain provides novel data availability mechanisms for large volumes of heterogenous data. The protocol
-consists of a few different layers that build upon one another, enabling an ecosystem to facilitate different ways to
-manage your data.
+The Hoku datachain provides novel data availability mechanisms for large volumes of heterogenous
+data. The protocol consists of a few different layers that build upon one another, enabling an
+ecosystem to facilitate different ways to manage your data.
 
 ### Accounts
 
-Like any blockchain system, _accounts_ (e.g., Ethereum wallets) are used to interact with the network. All transactions
-are signed by an account, which uses the same cryptographic primitives as Ethereum-style EVM chains (ECDSA, secp256k1)
-to ensure that the transaction is authentic and authorized. Accounts pay for network usage (e.g., transaction fees to
-store data) and are used to track balances and permissions.
+Like any blockchain system, _accounts_ (e.g., Ethereum wallets) are used to interact with the
+network. All transactions are signed by an account, which uses the same cryptographic primitives as
+Ethereum-style EVM chains (ECDSA, secp256k1) to ensure that the transaction is authentic and
+authorized. Accounts pay for network usage (e.g., transaction fees to store data) and are used to
+track balances and permissions.
 
 ### Credits
 
-Hoku also includes a novel _credits_ system to support usage-based pricing and predictable costs. This brings a
-subnet-level accounting mechanism wherein credits represent some unit of resource to perform a set of operations. For
-example, storing an arbitrary blob for a certain amount of time would cost a forecastable number of credits, measured by
-the size of the data, the duration of the storage, the computational complexity of the data processing, etc.
+Hoku also includes a novel _credits_ system to support usage-based pricing and predictable costs.
+This brings a subnet-level accounting mechanism wherein credits represent some unit of resource to
+perform a set of operations. For example, storing an arbitrary blob for a certain amount of time
+would cost a forecastable number of credits, measured by the size of the data, the duration of the
+storage, the computational complexity of the data processing, etc.
 
 ### Functions
 
-At its core, Hoku exposes _functions_, which are fundamental building blocks for task execution on the network. These
-functions are implemented with WASM-defined logic and are embedded into a subnet at genesis. A function can be thought
-of as a single, atomic unit of work that can be executed onchain.
+At its core, Hoku exposes _functions_, which are fundamental building blocks for task execution on
+the network. These functions are implemented with WASM-defined logic and are embedded into a subnet
+at genesis. A function can be thought of as a single, atomic unit of work that can be executed
+onchain.
 
-The core data storage primitive is a _blob_ function. Namely, blob functions track opcode usage and report gas spend for
-tasks such as downloading input data, erasure coding outputs for blob storage, and more.
+The core data storage primitive is a _blob_ function. Namely, blob functions track opcode usage and
+report gas spend for tasks such as downloading input data, erasure coding outputs for blob storage,
+and more.
 
 <Callout type="info">
 
-All subsequent layers are built on top of functions. Currently, the only function available is the blob, but others will
-be added in the future (e.g., compute for performing transformations).
+All subsequent layers are built on top of functions. Currently, the only function available is the
+blob, but others will be added in the future (e.g., compute for performing transformations).
 
 </Callout>
 
 ### Contracts
 
 _Contracts_ are arbitrary programs that run on the network. The flexible
-[execution environment](https://fvm.filecoin.io/) lets you deploy EVM (Solidity) and WASM (Rust, etc.) contracts that
-interact with verifiable offchain data stored in the Hoku datachain. There are two types of contracts that anyone can
-deploy:
+[execution environment](https://fvm.filecoin.io/) lets you deploy EVM (Solidity) and WASM (Rust,
+etc.) contracts that interact with verifiable offchain data stored in the Hoku datachain. There are
+two types of contracts that anyone can deploy:
 
-- **Buckets**: Key-value object storage for arbitrary data.
-- **Accumulators**: Merklized data structures for onchain data anchoring.
+- **Bucket**: Key-value object storage for arbitrary data.
+- **Timehub**: Merklized data structures for onchain data anchoring.
 
-Namely, these are simply predefined contracts wherein a subnet is aware of the contract type and its associated logic.
-Deploying these contracts occurs through a factory pattern.
+Namely, these are simply predefined contracts wherein a subnet is aware of the contract type and its
+associated logic. Deploying these contracts occurs through a factory pattern.
 
 <Callout type="info">
 
-You can create new types of contracts that suit your data needs. Buckets and accumulators power the existing offchain
-data services below, which is why they come as part of the core Hoku system.
+You can create new types of contracts that suit your data needs. Buckets and timehubs power the
+existing offchain data services below, which is why they come as part of the core Hoku system.
 
 </Callout>
 
 ### Data services
 
-Services integrate both onchain and offchain components to facilitate the storage and processing of large data volumes.
-Each onchain contract above has a corresponding offchain service that offers an interface for facilitating its usage.
-The first two data services on Hoku include:
+Services integrate both onchain and offchain components to facilitate the storage and processing of
+large data volumes. Each onchain contract above has a corresponding offchain service that offers an
+interface for facilitating its usage. The first two data services on Hoku include:
 
-- **Ceramic**: Offchain event-log service that relies on the onchain _accumulator_ contract for anchoring _events_.
-- **Basin**: Provides an S3-compatible object storage service by utilizing the onchain buckets contract.
+- **Ceramic**: Offchain event-log service that relies on the onchain _timehub_ contract for
+  anchoring _events_.
+- **Basin**: Provides an S3-compatible object storage service by utilizing the onchain _bucket_
+  contract.
 
-An additional layer of data service providers then build on top of the core data services to offer additional
-functionality:
+An additional layer of data service providers then build on top of the core data services to offer
+additional functionality:
 
-- **OrbisDB**: High-throughput application database with an index, query, and plugin wrapper around Ceramic.
+- **OrbisDB**: High-throughput application database with an index, query, and plugin wrapper around
+  Ceramic.
 - **Tableland**: Onchain decentralized SQL database whose state is backed by the Hoku datachain.
 
 You can learn more about each of these and how to use them throughout this documentation.
 
 ## Limits
 
-There are a few limitations to be aware of when building on Hoku. Keep in mind that services like Basin and Ceramic have
-their own constraints, which are detailed in their respective sections.
+There are a few limitations to be aware of when building on Hoku. Keep in mind that services like
+Basin and Ceramic have their own constraints, which are detailed in their respective sections.
 
 - **Block time**: ~1 block per second.
 - **Throughput (TPS)**: Hundreds of transactions per second.
@@ -131,7 +144,7 @@ their own constraints, which are detailed in their respective sections.
 
 <Callout type="warning">
 
-Note: TPS is rough estimate and may vary based on network conditions. The node design is still under heavy development,
-optimizations are being made, and benchmarked tests are yet to be finalized.
+Note: TPS is rough estimate and may vary based on network conditions. The node design is still under
+heavy development, optimizations are being made, and benchmarked tests are yet to be finalized.
 
 </Callout>

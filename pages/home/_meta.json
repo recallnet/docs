@@ -17,9 +17,9 @@
     "title": "Services",
     "type": "separator"
   },
-  "object-storage": {
-    "title": "Object storage",
-    "href": "/object-storage"
+  "basin": {
+    "title": "Basin",
+    "href": "/basin"
   },
   "event-store": {
     "title": "Event store",
@@ -41,17 +41,17 @@
     "title": "Protocol",
     "type": "separator"
   },
-  "architecture": {
-    "title": "Architecture",
-    "href": "/architecture"
-  },
   "network": {
     "title": "Contracts & RPCs",
     "href": "/network"
   },
   "operators": {
-    "title": "Node operators",
+    "title": "Running a node",
     "href": "/operators"
+  },
+  "architecture": {
+    "title": "Architecture",
+    "href": "/architecture"
   },
   "community-separator": {
     "title": "Community",

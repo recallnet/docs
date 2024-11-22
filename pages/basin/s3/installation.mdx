@@ -1,0 +1,99 @@
+---
+title: Installation & setup
+description: Use existing S3 tooling alongside the Basin S3 adapter.
+keywords: object storage, basin, bucket, buckets, web3, s3
+---
+
+import { Callout, Steps } from "nextra/components";
+
+The `basin_s3` binary is a simple adapter that allows you to use the Basin object storage system
+with S3-compatibility. Let's walk through how to set it up, and subsequent pages walk through how to
+use it with ancillary tools S3 like MinIO.
+
+### Setup
+
+<Steps>
+  
+### Install
+
+First, clone the repo:
+
+```sh
+git clone https://github.com/hokunet/basin-s3
+```
+
+Then, `cd` into `basin-s3` and install the adapter binary:
+
+```sh
+make install
+```
+
+This should make `basin_s3` available in your path, which you can verify with `basin_s3 --version`.
+
+### Run the adapter
+
+Starting the Basin S3 adapter uses port `8014` by default. There are three required flags:
+
+- `--private-key`: Hex encoded, Ethereum-style private key (ECDSA, secp256k1) for sending
+  transactions (environment variable: `PRIVATE_KEY`).
+- `--network`: The network to connect to (environment variable: `NETWORK`).
+- `--access-key`: An S3 access key (e.g,. `AKEXAMPLES3S`)
+- `--secret-key`: An S3 secret key (e.g., `SKEXAMPLES3S`)
+
+```sh
+basin_s3 --private-key [your_private_key] --access-key AKEXAMPLES3S --secret-key SKEXAMPLES3S
+```
+
+The access key and secret aren't used for anything other than matching the MinIO client
+configuration. If you want to do read-only queries, simply omit the private key. Alternatvely, you
+can run it directly with `cargo run`:
+
+```sh
+cargo run --features binary -- --private-key [your_private_key] --access-key AKEXAMPLES3S --secret-key SKEXAMPLES3S
+```
+
+<Callout type="info">
+
+If you do not already have a private key, you can generate one with the Hoku CLI. You also _must_
+make sure your account exists on the subnet, which requires you have deposited funds into your
+subnet account. Neglecting this step will lead to errors like
+`failed to init sequence; actor ... cannot be found`.
+
+</Callout>
+
+### Create an aliased bucket
+
+Bucket usage slightly deviates from how you typically would in S3. This happens due to how the S3
+adapter works alongside Basin by using aliases stored in metadata to help identify the bucket name
+and its relationship with onchain buckets owned by the creator. To interact with any bucket, the
+name you define is always prefixed by the creator's public key (i.e., EVM hex address), delimited by
+a period.
+
+The general format is `<0x_address>.<bucket_name>`. For example, if you create a bucket called
+`my-store` with the private key `0x...`, the actual bucket name will be
+`0x90f79bf6eb2c4f870365e785982e1f101e93b906.my-store`. Subsequent examples will describe this in
+more detail with respect to the client that is used.
+
+</Steps>
+
+## Next steps
+
+You can now use Basin with any S3-compatible tooling! The example below walks through how to use it
+with an S3-compatible CLI tool like MinIO, which is demonstrated in the ensuing page. But, its
+compatibility extends to any S3-compatible client or library (e.g.,
+[ClickHouse](https://clickhouse.com/), etc.).
+
+{/* TODO: update with newest release; fix video formatting issues on resize */}
+
+<div className="w-full">
+  <br />
+  <iframe
+    className="w-full aspect-video"
+    width="100%"
+    height="500px"
+    title="Hoku CLI"
+    src="https://drive.google.com/file/d/1Kou_jeFg3HgAAMBI8vvvAHLXl0yge-zV/preview"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</div>

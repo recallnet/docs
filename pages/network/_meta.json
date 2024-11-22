@@ -8,13 +8,14 @@
     "type": "separator"
   },
   "index": "Overview",
-  "contracts": "Contracts & chain info",
+  "config": "Contracts & chain info",
+  "rpcs": "RPC & API URLs",
+  "faucet": "Faucet",
   "--": {
-    "title": "RPC URLs",
+    "title": "RPC & API usage",
     "type": "separator"
   },
-  "rpcs": "Overview",
-  "api-objects": "IPC API",
   "api-evm": "EVM API",
-  "api-ipc": "Objects API"
+  "api-object": "Object API",
+  "api-cometbft": "CometBFT API"
 }

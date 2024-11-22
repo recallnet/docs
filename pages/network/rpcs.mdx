@@ -1,37 +1,50 @@
 ---
-title: RPC URLs
+title: RPC & API URLs
 description: Hoku nodes expose various RPCs for interacting with the network.
 ---
 
 import { Callout } from "nextra/components";
 
-To interact with a subnet, you can use the provided RPC URLs below. These are public endpoints for Hoku nodes ran by the
-core team. If you're running your own node, you can use the local development URLs. More information is provided for
-each of the endpoints in subsequent pages.
+To interact with a subnet, you can use the provided RPC URLs below. These are public endpoints for
+Hoku nodes ran by the core team. If you're running your own node, you can use the local development
+URLs. More information is provided for each of the endpoints in subsequent pages.
 
-<Callout type="warning">
-
-The Hoku network is still under development, so these values are subject to change. Review our GitHub repository to
-validate the values are correct.
-
-</Callout>
-
-## Testnet
+## Ignition (testnet)
 
 | Description    | Value                                         |
 | -------------- | --------------------------------------------- |
-| IPC RPC        | `https://api.n1.testnet.basin.storage`        |
-| Subnet EVM RPC | `https://evm-api.n1.testnet.basin.storage`    |
+| Subnet EVM RPC | `https://evm-ignition-0.hoku.sh`              |
+| Object API     | `https://object-api-ignition-0.hoku.s`        |
+| CometBFT RPC   | `https://api-ignition-0.hoku.sh`              |
 | Parent EVM RPC | `https://api.calibration.node.glif.io/rpc/v1` |
-| Object API     | `https://object-api.n1.testnet.basin.storage` |
 
-## Local development
+<Callout type="warning">
+
+The Hoku network is still under development, so these values are subject to change. Review our
+GitHub repository to validate the values are correct: [here](https://github.com/hokunet/rust-hoku).
+
+</Callout>
+
+## Localnet
 
 | Description    | Value                    |
 | -------------- | ------------------------ |
-| IPC RPC        | `http://127.0.0.1:26657` |
-| Subnet EVM RPC | `http://127.0.0.1:8545`  |
-| Parent EVM RPC | N/A                      |
+| Subnet EVM RPC | `http://127.0.0.1:8645`  |
 | Object API     | `http://127.0.0.1:8001`  |
+| CometBFT RPC   | `http://127.0.0.1:26657` |
+| Parent EVM RPC | `http://127.0.0.1:8545`  |
 
-Note: Since no "parent" chain is used in a local-only network, there's no parent RPC URL for local development.
+Note that the localnet, by default, spins up a dockerized three node network. The EVM, objects, and
+CometBFT values increment by either one or 100, and you can verify this by inspecting the docker
+images.
+
+## Devnet
+
+| Description    | Value                    |
+| -------------- | ------------------------ |
+| Subnet EVM RPC | `http://127.0.0.1:8645`  |
+| Object API     | `http://127.0.0.1:8001`  |
+| CometBFT RPC   | `http://127.0.0.1:26657` |
+
+Note: Since no "parent" chain is used in a local-only network, there's no parent RPC URL for the
+`devnet`.

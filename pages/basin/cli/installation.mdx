@@ -13,7 +13,7 @@ You'll need to download the source code, build, and install the CLI.
 
 ```sh
 git clone https://github.com/hokunet/rust-hoku.git
-cd basin
+cd rust-hoku
 make install
 ```
 
@@ -27,25 +27,26 @@ hoku --help
 
 There are two flags required for the majority of the `hoku` subcommands:
 
-- `--network`: Specify the chain location with RPC presets and settings that map to either `mainnet` (not available),
-  `testnet`, `localnet`, or `devnet`.
+- `--network`: Specify the chain location with RPC presets and settings that map to either `mainnet`
+  (not available), `ignition` (default),`testnet`, `localnet`, or `devnet`.
 - `--private-key`: A wallet private key (ECDSA, secp256k1) for signing transactions.
 
-As a best practice, you should create a `.env` file with the following and run `source .env` to ensure the commands load
-these variables. The default network is `testnet`, so it's not necessary to set the network variable unless you're
-developing elsewhere (e.g., local development uses `localnet`).
+As a best practice, you should create a `.env` file with the following and run `source .env` to
+ensure the commands load these variables. The default network is `ignition`, so it's not necessary
+to set the network variable unless you're developing elsewhere (e.g., local development uses
+`localnet`).
 
 ```txt filename=".env"
-PRIVATE_KEY=your_private_key
-NETWORK=testnet
+HOKU_PRIVATE_KEY=your_private_key
+HOKU_NETWORK=ignition
 ```
 
 </Steps>
 
 ## Next steps
 
-Head over to the [commands](/object-storage/cli/commands) page to learn more about the available commands. You can watch
-the video below to see a quick demo of the CLI in action!
+Head over to the [commands](/basin/cli/commands) page to learn more about the available commands.
+You can watch the video below to see a quick demo of the CLI in action!
 
 {/* TODO: fix video formatting issues on resize */}
 
@@ -56,7 +57,7 @@ the video below to see a quick demo of the CLI in action!
     width="100%"
     height="500px"
     title="Basin CLI"
-    src="https://drive.google.com/file/d/1Vd56asjYEMWYOtjgQNRLk9YoXiofJTeh/preview"
+    src="https://drive.google.com/file/d/1_O3dwQsDrxarZcecwWhcbPEIgGKBR7Lk/preview"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
     allowFullScreen
   />

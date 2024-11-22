@@ -6,27 +6,45 @@ description: Query table states across Ceramic's data pipeline
 import { Steps, Callout } from "nextra/components";
 
 <Callout>
-Just getting started? Check out our Getting Connected Guide to get your client setup
-This document assumes that you've already followed our [installation guide](/event-store/usage/installation)
+  Just getting started? Check out our Getting Connected Guide to get your client setup This document
+  assumes that you've already followed our [installation guide](/event-store/usage/installation)
 </Callout>
 
-Streaming systems are invaluable in modern data architectures due to their ability to process and analyze data in real-time as it flows through a system. One of the primary use cases that makes streaming systems so powerful is aggregation. By continuously processing incoming events, streaming systems allow for the dynamic creation and updating of table views, providing up-to-the-moment insights without the need for batch processing. This real-time data transformation capability enables applications to maintain live dashboards, detect anomalies instantly, and make data-driven decisions with minimal latency. Ceramic offers a powerful data pipeline suitable for a variety of workloads.
+Streaming systems are invaluable in modern data architectures due to their ability to process and
+analyze data in real-time as it flows through a system. One of the primary use cases that makes
+streaming systems so powerful is aggregation. By continuously processing incoming events, streaming
+systems allow for the dynamic creation and updating of table views, providing up-to-the-moment
+insights without the need for batch processing. This real-time data transformation capability
+enables applications to maintain live dashboards, detect anomalies instantly, and make data-driven
+decisions with minimal latency. Ceramic offers a powerful data pipeline suitable for a variety of
+workloads.
 
 ## Flight SQL library
 
-Flight SQL is a protocol designed efficiently handling and querying large-scale analytical data by extending [Apache Arrow Flight](https://arrow.apache.org/blog/2019/10/13/introducing-arrow-flight/), an RPC protocol built for high-performance data transfer in big data application settings.
+Flight SQL is a protocol designed efficiently handling and querying large-scale analytical data by
+extending [Apache Arrow Flight](https://arrow.apache.org/blog/2019/10/13/introducing-arrow-flight/),
+an RPC protocol built for high-performance data transfer in big data application settings.
 
-Ceramic nodes expose a Flight SQL endpoint which allows developers to query the various parquet tables across the Ceramic data pipeline.
+Ceramic nodes expose a Flight SQL endpoint which allows developers to query the various parquet
+tables across the Ceramic data pipeline.
 
 ### Why Flight SQL?
 
-Flight SQL organizes data into columnar format for fast, memory-efficient data handling, thus reducing the amount of time needed to serialize, deserialize, and transfer data between clients and servers. At the same time, Flight SQL supports SQL queries, making it highly useful for applications requiring SQL analytics. 
+Flight SQL organizes data into columnar format for fast, memory-efficient data handling, thus
+reducing the amount of time needed to serialize, deserialize, and transfer data between clients and
+servers. At the same time, Flight SQL supports SQL queries, making it highly useful for applications
+requiring SQL analytics.
 
-Since Flight SQL's protocol is tailored for high-throughput data transport across networks, this makes it ideal for moving large, columnar data (like Parquet) over the network between distributed systems. Furthermore, Parquet data can be loaded into an Arrow-based in-memory format and then queried and transmitted efficiently, ideal for intense data workloads. 
+Since Flight SQL's protocol is tailored for high-throughput data transport across networks, this
+makes it ideal for moving large, columnar data (like Parquet) over the network between distributed
+systems. Furthermore, Parquet data can be loaded into an Arrow-based in-memory format and then
+queried and transmitted efficiently, ideal for intense data workloads.
 
 ## Set up your client
 
-The `@ceramic-sdk/flight-sql-client` is a package designed to run server-side only. Using this client needs a [ceramic-one](https://github.com/ceramicnetwork/rust-ceramic) daemon running with experimental flags which point to your Basin-S3 adapter:
+The `@ceramic-sdk/flight-sql-client` is a package designed to run server-side only. Using this
+client needs a [ceramic-one](https://github.com/ceramicnetwork/rust-ceramic) daemon running with
+experimental flags which point to your Basin-S3 adapter:
 
 ```bash
 ceramic-one -- daemon --experimental-features --flight-sql-bind-address 0.0.0.0:5102 --s3-bucket your-basin-account.your-bucket-name
@@ -43,7 +61,7 @@ npm install --save @ceramic-sdk/flight-sql-client
 
 ```typescript
 import { createFlightSqlClient, ClientOptions } from "@ceramic-sdk/flight-sql-client";
-import { tableFromIPC } from 'apache-arrow'
+import { tableFromIPC } from "apache-arrow";
 
 const OPTIONS: ClientOptions = {
   headers: new Array(),
@@ -58,7 +76,7 @@ const OPTIONS: ClientOptions = {
 const client = await createFlightSqlClient(OPTIONS);
 ```
 
-### Execute a query 
+### Execute a query
 
 ```typescript
 // query the event_states table to access aggregated document state
@@ -68,4 +86,5 @@ const data = await client.runQuery("SELECT * FROM event_states");
 const table = tableFromIPC(buffer);
 console.log(JSON.stringify(table));
 ```
+
 </Steps>

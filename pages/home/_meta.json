@@ -21,9 +21,9 @@
     "title": "Basin",
     "href": "/basin"
   },
-  "event-store": {
-    "title": "Event store",
-    "href": "/event-store"
+  "ceramic": {
+    "title": "Ceramic",
+    "href": "/ceramic"
   },
   "databases": {
     "title": "Databases",

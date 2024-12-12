@@ -3,7 +3,7 @@ title: Installation
 description: Getting Started With the Ceramic SDK
 ---
 
-import { Steps } from "nextra/components";
+import { Steps, Callout } from "nextra/components";
 
 The [Ceramic SDK](https://github.com/ceramicstudio/ceramic-sdk) enables user to interact with the
 Ceramic's primitive APIs for creating streams as well as producing events on streams, consuming
@@ -18,6 +18,12 @@ sub-packages:
 - `@ceramic-sdk/http-client`: A simple client for
   [ceramic-one's](https://github.com/ceramicnetwork/rust-ceramic) HTTP APIs.
 - `@ceramic-sdk/identifiers`: A handful of useful types for identifying streams and events.
+- `@ceramic-sdk/model-client`: A client that handles the creation and fetching of model stream types.
+- `@ceramic-sdk/model-instance-client`: A client that handles the creation and fetching of model instance document stream types.
+
+<Callout>
+  While Ceramic will eventually support a wide array of different stream types, this guide will focus on the use of models and model instance documents given they represent the predominant pattern developers currently use when interacting with the network. 
+</Callout>
 
 The Ceramic SDK needs a [ceramic-one](https://github.com/ceramicnetwork/rust-ceramic) daemon to
 connect to.

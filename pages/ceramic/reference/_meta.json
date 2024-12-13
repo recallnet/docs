@@ -2,5 +2,6 @@
   "errors": "Errors",
   "faqs": "FAQs",
   "testing": "Testing",
-  "http": "HTTP API"
+  "http": "HTTP API",
+  "Base-client": "Base Client"
 }

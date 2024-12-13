@@ -79,12 +79,18 @@ const client = await createFlightSqlClient(OPTIONS);
 ### Execute a query
 
 ```typescript
-// query the event_states table to access aggregated document state
-const data = await client.runQuery("SELECT * FROM event_states");
+const buffer = await client.preparedStatement(
+  'SELECT * from conclusion_events where stream_type = $1',
+  new Array(['$1', '3']),
+)
 
 // deserialize the IPC format into a table
-const table = tableFromIPC(buffer);
-console.log(JSON.stringify(table));
+const data = tableFromIPC(buffer)
+const row = data.get(0)
+
+// data will be stored as bytes - transform to readable
+const content = JSON.parse(Buffer.from(row?.data).toString())
+console.log(content)
 ```
 
 </Steps>

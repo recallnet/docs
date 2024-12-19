@@ -183,16 +183,10 @@ const modelInstanceClient = new ModelInstanceClient({
 
 // 2. Create a new MID (single` and `set` model types are handled differently than `list` types)
 
-// `single` and `set` require a deterministic initial event followed by an update
+// `single` and `set` require a deterministic initial event (without content)
 const singleDocumentStream = await modelInstanceClient.postDeterministicInit({
    model: profileModelStreamId,
    controller: authenticatedDID.id,
-})
-
-const updatedStream = await modelInstanceClient.updateDocument({
-   streamID: singleDocumentStream.toString(),
-   newContent: { firstName: 'New', lastName: 'User', userName: 'newUser1' },
-   shouldIndex: true,
 })
 
 // `list` documents can contain an initial content payload
@@ -203,6 +197,13 @@ const listDocumentStream = await modelInstanceClient.postSignedInit({
 })
 
 // 3. Updating a MID (does not differ between model types)
+
+await modelInstanceClient.updateDocument({
+   streamID: singleDocumentStream.toString(),
+   newContent: { firstName: 'New', lastName: 'User', userName: 'newUser1' },
+   shouldIndex: true,
+})
+
 await modelInstanceClient.updateDocument({
    streamID: listDocumentStream.toString(),
    newContent: { title: 'This is an updated post title', body: 'This is an updated post body' },

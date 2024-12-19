@@ -20,8 +20,7 @@ Developers can use the `@ceramic-sdk/model-client` sub-package to create new mod
 
 To get started, use the base `CeramicClient` class to instantiate a new `ModelClient` class. For more information regarding usage of the CeramicClient see the previous page.
 
-<Steps>
-### Instantiate a ModelClient
+### Working with Models
 
 ```typescript
 import { CeramicClient } from '@ceramic-sdk/http-client'
@@ -33,16 +32,13 @@ const authenticatedDID = await getAuthenticatedDID(new Uint8Array(32))
 
 const ceramic = new CeramicClient({ url: "http://localhost:5101" })
 
-// Create a model client
+// 1. Create a model client
 const modelClient = new ModelClient({
   ceramic,
   did: authenticatedDID,
 })
-```
 
-### Define the Model's Schema Definition
-
-```typescript
+// 2. Define the Model's Schema Definition
 const model: ModelDefinition = {
   version: '2.0',
   name: 'Profile',
@@ -61,20 +57,13 @@ const model: ModelDefinition = {
     additionalProperties: false,
   },
 }
-```
 
-### Create the Model Stream
+// 3. Create the Model Stream
+const modelStream = await modelClient.postDefinition(model)
 
-```typescript
-const modelStream = await modelClient.postDefinition(testModel)
-```
-
-### Get the Stream's Model Definition
-
-```typescript
+// 4. Get the Stream's Model Definition
 const modelDefinition = await modelClient.getModelDefinition(modelStream)
 ```
-</Steps>
 
 ### Model Types
 

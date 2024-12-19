@@ -156,62 +156,61 @@ const listModel: ModelDefinition = {
 
 ## Model Instance Documents
 
-A `model instance document` (or MID) stream uses the definition of a model to create a Ceramic stream containing content that adheres to the model's schema definition. Developers can use the Ceramic SDK to create new MIDs, fetch the current state from an MID, and update MIDs by leveraging the `@ceramic-sdk/model-instance-client` sub-package:
+A `model instance document` (or MID) stream uses the definition of a model to create a Ceramic stream containing content that adheres to the model's schema definition. Developers can use the Ceramic SDK to create new MIDs, fetch the current state from an MID, and update MIDs by leveraging the `@ceramic-sdk/model-instance-client` sub-package.
 
-<Steps>
-### Instantiate a ModelInstanceClient
+### Working with MIDs
 
 ```typescript
 import { ModelInstanceClient } from '@ceramic-sdk/model-instance-client'
+import { getAuthenticatedDID } from '@didtools/key-did'
+import { CeramicClient } from '@ceramic-sdk/http-client'
 
-// Create a model instance client
+const authenticatedDID = await getAuthenticatedDID(new Uint8Array(32))
+
+const ceramic = new CeramicClient({ url: "http://localhost:5101" })
+
+// a model using the single accountRelation
+const profileModelStreamId = 'kjzl6hvfrbw6c77ooylhtrs71a3ddqi5zdzosmvaodxu1upnhl6t8x6ekf5k2t8'
+
+// a model using the list accountRelation
+const forumPostModelStreamId = 'kjzl6hvfrbw6c8007xlqeudoh0n82j0fepj4y2in7uskh74yv3612d3bi7y7p1j'
+
+// 1. Instantiate a ModelInstanceClient
 const modelInstanceClient = new ModelInstanceClient({
-  ceramic: client,
+  ceramic,
   did: authenticatedDID,
 })
-```
 
-### Create a new MID
+// 2. Create a new MID (single` and `set` model types are handled differently than `list` types)
 
-`single` and `set` model types are handled differently than `list` types:
-
-```typescript
-// creating a MID using a `set` or `single` model 
-const documentStream = await modelInstanceClient.postDeterministicInit({
-   model,
+// `single` and `set` require a deterministic initial event followed by an update
+const singleDocumentStream = await modelInstanceClient.postDeterministicInit({
+   model: profileModelStreamId,
    controller: authenticatedDID.id,
 })
+
 const updatedStream = await modelInstanceClient.updateDocument({
-   streamID: documentStream.toString(),
+   streamID: singleDocumentStream.toString(),
    newContent: { firstName: 'New', lastName: 'User', userName: 'newUser1' },
    shouldIndex: true,
 })
 
-// creating a MID using a `list` model
-const documentStream = await modelInstanceClient.postSignedInit({
-   model,
+// `list` documents can contain an initial content payload
+const listDocumentStream = await modelInstanceClient.postSignedInit({
+   model: forumPostModelStreamId,
    content: { title: 'This is a new post', body: 'This is the body for a new post' },
    shouldIndex: true,
 })
-```
 
-### Updating a MID
-
-Unlike the step above, the pattern for updating MIDs does not differ between model types:
-
-```typescript
-const updatedStream = await modelInstanceClient.updateDocument({
-   streamID: documentStream.toString(),
+// 3. Updating a MID (does not differ between model types)
+await modelInstanceClient.updateDocument({
+   streamID: listDocumentStream.toString(),
    newContent: { title: 'This is an updated post title', body: 'This is an updated post body' },
    shouldIndex: true,
 })
-```
 
-### Read the MID's State
-
-```typescript
+// 4. Read the MID's State
 const currentState = await modelInstanceClient.getDocumentState(
-   documentStream.toString()
+   listDocumentStream.toString()
 )
 ```
-</Steps>

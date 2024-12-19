@@ -64,8 +64,7 @@ the ID of the event. The `id` field of the event object JSON object shown above 
 string-encoded CID of the event's root block.
 
 The inner structure of the CAR, including the format of the data within blocks, can vary depending
-on the type of event and is not detailed here. (TODO: link to docs on model & document event
-structures)
+on the type of event. Visit the [Raw Events guide](/event-store/usage/events/raw-events) for more.
 
 ## Usage
 
@@ -183,18 +182,21 @@ no response body on success.
 
 ### Register an Interest
 
-TODO: describe interests & how to POST to `/interests`
+You can register an interest by sending a POST request to `interests`. The body of the request contains the fields sep and sepValue.
 
 ```jsx
-
+{
+  "sep": "model",
+  "sepValue": "example-model-id"
+}
 ```
 
 ### Read Events Related to an Interest
 
-TODO: describe `/experimental/events/{sep}/{sepValue}`
+You can also read events related to an interest by sending a GET request using the `sep` and `sepValue` as part of the URL path, with optional parameters like `controller`, `streamId`, `offset`, and limit.
 
 ```jsx
-
+curl -X GET $CERAMIC_API/experimental/events/model/example-model-id?controller=example-did
 ```
 
 ## Status

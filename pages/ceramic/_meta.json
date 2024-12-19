@@ -9,8 +9,8 @@
   },
   "index": "Overview",
   "concepts": "Concepts",
-  "examples": "Examples",
+
   "usage": "Usage",
-  "guides": "Guides",
-  "reference": "Reference"
+  "reference": "Reference",
+  "related-projects": "Related Projects"
 }

@@ -3,6 +3,8 @@ title: Concepts
 description: Ceramic Terms & Concepts
 ---
 
+import { Callout } from "nextra/components";
+
 # Concepts
 
 Ceramic combines a powerful event streaming platform with the open access and verifiability of the
@@ -139,6 +141,10 @@ graph LR;
     stream_tips --> stream_states;
 ```
 
+<Callout>
+  Ceramic currently exposes `event_states` and `conclusion_events` as exposed tables available for developers to query. All other pipeline tables are in development.
+</Callout>
+
 ### raw_events
 
 The raw_events table contains the raw event data from Ceramic streams, including the corresponding
@@ -150,10 +156,9 @@ processing.
 The streams table provides identifying information for each stream, such as its type, controller,
 and dimensions. It serves as a central reference for understanding and querying stream metadata.
 
-### chain_proofs
+### time_conclusions
 
-The chain_proofs table contains records of onchain proofs for events, supporting verification and
-validation processes. (Schema and population details are TBD.)
+The time_conclusions table contains a row for each conclusion about a CID existing on chain.
 
 ### conclusion_events
 
@@ -181,7 +186,7 @@ The stream_states table provides the canonical state for each stream after apply
 resolution, offering a reliable snapshot of stream data for consumers.
 
 _For a more detailed breakdown of each table, please visit the
-[Pipeline Architecture](https://github.com/ceramicnetwork/rust-ceramic/pipeline/DESIGN.md)
+[Pipeline Architecture](https://github.com/ceramicnetwork/rust-ceramic/blob/main/pipeline/DESIGN.md)
 overview._
 
 ### Models & Documents

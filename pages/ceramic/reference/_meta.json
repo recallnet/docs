@@ -1,7 +1,3 @@
 {
-  "errors": "Errors",
-  "faqs": "FAQs",
-  "testing": "Testing",
-  "http": "HTTP API",
-  "Base-client": "Base Client"
+  "http": "HTTP API"
 }

@@ -10,9 +10,9 @@ import { Steps, Callout } from "nextra/components";
   assumes that you've already followed our [installation guide](/event-store/usage/installation)
 </Callout>
 
-Let's explore how to use Ceramic to send messages between clients. If you've followed our
-[Getting Started guide](/event-store/usage/installation), you should have a `CeramicClient`
-connected to a Ceramic node, as well as a `DID` that can sign and publish events. We'll use these to
+This section is dedicated to the lower-level functionality exposed by the `CeramicClient` class. For most developers looking to get started with Ceramic, it's recommended to reference the [Produce guide](/event-store/usage/produce) which uses models and model isntance documents. Developers who wish to understand and work with lower-level event construction and publishing should reference the current page.
+
+If you've followed our [Getting Started guide](/event-store/usage/installation), you should have a `CeramicClient` connected to a Ceramic node, as well as a `DID` that can sign and publish events. We'll use these to
 create new signed events and submit them to the Ceramic network.
 
 In the examples below, the `CeramicClient` is stored in a variable named `ceramic`, and the DID used

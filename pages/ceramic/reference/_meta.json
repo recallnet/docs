@@ -1,3 +1,11 @@
 {
-  "http": "HTTP API"
+  "events": "Events",
+  "http-client": "HTTP Client",
+  "stream-client": "Stream Client",
+  "model-client": "Model Client",
+  "model-instance-client": "Model Instance Client",
+  "identifiers": "Identifiers",
+  "model-instance-handler": "Model Instance Handler",
+  "model-instance-protocol": "Model Instance Protocol",
+  "model-protocol": "Model Protocol"
 }

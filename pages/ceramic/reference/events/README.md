@@ -26,8 +26,6 @@
 
 ## Functions
 
-- [assertSignedEvent](functions/assertSignedEvent.md)
-- [assertTimeEvent](functions/assertTimeEvent.md)
 - [carFromString](functions/carFromString.md)
 - [carToString](functions/carToString.md)
 - [createSignedInitEvent](functions/createSignedInitEvent.md)

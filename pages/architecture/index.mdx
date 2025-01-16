@@ -35,7 +35,7 @@ graph TD
       CometBFT1 --"Consensus"--> CometBFT1
       subgraph ABCI1["Fendermint (ABCI++)"]
         subgraph Machines1["Machines"]
-          ObjectStore1["Object Store"]
+          Bucket1["Bucket"]
           MachineManager1["Machine Manager"]
         end
         ParentView1["Parent View"]
@@ -45,7 +45,7 @@ graph TD
         Resolver1["Resolver"]
         Store1 <--> Resolver1
       end
-      ObjectStore1 --> Store1
+      Bucket1 --> Store1
       ABCI1 --> Resolver1
       CometBFT1 --> ABCI1
     end
@@ -58,7 +58,7 @@ graph TD
       CometBFTN --"Consensus"--> CometBFTN
       subgraph ABCIN["Fendermint (ABCI++)"]
         subgraph MachinesN["Machines"]
-          ObjectStoreN["Object Store"]
+          BucketN["Bucket"]
           MachineManagerN["Machine Manager"]
         end
         ParentViewN["Parent View"]
@@ -68,7 +68,7 @@ graph TD
         ResolverN["Resolver"]
         StoreN <--> ResolverN
       end
-      ObjectStoreN --> StoreN
+      BucketN --> StoreN
       ABCIN --> ResolverN
       CometBFTN --> ABCIN
     end

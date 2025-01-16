@@ -15,15 +15,15 @@ All the global flags can also be passed as all-caps (prefixed with `HOKU_`), sna
 variables that are set, or create and source them in a `env` file. For example, `--network` =>
 `HOKU_NETWORK`, `--private-key` => `HOKU_PRIVATE_KEY`, etc.
 
-| Flag              | Description                                                                                                        | Env. variable      |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------ |
-| `-n`, `--network` | Network presets for subnet and RPC: `mainnet`, `ignition`, `testnet`, `localnet`,or `devnet` (default: `ignition`) | HOKU_NETWORK       |
-| `-s`, `--subnet`  | The ID of the target subnet.                                                                                       | HOKU_SUBNET        |
-| `--rpc-url`       | Node CometBFT RPC URL.                                                                                             | HOKU_RPC_URL       |
-| `-v, --verbosity` | Logging verbosity (none: error; `-v`: warn; `-vv`: info; `-vvv`: debug; `-vvvv`: trace).                           | HOKU_LOG_VERBOSITY |
-| `-q, --quiet`     | Silence logging (default: `false`).                                                                                | HOKU_LOG_QUIET     |
-| `-h, --help`      | Print help.                                                                                                        | -                  |
-| `-V, --version`   | Print version.                                                                                                     | -                  |
+| Flag              | Description                                             | Env. variable        |
+| ----------------- | ------------------------------------------------------- | -------------------- |
+| `-n`, `--network` | Network presets for subnet and RPC (default: `testnet`) | `HOKU_NETWORK`       |
+| `-s`, `--subnet`  | The ID of the target subnet.                            | `HOKU_SUBNET`        |
+| `--rpc-url`       | Node CometBFT RPC URL.                                  | `HOKU_RPC_URL`       |
+| `-v, --verbosity` | Logging verbosity (repeat for more verbosity).          | `HOKU_LOG_VERBOSITY` |
+| `-q, --quiet`     | Silence logging (default: `false`).                     | `HOKU_LOG_QUIET`     |
+| `-h, --help`      | Print help.                                             | -                    |
+| `-V, --version`   | Print version.                                          | -                    |
 
 ### Environment variables
 
@@ -31,7 +31,7 @@ The following environment variables are required for the majority of the `hoku` 
 
 - `HOKU_PRIVATE_KEY`: A wallet private key (ECDSA, secp256k1) for signing transactions.
 - `HOKU_NETWORK`: Specify the chain location with RPC presets and settings that map to either
-  `mainnet` (not available), `ignition`, `testnet`, `localnet`, or `devnet`.
+  `mainnet` (not available), `testnet`, `localnet`, or `devnet`.
 
 As such, the examples below omit these flags and presume that you've already set them.
 
@@ -39,15 +39,15 @@ As such, the examples below omit these flags and presume that you've already set
 
 Interaction with the Hoku network requires an account (ECDSA, secp256k1). As with any blockchain
 system, an account can be created at will, transfer funds, and send transactions. Recall that Hoku
-runs on a polyglot execution environment, supporting both EVM and WASM. Accounts work a bit
+runs on a polyglot execution environment, supporting both EVM and Wasm. Accounts work a bit
 different than pure EVM environments because the account is "unknown" to the chain until a
 transaction is sent to it. A transaction can be a deposit, `withdrawal`, or (intra-subnet) transfer.
 
 Generally, you should _always_ opt for using an EVM `0x` address when you run account commands. EVM
-accounts are also mapped to the WASM environment's address space, which is an address that gets
+accounts are also mapped to the Wasm environment's address space, which is an address that gets
 prefixed with `t410...` (or `f410...` on mainnet) and
 [specially encoded](https://docs.filecoin.io/smart-contracts/filecoin-evm-runtime/address-types#ethereum-address-manager)
-for full EVM-compatability in the WASM runtime.
+for full EVM-compatability in the Wasm runtime.
 
 The `account` command allows you to execute various subcommands:
 
@@ -62,6 +62,7 @@ The following `account` subcommands are available:
 - `deposit`: Deposit funds into a subnet from its parent.
 - `withdraw`: Withdraw funds from a subnet to its parent.
 - `transfer`: Transfer funds to another account in a subnet.
+- `sponsor`: Set or unset an account's default credit sponsor for gas fees.
 
 ### Create an account
 
@@ -72,7 +73,7 @@ hoku account create
 ```
 
 This command logs a JSON object to stdout with three properties: the private key, EVM public key,
-and its corresponding WASM compatible address.
+and its corresponding Wasm compatible address.
 
 **Example:**
 
@@ -153,7 +154,7 @@ on the parent, later minting them to the address on the subnet (i.e., a bridging
 
 Optionally, you can pass the `--to` flag to deposit funds from the parent to a specific address on
 the child. If you don't specify anything, the funds will be deposited to the address corresponding
-to the provided private key. Note that the global `--network` flag (defaults to `ignition`) will set
+to the provided private key. Note that the global `--network` flag (defaults to `testnet`) will set
 all of the `--evm-...` presets for you, but you _can_ override them with your own values, if needed.
 
 | Flag                   | Required? | Description                                                                       |
@@ -223,7 +224,7 @@ hoku account withdraw [--to <TO>] <AMOUNT>
 
 The `withdraw` command is the opposite of a `deposit`. It moves funds from a subnet to its parent,
 which happens through a smart contract call that unlocks the funds in the smart contract on the
-parent. Note that the global `--network` flag (defaults to `ignition`) will set all of the
+parent. Note that the global `--network` flag (defaults to `testnet`) will set all of the
 `--evm-...` presets for you, but you _can_ override them with your own values, if needed.
 
 | Positionals | Description             |
@@ -289,8 +290,8 @@ hoku account transfer --to <TO> <AMOUNT>
 | `<AMOUNT>`  | The amount to transfer. |
 
 The `--to` flag is the destination address within the subnet that you want to send funds to. Note
-that the global `--network` flag (defaults to `ignition`) will set all of the `--evm-...` presets
-for you, but you _can_ override them with your own values, if needed. This transaction happens fully
+that the global `--network` flag (defaults to `testnet`) will set all of the `--evm-...` presets for
+you, but you _can_ override them with your own values, if needed. This transaction happens fully
 _within_ the subnet (and does not interact with the rootnet).
 
 | Flag                   | Required? | Description                                                     |
@@ -338,6 +339,43 @@ the rootnet.
 
 </Callout>
 
+### Sponsor
+
+Set or unset an account's default credit sponsor for gas fees. This assumes the sponsor has approved
+your account via a credit approval.
+
+```
+hoku account sponsor <SUBCOMMAND>
+```
+
+| Subcommand | Description                                             |
+| ---------- | ------------------------------------------------------- |
+| `set`      | Set an account's default credit sponsor for gas fees.   |
+| `unset`    | Unset an account's default credit sponsor for gas fees. |
+
+In each command, it takes the following positionals:
+
+| Positionals | Description             |
+| ----------- | ----------------------- |
+| `<SPONSOR>` | Credit sponsor address. |
+
+**Examples:**
+
+Both of these examples presume the account `0x15d34aaf54267db7d7c367839aaf71a00a2c6a65` has executed
+a [credit approval](#approve-credit) for your account.
+
+- Set an account's default credit sponsor for gas fees.
+
+```
+hoku account sponsor set 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
+```
+
+- Unset an account's default credit sponsor for gas fees.
+
+```
+hoku account sponsor unset 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
+```
+
 ## Credit
 
 Manage credits for your account and sponsoring storage for contracts.
@@ -377,10 +415,10 @@ You'll see three values in the `data` field of the response:
 
 **Example:**
 
-- Buy credits with 0.1 native coins (displayed with $10^(17)$ units).
+- Buy credits with 1 native coins (displayed with $10^(18)$ units).
 
 ```
-> hoku credit buy 0.1
+> hoku credit buy 1
 
 {
   "status": "committed",
@@ -388,9 +426,12 @@ You'll see three values in the `data` field of the response:
   "height": "791907",
   "gas_used": 11114885,
   "data": {
-    "credit_free": "100000000000000000",
+    "credit_free": "1000000000000000000.0",
     "credit_committed": "0",
-    "last_debit_epoch": 791907
+    "credit_sponsor": null,
+    "last_debit_epoch": 14400,
+    "approvals": {},
+    "gas_allowance": "1.0"
   }
 }
 ```
@@ -400,16 +441,15 @@ You'll see three values in the `data` field of the response:
 Approve a credit amount for a bucket.
 
 ```
-hoku credit approve [OPTIONS] --receiver <RECEIVER>
+hoku credit approve [OPTIONS] --to <TO>
 ```
 
-| Flag                    | Required? | Description                                                                                                                         |
-| ----------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `-p, --private-key`     | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                                                                     |
-| `--receiver <RECEIVER>` | Yes       | The receiver account address.                                                                                                       |
-| `--caller <CALLER>`     | No        | Restrict the approval to a caller address, e.g., a bucket. The receiver will only be able to use the approval via a caller contract |
-| `--limit <LIMIT>`       | No        | Credit approval limit. If specified, the approval becomes invalid once the committed credits reach the specified limit              |
-| `--ttl <TTL>`           | No        | Credit approval time-to-live epochs. If specified, the approval becomes invalid after this duration                                 |
+| Flag                | Required? | Description                                                                                                            |
+| ------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `-p, --private-key` | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                                                        |
+| `--to <TO>`         | Yes       | The receiver account address.                                                                                          |
+| `--limit <LIMIT>`   | No        | Credit approval limit. If specified, the approval becomes invalid once the committed credits reach the specified limit |
+| `--ttl <TTL>`       | No        | Credit approval time-to-live epochs. If specified, the approval becomes invalid after this duration                    |
 
 **Example:**
 
@@ -417,7 +457,7 @@ hoku credit approve [OPTIONS] --receiver <RECEIVER>
   making the approval).
 
 ```
-> hoku credit approve --receiver 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
+> hoku credit approve --to 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
 
 {
   "status": "committed",
@@ -425,7 +465,8 @@ hoku credit approve [OPTIONS] --receiver <RECEIVER>
   "height": "15139",
   "gas_used": 9956584,
   "data": {
-    "committed": "0"
+    "credit_used": "0.0",
+    "gas_fee_used": "0.0"
   }
 }
 ```
@@ -434,16 +475,14 @@ hoku credit approve [OPTIONS] --receiver <RECEIVER>
 
 ```
 > hoku credit approve \
---receiver 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65 \
---caller t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi
+--to 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
 ```
 
-- Approve a receiver to use credits for a specific bucket and both a TTL and a credit limit.
+- Approve a receiver to use credits with both a TTL and a credit limit.
 
 ```
 > hoku credit approve \
---receiver 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65 \
---caller t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+--to 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65 \
 --ttl 3600 \
 --limit 10
 
@@ -465,21 +504,20 @@ hoku credit approve [OPTIONS] --receiver <RECEIVER>
 Revoke a credit amount for a bucket.
 
 ```
-hoku credit revoke [OPTIONS] --receiver <RECEIVER>
+hoku credit revoke [OPTIONS] --to <TO>
 ```
 
-| Flag                    | Required? | Description                                                                                                                         |
-| ----------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `-p, --private-key`     | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.                                                                     |
-| `--receiver <RECEIVER>` | Yes       | The receiver account address.                                                                                                       |
-| `--caller <CALLER>`     | No        | Restrict the approval to a caller address, e.g., a bucket. The receiver will only be able to use the approval via a caller contract |
+| Flag                | Required? | Description                                                     |
+| ------------------- | --------- | --------------------------------------------------------------- |
+| `-p, --private-key` | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions. |
+| `--to <TO>`         | Yes       | The receiver account address.                                   |
 
 **Example:**
 
 - Revoke a receiver's approval, disabling credit usage.
 
 ```
-> hoku credit revoke --receiver
+> hoku credit revoke --to 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
 
 {
   "status": "committed",
@@ -487,14 +525,6 @@ hoku credit revoke [OPTIONS] --receiver <RECEIVER>
   "height": "15287",
   "gas_used": 10150699
 }
-```
-
-- If a required caller was initially set, it must be provided to revoke the approval.
-
-```
-> hoku credit revoke \
---receiver 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65 \
---caller t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi
 ```
 
 ### Get credit balance
@@ -517,9 +547,17 @@ hoku credit balance
 > hoku credit balance
 
 {
-  "credit_free": "100000000000000000",
-  "credit_committed": "0",
-  "last_debit_epoch": 791907
+  "credit_free": "1000000000000000000.0",
+  "credit_committed": "0.0",
+  "credit_sponsor": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+  "last_debit_epoch": 15000,
+  "approvals": {
+    "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc": {
+      "credit_used": "0.0",
+      "gas_fee_used": "0.0"
+    }
+  },
+  "gas_allowance": "1.0"
 }
 ```
 
@@ -545,12 +583,12 @@ and the credit debit rate.
 > hoku credit stats
 
 {
-  "balance": "28.1",
-  "credit_sold": "28100000000000000000",
-  "credit_committed": "196953720372",
-  "credit_debited": "77309514267",
-  "credit_debit_rate": 1,
-  "num_accounts": 8
+  "balance": "50000.199999787752056",
+  "credit_sold": "50000200000000000000000.0",
+  "credit_committed": "493182.0",
+  "credit_debited": "25218.0",
+  "token_credit_rate": 1000000000000000000.0,
+  "num_accounts": 10
 }
 ```
 
@@ -590,7 +628,7 @@ The response will define `capacity_used` in bytes.
 
 ### Subnet storage stats
 
-Get the credit stats for a subnet.
+Get the storage stats for a subnet.
 
 ```
 hoku storage stats
@@ -616,10 +654,14 @@ The response includes the following values:
 > hoku storage stats
 
 {
-  "capacity_free": "1073741824",
-  "capacity_used": "1391267",
-  "num_blobs": 4,
-  "num_resolving": 0
+  "capacity_free": "10995116277754",
+  "capacity_used": "6",
+  "num_blobs": 1,
+  "num_resolving": 0,
+  "num_accounts": 10,
+  "bytes_resolving": 0,
+  "num_added": 0,
+  "bytes_added": 0
 }
 ```
 
@@ -649,12 +691,14 @@ hoku machine info <ADDRESS>
 **Example:**
 
 ```
-> hoku machine info t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi
+> hoku machine info 0xff00000000000000000000000000000000000094
 
 {
   "kind": "Bucket",
   "owner": "0x4d5286d81317e284cd377cb98b478552bbe641ae",
-  "metadata": {}
+  "metadata": {
+    "alias": "foo"
+  }
 }
 ```
 
@@ -670,11 +714,12 @@ hoku bu <SUBCOMMAND>
 The `bucket` subcommand has the following subcommands:
 
 - `create`: Create a new bucket contract.
-- `list`: List object stores by owner in a subnet.
+- `list`: List buckets by owner in a subnet.
 - `add`: Add an object into the bucket.
 - `get`: Get an object from the bucket.
 - `delete`: Delete an object from the bucket.
 - `query`: Query objects in the bucket.
+- `metadata`: Set new metadata for an object.
 
 When you create objects, the `key` is a custom identifier that, by default, uses the `/` delimiter
 to create a key-based hierarchy. The value is the data you want to store, which can be a file path.
@@ -693,7 +738,6 @@ hoku bucket create
 | Flag                | Required? | Description                                                               |
 | ------------------- | --------- | ------------------------------------------------------------------------- |
 | `-p, --private-key` | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.           |
-| `--public-write`    | No        | Allow **_public, open_** write access to the bucket.                      |
 | `-m, --metadata`    | No        | User-defined metadata.                                                    |
 | `--buy-credit`      | No        | The amount of tokens to spend on credit for the bucket.                   |
 | `--gas-limit`       | No        | Gas limit for the transaction.                                            |
@@ -703,11 +747,13 @@ hoku bucket create
 
 **Example:**
 
+- Create a new bucket contract.
+
 ```
 > hoku bucket create
 
 {
-  "address": "t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi",
+  "address": "0xff00000000000000000000000000000000000094",
   "tx": {
     "hash": "EC2ADFDD47F7E740C417E3BAEF2240CD5431C57F3389BF80A4B219D7B1486000",
     "height": "789471",
@@ -716,9 +762,15 @@ hoku bucket create
 }
 ```
 
-### List object stores
+- Create a new bucket contract with metadata.
 
-List object stores by owner in a subnet.
+```
+> hoku bucket create --metadata "alias=foo"
+```
+
+### List buckets
+
+List buckets by owner in a subnet.
 
 ```
 hoku bucket list {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
@@ -749,9 +801,11 @@ Query data contracts by:
 
 [
   {
-    "address": "t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi",
+    "address": "0xff00000000000000000000000000000000000094",
     "kind": "Bucket",
-    "metadata": {}
+    "metadata": {
+      "alias": "foo"
+    }
   }
 ]
 ```
@@ -761,13 +815,6 @@ Query data contracts by:
 
 ```
 > hoku bucket list --height 789471
-[
-  {
-    "address": "t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi",
-    "kind": "Bucket",
-    "metadata": {}
-  }
-]
 ```
 
 ### Add an object
@@ -778,10 +825,15 @@ Add an object with a key prefix.
 hoku bucket add \
 --address <ADDRESS> \
 --key <KEY> \
-[FILE_PATH]
+<FILE_PATH>
 ```
 
-The `INPUT` can be a file path.
+| Positionals   | Description          |
+| ------------- | -------------------- |
+| `<FILE_PATH>` | File path to upload. |
+
+You _must_ set the bucket address and object key. The metadata, ttl, and overwrite flags are
+optional but useful in various scenarios.
 
 | Flag                   | Required? | Description                                                                           |
 | ---------------------- | --------- | ------------------------------------------------------------------------------------- |
@@ -806,11 +858,11 @@ following contents:
 echo '{"hello":"world"}' > ~/hello.json
 ```
 
-And then push it to the bucket:
+- Add the file to the bucket:
 
 ```
 > hoku bucket add \
---address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+--address 0xff00000000000000000000000000000000000094 \
 --key "hello/world" \
 ~/hello.json
 
@@ -821,6 +873,18 @@ And then push it to the bucket:
   "gas_used": 4784697,
   "data": "bafy2bzacebnjpu5e3ushfu2weqvmtvk7vnndg4fkqsbr4zub52cyekcix7l4o"
 }
+```
+
+- Include metadata in the object along with ttl and overwrite:
+
+```
+> hoku bucket add \
+--address 0xff00000000000000000000000000000000000094 \
+--key "hello/world" \
+--metadata "alias=foo" \
+--ttl 3600 \
+--overwrite \
+~/hello.json
 ```
 
 ### Get an object
@@ -850,7 +914,7 @@ Note that when you retrieve the object, it will be written to stdout.
 
 ```
 > hoku bucket get \
---address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+--address 0xff00000000000000000000000000000000000094 \
 "hello/world"
 
 {"hello":"world"}
@@ -860,7 +924,7 @@ Note that when you retrieve the object, it will be written to stdout.
 
 ```
 > hoku bucket get \
---address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+--address 0xff00000000000000000000000000000000000094 \
 "hello/world" > downloaded.json
 ```
 
@@ -868,7 +932,7 @@ Note that when you retrieve the object, it will be written to stdout.
 
 ```
 > hoku bucket get \
---address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+--address 0xff00000000000000000000000000000000000094 \
 --range "10-14" \
 "hello/world"
 
@@ -908,7 +972,7 @@ Similar to when you `add` an object, you can specify gas settings or alter the b
 
 ```
 > hoku bucket delete \
---address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+--address 0xff00000000000000000000000000000000000094 \
 "hello/world"
 
 {
@@ -954,7 +1018,7 @@ at the end).
 
 ```
 > hoku bucket query \
---address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi
+--address 0xff00000000000000000000000000000000000094
 
 {
   "objects": [],
@@ -971,7 +1035,7 @@ at the end).
 
 ```
 > hoku bucket query \
---address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+--address 0xff00000000000000000000000000000000000094 \
 --prefix "hello/"
 
 {
@@ -1000,7 +1064,7 @@ at the end).
 
 ```
 > hoku bucket query \
---address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+--address 0xff00000000000000000000000000000000000094 \
 --delimiter "*"
 ```
 
@@ -1010,7 +1074,7 @@ at the end).
 
 ```
 > hoku bucket query \
---address t2l6pceh34a2v55df2ne5ourud5sputio6m57u2hi \
+--address 0xff00000000000000000000000000000000000094 \
 --delimiter "/" \
 --prefix "hello/" \
 --offset 1 \
@@ -1034,6 +1098,40 @@ at the end).
   "common_prefixes": []
 }
 ```
+
+### Add metadata to an object
+
+Add metadata to an existing object.
+
+```
+hoku bucket metadata --address <ADDRESS> --key <KEY> --metadata <METADATA>
+```
+
+| Flag             | Required? | Description                           |
+| ---------------- | --------- | ------------------------------------- |
+| `-a, --address`  | Yes       | Bucket contract address.              |
+| `-k, --key`      | Yes       | Key of the object to add metadata to. |
+| `-m, --metadata` | Yes       | Metadata to add to the object.        |
+
+**Example:**
+
+- Add metadata to an existing object:
+
+```
+> hoku bucket metadata \
+--address 0xff00000000000000000000000000000000000094 \
+--key "hello/world" \
+--metadata "alias=foo"
+
+{
+  "status": "committed",
+  "hash": "468D11CEC52D0AC4418459C6E10DFE6A6A0DC294EA7E79BA9E1BA479E4B7A44F",
+  "height": "15730",
+  "gas_used": 6805233
+}
+```
+
+Then, when you query the object, you'll see the metadata is now in the object.
 
 ## Timehub
 

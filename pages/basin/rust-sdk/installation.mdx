@@ -32,17 +32,6 @@ code!
 
 ## Additional dependencies
 
-For the sake of these examples, you'll also want to make sure you add the following to you
-`Cargo.toml`. The `fendermint_actor_machine` will later be used to define the write options for the
-object store (e.g., only owner can write, etc.), so this is most likely something you'll want to
-include. The specific revision hash should match what's defined in the `rust-hoku` repo's
-`Cargo.toml` file
-[here](https://github.com/hokunet/rust-hoku/blob/d442dbe7152717191af7912da7473e4fcacf95e5/Cargo.toml#L77).
-
-```toml
-fendermint_actor_machine = { git = "https://github.com/hokunet/ipc.git", rev = "139782cff4edec919d021c31400661d4cb3ff946" }
-```
-
 We'll also use the following, which are common for handling asynchronous network operations:
 
 - `tokio`: Async file operations.
@@ -55,4 +44,4 @@ tokio = { version = "1.37.0", features = ["fs", "macros", "rt-multi-thread"] }
 
 ## Next steps
 
-Continue onward to see how to connect to the network and interact with object stores!
+Continue onward to see how to connect to the network and interact with buckets!

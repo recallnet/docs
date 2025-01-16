@@ -26,9 +26,9 @@ flexible use cases.
 ### Flexible, programmable execution
 
 - Supports a **polyglot virtual machine** (VM) used to execute onchain data logic in both EVM and
-  WASM execution runtimes with familiar account patterns and tooling.
+  Wasm execution runtimes with familiar account patterns and tooling.
 - Existing Ethereum developers (e.g., Solidity) can utilize the same data and storage primitives as
-  WASM (e.g., Rust) developers through VM abstraction layers.
+  Wasm (e.g., Rust) developers through VM abstraction layers.
 
 ### Lightening-fast settlement & consensus
 
@@ -78,7 +78,7 @@ storage, the computational complexity of the data processing, etc.
 ### Functions
 
 At its core, Hoku exposes _functions_, which are fundamental building blocks for task execution on
-the network. These functions are implemented with WASM-defined logic and are embedded into a subnet
+the network. These functions are implemented with Wasm-defined logic and are embedded into a subnet
 at genesis. A function can be thought of as a single, atomic unit of work that can be executed
 onchain.
 
@@ -96,7 +96,7 @@ blob, but others will be added in the future (e.g., compute for performing trans
 ### Contracts
 
 _Contracts_ are arbitrary programs that run on the network. The flexible
-[execution environment](https://fvm.filecoin.io/) lets you deploy EVM (Solidity) and WASM (Rust,
+[execution environment](https://fvm.filecoin.io/) lets you deploy EVM (Solidity) and Wasm (Rust,
 etc.) contracts that interact with verifiable offchain data stored in the Hoku datachain. There are
 two types of contracts that anyone can deploy:
 

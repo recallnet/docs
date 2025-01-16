@@ -1,6 +1,6 @@
 ---
 title: Usage
-description: Understand the basics for connecting to Hoku and using object stores.
+description: Understand the basics for connecting to Hoku and using buckets.
 ---
 
 The most basic usage will likely involve connecting to the network, creating an bucket, and then
@@ -24,7 +24,6 @@ use hoku_sdk::{
     machine::{bucket::Bucket, Machine},
     network::Network,
 };
-use fendermint_actor_machine::WriteAccess;
 
 #[tokio::main]
 async fn main() {
@@ -44,12 +43,11 @@ To create a bucket, you'll need to use the `Bucket::new` method, which takes a f
 - The RPC provider.
 - The signer.
 - An optional `owner` address, which defaults to the signer's address.
-- Although this defined desired `WriteAccess` controls, the actual access is controlled by the
-  credit approval logic. Use `WriteAccess::OnlyOwner` for now, but this may change in the future.
-- A `HashMap` of metadata to assign to the bucket.
+- A `HashMap` of metadata to assign to the bucket (use `Default::default()` to create an empty map).
 - Lastly, optional gas parameters (these can be imported from `hoku_provider::message::GasParams`).
 
 ```rust
+#[tokio::main]
 async fn main() {
     // Existing code...
 
@@ -57,7 +55,6 @@ async fn main() {
         &provider,
         &mut signer,
         None,
-        WriteAccess::OnlyOwner,
         HashMap::new(),
         Default::default(),
     ).await?;
@@ -85,6 +82,7 @@ use hoku_sdk::{
 };
 use tokio::io::{AsyncSeekExt, AsyncWriteExt};
 
+#[tokio::main]
 async fn main() {
     // Existing code...
 
@@ -102,7 +100,7 @@ async fn main() {
         ..Default::default()
     };
     let tx = bucket
-        .add(&provider, &mut signer, key, file.file_path(), options)
+        .add_from_path(&provider, &mut signer, key, file.file_path(), options)
         .await?;
 }
 ```
@@ -135,7 +133,7 @@ refine your results:
 
 - `prefix`: The prefix of the keys you want to list.
 - `delimiter`: The delimiter to use when listing keys.
-- `offset`: The offset to start listing keys.
+- `start_key`: The key to start listing keys from.
 - `limit`: The maximum number of keys to list.
 - `height`: The block height to list objects for (defaults to the latest committed height).
 
@@ -148,13 +146,14 @@ use hoku_sdk::{
     network::Network,
 };
 
+#[tokio::main]
 async fn main() {
     // Existing code...
 
     let options = QueryOptions {
         prefix: "my/".to_string(),
         delimiter: "/".to_string(),
-        offset: 0,
+        start_key: None,
         limit: 1,
         height: Default::default(),
     };
@@ -168,19 +167,19 @@ This will give you a list of all objects and any other common prefixes down the 
 {
   "objects": [
     {
-      "key": "my/key",
+      "key": "hello/world",
       "value": {
-        "hash": "lioj4xmf3geyffydp2hcj5u3wdtajkcmshb3h32hqsrxjajjadmq",
-        "recovery_hash": "tczmmjk737gya3unto6qrfuomnykwyynan7cx3i355r2ivt7bbpq",
-        "size": 1024,
-        "expiry": 73912,
+        "hash": "rzghyg4z3p6vbz5jkgc75lk64fci7kieul65o6hk6xznx7lctkmq",
+        "size": 6,
         "metadata": {
+          "new": "foo",
           "content-type": "application/octet-stream"
         }
       }
     }
   ],
-  "common_prefixes": []
+  "common_prefixes": [],
+  "next_key": null
 }
 ```
 
@@ -202,6 +201,7 @@ use hoku_sdk::{
     network::Network,
 };
 
+#[tokio::main]
 async fn main() {
     // Existing code...
 
@@ -216,9 +216,9 @@ async fn main() {
         bucket.get(&provider, &key, open_file, options).await?;
     }
     // Read the first 10 bytes of your downloaded 100 bytes
-    let mut read_file = tokio::fs::File::open(&obj_path).await?;
+    let mut read_file = tokio::fs::File::open(&file.file_path()).await?;
     let mut contents = vec![0; 10];
-    read_file.read(&mut contents).await?;
+    read_file.write_all(&mut contents).await?;
 }
 ```
 
@@ -229,6 +229,7 @@ It takes similar parameters as adding an object. The default options are general
 you specify the broadcast mode and gas parameters.
 
 ```rust
+#[tokio::main]
 async fn main() {
     // Existing code...
 

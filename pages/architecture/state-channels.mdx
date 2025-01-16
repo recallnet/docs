@@ -215,9 +215,9 @@ producer must also check onchain state for "resolved" as well as the in-memory v
 the power table (stake) within the subnet. If a quorum is reached, the leader injects an _implicit
 transaction_ into the proposal, which is validated by the other validators based on their view of
 the vote tally. Finally, during execution of this transaction, the object is marked as "resolved".
-Querying the object store at this point will show resolved status. The whole process is
-asynchronous, and the object is not considered resolved until the next block. See figure for a
-high-level overview of the block production process in Hoku based on the CometBFT ABCI++ framework.
+Querying the bucket at this point will show resolved status. The whole process is asynchronous, and
+the object is not considered resolved until the next block. See figure for a high-level overview of
+the block production process in Hoku based on the CometBFT ABCI++ framework.
 
 <Callout>
 

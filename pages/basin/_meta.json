@@ -9,6 +9,7 @@
   },
   "index": "Overview",
   "concepts": "Concepts",
+  "studio": "Faucet & Studio",
   "cli": "CLI",
   "rust-sdk": "Rust SDK",
   "s3": "S3 adapter",

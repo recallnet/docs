@@ -14,7 +14,7 @@ to the Hoku network.
 
 The object API endpoints for each of the Hoku chain environments are listed below:
 
-- `ignition` (testnet): `https://object-api-ignition-0.hoku.sh`
+- `testnet`: `https://object-api-ignition-0.hoku.sh`
 - `localnet` or `devnet`: `http://127.0.0.1:8001`
 
 ## Endpoints
@@ -77,14 +77,16 @@ The object download endpoint is used to download an object from a bucket.
 We'll set an environment variable for the bucket and object key.
 
 ```bash
-export BUCKET="t2nxspveg57zoewzzv35u377o4r22b3t6wcrge6yq"
+export BUCKET="0xff000000000000000000000000000000000000ac"
 export OBJECT_KEY="hello/world"
+export BUCKET_ID=$(echo $BUCKET | sed 's/0xff00*//g' | xargs -I {} printf "%d" "0x{}")
 ```
 
-Then, we'll download the object.
+Then, we'll download the object. The API currently expects the FVM-style bucket ID address, which is
+a `f0` or `t0` prefixed before the bucket ID's decimal value.
 
 ```bash
-curl -X GET http://localhost:8001/v1/objects/$BUCKET/$OBJECT_KEY > downloaded.txt
+curl -X GET http://localhost:8001/v1/objects/t0$BUCKET_ID/$OBJECT_KEY > downloaded.txt
 ```
 
 Note the the contents will be written to stdout unless you redirect it to a file.

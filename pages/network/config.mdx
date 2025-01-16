@@ -5,47 +5,38 @@ description: Core contracts & network information for interacting with the Hoku 
 
 import { Callout } from "nextra/components";
 
-You can find all of the Ignition testnet information below, such as contract addresses and chain
-information.
+You can find all of the testnet information below, such as contract addresses and chain information.
 
 <Callout type="warning"  >
 
 The Hoku network is still under development, so these values are **heavily** subject to change. The
-testnet will be upgraded every ~2 weeks, and each upgrade will change the subnet ID, chain ID, and
-certain contract addresses.
+testnet will be upgraded every ~2 weeks, and each upgrade will change certain contract addresses.
 
 </Callout>
 
-## Ignition (testnet)
+## Testnet
 
 ### Chain & subnet ID
 
 | Description | Value                                                   |
 | ----------- | ------------------------------------------------------- |
-| Subnet ID   | `/r314159/t410f3oewkcvacaaydfn4v6diulzise26cpfolfj7heq` |
-
-The corresponding chain ID for this subnet ID is the following:
-
-- Integer: `3258443211374980`
-- Hex: `0xb93896e228184`
-
-Note the subnet ID can be converted to its integer value by taking the
-[FNV](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function) hash (64 bit) of
-the subnet ID string representation, modulo the maximum chain ID value (`4503599627370476`, as
-defined in [EIP-2294](https://eips.ethereum.org/EIPS/eip-2294)).
+| Chain ID    | `2481632`                                               |
+| Subnet ID   | `/r314159/t410f4f5jzfsftk6zqvcq3c4rrt372itjg6qh5b33dwq` |
 
 ### Contracts
 
 #### Core
 
-| Description                | Address                                      |
-| -------------------------- | -------------------------------------------- |
-| Subnet EVM gateway         | `0x77aa40b105843728088c0132e43fc44348881da8` |
-| Subnet EVM registry        | `0x74539671a1d2f1c8f200826baba665179f53a1b7` |
-| Subnet EVM validator gater | `0x2c6f90127a2487aC6524Cf93e796971478432447` |
-| Parent EVM gateway         | `0xF8Abf46A1114d3B44d18F2A96D850e36FC6Ee94E` |
-| Parent EVM registry        | `0x0bb143a180b61ae6b1872bbf99dBe261A2aDde40` |
-| Parent EVM supply source   | `0x20d8a696091153c4d4816ba1fdefe113f71e0905` |
+| Description               | Address                                      |
+| ------------------------- | -------------------------------------------- |
+| Subnet gateway            | `0x77aa40b105843728088c0132e43fc44348881da8` |
+| Subnet registry           | `0x74539671a1d2f1c8f200826baba665179f53a1b7` |
+| Parent gateway            | `0x88b497225c33dDF92A4F94C0C82a20044e68Bc9E` |
+| Parent registry           | `0x4665468636B81481adac664993782609a1F3cB30` |
+| Parent supply source      | `0xA7D1A73173A6854b7C8c1DF4d22a1d39BfcFb021` |
+| Parent validator gater    | `0x3d63f2e9fe4e5d7b0e4c97a8720b43dd55f82cf4` |
+| Parent validator rewarder | `0x8d235338cf5fDFA39857a135d6314890615b986b` |
+| Parent subnet actor       | `0xe17a9c96459abd985450d8b918cf7fd226937a07` |
 
 Note that the subnet contracts will always be the same for any new subnet deployed. The parent
 contracts may change, up until the testnet is stabilized.
@@ -57,8 +48,9 @@ deploy them, but the following addresses are the ones that are officially suppor
 
 | Description    | Address                                      |
 | -------------- | -------------------------------------------- |
-| Bucket manager | `0xd5E54fe1b8eC9bf73Fdc195Ee2399c97B1a37B8E` |
-| Credit manager | `0xB2a4636b743EBdF13Bb83a8F4c520c965131d294` |
+| Blob manager   | `0x39E39A2dcdB7340CE12c67f4C25f2A5183a5f70d` |
+| Bucket manager | `0x48E6c6d0745795Ae0CaeA74a0f1E113Cb5365DC3` |
+| Credit manager | `0x612308d30FB994FEF12F2C4e0534a44e3fb6d323` |
 
 ## Localnet
 
@@ -69,32 +61,31 @@ always be the same.
 
 | Description | Value                                                   |
 | ----------- | ------------------------------------------------------- |
-| Subnet ID   | `/r314159/t410fkzrz3mlkyufisiuae3scumllgalzuu3wxlxa2ly` |
-
-The corresponding chain ID for this subnet ID is the following:
-
-- Integer: `4362550583360910`
-- Hex: `0xf7fb775d5fd8e`
+| Chain ID    | `248163216`                                             |
+| Subnet ID   | `/r314159/t410f6gbdxrbehnaeeo4mrq7wc5hgq6smnefys4qanwi` |
 
 ### Contracts
 
 #### Core
 
-| Description                | Address                                      |
-| -------------------------- | -------------------------------------------- |
-| Subnet EVM gateway         | `0x77aa40b105843728088c0132e43fc44348881da8` |
-| Subnet EVM registry        | `0x74539671a1d2f1c8f200826baba665179f53a1b7` |
-| Subnet EVM validator gater | `0x851356ae760d987E095750cCeb3bC6014560891C` |
-| Parent EVM gateway         | `0x77aa40b105843728088c0132e43fc44348881da8` |
-| Parent EVM registry        | `0x74539671a1d2f1c8f200826baba665179f53a1b7` |
-| Parent EVM supply source   | `0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E` |
+| Description               | Address                                      |
+| ------------------------- | -------------------------------------------- |
+| Subnet gateway            | `0x77aa40b105843728088c0132e43fc44348881da8` |
+| Subnet registry           | `0x74539671a1d2f1c8f200826baba665179f53a1b7` |
+| Parent gateway            | `0x9A676e781A523b5d0C0e43731313A708CB607508` |
+| Parent registry           | `0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44` |
+| Parent supply source      | `0x4A679253410272dd5232B3Ff7cF5dbB88f295319` |
+| Parent validator gater    | `0x70e0bA845a1A0F2DA3359C97E0285013525FFC49` |
+| Parent validator rewarder | `0x09635F643e140090A9A8Dcd712eD6285858ceBef` |
+| Parent subnet actor       | `0xf1823bc4243b40423b8c8c3f6174e687a4c690b8` |
 
 #### Solidity wrappers
 
 | Description    | Address                                      |
 | -------------- | -------------------------------------------- |
-| Bucket manager | `0xd5E54fe1b8eC9bf73Fdc195Ee2399c97B1a37B8E` |
-| Credit manager | `0xB2a4636b743EBdF13Bb83a8F4c520c965131d294` |
+| Blob manager   | `0xe1Aa25618fA0c7A1CFDab5d6B456af611873b629` |
+| Bucket manager | `0xf7Cd8fa9b94DB2Aa972023b379c7f72c65E4De9D` |
+| Credit manager | `0x82C6D3ed4cD33d8EC1E51d0B5Cc1d822Eaa0c3dC` |
 
 ## Devnet
 
@@ -104,14 +95,10 @@ chain and is meant for testing core protocol changes.
 
 ### Chain & subnet ID
 
-| Description | Value  |
-| ----------- | ------ |
-| Subnet ID   | `test` |
-
-The corresponding chain ID for this subnet ID is the following:
-
-- Integer: `1942764459484029`
-- Hex: `0x6e6ef197d637d`
+| Description | Value              |
+| ----------- | ------------------ |
+| Chain ID    | `1942764459484029` |
+| Subnet ID   | `test`             |
 
 ### Contracts
 

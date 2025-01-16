@@ -5,8 +5,8 @@ description: Getting started with basic network concepts.
 
 import { Callout } from "nextra/components";
 
-Buckets are object stores that take advantage of Hoku's subnet scaling infrastructure to enable fast
-and cost-effective storage of large amounts of data. Basin's usage pattern generally consists of two
+Buckets are buckets that take advantage of Hoku's subnet scaling infrastructure to enable fast and
+cost-effective storage of large amounts of data. Basin's usage pattern generally consists of two
 components:
 
 - Creating an bucket (with certain permissions on who can write data).
@@ -21,80 +21,69 @@ complex data structures.
 
 The interface is implemented as a _contract_, deployed on a subnet. Data is represented as an
 onchain hash within a contract's state, and the actual data is stored offchain in a node's local
-(networked) block store. Spawning new object stores is handled with a general factory smart
-contract, which the various Basin interfaces (SDK, CLI) call under the hood.
+(networked) block store. Spawning new buckets is handled with a general factory smart contract,
+which the various Basin interfaces (SDK, CLI) call under the hood.
 
-More generally, there are two types of contracts on Hoku network: **_WASM_** contracts, and EVM
+More generally, there are two types of contracts on Hoku network: **_Wasm_** contracts, and EVM
 **_smart_** contracts. The two differ in how what they can handle and related intents.
 
-### WASM contract
+### Wasm contract
 
-A _WASM_ contract is an
-[WASM runtime contract](https://docs.filecoin.io/basics/the-blockchain/actors) used to store and
-manage data with low-level control. The polyglot execution runtime allows WASM contracts to be
+A _Wasm_ contract is an
+[Wasm runtime contract](https://docs.filecoin.io/basics/the-blockchain/actors) used to store and
+manage data with low-level control. The polyglot execution runtime allows Wasm contracts to be
 written in Rust (or other languages) and then compiled accordingly. Thus, these have more flexible
-and data-oriented programmatic control, so they're called "WASM contracts" to help distinguish them
+and data-oriented programmatic control, so they're called "Wasm contracts" to help distinguish them
 from EVM smart contracts.
 
 ### Smart contract
 
 A _smart_ contract is a "traditional" EVM contract, most commonly written in Solidity. These expose
 EVM-specific types, state access, and functionality, but they lack the more robust features that a
-WASM runtime supports.
+Wasm runtime supports.
 
-## Accounts & addresses
+## Accounts
 
 Accounts (ECDSA, secp256k1) are used to send data-carrying transactions as you would on any
 blockchain system. Thus, all mutations are onchain transactions within a subnet, so funds are
 required to pay for writes. Since Basin is built on top of Filecoin's FVM, the addresses can follow
 a _slightly_ different convention than a purely EVM-based account system.
 
-### EVM compatibility
+### EVM addresses
 
-Generally, you can use EVM-style (i.e., `0x` prefixed) accounts for user operations (writes, etc.).
-WASM contracts, such as object stores, are represented as WASM-style addresses (e.g.,
-`t2...`/`f2...`).
+You can use EVM-style (i.e., `0x` prefixed) accounts for typical wallet operations (writes, sending
+transactions, etc.). Wasm contracts, such as buckets, are represented as hex addresses as well.
 
-<Callout type="info">
+### Wasm addresses
 
-This is being further researched to create a consistent experience. In the future, you'll likely
-only need to think about EVM-style addresses.
+All Wasm contract addresses are represented a bit differently than your typical EVM wallet or
+contract contract. Its usage pattern doesn't change; the format just looks _slightly_ unusual.
+
+Every Wasm contract has an unique internal chain identifier associated with it called an _actor ID_.
+You'll see Wasm contracts are predictably represented as `0xff00...<actor_id>`. For example, a
+bucket with an ID of `143` would be `0xff0000000000000000000000000000000000008f` (since the hex
+value of `143` is `8f`).
+
+## Payment
+
+### Tokens
+
+Tokens are used to pay for typical blockchain operations, like deploying contracts (e.g., creating a
+bucket), adding an object, or transferring funds. Whenever _data is written_ to a contract and
+stored as a blob on the network, _credits_ are used.
+
+<Callout>
+
+You'll often see the phrase _native coin_ or _native token_. A Hoku subnet doesn't really "care"
+what the native coin is; it simply uses the concept of a token as a medium of exchange for chain
+transactions. In practice, the parent rootnet specifies a _supply source_ upon subnet creation,
+dictating how you move funds into or out of the subnet through deposits and withdrawals. This is
+where the HOKU ERC20 token is used; it's the supply source on the parent chain defined for the child
+subnet.
 
 </Callout>
 
-### WASM compatibility
-
-Under the hood, EVM accounts and addresses are represented differently than WASM contract addresses.
-Here's a quick primer on how WASM addresses work:
-
-- Addresses are prefixed with a network identifier: `t` for Filecoin testnet, or `f` for Filecoin
-  mainnet, and there are five different address types denoted by the second character in the address
-  string: `t0`/`f0` up to `t4`/`f4`.
-- If you're coming from the EVM world, you'll mostly see two types in Hoku:
-  - `t2`/`f2`: Any WASM contract that gets deployed, such as an bucket.
-  - `t4`/`f4`: A namespaced contract address, and `t410`/`f410` is a specifalized namespace for
-    Ethereum-compatible addresses (wallets _and_ smart contracts) on the FVM.
-- Namely, each `t410...`/`f410...` address is equivalent to a `0x` address; the hex address is
-  [encoded in the FVM address string](https://docs.filecoin.io/smart-contracts/filecoin-evm-runtime/address-types#converting-to-a-0x-style-address).
-
-Once your EVM-style account is registered on a subnet, the `0x` and its corresponding
-`t410...`/`f410...` addresses can be used interchangeably on Basin subnets.
-
-## Access control
-
-Access control is fully managed by credit workflows with approvals and revocations. You start buy
-purchasing credit with an account (i.e., wallet), and once this account creates a bucket, all object
-related storage operations will draw down from these credits.
-
-If you want to enable other accounts to write to this bucket, you can use a credit approval to
-enable some other account to draw down from this admin account's credit balance—referred to as the
-"receiver" for the approval. You can also further constrain this by defining a "required caller"
-that, for example, only lets the receiver write data only for a specific bucket.
-
-Revocations follow the same pattern. You can revoke an approval for a receiver, or a receiver and
-caller (e.g., bucket) pair.
-
-## Credits
+### Credits
 
 Credits are a useful mechanism to predictably manage storage costs and avoid surprises, and they are
 used to pay for all storage within the Hoku network. You can sponsor (delegate) your credits to
@@ -102,28 +91,31 @@ contracts on the network, and whenever data is written to a contract, credits ar
 credit balance upon ongoing debit epochs (sparse block heights). It allows for more fine-grained
 accounting because 1 subnet native coin = $10^(18)$ credits.
 
-The native subnet token is used for creating _contracts_, like buckets, but whenever _data is
-written_ to a contract, credits are used.
-
-Thus, you **MUST have credits** to store data on Hoku. For example, to add an object to a bucket,
+Namely, you **MUST have credits** to store data on Hoku. For example, to add an object to a bucket,
 you spend credits that allocate storage space for the object, including [TTL](#time-to-live-ttl)
-parameters, and credits will automatically get withdrawn from your credit balance as storage
-continues.
+parameters. Credits will automatically get withdrawn from your credit balance as storage continues.
 
 You can manage your credits with the `hoku credit` command, further described in the
-[credits](#credits) section below.
+[credits](/basin/cli/commands#credits) section below.
 
-<Callout>
+### Gas allowance
 
-You'll see the phrase "native coin" or "native token" used throughout the documentation. A Hoku
-subnet doesn't really "care" what the native coin is; it simply uses the concept of a token as a
-medium of exchange for chain transactions. In practice, the parent rootnet specifies a _supply
-source_ upon subnet creation, dictating how you move funds into or out of the subnet through
-deposits and withdrawals. By default, Hoku subnets simply use the parent chain's native token as the
-supply source, and moving funds into a subnet just bridges the native token from the parent chain to
-the subnet.
+Whenever you purchase credits, the number of tokens you spend will also be allocated to a _gas
+allowance_ for your account. Recall that tokens are used to pay for gas. If you have a gas allowance
+balance, you'll instead draw down from this balance. For example, if you create a bucket _and_ you
+have a gas allowance, your token balance will remain unchanged, but your gas allowance will
+decrease. In the same example but with _no gas allowance balance_, you'll simply draw down from your
+token balance.
 
-</Callout>
+## Access control
+
+Access control is fully managed by credit workflows with approvals and revocations. You start buy
+purchasing credit with an account (i.e., wallet), and once this account creates a bucket, all object
+related storage operations will draw down from these credits.
+
+If you want to enable other accounts to write to this bucket, you can use a credit _approval_ to
+enable some other account to draw down from this admin account's credit balance. Revocations follow
+the same pattern where you can revoke an approval for a provisioned account.
 
 ## Broadcasting transactions
 

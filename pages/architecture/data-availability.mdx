@@ -5,13 +5,13 @@ description: A general purpose data overlay fulfilling data availability require
 
 import { Callout } from "nextra/components";
 
-In Hoku, data commitments are maintained onchain but actual data storage is managed offchain. This
+In Recall, data commitments are maintained onchain but actual data storage is managed offchain. This
 design choice is driven by the need to maintain chain liveness and limit the demands on validator
 resources, as storing large volumes of data onchain can lead to bloating and reduced efficiency.
-Hoku partly addresses these scalability issues through the use of hierarchical consensus and
+Recall partly addresses these scalability issues through the use of hierarchical consensus and
 detached payload transactions with a custom synchronization and consensus protocol. However, this
 requires care in order to maintain the overall integrity, and reliability of our system. In
-particular, Hoku needs to support the following additional core requirements to maintain data
+particular, Recall needs to support the following additional core requirements to maintain data
 security:
 
 - **Data integrity**: Stakeholders must have mechanisms to verify that the data has not been altered
@@ -50,8 +50,8 @@ proofs are designed to demonstrate that a prover actually has the bytes of data 
 have, and perhaps more importantly, that they _continue_ to have the bytes of data that they should
 have for the period of time that they should have them.
 
-In order to address all four of Hoku's core data security requirements, we employ features from both
-data availability and data accessibility protocol designs.
+In order to address all four of Recall's core data security requirements, we employ features from
+both data availability and data accessibility protocol designs.
 
 ## Erasure coding
 
@@ -64,17 +64,18 @@ can be reconstructed from a subset of the fragments, as long as a sufficient num
 remain intact.
 
 Most existing data availability protocols rely on a combination of random sampling and erasure
-coding, an approach we also adopt in Hoku. In the context of data availability sampling, when a node
-needs to verify data availability, it randomly samples a subset of the _coded_ fragments. Due to the
-properties of erasure encoding, any sufficiently large subset of fragments (defined by the encoding
-scheme) can be used to reconstruct the original data. This allows nodes to verify the presence of
-the entire dataset without needing to store or access all fragments. By combining erasure encoding
-with data availability sampling, a system can efficiently detect and mitigate data withholding or
-loss, thereby maintaining the robustness and reliability of the distributed storage solution.
+coding, an approach we also adopt in Recall. In the context of data availability sampling, when a
+node needs to verify data availability, it randomly samples a subset of the _coded_ fragments. Due
+to the properties of erasure encoding, any sufficiently large subset of fragments (defined by the
+encoding scheme) can be used to reconstruct the original data. This allows nodes to verify the
+presence of the entire dataset without needing to store or access all fragments. By combining
+erasure encoding with data availability sampling, a system can efficiently detect and mitigate data
+withholding or loss, thereby maintaining the robustness and reliability of the distributed storage
+solution.
 
 ### Alpha entanglement
 
-Hoku employs [Alpha Entanglement (AE) codes](https://arxiv.org/abs/1810.02974) to encode data
+Recall employs [Alpha Entanglement (AE) codes](https://arxiv.org/abs/1810.02974) to encode data
 fragments, which differs from commonly deployed Reed-Solomon erasure codes,. AE codes are a
 specialized XOR-based coding scheme specifically designed for distributed systems, and provide a
 number of advantages over other commonly used erasure codes.
@@ -137,11 +138,11 @@ mapping a Merkle DAG into an authenticated lattice structure.
 </Callout>
 
 Initially, the entangled Merkle tree blocks are automatically distributed (evenly) across the
-network, and Hoku uses [consistent hashing](https://en.wikipedia.org/wiki/Consistent_hashing), to
-distribute the data and parity blocks among a dynamic set of validator nodes. In practice, Hoku uses
-a redundancy strategy that ensures that the replication factor for each node in the lattice is a
-function of its depth in the resulting eDAG (i.e., nodes closer to the root are replicated more than
-data and parity blocks closer to the leafs).
+network, and Recall uses [consistent hashing](https://en.wikipedia.org/wiki/Consistent_hashing), to
+distribute the data and parity blocks among a dynamic set of validator nodes. In practice, Recall
+uses a redundancy strategy that ensures that the replication factor for each node in the lattice is
+a function of its depth in the resulting eDAG (i.e., nodes closer to the root are replicated more
+than data and parity blocks closer to the leafs).
 
 <Callout>
 
@@ -160,10 +161,10 @@ themselves can be adaptive, and parameters can be allowed to change over time.
 Recall from the previous section that alpha entanglement works by **propagating redundant
 information across the mesh-like structure.** In practice, this means that in order to compute
 parity blocks for new incoming data, the new data must be combined (XOR) with past/current data.
-Hoku takes advantage of this process by requiring validators to alpha entangle new chunks of data
+Recall takes advantage of this process by requiring validators to alpha entangle new chunks of data
 with past chunks, to create a self-repairing data lattice.
 
-Each new data file/blob that is added to a Hoku bucket machine via a detached payload transaction
+Each new data file/blob that is added to a Recall bucket machine via a detached payload transaction
 has already been chunked into fixed size chunks, and forms a content-addressable DAG. Each data
 chunk within the DAG, including intermediate nodes of the tree, have a unique hash address (i.e.,
 CID). As each chunk is ingested into the system it is entangled with a pseudorandomly selected past
@@ -171,24 +172,25 @@ chunk from the existing data lattice.
 
 <Callout>
 
-Note that this chunking and DAG construction process is already part of the object API that Hoku
+Note that this chunking and DAG construction process is already part of the object API that Recall
 uses for detached payloads. The input data is essentially an IPFS-compatible IPLD encoded DAG.
 
 </Callout>
 
 ### A note on data retention
 
-One of the stated goals of Hoku is to support custom time-to-live (TTL) data life-cycles in subnets.
-This is in contrast to existing data availability solutions, where there are very well-defined and
-fixed TTL requirements. Again, we leverage the entanglement process to our advantage to
+One of the stated goals of Recall is to support custom time-to-live (TTL) data life-cycles in
+subnets. This is in contrast to existing data availability solutions, where there are very
+well-defined and fixed TTL requirements. Again, we leverage the entanglement process to our
+advantage to
 [support varying TTL requirements](https://www.researchgate.net/publication/328416034_Practical_erasure_codes_for_storage_systems_The_study_of_entanglement_codes_an_approach_that_propagates_redundancy_to_increase_reliability_and_performance)
 within a bucket.
 
 Each new file or blob added to a bucket is required to have an associated _retention policy_ as part
-of its object metadata. Given that time in Hoku is measured in block time, this retention policy is
-specified as a TTL in blocks (e.g., TTL = 5). For a file/blob added at block 10, with a TTL of (at
-least) 5 blocks, we then assign it to _retention group_ 15. When entangling data, validators must
-always entangle incoming data (and associated chunks) with pseudorandom chunks from the correct
+of its object metadata. Given that time in Recall is measured in block time, this retention policy
+is specified as a TTL in blocks (e.g., TTL = 5). For a file/blob added at block 10, with a TTL of
+(at least) 5 blocks, we then assign it to _retention group_ 15. When entangling data, validators
+must always entangle incoming data (and associated chunks) with pseudorandom chunks from the correct
 retention group (or a retention group with a longer TTL). This ensures that data that should remain
 “available” together are physically and semantically grouped. If it is not possible to entangle a
 given data chunk with other data from its intended retention group (e.g., due to lack of preexisting

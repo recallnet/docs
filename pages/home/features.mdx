@@ -6,7 +6,7 @@ keywords: features, costs, limits
 
 import { Callout } from "nextra/components";
 
-The Hoku system facilitates new data-driven applications by connecting various participants in the
+The Recall system facilitates new data-driven applications by connecting various participants in the
 data pipeline through a unified, programmable data layer:
 
 - **Data producers**: Entities that generate or aggregate data (social media, DePINs, blockchain
@@ -15,7 +15,7 @@ data pipeline through a unified, programmable data layer:
   compute).
 - **Infrastructure providers**: Decentralized node operators that operate the network and ensure
   data availability.
-- **Data consumers**: Users who interact with applications built on Hoku, consuming or generating
+- **Data consumers**: Users who interact with applications built on Recall, consuming or generating
   data.
 
 All of this is made possible through a modular set of primitives that can be stitched together for
@@ -55,7 +55,7 @@ flexible use cases.
 
 ## Components
 
-The Hoku datachain provides novel data availability mechanisms for large volumes of heterogenous
+The Recall datachain provides novel data availability mechanisms for large volumes of heterogenous
 data. The protocol consists of a few different layers that build upon one another, enabling an
 ecosystem to facilitate different ways to manage your data.
 
@@ -69,7 +69,7 @@ track balances and permissions.
 
 ### Credits
 
-Hoku also includes a novel _credits_ system to support usage-based pricing and predictable costs.
+Recall also includes a novel _credits_ system to support usage-based pricing and predictable costs.
 This brings a subnet-level accounting mechanism wherein credits represent some unit of resource to
 perform a set of operations. For example, storing an arbitrary blob for a certain amount of time
 would cost a forecastable number of credits, measured by the size of the data, the duration of the
@@ -77,7 +77,7 @@ storage, the computational complexity of the data processing, etc.
 
 ### Functions
 
-At its core, Hoku exposes _functions_, which are fundamental building blocks for task execution on
+At its core, Recall exposes _functions_, which are fundamental building blocks for task execution on
 the network. These functions are implemented with Wasm-defined logic and are embedded into a subnet
 at genesis. A function can be thought of as a single, atomic unit of work that can be executed
 onchain.
@@ -97,8 +97,8 @@ blob, but others will be added in the future (e.g., compute for performing trans
 
 _Contracts_ are arbitrary programs that run on the network. The flexible
 [execution environment](https://fvm.filecoin.io/) lets you deploy EVM (Solidity) and Wasm (Rust,
-etc.) contracts that interact with verifiable offchain data stored in the Hoku datachain. There are
-two types of contracts that anyone can deploy:
+etc.) contracts that interact with verifiable offchain data stored in the Recall datachain. There
+are two types of contracts that anyone can deploy:
 
 - **Bucket**: Key-value object storage for arbitrary data.
 - **Timehub**: Merklized data structures for onchain data anchoring.
@@ -109,7 +109,7 @@ associated logic. Deploying these contracts occurs through a factory pattern.
 <Callout type="info">
 
 You can create new types of contracts that suit your data needs. Buckets and timehubs power the
-existing offchain data services below, which is why they come as part of the core Hoku system.
+existing offchain data services below, which is why they come as part of the core Recall system.
 
 </Callout>
 
@@ -117,7 +117,7 @@ existing offchain data services below, which is why they come as part of the cor
 
 Services integrate both onchain and offchain components to facilitate the storage and processing of
 large data volumes. Each onchain contract above has a corresponding offchain service that offers an
-interface for facilitating its usage. The first two data services on Hoku include:
+interface for facilitating its usage. The first two data services on Recall include:
 
 - **Ceramic**: Offchain event-log service that relies on the onchain _timehub_ contract for
   anchoring _events_.
@@ -129,13 +129,13 @@ additional functionality:
 
 - **OrbisDB**: High-throughput application database with an index, query, and plugin wrapper around
   Ceramic.
-- **Tableland**: Onchain decentralized SQL database whose state is backed by the Hoku datachain.
+- **Tableland**: Onchain decentralized SQL database whose state is backed by the Recall datachain.
 
 You can learn more about each of these and how to use them throughout this documentation.
 
 ## Limits
 
-There are a few limitations to be aware of when building on Hoku. Keep in mind that services like
+There are a few limitations to be aware of when building on Recall. Keep in mind that services like
 Basin and Ceramic have their own constraints, which are detailed in their respective sections.
 
 - **Block time**: ~1 block per second.

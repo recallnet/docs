@@ -5,7 +5,7 @@ description: Leverage a Dockerized multi-node setup for development.
 
 import { Callout, Tabs } from "nextra/components";
 
-This page walks through how to spin up a local Hoku network with either Docker (`localnet`) or on
+This page walks through how to spin up a local Recall network with either Docker (`localnet`) or on
 your machine (`devnet`) and presumes you've done the steps described in the preceding
 [setup page](/operators/setup).
 
@@ -85,9 +85,9 @@ Lastly, if you're ready to stop the network, you can run `stop_local.sh`:
 ./scripts/deploy_subnet/stop_local.sh
 ```
 
-Also optional is the `hoku` CLI, which (if installed) will pre-buy credits for all accounts in the
-localnet subnet setup. Follow the instructions in the `rust-hoku` repo to install it:
-[here](https://github.com/hokunet/rust-hoku).
+Also optional is the `recall` CLI, which (if installed) will pre-buy credits for all accounts in the
+localnet subnet setup. Follow the instructions in the `rust-recall` repo to install it:
+[here](https://github.com/recallnet/rust-recall).
 
 The following outlines general observations for how long the localnet deployment process takes and
 various metrics:
@@ -130,17 +130,18 @@ other validators:
 
 ### Usage
 
-You can test using the subnet with the [`hoku` SDK & CLI](https://github.com/hokunet/rust-hoku).
-Keys _are not_ logged if you're running a testnet. For localnet, keys _are_ logged with their
-corresponding balances. You'll notice the first three accounts correspond to the validators and
-marked as reserved. If you're trying to do non-validator actions (e.g., create a bucket or timehub),
-it's best to avoid these accounts since nonce race conditions can occur.
+You can test using the subnet with the
+[`recall` SDK & CLI](https://github.com/recallnet/rust-recall). Keys _are not_ logged if you're
+running a testnet. For localnet, keys _are_ logged with their corresponding balances. You'll notice
+the first three accounts correspond to the validators and marked as reserved. If you're trying to do
+non-validator actions (e.g., create a bucket or timehub), it's best to avoid these accounts since
+nonce race conditions can occur.
 
 ```txt
 Account balances:
 Parent native: 10000 ETH
-Parent HOKU:   100 HOKU
-Subnet native: 5000 HOKU
+Parent RECALL: 100 RECALL
+Subnet native: 5000 RECALL
 Subnet credits: 5000000000000000000000
 
 Accounts:
@@ -158,19 +159,19 @@ Private keys:
 ...
 ```
 
-You can use then these keys with the `hoku` SDK and CLI by creating an `.env` file and sourcing it,
-or by setting the variables in your shell. Keep in mind a `NETWORK` variable is used by `fendermint`
-and `ipc-cli` but with a different value, so it's best to use separate terminal windows when using
-the `hoku` CLI alongside the others.
+You can use then these keys with the `recall` SDK and CLI by creating an `.env` file and sourcing
+it, or by setting the variables in your shell. Keep in mind a `NETWORK` variable is used by
+`fendermint` and `ipc-cli` but with a different value, so it's best to use separate terminal windows
+when using the `recall` CLI alongside the others.
 
 ```dotenv
-export HOKU_NETWORK=localnet
-export HOKU_PRIVATE_KEY=<private_key>
+export RECALL_NETWORK=localnet
+export RECALL_PRIVATE_KEY=<private_key>
 ```
 
-You can now use `hoku` as normal, e.g., `hoku account deposit`, `hoku os create`, etc. Similarly,
-the SDK lets you use the `localnet` by explicitly initializing it with
-`hoku_sdk::network::Network::Localnet.init()`.
+You can now use `recall` as normal, e.g., `recall account deposit`, `recall os create`, etc.
+Similarly, the SDK lets you use the `localnet` by explicitly initializing it with
+`recall_sdk::network::Network::Localnet.init()`.
 
 When developing locally, it's ideal to use the `localnet` setup in the `deploy_subnet` directory.
 But `devnet` is much faster to set up and teardown since it doesn't require building Docker images
@@ -286,14 +287,14 @@ and then `make config-devnet` again.
 
 ### Usage
 
-If you're using the `hoku` CLI, you must set the `HOKU_NETWORK` environment variable to `devnet` in
-order to use it. Note that `fendermint` `ipc-cli` the `NETWORK` flag but with different target
-functionality, so be sure the `HOKU_` prefix is attached.
+If you're using the `recall` CLI, you must set the `RECALL_NETWORK` environment variable to `devnet`
+in order to use it. Note that `fendermint` `ipc-cli` the `NETWORK` flag but with different target
+functionality, so be sure the `RECALL_` prefix is attached.
 
 ```
-export NETWORK=devnet
-export PRIVATE_KEY=1c323d494d1d069fe4c891350a1ec691c4216c17418a0cb3c7533b143bd2b812
+export RECALL_NETWORK=devnet
+export RECALL_PRIVATE_KEY=1c323d494d1d069fe4c891350a1ec691c4216c17418a0cb3c7533b143bd2b812
 ```
 
 Similarly, you'll use the `devnet` in the SDK where necessary—e.g.,
-`hoku_sdk::network::Network::Devnet.init()`.
+`recall_sdk::network::Network::Devnet.init()`.

@@ -4,11 +4,11 @@
     "href": "/home"
   },
   "index": "Overview",
-  "hoku-separator": {
-    "title": "Hoku",
+  "recall-separator": {
+    "title": "Recall",
     "type": "separator"
   },
-  "hoku-ml-pipeline": "End-to-end ML pipeline",
+  "recall-ml-pipeline": "End-to-end ML pipeline",
   "basin-separator": {
     "title": "Basin",
     "type": "separator"

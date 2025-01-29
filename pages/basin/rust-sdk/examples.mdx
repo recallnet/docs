@@ -1,9 +1,9 @@
 ---
 title: Examples
-description: A series of Hoku SDK examples.
+description: A series of Recall SDK examples.
 ---
 
-The Hoku SDK can be used to interact with both accounts and the actual bucket layer. This page
+The Recall SDK can be used to interact with both accounts and the actual bucket layer. This page
 outlines a handful of example for different use cases.
 
 ## Creating a new account
@@ -13,8 +13,8 @@ use ethers::utils::hex::ToHexExt;
 use fendermint_vm_actor_interface::eam::EthAddress;
 use fvm_shared::address::Address;
 
-use hoku_sdk::network::Network;
-use hoku_signer::key::random_secretkey;
+use recall_sdk::network::Network;
+use recall_signer::key::random_secretkey;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -44,8 +44,8 @@ use anyhow::anyhow;
 use ethers::utils::hex::ToHexExt;
 use fvm_shared::econ::TokenAmount;
 
-use hoku_sdk::{account::Account, network::Network};
-use hoku_signer::{key::parse_secret_key, AccountKind, Signer, Wallet};
+use recall_sdk::{account::Account, network::Network};
+use recall_signer::{key::parse_secret_key, AccountKind, Signer, Wallet};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -57,15 +57,14 @@ async fn main() -> anyhow::Result<()> {
     let pk = parse_secret_key(pk_kex)?;
 
     // Use testnet network defaults
-    // Note: The debit account _must_ hold at least 1 (Calibration) tHOKU for the deposit
+    // Note: The debit account _must_ hold at least 1 (Calibration) RECALL for the deposit
     // plus enough tFIL to cover the transaction fee.
-    // Go to the faucet at https://faucet.calibnet.chainsafe-fil.io/ to get yourself some tFIL.
     let network = Network::Testnet.init();
 
     // Setup local wallet using private key from arg
     let signer = Wallet::new_secp256k1(pk, AccountKind::Ethereum, network.subnet_id()?.parent()?)?;
 
-    // Deposit some tHOKU (Calibration) funds into the subnet
+    // Deposit some RECALL (Calibration) funds into the subnet
     // Note: The debit account _must_ have Calibration
     let tx = Account::deposit(
         &signer,
@@ -76,7 +75,7 @@ async fn main() -> anyhow::Result<()> {
     .await?;
 
     println!(
-        "Deposited 1 tHOKU to {}",
+        "Deposited 1 RECALL to {}",
         signer.evm_address()?.encode_hex_with_prefix()
     );
     println!(
@@ -96,8 +95,8 @@ use std::env;
 use anyhow::anyhow;
 use ethers::utils::hex::ToHexExt;
 
-use hoku_sdk::{account::Account, network::Network};
-use hoku_signer::{key::parse_secret_key, AccountKind, Signer, Wallet};
+use recall_sdk::{account::Account, network::Network};
+use recall_signer::{key::parse_secret_key, AccountKind, Signer, Wallet};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -140,10 +139,10 @@ use rand::{thread_rng, Rng};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::time::{sleep, Duration};
 
-use hoku_provider::json_rpc::JsonRpcProvider;
-use hoku_sdk::machine::bucket::{AddOptions, Bucket, GetOptions, QueryOptions};
-use hoku_sdk::{machine::Machine, network::Network};
-use hoku_signer::{key::parse_secret_key, AccountKind, Wallet};
+use recall_provider::json_rpc::JsonRpcProvider;
+use recall_sdk::machine::bucket::{AddOptions, Bucket, GetOptions, QueryOptions};
+use recall_sdk::{machine::Machine, network::Network};
+use recall_signer::{key::parse_secret_key, AccountKind, Wallet};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

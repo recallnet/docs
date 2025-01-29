@@ -1,9 +1,10 @@
 ---
-title: Store User Data for a Web Forum using Hoku Event Storage
-description: Build a decentralized Web Forum using OrbisDB - a decentralized database built on Hoku.
+title: Store User Data for a Web Forum using Recall Event Storage
+description:
+  Build a decentralized Web Forum using OrbisDB - a decentralized database built on Recall.
 ---
 
-# Store User Data for a Decentralized Web Forum using Hoku Event Storage
+# Store User Data for a Decentralized Web Forum using Recall Event Storage
 
 Creating and maintaining a successful social web forum presents unique challenges and opportunities.
 As platforms strive to foster meaningful discussions and user engagement, the ability to efficiently
@@ -21,12 +22,12 @@ under the control of the users who author it and have the agency to decide how t
 and what the value of that data is.
 
 Given these potential benefits, tools that offer clear ownership properties and data lineage
-features can significantly benefit social web forum architects. This is where Hoku's Event Storage
+features can significantly benefit social web forum architects. This is where Recall's Event Storage
 capabilities come into play.
 
-## Hoku Event Storage for Social Web Forums
+## Recall Event Storage for Social Web Forums
 
-At the core of Hoku's Event Storage lies an innovative decentralized data architecture called
+At the core of Recall's Event Storage lies an innovative decentralized data architecture called
 Ceramic that enables the creation of verifiable, traceable event streams. This network technology
 forms the foundation for building sophisticated relational databases, secure private storage
 systems, and responsive event-driven applications. One of Ceramic’s hallmark features is its ability
@@ -52,16 +53,16 @@ Let's explore how this technology can be applied to enhance forum functionality:
   federated forums where discussions can seamlessly span across multiple platforms while preserving
   data ownership and provenance.
 
-Given these powerful capabilities, this technical guide will demonstrate how to harness Hoku Event
-Storage to construct a social web forum. We aim to showcase how Hoku Event Storage can be leveraged
-to create a platform that sets new standards in transparency, moderation efficiency, and data
-integrity in online communities.
+Given these powerful capabilities, this technical guide will demonstrate how to harness Recall Event
+Storage to construct a social web forum. We aim to showcase how Recall Event Storage can be
+leveraged to create a platform that sets new standards in transparency, moderation efficiency, and
+data integrity in online communities.
 
 ## Social Web Forum Overview
 
-As mentioned above, we will set up a web forum that uses one of Hoku’s Event Storage configurations
-to store user data. Once setup is complete, you’ll have something up and running that looks similar
-to this:
+As mentioned above, we will set up a web forum that uses one of Recall’s Event Storage
+configurations to store user data. Once setup is complete, you’ll have something up and running that
+looks similar to this:
 
 ![deforum screenshot](/img/tutorials/deforum/deforum-screenshot.png)
 
@@ -80,7 +81,7 @@ To bring this use case full circle, this demo implements several key capabilitie
 
 This design will require defining relations between models and query patterns to join and format
 tables to accommodate our UI. This will allow us to explore the implementation of this pattern using
-Hoku Event Storage.
+Recall Event Storage.
 
 ### Key Dependencies
 
@@ -99,7 +100,7 @@ therefore use OrbisDB (and its SDK) to allow our users to create their forum dat
 
 **IPFS**
 
-Hoku’s Event Storage solution, Ceramic, is designed to support text-based data. Hoku’s data
+Recall’s Event Storage solution, Ceramic, is designed to support text-based data. Recall’s data
 availability layer is built to store arbitrary data, making Basin is a good fit for this. However,
 for this tutorial we will rely on IPFS to allow our users to store rich media assets like images for
 user profiles or in the body of posts and comments. For this, we will use the
@@ -513,7 +514,7 @@ showing information from their bio, and a list of the different posts that user 
 
 ## Next Steps
 
-Now that you know how Hoku Event Storage (using OrbisDB) can be integrated into a web forum
+Now that you know how Recall Event Storage (using OrbisDB) can be integrated into a web forum
 application to support user data, how might you add features or modifications to improve this demo?
 For example, what tables and query patterns would you use to integrate features such as likes on
 posts, upvotes, or downvotes? What about direct messages between users? This application can be

@@ -1,20 +1,20 @@
 ---
 title: Object API
-description: Endpoints for interacting with the Hoku network's object API.
+description: Endpoints for interacting with the Recall network's object API.
 ---
 
 import { Callout } from "nextra/components";
 
-The object API exposes a set of endpoints for interacting with the Hoku network's blob storage.
-Buckets are an abstraction around blobs the help you manage these blobs. Under the hood, Hoku nodes
-use [Iroh](https://www.iroh.computer/) and expose the HTTP API to allow anyone to upload signed data
-to the Hoku network.
+The object API exposes a set of endpoints for interacting with the Recall network's blob storage.
+Buckets are an abstraction around blobs the help you manage these blobs. Under the hood, Recall
+nodes use [Iroh](https://www.iroh.computer/) and expose the HTTP API to allow anyone to upload
+signed data to the Recall network.
 
 ### Base URL
 
-The object API endpoints for each of the Hoku chain environments are listed below:
+The object API endpoints for each of the Recall chain environments are listed below:
 
-- `testnet`: `https://object-api-ignition-0.hoku.sh`
+- `testnet`: `https://objects.node-0.testnet.recall.network`
 - `localnet` or `devnet`: `http://127.0.0.1:8001`
 
 ## Endpoints
@@ -63,7 +63,7 @@ It returns a JSON object with the following fields:
 }
 ```
 
-When you upload data to the Hoku network, you will need to know the information above to properly
+When you upload data to the Recall network, you will need to know the information above to properly
 stage your data for the asynchronous-sync transaction and data upload process.
 
 ## Downloading an object
@@ -96,11 +96,11 @@ Note the the contents will be written to stdout unless you redirect it to a file
 ### `POST /v1/objects`
 
 The object upload endpoint is a two step process. It is best recommended to avoid using this API
-directly and, instead, use the Hoku CLI, SDK, or other clients that help you manage the process.
+directly and, instead, use the Recall CLI, SDK, or other clients that help you manage the process.
 
 The upload endpoint is designed to accept multipart form data with the following fields:
 
-- `chain_id`: The chain ID for Hoku.
+- `chain_id`: The chain ID for Recall.
 - `msg`: The signed message to upload. This accepts either an EVM EIP-1559 signed transaction, or an
   FVM signed message, where the bytes are encoded as a base64 string.
 - `hash`: The blake3 hash of the object.
@@ -141,11 +141,11 @@ This will return the following, which confirms the object was uploaded successfu
 }
 ```
 
-The `metadata_hash` is a blake3 hash used by Hoku for data availability and recovery purposes.
+The `metadata_hash` is a blake3 hash used by Recall for data availability and recovery purposes.
 
 <Callout type="info">
 
 We'll put out more detailed examples for how to do this in the future. For now, it's best to rely on
-the Hoku clients that handle the upload process.
+the Recall clients that handle the upload process.
 
 </Callout>

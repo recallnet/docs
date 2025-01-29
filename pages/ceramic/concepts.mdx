@@ -95,10 +95,10 @@ Consumers can either handle the event `data` payloads directly using their own b
 or they can leverage Ceramic's standard data pipeline to combine messages into new forms, including
 mutable data structures and other key components of a modern data environment.
 
-## Archival Storage on Hoku
+## Archival Storage on Recall
 
-The Ceramic Network in the context of Hoku is a communication, synchronization, and validation for
-ephemral events. While this architecture is intentionally flexible to allow for bespoke molding of
+The Ceramic Network in the context of Recall is a communication, synchronization, and validation for
+ephemeral events. While this architecture is intentionally flexible to allow for bespoke molding of
 custom data pipelines, schema, and other logic, it requires a data availability layer to provide
 archival assurances and programmatic access.
 
@@ -107,10 +107,10 @@ transformations across the Ceramic data pipeline, giving developers access to ra
 document states, or custom document states based on bespoke logic developers implement into their
 pipelines.
 
-These parquet files containing Ceramic events are stored in Hoku's Object Storage solution, Basin.
-The columnar storage format of parquet files is highly efficient for analytical queries, therefore
-reducing data transfer and storage costs. Parquet also supports performant compression schemes which
-reduces file sizes further without compromising performance.
+These parquet files containing Ceramic events are stored in Recall buckets. The columnar storage
+format of parquet files is highly efficient for analytical queries, therefore reducing data transfer
+and storage costs. Parquet also supports performant compression schemes which reduces file sizes
+further without compromising performance.
 
 ## Data Pipeline
 
@@ -142,7 +142,8 @@ graph LR;
 ```
 
 <Callout>
-  Ceramic currently exposes `event_states` and `conclusion_events` as exposed tables available for developers to query. All other pipeline tables are in development.
+  Ceramic currently exposes `event_states` and `conclusion_events` as exposed tables available for
+  developers to query. All other pipeline tables are in development.
 </Callout>
 
 ### raw_events

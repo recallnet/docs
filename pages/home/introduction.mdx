@@ -1,18 +1,18 @@
 ---
 title: Introduction
-description: Learn about the Hoku network basics and why it exists.
+description: Learn about the Recall network basics and why it exists.
 ---
 
 import { Cards, Card, Callout } from "nextra/components";
 
-Hoku is a decentralized **application data availability (DA) network** hyper-scaled for
+Recall is a decentralized **application data availability (DA) network** hyper-scaled for
 data-intensive applications. It enables verifiable application data (e.g., DePINs, AI/ML training
 data, user data, etc.) to be made available to smart contracts, application developers, and external
 workloads. A **scalable**, **permissionless**, and **verifiable** datachain.
 
-## What is Hoku?
+## What is Recall?
 
-Hoku unifies the fragmented marketplace of disparate and competitive crypto-enabled databases,
+Recall unifies the fragmented marketplace of disparate and competitive crypto-enabled databases,
 application data protocols, and miscellaneous data services into one single network. All of this is
 possible through programmable features of a traditional EVM blockchain with native support for
 data-intensive (Wasm enabled) tasks, such as storing and processing large volumes of offchain data.
@@ -27,11 +27,11 @@ The network's design features include:
 - **Predictable pricing**: Better control costs with a predictable transaction and storage pricing
   model enabled by a novel credit billing mechanism.
 
-An extensible ecosystem of data developer tools—Hoku Data Services (HDS)—facilitate sourcing,
-storing, managing, and monetizing data on Hoku. Each HDS leverages the full suite of Hoku’s offchain
-DA capabilities. Data services consist of both onchain components for programmability and
+An extensible ecosystem of data developer tools—Recall Data Services (HDS)—facilitate sourcing,
+storing, managing, and monetizing data on Recall. Each HDS leverages the full suite of Recall’s
+offchain DA capabilities. Data services consist of both onchain components for programmability and
 verifiability, and offchain components for scalability. The initial set of core HDS have been
-developed to enable developers to start building advanced, data-driven applications on Hoku’s
+developed to enable developers to start building advanced, data-driven applications on Recall’s
 application DA network today:
 
 - [**Basin**](/basin): Object store with an S3-compatible interface that is fully verifiable
@@ -56,7 +56,7 @@ flowchart LR
         C["App"]
     end
 
-    subgraph Hoku["Hoku datachain"]
+    subgraph Recall["Recall datachain"]
       direction TB
         subgraph Services["Data services"]
           direction TB
@@ -83,20 +83,20 @@ flowchart LR
         F["App"]
     end
 
-DataSources <--> Hoku
+DataSources <--> Recall
 Subnets <--> Rootnet
 Orbis <--> Ceramic
 Tableland <--> Basin
-Hoku <--> DataConsumers
+Recall <--> DataConsumers
 Ceramic <--> Subnets
 Basin <--> Subnets
 
 ```
 
-## Why Hoku?
+## Why Recall?
 
-Let's explore the problem space that Hoku addresses and why it is needed. TL;DR—data is hard (or
-expensive) to get, use, move, trust, and monetize, and Hoku aims to solve these problems for data
+Let's explore the problem space that Recall addresses and why it is needed. TL;DR—data is hard (or
+expensive) to get, use, move, trust, and monetize, and Recall aims to solve these problems for data
 producers and consumers.
 
 ### Current landscape
@@ -122,12 +122,12 @@ interoperability, and efficient handling of large-scale data operations. Consequ
 clear need for a new approach that can overcome these constraints and facilitate the flow of data to
 meet the rising demand.
 
-Hoku aims to make it possible for organizations and AIs to source fresh, valuable data to drive
+Recall aims to make it possible for organizations and AIs to source fresh, valuable data to drive
 innovation. By solving problems around data availability and compute over data, while nurturing a
 rich data ecosystem, the network aims to unlock a global **_data liquidity_** layer to usher in a
-new age for data-rich applications. Hoku will make it possible for developers and machines to wield
-open data pipelines and workflows to build more powerful applications and AIs in a post-cloud and
-post-SaaS world.
+new age for data-rich applications. Recall will make it possible for developers and machines to
+wield open data pipelines and workflows to build more powerful applications and AIs in a post-cloud
+and post-SaaS world.
 
 #### Blockchains & adjacent infrastructure
 
@@ -159,17 +159,18 @@ decentralization and blockchain integration.
 ### The application datachain
 
 In contrast to current systems–which are opaque, slow, cumbersome, or built on trust due to data
-centralization—Hoku provides a permissionless, secure, and sustainable market for connecting service
-consumers with service providers. This is enabled by tailoring blockchain technology to better suit
-the need of this data market. It aims to be competitive with traditional cloud services in terms of
-cost, throughput, scalability, usability, and features. As such, the Hoku datachain provides:
+centralization—Recall provides a permissionless, secure, and sustainable market for connecting
+service consumers with service providers. This is enabled by tailoring blockchain technology to
+better suit the need of this data market. It aims to be competitive with traditional cloud services
+in terms of cost, throughput, scalability, usability, and features. As such, the Recall datachain
+provides:
 
 - High-throughput, low-latency data ingest and retrieval.
 - High availability and fault tolerance.
 - Permissionless and owner-less operation.
 - Direct and programmatic access to data.
 
-Hoku has been built from the ground up to meet the needs of modern data-hungry applications.
+Recall has been built from the ground up to meet the needs of modern data-hungry applications.
 
 ## How does it work?
 
@@ -203,7 +204,7 @@ enable efficient data recovery, reduced storage costs, decentralized repair, and
 well as the ability to tie information about the **data recency and retention requirements**
 ([TTL](https://en.wikipedia.org/wiki/Time_to_live)) into the way the data is encoded.
 
-Hoku also incorporates mechanisms for proof of data access, proof of correct encoding, and a data
+Recall also incorporates mechanisms for proof of data access, proof of correct encoding, and a data
 availability sampling layer that leverages its unique erasure encoding system to ensure that data is
 always accessible and retrievable by all actors on the network.
 

@@ -14,15 +14,19 @@ The SDK is written in TypeScript and published to NPM as `@ceramic-sdk`, with a 
 sub-packages:
 
 - `@ceramic-sdk/events`: Utilities for creating and signing events that comply to the
-  [Hoku Event Store standards.](https://developers.ceramic.network/docs/protocol/js-ceramic/streams/event-log)
+  [Recall Event Store standards.](https://developers.ceramic.network/docs/protocol/js-ceramic/streams/event-log)
 - `@ceramic-sdk/http-client`: A simple client for
   [ceramic-one's](https://github.com/ceramicnetwork/rust-ceramic) HTTP APIs.
 - `@ceramic-sdk/identifiers`: A handful of useful types for identifying streams and events.
-- `@ceramic-sdk/model-client`: A client that handles the creation and fetching of model stream types.
-- `@ceramic-sdk/model-instance-client`: A client that handles the creation and fetching of model instance document stream types.
+- `@ceramic-sdk/model-client`: A client that handles the creation and fetching of model stream
+  types.
+- `@ceramic-sdk/model-instance-client`: A client that handles the creation and fetching of model
+  instance document stream types.
 
 <Callout>
-  While Ceramic will eventually support a wide array of different stream types, this guide will focus on the use of models and model instance documents given they represent the predominant pattern developers currently use when interacting with the network. 
+  While Ceramic will eventually support a wide array of different stream types, this guide will
+  focus on the use of models and model instance documents given they represent the predominant
+  pattern developers currently use when interacting with the network.
 </Callout>
 
 The Ceramic SDK needs a [ceramic-one](https://github.com/ceramicnetwork/rust-ceramic) daemon to

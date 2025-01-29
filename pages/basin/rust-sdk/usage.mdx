@@ -1,6 +1,6 @@
 ---
 title: Usage
-description: Understand the basics for connecting to Hoku and using buckets.
+description: Understand the basics for connecting to Recall and using buckets.
 ---
 
 The most basic usage will likely involve connecting to the network, creating an bucket, and then
@@ -9,8 +9,8 @@ started.
 
 ## Signer & provider setup
 
-To create an bucket, you'll need to use the `JsonRpcProvider` from the `hoku_provider` crate plus
-various `hoku_sdk` types.
+To create an bucket, you'll need to use the `JsonRpcProvider` from the `recall_provider` crate plus
+various `recall_sdk` types.
 
 Here's a simple example. The `signer.init_sequence()` call is optional, but without it, you'll run
 into issues with out of sync sequences (nonces). **It's best to call `init_sequence` unless you're
@@ -19,8 +19,8 @@ firing many transactions at once.**
 ```rust
 use std::collections::HashMap;
 
-use hoku_provider::json_rpc::JsonRpcProvider;
-use hoku_sdk::{
+use recall_provider::json_rpc::JsonRpcProvider;
+use recall_sdk::{
     machine::{bucket::Bucket, Machine},
     network::Network,
 };
@@ -44,7 +44,8 @@ To create a bucket, you'll need to use the `Bucket::new` method, which takes a f
 - The signer.
 - An optional `owner` address, which defaults to the signer's address.
 - A `HashMap` of metadata to assign to the bucket (use `Default::default()` to create an empty map).
-- Lastly, optional gas parameters (these can be imported from `hoku_provider::message::GasParams`).
+- Lastly, optional gas parameters (these can be imported from
+  `recall_provider::message::GasParams`).
 
 ```rust
 #[tokio::main]
@@ -73,7 +74,7 @@ how to handle overwriting an existing object.
 ```rust {3}
 use std::collections::HashMap;
 
-use hoku_sdk::{
+use recall_sdk::{
     machine::{
         bucket::{AddOptions, Bucket},
         Machine,
@@ -138,7 +139,7 @@ refine your results:
 - `height`: The block height to list objects for (defaults to the latest committed height).
 
 ```rust {3}
-use hoku_sdk::{
+use recall_sdk::{
     machine::{
         objectstore::{AddOptions, ObjectStore, QueryOptions},
         Machine,
@@ -193,7 +194,7 @@ available to refine your results:
 - `show_progress`: Visually show the download progress (useful with CLI tools).
 
 ```rust {3}
-use hoku_sdk::{
+use recall_sdk::{
     machine::{
         objectstore::{AddOptions, GetOptions, ObjectStore, QueryOptions},
         Machine,
@@ -243,15 +244,15 @@ The response will be similar to the `add` example above.
 
 ## Network interactions
 
-You can review the `hoku_sdk::network` module for more information or check out the network
-configuration docs. Utility methods exist on the `hoku_sdk::network::Network` struct to fetch
+You can review the `recall_sdk::network` module for more information or check out the network
+configuration docs. Utility methods exist on the `recall_sdk::network::Network` struct to fetch
 network values dynamically, so there's not necessarily a need to hardcode them yourself anywhere.
 
 For example, you'll notice the subnet ID has a string value. Its hex encoded value can be found with
 an RPC call to the EVM provider URL:
 
 ```sh copy
-curl https://evm-ignition-0.hoku.sh \
+curl https://objects.node-0.testnet.recall.network \
 -X POST \
 -H "Content-Type: application/json" \
 -d '{"method":"eth_chainId","params":[],"id":1,"jsonrpc":"2.0"}'

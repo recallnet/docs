@@ -1,13 +1,13 @@
 ---
 title: Overview
-description: Get started with Hoku node development and deployment.
+description: Get started with Recall node development and deployment.
 ---
 
 import { Callout } from "nextra/components";
 
 <Callout type="info">
 
-Hoku is deployed as live, public testnet. It is currently _permissioned_, meaning only authorized
+Recall is deployed as live, public testnet. It is currently _permissioned_, meaning only authorized
 nodes can participate in the network, but we will open this up more broadly in the future. If you
 are interested in participating in the network, please reach out!
 
@@ -15,7 +15,7 @@ are interested in participating in the network, please reach out!
 
 ## Hardware requirements
 
-To run a Hoku node, you will need:
+To run a Recall node, you will need:
 
 - X vCPUs.
 - X GiB of RAM.
@@ -33,8 +33,8 @@ take up to ~100% CPU utilization.
 
 ## Parent-child nodes
 
-Recall that Hoku leverages a parent-child subnet architecture. Operators of a subnet **must** run a
-full validator node for **both the parent and the child subnet**. In the future, Hoku subnets will
-also be able to dynamically adjust their capacity by spawning temporary subnets during peak usage
-and merging them during lower activity. However, today, there is only a single subnet that rolls up
-to an L1 rootnet, so only a single node is required.
+Recall that Recall leverages a parent-child subnet architecture. Operators of a subnet **must** run
+a full validator node for **both the parent and the child subnet**. In the future, Recall subnets
+will also be able to dynamically adjust their capacity by spawning temporary subnets during peak
+usage and merging them during lower activity. However, today, there is only a single subnet that
+rolls up to an L1 rootnet, so only a single node is required.

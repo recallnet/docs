@@ -1,10 +1,11 @@
 ---
-title: Label Data for LLM training using Hoku Event Storage
+title: Label Data for LLM training using Recall Event Storage
 description:
-  Create a labeled dataset for LLM training using OrbisDB - a decentralized database built on Hoku.
+  Create a labeled dataset for LLM training using OrbisDB - a decentralized database built on
+  Recall.
 ---
 
-# Label Data for LLM training using Hoku Event Storage
+# Label Data for LLM training using Recall Event Storage
 
 In the ever-evolving world of machine learning, fine-tuning Large Language Models (LLMs) has become
 a crucial step in achieving optimal performance for specific tasks. One of the most time-consuming
@@ -28,15 +29,15 @@ datasets becomes increasingly important. For example, teams working on LLM pipel
   and refine their labeling processes.
 
 Given these desires, it’s easy to see how tools that provide strong provenance and data lineage
-characteristics might benefit ML pipeline architects. This is where Hoku’s Event Storage
+characteristics might benefit ML pipeline architects. This is where Recall’s Event Storage
 capabilities come into play.
 
-## Hoku Event Storage for Data Labeling
+## Recall Event Storage for Data Labeling
 
-Hoku’s Event Storage capabilities feature Ceramic - a decentralized data network built on verifiable
-event streams on top of which relational databases, private storage, and event-driven capabilities
-can be built. A key characteristic of Ceramic is its verifiable data integrity and lineage. Here’s
-how this relates to data labeling:
+Recall’s Event Storage capabilities feature Ceramic - a decentralized data network built on
+verifiable event streams on top of which relational databases, private storage, and event-driven
+capabilities can be built. A key characteristic of Ceramic is its verifiable data integrity and
+lineage. Here’s how this relates to data labeling:
 
 - All data (such as labeled datasets) written to Ceramic are “owned” by an account controlled by a
   sovereign decentralized identifier. These identifiers can be owned by an Ethereum address or
@@ -50,7 +51,7 @@ how this relates to data labeling:
   access in exchange for monetary value.
 
 With these qualities and reasoning in mind, we’ve written this technical guide to walk through one
-example of how to facilitate data labeling into Hoku Event Storage.
+example of how to facilitate data labeling into Recall Event Storage.
 
 ### Labeling Guide: Key Components
 
@@ -268,10 +269,10 @@ Navigate back to your OrbisDB Studio view where you can select the "Data" tab at
 ## Next Steps
 
 While this guide walks through a simple implementation of text classification data labeling using
-Hoku Event Storage, there are many other places within the LLM pipeline where Ceramic could be
+Recall Event Storage, there are many other places within the LLM pipeline where Ceramic could be
 leveraged. While we facilitated the writing portion of this process above, an obvious next step
 would be to spin up a service to read and consume these datasets, and perhaps apply weighted logic
 based on the expertise behind who created them.
 
-Are you interested in leveraging Hoku for your data labeling needs? Did you find this guide helpful?
-We’d love to hear from you!
+Are you interested in leveraging Recall for your data labeling needs? Did you find this guide
+helpful? We’d love to hear from you!

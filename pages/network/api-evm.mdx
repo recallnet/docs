@@ -1,11 +1,11 @@
 ---
 title: EVM API
-description: Endpoints for interacting with the Hoku network's EVM API.
+description: Endpoints for interacting with the Recall network's EVM API.
 ---
 
 import { Callout } from "nextra/components";
 
-Hoku is fully EVM compatible. You can deploy smart contracts as you would on any other chain, but
+Recall is fully EVM compatible. You can deploy smart contracts as you would on any other chain, but
 many of the true unlocks are at the underlying Wasm runtime. Regardless, most of the EVM RPC calls
 are supported.
 
@@ -18,12 +18,12 @@ currently are not supported. Instead, use the Paris EVM version.
 
 ## Base URL
 
-The EVM API endpoints for each of the Hoku chain environments are listed below:
+The EVM API endpoints for each of the Recall chain environments are listed below:
 
-- `testnet`: `https://evm-ignition-0.hoku.sh`
+- `testnet`: `https://evm.node-0.testnet.recall.network`
 - `localnet` or `devnet`: `http://127.0.0.1:8645`
 
-The parent chain RPCs for Hoku are the following. These are only relevant if you're working with
+The parent chain RPCs for Recall are the following. These are only relevant if you're working with
 cross chain operations (e.g., deposits or withdrawals) or validator actions (i.e., node operator
 actions).
 

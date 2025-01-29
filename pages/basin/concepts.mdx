@@ -5,7 +5,7 @@ description: Getting started with basic network concepts.
 
 import { Callout } from "nextra/components";
 
-Buckets are buckets that take advantage of Hoku's subnet scaling infrastructure to enable fast and
+Buckets are buckets that take advantage of Recall's subnet scaling infrastructure to enable fast and
 cost-effective storage of large amounts of data. Basin's usage pattern generally consists of two
 components:
 
@@ -24,7 +24,7 @@ onchain hash within a contract's state, and the actual data is stored offchain i
 (networked) block store. Spawning new buckets is handled with a general factory smart contract,
 which the various Basin interfaces (SDK, CLI) call under the hood.
 
-More generally, there are two types of contracts on Hoku network: **_Wasm_** contracts, and EVM
+More generally, there are two types of contracts on Recall network: **_Wasm_** contracts, and EVM
 **_smart_** contracts. The two differ in how what they can handle and related intents.
 
 ### Wasm contract
@@ -74,28 +74,29 @@ stored as a blob on the network, _credits_ are used.
 
 <Callout>
 
-You'll often see the phrase _native coin_ or _native token_. A Hoku subnet doesn't really "care"
+You'll often see the phrase _native coin_ or _native token_. A Recall subnet doesn't really "care"
 what the native coin is; it simply uses the concept of a token as a medium of exchange for chain
 transactions. In practice, the parent rootnet specifies a _supply source_ upon subnet creation,
 dictating how you move funds into or out of the subnet through deposits and withdrawals. This is
-where the HOKU ERC20 token is used; it's the supply source on the parent chain defined for the child
-subnet.
+where the RECALL ERC20 token is used; it's the supply source on the parent chain defined for the
+child subnet.
 
 </Callout>
 
 ### Credits
 
 Credits are a useful mechanism to predictably manage storage costs and avoid surprises, and they are
-used to pay for all storage within the Hoku network. You can sponsor (delegate) your credits to
+used to pay for all storage within the Recall network. You can sponsor (delegate) your credits to
 contracts on the network, and whenever data is written to a contract, credits are debited from your
 credit balance upon ongoing debit epochs (sparse block heights). It allows for more fine-grained
 accounting because 1 subnet native coin = $10^(18)$ credits.
 
-Namely, you **MUST have credits** to store data on Hoku. For example, to add an object to a bucket,
-you spend credits that allocate storage space for the object, including [TTL](#time-to-live-ttl)
-parameters. Credits will automatically get withdrawn from your credit balance as storage continues.
+Namely, you **MUST have credits** to store data on Recall. For example, to add an object to a
+bucket, you spend credits that allocate storage space for the object, including
+[TTL](#time-to-live-ttl) parameters. Credits will automatically get withdrawn from your credit
+balance as storage continues.
 
-You can manage your credits with the `hoku credit` command, further described in the
+You can manage your credits with the `recall credit` command, further described in the
 [credits](/basin/cli/commands#credits) section below.
 
 ### Gas allowance
@@ -150,10 +151,10 @@ deleted.
 
 ## Chain RPCs & funds
 
-First, to get HOKU tokens, reach out to the Hoku team.
+First, to get RECALL tokens, reach out to the Recall team.
 
 Since Basin is built on top of Filecoin, you must also have FIL in your account to interact with the
-network if you are bridging HOKU tokens into the subnet. Hoku is currently only live on the Filecoin
-Calibration network. You can get tFIL via the faucet
+network if you are bridging RECALL tokens into the subnet. Recall is currently only live on the
+Filecoin Calibration network. You can get tFIL via the faucet
 [here](https://faucet.calibnet.chainsafe-fil.io/funds.html), and for reference, Filecoin chain
 information can be found [here](https://chainlist.org/?search=filecoin&testnets=true).

@@ -1,19 +1,19 @@
 ---
 title: CometBFT API
-description: Endpoints for interacting with the Hoku network's CometBFT API.
+description: Endpoints for interacting with the Recall network's CometBFT API.
 ---
 
 import { Callout } from "nextra/components";
 
-Hoku's consensus layer is built with CometBFT (v0.37). Currently, there is no directly exposed
+Recall's consensus layer is built with CometBFT (v0.37). Currently, there is no directly exposed
 execution RPC. Instead, all calls flow through this layer—including the EVM RPCs, which are proxied
 to CometBFT before being sent to the Wasm/EVM runtime.
 
 ## Base URL
 
-The CometBFT API endpoints for each of the Hoku chain environments are listed below:
+The CometBFT API endpoints for each of the Recall chain environments are listed below:
 
-- `testnet`: `https://api-ignition-0.hoku.sh`
+- `testnet`: `https://api.node-0.testnet.recall.network`
 - `localnet` or `devnet`: `http://127.0.0.1:26657`
 
 ## Endpoints

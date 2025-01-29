@@ -1,7 +1,7 @@
 {
-  "name": "hoku-docs",
+  "name": "recall-docs",
   "version": "0.0.1",
-  "description": "Official developer documentation for the Hoku protocol",
+  "description": "Official developer documentation for the Recall protocol",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/todo/docs.git"
+    "url": "git+https://github.com/recallnet/docs.git"
   },
   "license": "MIT AND Apache-2.0",
   "dependencies": {

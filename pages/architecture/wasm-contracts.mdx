@@ -5,10 +5,10 @@ description: The core building blocks for data exchange.
 
 import { Callout } from "nextra/components";
 
-Hoku’s core functionality is built on top of the FVM as a series of _Wasm contracts_, which are,
+Recall’s core functionality is built on top of the FVM as a series of _Wasm contracts_, which are,
 essentially, Wasm-based smart contracts that run on the FVM and are used to manage, query, and
 update the state of the subnet. In effect, the FVM is responsible for executing the logic of the
-Hoku protocol.
+Recall protocol.
 
 ## Contract execution
 
@@ -23,12 +23,12 @@ For further details on the FVM, see the [Filecoin documentation](https://docs.fi
 
 </Callout>
 
-Within Hoku, our default contracts are called **_Wasm contracts_**. These are the core building
-blocks of Hoku; each Wasm contract has its own unique address and is associated with a unique owner
-address. This helps track which contracts are tied to a given account. At present, Hoku ships with
-three core Wasm contracts: the _address manager_, _bucket_, and _timehub_. These contracts are
-responsible for managing the state of a subnet, creating new buckets, timehubs, and storing and
-retrieving data from the subnet.
+Within Recall, our default contracts are called **_Wasm contracts_**. These are the core building
+blocks of Recall; each Wasm contract has its own unique address and is associated with a unique
+owner address. This helps track which contracts are tied to a given account. At present, Recall
+ships with three core Wasm contracts: the _address manager_, _bucket_, and _timehub_. These
+contracts are responsible for managing the state of a subnet, creating new buckets, timehubs, and
+storing and retrieving data from the subnet.
 
 One of the main advantages of the FVM runtime is its support for [IPLD](https://ipld.io/), a
 hash-linked data model that can be used to represent and traverse hash-linked data. It's the basis
@@ -50,7 +50,7 @@ developers can leverage the best tools for their specific needs.
 
 ## Wasm contracts
 
-Hoku comes with a few built-in Wasm contracts that are used to manage the state of the subnet and
+Recall comes with a few built-in Wasm contracts that are used to manage the state of the subnet and
 implement core data structures.
 
 ### Address manager
@@ -128,5 +128,5 @@ verification.
 
 The HAMT itself references the blobs of the bucket, which may be included directly (for smaller
 payloads that fit entirely within a single transaction), or as part of a _detached payload_. When
-required, Hoku can leverage the IPLD resolver (and store) to read and write data to its internal
+required, Recall can leverage the IPLD resolver (and store) to read and write data to its internal
 state, so that it is IPLD addressable.

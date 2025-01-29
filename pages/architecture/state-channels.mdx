@@ -5,11 +5,11 @@ description: Data state channels and detached payloads for efficient data exchan
 
 import { Callout } from "nextra/components";
 
-Consistency in [distributed systems is a complex topic](https://docsend.com/view/gu3ywqi), and Hoku
-is no exception. The network is designed to be highly available and partition tolerant, which means
-that the network is able to continue operating even in the event of network disruptions or other
-failures. This is achieved largely by leveraging the IPC hierarchical consensus protocol and makes
-Hoku robust to network disruptions and faults.
+Consistency in [distributed systems is a complex topic](https://docsend.com/view/gu3ywqi), and
+Recall is no exception. The network is designed to be highly available and partition tolerant, which
+means that the network is able to continue operating even in the event of network disruptions or
+other failures. This is achieved largely by leveraging the IPC hierarchical consensus protocol and
+makes Recall robust to network disruptions and faults.
 
 ## Data state channels
 
@@ -21,12 +21,12 @@ of a disruption) for eventual consistency.
 
 As an active area of research, designing real systems with
 [provable eventual consistency](https://hal.inria.fr/inria-00555588) guarantees
-[remains challenging](https://arxiv.org/abs/1603.01529), however the Hoku system strikes a balance
+[remains challenging](https://arxiv.org/abs/1603.01529), however the Recall system strikes a balance
 between
 [consistency, availability, and partition tolerance](http://pld.cs.luc.edu/courses/353/spr11/notes/brewer_keynote.pdf)
 (see [Brewer's conjecture](https://dl.acm.org/doi/abs/10.1145/564585.564601)) by leveraging
 peer-base consensus and hierarchical checkpoints to arrive at strong eventual consistency. Another
-important aspect of Hoku’s consistency model is the use of _data state channels_, which allows the
+important aspect of Recall’s consistency model is the use of _data state channels_, which allows the
 chain to remain "live", while members of a subnet synchronize over correct state in the background.
 
 State channels have emerged as a promising solution to the scalability issues of blockchains. By
@@ -34,7 +34,7 @@ allowing transactions to occur offchain and only recording the final state oncha
 can significantly reduce the load on the main blockchain. However, standard state channels are
 primarily designed for financial transactions and do not cater well to scenarios involving the
 synchronization of large, complex data sets, such as Merklized directed acyclic graphs (DAGs) or
-other verifiable data structures as employed in Hoku.
+other verifiable data structures as employed in Recall.
 
 To address these limitations, we introduce the concept of _data state channels_. Unlike traditional
 state channels, data state channels are ephemeral and specifically designed to facilitate the
@@ -91,22 +91,22 @@ agreed-upon state is then committed to the blockchain by recording the final roo
 <Callout>
 
 The specifics of the onchain commitment process may vary depending on the application and use case.
-For example, in Hoku the final state is committed to the blockchain by recording the final root hash
-in the state of the target machine.
+For example, in Recall the final state is committed to the blockchain by recording the final root
+hash in the state of the target machine.
 
 </Callout>
 
 ## End-to-end flow
 
-In Hoku, data references are represented as CIDs onchain (within a machine’s state). In most cases,
-the actual data is stored _offchain_, in a node's local (networked) blockstore. The actual storage
-layout etc is an implementation detail of the Hoku node, though in practice, this currently uses an
-IPFS-style blockstore. During normal chain operation, nodes are instructed to fetch object data as
-part of the normal consensus process. However, the default CometBFT consensus process has no builtin
-mechanism to ensure that all validators (or a quorum) has actually downloaded the data before the
-data is referenced (by CID) onchain.
+In Recall, data references are represented as CIDs onchain (within a machine’s state). In most
+cases, the actual data is stored _offchain_, in a node's local (networked) blockstore. The actual
+storage layout etc is an implementation detail of the Recall node, though in practice, this
+currently uses an IPFS-style blockstore. During normal chain operation, nodes are instructed to
+fetch object data as part of the normal consensus process. However, the default CometBFT consensus
+process has no builtin mechanism to ensure that all validators (or a quorum) has actually downloaded
+the data before the data is referenced (by CID) onchain.
 
-To address this, Hoku leverages data state channels, and the concept of a _detached payload_. A
+To address this, Recall leverages data state channels, and the concept of a _detached payload_. A
 detached payload is a transaction that includes a CID reference to some data, but does not include
 the data itself. When a detached payload is added to the chain, validators leverage a data state
 channel to synchronize the data and verify that it matches the CID reference. This ensures that all
@@ -217,7 +217,7 @@ transaction_ into the proposal, which is validated by the other validators based
 the vote tally. Finally, during execution of this transaction, the object is marked as "resolved".
 Querying the bucket at this point will show resolved status. The whole process is asynchronous, and
 the object is not considered resolved until the next block. See figure for a high-level overview of
-the block production process in Hoku based on the CometBFT ABCI++ framework.
+the block production process in Recall based on the CometBFT ABCI++ framework.
 
 <Callout>
 

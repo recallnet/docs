@@ -12,20 +12,20 @@ import { Steps } from "nextra/components";
 You'll need to download the source code, build, and install the CLI.
 
 ```sh
-git clone https://github.com/hokunet/rust-hoku.git
-cd rust-hoku
+git clone https://github.com/recallnet/rust-recall.git
+cd rust-recall
 make install
 ```
 
-Once installed, you can run the `hoku` command from your terminal.
+Once installed, you can run the `recall` command from your terminal.
 
 ```sh
-hoku --help
+recall --help
 ```
 
 ### Configuration
 
-There are two flags required for the majority of the `hoku` subcommands:
+There are two flags required for the majority of the `recall` subcommands:
 
 - `--network`: Specify the chain location with RPC presets and settings that map to either `mainnet`
   (not available), `testnet` (default),`testnet`, `localnet`, or `devnet`.
@@ -37,8 +37,8 @@ set the network variable unless you're developing elsewhere (e.g., local develop
 `localnet`).
 
 ```txt filename=".env"
-export HOKU_PRIVATE_KEY=your_private_key
-export HOKU_NETWORK=testnet
+export RECALL_PRIVATE_KEY=your_private_key
+export RECALL_NETWORK=testnet
 ```
 
 Then, make sure to run source it to load these variables:

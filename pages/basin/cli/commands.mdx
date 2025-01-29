@@ -5,40 +5,40 @@ description: Learn how to use the Basin CLI.
 
 import { Callout } from "nextra/components";
 
-The Hoku CLI is a command-line interface for interacting with the Hoku network. It allows you to
+The Recall CLI is a command-line interface for interacting with the Recall network. It allows you to
 manage your accounts, interact with smart contracts, and manage your data that gets stored on the
 network.
 
 ## Global options
 
-All the global flags can also be passed as all-caps (prefixed with `HOKU_`), snake case environment
-variables that are set, or create and source them in a `env` file. For example, `--network` =>
-`HOKU_NETWORK`, `--private-key` => `HOKU_PRIVATE_KEY`, etc.
+All the global flags can also be passed as all-caps (prefixed with `RECALL_`), snake case
+environment variables that are set, or create and source them in a `env` file. For example,
+`--network` => `RECALL_NETWORK`, `--private-key` => `RECALL_PRIVATE_KEY`, etc.
 
-| Flag              | Description                                             | Env. variable        |
-| ----------------- | ------------------------------------------------------- | -------------------- |
-| `-n`, `--network` | Network presets for subnet and RPC (default: `testnet`) | `HOKU_NETWORK`       |
-| `-s`, `--subnet`  | The ID of the target subnet.                            | `HOKU_SUBNET`        |
-| `--rpc-url`       | Node CometBFT RPC URL.                                  | `HOKU_RPC_URL`       |
-| `-v, --verbosity` | Logging verbosity (repeat for more verbosity).          | `HOKU_LOG_VERBOSITY` |
-| `-q, --quiet`     | Silence logging (default: `false`).                     | `HOKU_LOG_QUIET`     |
-| `-h, --help`      | Print help.                                             | -                    |
-| `-V, --version`   | Print version.                                          | -                    |
+| Flag              | Description                                             | Env. variable          |
+| ----------------- | ------------------------------------------------------- | ---------------------- |
+| `-n`, `--network` | Network presets for subnet and RPC (default: `testnet`) | `RECALL_NETWORK`       |
+| `-s`, `--subnet`  | The ID of the target subnet.                            | `RECALL_SUBNET`        |
+| `--rpc-url`       | Node CometBFT RPC URL.                                  | `RECALL_RPC_URL`       |
+| `-v, --verbosity` | Logging verbosity (repeat for more verbosity).          | `RECALL_LOG_VERBOSITY` |
+| `-q, --quiet`     | Silence logging (default: `false`).                     | `RECALL_LOG_QUIET`     |
+| `-h, --help`      | Print help.                                             | -                      |
+| `-V, --version`   | Print version.                                          | -                      |
 
 ### Environment variables
 
-The following environment variables are required for the majority of the `hoku` subcommands:
+The following environment variables are required for the majority of the `recall` subcommands:
 
-- `HOKU_PRIVATE_KEY`: A wallet private key (ECDSA, secp256k1) for signing transactions.
-- `HOKU_NETWORK`: Specify the chain location with RPC presets and settings that map to either
+- `RECALL_PRIVATE_KEY`: A wallet private key (ECDSA, secp256k1) for signing transactions.
+- `RECALL_NETWORK`: Specify the chain location with RPC presets and settings that map to either
   `mainnet` (not available), `testnet`, `localnet`, or `devnet`.
 
 As such, the examples below omit these flags and presume that you've already set them.
 
 ## Account management
 
-Interaction with the Hoku network requires an account (ECDSA, secp256k1). As with any blockchain
-system, an account can be created at will, transfer funds, and send transactions. Recall that Hoku
+Interaction with the Recall network requires an account (ECDSA, secp256k1). As with any blockchain
+system, an account can be created at will, transfer funds, and send transactions. Recall that Recall
 runs on a polyglot execution environment, supporting both EVM and Wasm. Accounts work a bit
 different than pure EVM environments because the account is "unknown" to the chain until a
 transaction is sent to it. A transaction can be a deposit, `withdrawal`, or (intra-subnet) transfer.
@@ -52,7 +52,7 @@ for full EVM-compatability in the Wasm runtime.
 The `account` command allows you to execute various subcommands:
 
 ```
-hoku account
+recall account
 ```
 
 The following `account` subcommands are available:
@@ -69,7 +69,7 @@ The following `account` subcommands are available:
 Create a new account from a random seed.
 
 ```
-hoku account create
+recall account create
 ```
 
 This command logs a JSON object to stdout with three properties: the private key, EVM public key,
@@ -80,7 +80,7 @@ and its corresponding Wasm compatible address.
 Create a new private key:
 
 ```
-> hoku account create
+> recall account create
 
 {
   "private_key": "d5020dd0b12d4d8d8793ff0edbaa29bd7197879ddf82d475b7e9a6a34de765b0",
@@ -92,7 +92,7 @@ Create a new private key:
 - Optionally, pipe its output into a file to store the keys:
 
 ```
-> hoku account create > account.json
+> recall account create > account.json
 ```
 
 ### Get account info
@@ -100,7 +100,7 @@ Create a new private key:
 Get account information, such as its address, nonce, and balance.
 
 ```
-hoku account info {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
+recall account info {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
 ```
 
 This commands logs a JSON object to stdout: its public key, addresses, current sequence (nonce),
@@ -123,7 +123,7 @@ current subnet balance, and its balance on the parent subnet.
 Get account info for a specific address:
 
 ```
-> hoku account info \
+> recall account info \
 --address 0x4D5286d81317E284Cd377cB98b478552Bbe641ae
 
 {
@@ -140,13 +140,13 @@ Get account info for a specific address:
 Deposit funds into a subnet from its parent.
 
 ```
-hoku account deposit [--to <TO>] <AMOUNT>
+recall account deposit [--to <TO>] <AMOUNT>
 ```
 
 Think of the `deposit` command as transferring funds from a parent to a child subnet. If you want to
-build on Hoku, you start by moving funds from the parent L1 (rootnet) to the Hoku subnet. This goes
-through a smart contract (i.e., the gateway contract) call that locks the funds in a smart contract
-on the parent, later minting them to the address on the subnet (i.e., a bridging flow).
+build on Recall, you start by moving funds from the parent L1 (rootnet) to the Recall subnet. This
+goes through a smart contract (i.e., the gateway contract) call that locks the funds in a smart
+contract on the parent, later minting them to the address on the subnet (i.e., a bridging flow).
 
 | Positionals | Description             |
 | ----------- | ----------------------- |
@@ -172,7 +172,7 @@ all of the `--evm-...` presets for you, but you _can_ override them with your ow
 - Deposit funds to the signer's address:
 
 ```
-> hoku account deposit 10
+> recall account deposit 10
 
 {
   "transactionHash": "0xcc7fdf8057dd9f024582b24fce2abe0f5e0c01f1e925fb52bd002c4456333bfc",
@@ -211,7 +211,7 @@ all of the `--evm-...` presets for you, but you _can_ override them with your ow
 - Deposit funds to some other, non-signer address:
 
 ```
-> hoku account deposit --to 0x181c2d11DbB674147Ba53F2cf26Cf6DF9d9cc0aC 10
+> recall account deposit --to 0x181c2d11DbB674147Ba53F2cf26Cf6DF9d9cc0aC 10
 ```
 
 ### Withdraw funds
@@ -219,7 +219,7 @@ all of the `--evm-...` presets for you, but you _can_ override them with your ow
 Withdraw funds from a subnet to its parent.
 
 ```
-hoku account withdraw [--to <TO>] <AMOUNT>
+recall account withdraw [--to <TO>] <AMOUNT>
 ```
 
 The `withdraw` command is the opposite of a `deposit`. It moves funds from a subnet to its parent,
@@ -250,7 +250,7 @@ private key.
 - Withdraw funds to the signer's address:
 
 ```
-> hoku account withdraw 10
+> recall account withdraw 10
 
 {
   "transactionHash": "0xb098e39c4b358e5f55cd6f2db941092ff50b46d99db53c34101cac3f0f65f20d",
@@ -274,7 +274,7 @@ private key.
 - Withdraw funds to some other, non-signer address:
 
 ```
-> hoku account withdraw --to 0x181c2d11DbB674147Ba53F2cf26Cf6DF9d9cc0aC 10
+> recall account withdraw --to 0x181c2d11DbB674147Ba53F2cf26Cf6DF9d9cc0aC 10
 ```
 
 ### Transfer funds
@@ -282,7 +282,7 @@ private key.
 Transfer funds to another account within a subnet.
 
 ```
-hoku account transfer --to <TO> <AMOUNT>
+recall account transfer --to <TO> <AMOUNT>
 ```
 
 | Positionals | Description             |
@@ -307,7 +307,7 @@ _within_ the subnet (and does not interact with the rootnet).
 **Example:**
 
 ```
-> hoku account transfer \
+> recall account transfer \
 --to 0x4D5286d81317E284Cd377cB98b478552Bbe641ae \
 10
 
@@ -345,7 +345,7 @@ Set or unset an account's default credit sponsor for gas fees. This assumes the 
 your account via a credit approval.
 
 ```
-hoku account sponsor <SUBCOMMAND>
+recall account sponsor <SUBCOMMAND>
 ```
 
 | Subcommand | Description                                             |
@@ -367,13 +367,13 @@ a [credit approval](#approve-credit) for your account.
 - Set an account's default credit sponsor for gas fees.
 
 ```
-hoku account sponsor set 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
+recall account sponsor set 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
 ```
 
 - Unset an account's default credit sponsor for gas fees.
 
 ```
-hoku account sponsor unset 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
+recall account sponsor unset 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
 ```
 
 ## Credit
@@ -381,7 +381,7 @@ hoku account sponsor unset 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
 Manage credits for your account and sponsoring storage for contracts.
 
 ```
-hoku credit <SUBCOMMAND>
+recall credit <SUBCOMMAND>
 ```
 
 ### Buy credit
@@ -389,7 +389,7 @@ hoku credit <SUBCOMMAND>
 Buy credits for an account.
 
 ```
-hoku credit buy <AMOUNT>
+recall credit buy <AMOUNT>
 ```
 
 | Positionals | Description                                                       |
@@ -418,7 +418,7 @@ You'll see three values in the `data` field of the response:
 - Buy credits with 1 native coins (displayed with $10^(18)$ units).
 
 ```
-> hoku credit buy 1
+> recall credit buy 1
 
 {
   "status": "committed",
@@ -441,7 +441,7 @@ You'll see three values in the `data` field of the response:
 Approve a credit amount for a bucket.
 
 ```
-hoku credit approve [OPTIONS] --to <TO>
+recall credit approve [OPTIONS] --to <TO>
 ```
 
 | Flag                | Required? | Description                                                                                                            |
@@ -457,7 +457,7 @@ hoku credit approve [OPTIONS] --to <TO>
   making the approval).
 
 ```
-> hoku credit approve --to 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
+> recall credit approve --to 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
 
 {
   "status": "committed",
@@ -474,14 +474,14 @@ hoku credit approve [OPTIONS] --to <TO>
 - Approve a receiver to use credits for a specific bucket.
 
 ```
-> hoku credit approve \
+> recall credit approve \
 --to 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
 ```
 
 - Approve a receiver to use credits with both a TTL and a credit limit.
 
 ```
-> hoku credit approve \
+> recall credit approve \
 --to 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65 \
 --ttl 3600 \
 --limit 10
@@ -504,7 +504,7 @@ hoku credit approve [OPTIONS] --to <TO>
 Revoke a credit amount for a bucket.
 
 ```
-hoku credit revoke [OPTIONS] --to <TO>
+recall credit revoke [OPTIONS] --to <TO>
 ```
 
 | Flag                | Required? | Description                                                     |
@@ -517,7 +517,7 @@ hoku credit revoke [OPTIONS] --to <TO>
 - Revoke a receiver's approval, disabling credit usage.
 
 ```
-> hoku credit revoke --to 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
+> recall credit revoke --to 0x15d34aaf54267db7d7c367839aaf71a00a2c6a65
 
 {
   "status": "committed",
@@ -532,7 +532,7 @@ hoku credit revoke [OPTIONS] --to <TO>
 Get the credit balance for an account.
 
 ```
-hoku credit balance
+recall credit balance
 ```
 
 | Flag                | Required?                | Description                                                           |
@@ -544,7 +544,7 @@ hoku credit balance
 - **Example:**
 
 ```
-> hoku credit balance
+> recall credit balance
 
 {
   "credit_free": "1000000000000000000.0",
@@ -566,7 +566,7 @@ hoku credit balance
 Get the credit stats for a subnet.
 
 ```
-hoku credit stats
+recall credit stats
 ```
 
 This is more of a subnet-wide view, as opposed to an account-specific view. It's helpful because it
@@ -580,7 +580,7 @@ and the credit debit rate.
 **Example:**
 
 ```
-> hoku credit stats
+> recall credit stats
 
 {
   "balance": "50000.199999787752056",
@@ -597,7 +597,7 @@ and the credit debit rate.
 Get the storage stats and information.
 
 ```
-hoku storage
+recall storage
 ```
 
 ### Get storage usage
@@ -605,7 +605,7 @@ hoku storage
 Get the storage usage for an account.
 
 ```
-hoku storage usage
+recall storage usage
 ```
 
 | Flag                | Required?                | Description                                                           |
@@ -619,7 +619,7 @@ The response will define `capacity_used` in bytes.
 - **Example:**
 
 ```
-> hoku storage usage
+> recall storage usage
 
 {
   "capacity_used": "0"
@@ -631,7 +631,7 @@ The response will define `capacity_used` in bytes.
 Get the storage stats for a subnet.
 
 ```
-hoku storage stats
+recall storage stats
 ```
 
 This is a subnet-wide view that describes the total amount of storage available and the amount of
@@ -651,7 +651,7 @@ The response includes the following values:
 **Example:**
 
 ```
-> hoku storage stats
+> recall storage stats
 
 {
   "capacity_free": "10995116277754",
@@ -667,7 +667,7 @@ The response includes the following values:
 
 ## Contracts
 
-Contracts are the core building blocks of the Hoku network. The `machine` command allows you to
+Contracts are the core building blocks of the Recall network. The `machine` command allows you to
 retrieve data contract information relative to a specific address. This helps track which bucket or
 timehub contracts are tied to your account, which are later used in the `bucket` and `timehub`
 subcommands described below.
@@ -677,7 +677,7 @@ subcommands described below.
 Get contract metadata at a specific address.
 
 ```
-hoku machine info <ADDRESS>
+recall machine info <ADDRESS>
 ```
 
 | Positionals | Description       |
@@ -691,7 +691,7 @@ hoku machine info <ADDRESS>
 **Example:**
 
 ```
-> hoku machine info 0xff00000000000000000000000000000000000094
+> recall machine info 0xff00000000000000000000000000000000000094
 
 {
   "kind": "Bucket",
@@ -707,8 +707,8 @@ hoku machine info <ADDRESS>
 Interact with a bucket contract using either the `bucket` or aliased `bu` subcommand:
 
 ```
-hoku bucket <SUBCOMMAND>
-hoku bu <SUBCOMMAND>
+recall bucket <SUBCOMMAND>
+recall bu <SUBCOMMAND>
 ```
 
 The `bucket` subcommand has the following subcommands:
@@ -732,7 +732,7 @@ data by prefixes, which is explained below (see the `query` subcommand).
 Create a new Bucket contract.
 
 ```
-hoku bucket create
+recall bucket create
 ```
 
 | Flag                | Required? | Description                                                               |
@@ -750,7 +750,7 @@ hoku bucket create
 - Create a new bucket contract.
 
 ```
-> hoku bucket create
+> recall bucket create
 
 {
   "address": "0xff00000000000000000000000000000000000094",
@@ -765,7 +765,7 @@ hoku bucket create
 - Create a new bucket contract with metadata.
 
 ```
-> hoku bucket create --metadata "alias=foo"
+> recall bucket create --metadata "alias=foo"
 ```
 
 ### List buckets
@@ -773,15 +773,15 @@ hoku bucket create
 List buckets by owner in a subnet.
 
 ```
-hoku bucket list {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
+recall bucket list {--private-key <PRIVATE_KEY> | --address <ADDRESS>}
 ```
 
 You must pass _either_ the `--private-key` or `--address` flag. An address must be in the delegated
 `t410` or `0x` format.
 
-- `hoku bucket list --private-key <PRIVATE_KEY>`: Query with a private key (or read from your `.env`
-  file).
-- `hoku bucket list --address <ADDRESS>`: Query a `t410` or `0x` address.
+- `recall bucket list --private-key <PRIVATE_KEY>`: Query with a private key (or read from your
+  `.env` file).
+- `recall bucket list --address <ADDRESS>`: Query a `t410` or `0x` address.
 
 | Flag                | Required?                | Description                                                           |
 | ------------------- | ------------------------ | --------------------------------------------------------------------- |
@@ -796,7 +796,7 @@ Query data contracts by:
 - A hex address:
 
 ```
-> hoku bucket list \
+> recall bucket list \
 --address 0x4D5286d81317E284Cd377cB98b478552Bbe641ae
 
 [
@@ -814,7 +814,7 @@ Query data contracts by:
   than the most recent `committed` height above):
 
 ```
-> hoku bucket list --height 789471
+> recall bucket list --height 789471
 ```
 
 ### Add an object
@@ -822,7 +822,7 @@ Query data contracts by:
 Add an object with a key prefix.
 
 ```
-hoku bucket add \
+recall bucket add \
 --address <ADDRESS> \
 --key <KEY> \
 <FILE_PATH>
@@ -861,7 +861,7 @@ echo '{"hello":"world"}' > ~/hello.json
 - Add the file to the bucket:
 
 ```
-> hoku bucket add \
+> recall bucket add \
 --address 0xff00000000000000000000000000000000000094 \
 --key "hello/world" \
 ~/hello.json
@@ -878,7 +878,7 @@ echo '{"hello":"world"}' > ~/hello.json
 - Include metadata in the object along with ttl and overwrite:
 
 ```
-> hoku bucket add \
+> recall bucket add \
 --address 0xff00000000000000000000000000000000000094 \
 --key "hello/world" \
 --metadata "alias=foo" \
@@ -892,7 +892,7 @@ echo '{"hello":"world"}' > ~/hello.json
 Get an object from the bucket contract.
 
 ```
-hoku bucket get --address <ADDRESS> <KEY>
+recall bucket get --address <ADDRESS> <KEY>
 ```
 
 | Positionals | Description               |
@@ -913,7 +913,7 @@ Note that when you retrieve the object, it will be written to stdout.
 - Get an object and write to stdout (default behavior):
 
 ```
-> hoku bucket get \
+> recall bucket get \
 --address 0xff00000000000000000000000000000000000094 \
 "hello/world"
 
@@ -923,7 +923,7 @@ Note that when you retrieve the object, it will be written to stdout.
 - Download the output to a file by piping the output:
 
 ```
-> hoku bucket get \
+> recall bucket get \
 --address 0xff00000000000000000000000000000000000094 \
 "hello/world" > downloaded.json
 ```
@@ -931,7 +931,7 @@ Note that when you retrieve the object, it will be written to stdout.
 - Range request for a subset of bytes:
 
 ```
-> hoku bucket get \
+> recall bucket get \
 --address 0xff00000000000000000000000000000000000094 \
 --range "10-14" \
 "hello/world"
@@ -944,7 +944,7 @@ world
 Delete an object from the bucket.
 
 ```
-hoku bucket delete \
+recall bucket delete \
 --address <ADDRESS> \
 <KEY>
 ```
@@ -971,7 +971,7 @@ Similar to when you `add` an object, you can specify gas settings or alter the b
 - Delete an existing object:
 
 ```
-> hoku bucket delete \
+> recall bucket delete \
 --address 0xff00000000000000000000000000000000000094 \
 "hello/world"
 
@@ -989,7 +989,7 @@ Similar to when you `add` an object, you can specify gas settings or alter the b
 Query across all objects in the store.
 
 ```
-hoku bucket query --address <ADDRESS>
+recall bucket query --address <ADDRESS>
 ```
 
 Performing a `query` lists all keys that match a given prefix _up to and including the delimiter_.
@@ -1017,7 +1017,7 @@ at the end).
   see the common prefix `hello/`, but no objects are listed since the "root" is the prefix:
 
 ```
-> hoku bucket query \
+> recall bucket query \
 --address 0xff00000000000000000000000000000000000094
 
 {
@@ -1034,7 +1034,7 @@ at the end).
   sub-objects to list:
 
 ```
-> hoku bucket query \
+> recall bucket query \
 --address 0xff00000000000000000000000000000000000094 \
 --prefix "hello/"
 
@@ -1063,7 +1063,7 @@ at the end).
   `common_prefixes` array will be empty. The response will be the same as above.
 
 ```
-> hoku bucket query \
+> recall bucket query \
 --address 0xff00000000000000000000000000000000000094 \
 --delimiter "*"
 ```
@@ -1073,7 +1073,7 @@ at the end).
   the first object listed since we're offsetting by `1`:
 
 ```
-> hoku bucket query \
+> recall bucket query \
 --address 0xff00000000000000000000000000000000000094 \
 --delimiter "/" \
 --prefix "hello/" \
@@ -1104,7 +1104,7 @@ at the end).
 Add metadata to an existing object.
 
 ```
-hoku bucket metadata --address <ADDRESS> --key <KEY> --metadata <METADATA>
+recall bucket metadata --address <ADDRESS> --key <KEY> --metadata <METADATA>
 ```
 
 | Flag             | Required? | Description                           |
@@ -1118,7 +1118,7 @@ hoku bucket metadata --address <ADDRESS> --key <KEY> --metadata <METADATA>
 - Add metadata to an existing object:
 
 ```
-> hoku bucket metadata \
+> recall bucket metadata \
 --address 0xff00000000000000000000000000000000000094 \
 --key "hello/world" \
 --metadata "alias=foo"
@@ -1139,8 +1139,8 @@ Timehubs are an anchoring service, separate from Basin. You can interact with a 
 using either the `timehub` or aliased `th` subcommand:
 
 ```
-hoku timehub <SUBCOMMAND>
-hoku th <SUBCOMMAND>
+recall timehub <SUBCOMMAND>
+recall th <SUBCOMMAND>
 ```
 
 The `timehub` subcommand has the following subcommands:

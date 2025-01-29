@@ -6,18 +6,18 @@ import LogoSvg from "./components/LogoSvg";
 const config: DocsThemeConfig = {
   logo: (
     <>
-      <LogoSvg />
+      <LogoSvg height={22} width={100} />
       <span style={{ marginLeft: ".4em", fontWeight: 500 }}>DOCS</span>
     </>
   ),
   project: {
-    link: "https://github.com/hokunet",
+    link: "https://github.com/recallnet",
   },
   darkMode: true,
   chat: {
-    // link: "https://discord.com/hokunetwork",
+    // link: "https://discord.com/recallnet",
   },
-  docsRepositoryBase: "https://github.com/hokunet/docs",
+  docsRepositoryBase: "https://github.com/recallnet/docs",
   editLink: {
     text: "Edit this page on GitHub →",
   },
@@ -29,7 +29,7 @@ const config: DocsThemeConfig = {
     const { asPath } = useRouter();
     if (asPath !== "/home") {
       return {
-        titleTemplate: "%s – Hoku docs",
+        titleTemplate: "%s – Recall docs",
       };
     }
   },
@@ -37,12 +37,12 @@ const config: DocsThemeConfig = {
     const { frontMatter } = useConfig();
     // TODO: determine default keywords for SEO (also, should it be joined on a
     // per-page basis, or should each page be unique?)
-    const keywords = frontMatter.keywords || "Hoku docs, Hoku protocol, Hoku network";
+    const keywords = frontMatter.keywords || "Recall docs, Recall protocol, Recall network";
     return (
       <>
         <meta
           name="og:title"
-          content="Hoku docs: the official documentation for the Hoku protocol"
+          content="Recall docs: the official documentation for the Recall protocol"
         />
         <meta name="keywords" content={keywords} />
         <link rel="icon" href="/img/favicon.ico" />
@@ -100,7 +100,7 @@ const config: DocsThemeConfig = {
     extraContent: (
       <>
         <a
-          href="https://twitter.com/hokunetwork"
+          href="https://x.com/recallprotocol"
           target="_blank"
           rel="noreferrer"
           className="nx-p-2 nx-text-current"
@@ -114,7 +114,7 @@ const config: DocsThemeConfig = {
           >
             <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z" />
           </svg>
-          <span className="nx-sr-only">Twitter</span>
+          <span className="nx-sr-only">X</span>
           <span className="nx-sr-only nx-select-none">(opens in a new tab)</span>
         </a>
       </>

@@ -1,0 +1,15 @@
+{
+  "title": "OrbisDB Managing Data",
+  "description": "OrbisDB Managing Data",
+  "pages": [
+    "overview",
+    "accounts",
+    "contexts",
+    "models",
+    "insert",
+    "update",
+    "select",
+    "delete",
+    "advanced"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "title": "Recall Tutorials",
+  "description": "Tutorials that showcase how to build with the Recall stack.",
+  "pages": [
+    "---Recall---",
+    "recall-ml-pipeline",
+    "---Basin---",
+    "basin-ml",
+    "---Ceramic---",
+    "ceramic-user-data",
+    "ceramic-data-labeling",
+    "---OrbisDB---",
+    "orbisdb-indexing"
+  ]
+}

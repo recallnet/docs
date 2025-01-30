@@ -1,0 +1,13 @@
+{
+  "title": "Recall Network",
+  "description": "The Recall network is a decentralized network of nodes that run the Recall stack.",
+  "pages": [
+    "config",
+    "rpcs",
+    "faucet",
+    "---RPC & API usage---",
+    "api-evm",
+    "api-object",
+    "api-cometbft"
+  ]
+}

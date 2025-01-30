@@ -1,0 +1,5 @@
+{
+  "title": "OrbisDB SDK Reference",
+  "description": "OrbisDB SDK Reference",
+  "pages": ["getting-started", "auth", "insert", "update", "select"]
+}

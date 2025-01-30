@@ -1,0 +1,5 @@
+{
+  "title": "Basin",
+  "description": "Basin",
+  "pages": ["concepts", "studio", "cli", "rust-sdk", "s3", "reference"]
+}

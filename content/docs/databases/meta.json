@@ -1,0 +1,12 @@
+{
+  "title": "Recall Databases",
+  "description": "Recall Databases",
+  "pages": [
+    "orbisdb-introduction",
+    "orbisdb-setting-up",
+    "orbisdb-managing-data",
+    "orbisdb-sdk-reference",
+    "---Tableland---",
+    "tableland"
+  ]
+}

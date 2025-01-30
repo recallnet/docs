@@ -1,0 +1,5 @@
+{
+  "title": "Recall Operators",
+  "description": "Operators are the nodes that run the Recall stack.",
+  "pages": ["---Local development---", "setup", "local"]
+}

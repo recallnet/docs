@@ -1,0 +1,86 @@
+{
+  "*": {
+    "type": "page",
+    "display": "hidden"
+  },
+  "nav-services": {
+    "title": "Services",
+    "type": "menu",
+    "display": "normal",
+    "items": {
+      "basin": {
+        "title": "Basin",
+        "href": "/basin"
+      },
+      "event-store": {
+        "title": "Event store",
+        "href": "/event-store"
+      },
+      "databases": {
+        "title": "Databases",
+        "href": "/databases"
+      }
+    }
+  },
+  "nav-guides": {
+    "title": "Guides",
+    "type": "menu",
+    "display": "normal",
+    "items": {
+      "tutorials": {
+        "title": "Tutorials",
+        "href": "/tutorials"
+      }
+    }
+  },
+  "nav-protocol": {
+    "title": "Protocol",
+    "type": "menu",
+    "display": "normal",
+    "items": {
+      "architecture": {
+        "title": "Architecture",
+        "href": "/architecture"
+      },
+      "network": {
+        "title": "Contracts & RPCs",
+        "href": "/network"
+      },
+      "operators": {
+        "title": "Node operators",
+        "href": "/operators"
+      }
+    }
+  },
+  "nav-community": {
+    "title": "Community",
+    "type": "menu",
+    "display": "normal",
+    "items": {
+      "point-program": {
+        "title": "Points program",
+        "href": "/home/points-program"
+      },
+      "ecosystem": {
+        "title": "Ecosystem",
+        "href": "/home/ecosystem"
+      },
+      "contributing": {
+        "title": "Contributing",
+        "href": "/home/contributing"
+      }
+    }
+  },
+  "home": "Home",
+  "introduction": "Introduction",
+  "features": "Features",
+  "use-cases": "Use cases",
+  "event-store": "Event store",
+  "basin": "Basin",
+  "databases": "Databases",
+  "tutorials": "Guides",
+  "architecture": "Architecture",
+  "network": "APIs & contracts",
+  "operators": "Node operators",
+  "community": "Community"
+}

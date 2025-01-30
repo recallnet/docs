@@ -14,6 +14,9 @@ importers:
       fumadocs-core:
         specifier: 15.0.0
         version: 15.0.0(@types/react@19.0.8)(next@15.1.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      fumadocs-docgen:
+        specifier: ^1.3.5
+        version: 1.3.5(typescript@5.7.3)
       fumadocs-mdx:
         specifier: 11.3.2
         version: 11.3.2(acorn@8.14.0)(fumadocs-core@15.0.0(@types/react@19.0.8)(next@15.1.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(next@15.1.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
@@ -521,6 +524,46 @@ packages:
   '@orama/orama@2.1.1':
     resolution: {integrity: sha512-euTV/2kya290SNkl5m8e/H1na8iDygk74nNtl4E0YZNyYIrEMwE1JwamoroMKGZw2Uz+in/8gH3m1+2YfP0j1w==}
     engines: {node: '>= 16.0.0'}
+
+  '@oxc-transform/binding-darwin-arm64@0.47.1':
+    resolution: {integrity: sha512-GT56Wkk/M1Eo1HCFfj8PxNn/ssBfxFVIrS3A5lJ6GE2k3gbVRORNzVA1znHtB3Tj4hIvWPNzqh+EQ2bhaFypNQ==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@oxc-transform/binding-darwin-x64@0.47.1':
+    resolution: {integrity: sha512-2lwBMYHouI8Q0wubDCRuK4lMosiA0acsk2ZZzvTzYkn2xNKXtug2+D5UsOxpRLzW1vtIiTEdE5kPaafGPIIcqw==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@oxc-transform/binding-linux-arm64-gnu@0.47.1':
+    resolution: {integrity: sha512-AvAhryJTpOF0pJdroI0167cmRHDGv2aBBbTjEeNYW5b5KHNvmfeFF1eKT5e8pwj9ygR6DhwXQMIfYOsR2GBzrw==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@oxc-transform/binding-linux-arm64-musl@0.47.1':
+    resolution: {integrity: sha512-b3KDPQeC3yTZXF3vroOD9Mq6QfODxVt8OOeWkufytgOvNyM0NrHhXiiRLBvbNQyf7GfKd82B0l7is6hKuGELwg==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@oxc-transform/binding-linux-x64-gnu@0.47.1':
+    resolution: {integrity: sha512-bvdPbWnAtfWhQ+hRLtZCeI+mHivHBR4oJL1Zk8HZdo61LEr32XrfTjAOjzoaRqcANKaZv5o9Skyotp71Pf+Xfg==}
+    cpu: [x64]
+    os: [linux]
+
+  '@oxc-transform/binding-linux-x64-musl@0.47.1':
+    resolution: {integrity: sha512-E549H+YqzkkvX72QxJechLEAAIseHndrrSWW5lacfCpatZjpTEBoHaMfTf7L3B4Ha/hg/JRZrn/rudYOMJ7ztA==}
+    cpu: [x64]
+    os: [linux]
+
+  '@oxc-transform/binding-win32-arm64-msvc@0.47.1':
+    resolution: {integrity: sha512-GGbQBBKjIJ3CZ+lnOyPdKdyy1cbazZxTAJWN+EShfXJz+T1gY3BF6U3yhiRAvDefZ2SYLvALi2n4Wz//4vUz6A==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@oxc-transform/binding-win32-x64-msvc@0.47.1':
+    resolution: {integrity: sha512-IVdLjLWknwrhWsWj0f0WTWd3Mfu3a/kjEWwTy0X65udWNxfzpIOVSnauHL7E0lWiatAKmpjS4GacVDPtMdw3GQ==}
+    cpu: [x64]
+    os: [win32]
 
   '@radix-ui/number@1.1.0':
     resolution: {integrity: sha512-V3gRzhVNU1ldS5XhAPTom1fOIo4ccrjjJgmE+LI2h/WaFpHmx0MQApT+KZHnx8abG6Avtfcz4WoEciMnpFT3HQ==}
@@ -1984,6 +2027,9 @@ packages:
       react-dom:
         optional: true
 
+  fumadocs-docgen@1.3.5:
+    resolution: {integrity: sha512-EaacNbPCpIXpExRv+zb+TrkvJbmyEN5Z1J2+Qp9MoYbF5sxeM60bmvHJAyp/KvtcmPhFs+8APUlWEFsKXHcbJw==}
+
   fumadocs-mdx@11.3.2:
     resolution: {integrity: sha512-FosobobQMKJmwWiwMoV1uFeuccWRL5q65Tk+x69mS/pM82Xcq+mdj9TEzMmpwp0+WzjV6Sg2QZbAGrKYCjyIfQ==}
     hasBin: true
@@ -1997,6 +2043,11 @@ packages:
       fumadocs-ui: ^15.0.0
       react: 18.x.x || 19.x.x
       shiki: 1.x.x || 2.x.x
+
+  fumadocs-typescript@3.0.3:
+    resolution: {integrity: sha512-TpVem2Sy+fo5e8wJibisn1XZoRdwNyY8+MuxQWBC2k8Q4oaxA6qVVsy2paCVEa716UnXbES0sVP1HqX3HCEhBg==}
+    peerDependencies:
+      typescript: '*'
 
   fumadocs-ui@15.0.0:
     resolution: {integrity: sha512-o6mri3ehebFWpBwy11bkN9mWGs0JICWeAbuFpkM7igIVVgjI80eQ4Uz5P4smF+nTMx9Gd1GbQvDCt7CI+zRVvQ==}
@@ -2776,6 +2827,10 @@ packages:
     resolution: {integrity: sha512-9qny7Z9DsQU8Ou39ERsPU4OZQlSTP47ShQzuKZ6PRXpYLtIFgl/DEBYEXKlvcEa+9tHVcK8CF81Y2V72qaZhWA==}
     engines: {node: '>=18'}
 
+  npm-to-yarn@3.0.1:
+    resolution: {integrity: sha512-tt6PvKu4WyzPwWUzy/hvPFqn+uwXO0K1ZHka8az3NnrhWJDmSqI8ncWq0fkL0k/lmmi5tAC11FXwXuh0rFbt1A==}
+    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+
   object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
@@ -2821,6 +2876,9 @@ packages:
   own-keys@1.0.1:
     resolution: {integrity: sha512-qFOyK5PjiWZd+QQIh+1jhdb9LpxTF0qs7Pm8o5QHYZ0M3vKqSqzsZaEB6oWlxZ+q2sJBMI/Ktgd2N5ZwQoRHfg==}
     engines: {node: '>= 0.4'}
+
+  oxc-transform@0.47.1:
+    resolution: {integrity: sha512-krLyXKa+2RWT9MFcj2q4ffEFFzX3EoypcLGpXMhTW0ayLxmGxyiLYlDlwFwP+5fbaVeeBu36XsVroOZelddl7g==}
 
   p-limit@3.1.0:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
@@ -3885,6 +3943,30 @@ snapshots:
   '@nolyfill/is-core-module@1.0.39': {}
 
   '@orama/orama@2.1.1': {}
+
+  '@oxc-transform/binding-darwin-arm64@0.47.1':
+    optional: true
+
+  '@oxc-transform/binding-darwin-x64@0.47.1':
+    optional: true
+
+  '@oxc-transform/binding-linux-arm64-gnu@0.47.1':
+    optional: true
+
+  '@oxc-transform/binding-linux-arm64-musl@0.47.1':
+    optional: true
+
+  '@oxc-transform/binding-linux-x64-gnu@0.47.1':
+    optional: true
+
+  '@oxc-transform/binding-linux-x64-musl@0.47.1':
+    optional: true
+
+  '@oxc-transform/binding-win32-arm64-msvc@0.47.1':
+    optional: true
+
+  '@oxc-transform/binding-win32-x64-msvc@0.47.1':
+    optional: true
 
   '@radix-ui/number@1.1.0': {}
 
@@ -5313,8 +5395,8 @@ snapshots:
       '@typescript-eslint/parser': 8.22.0(eslint@8.57.1)(typescript@5.7.3)
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
       eslint-plugin-react: 7.37.4(eslint@8.57.1)
       eslint-plugin-react-hooks: 5.1.0(eslint@8.57.1)
@@ -5333,7 +5415,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1))(eslint@8.57.1):
+  eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0)(eslint@8.57.1):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.0
@@ -5345,22 +5427,22 @@ snapshots:
       is-glob: 4.0.3
       stable-hash: 0.0.4
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1):
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.22.0(eslint@8.57.1)(typescript@5.7.3)
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1):
+  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.8
@@ -5371,7 +5453,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.22.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -5651,6 +5733,19 @@ snapshots:
       - '@types/react'
       - supports-color
 
+  fumadocs-docgen@1.3.5(typescript@5.7.3):
+    dependencies:
+      estree-util-value-to-estree: 3.2.1
+      fumadocs-typescript: 3.0.3(typescript@5.7.3)
+      hast-util-to-estree: 3.1.1
+      npm-to-yarn: 3.0.1
+      oxc-transform: 0.47.1
+      unist-util-visit: 5.0.0
+      zod: 3.24.1
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
   fumadocs-mdx@11.3.2(acorn@8.14.0)(fumadocs-core@15.0.0(@types/react@19.0.8)(next@15.1.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(next@15.1.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)):
     dependencies:
       '@mdx-js/mdx': 3.1.0(acorn@8.14.0)
@@ -5686,6 +5781,19 @@ snapshots:
       - react-dom
       - supports-color
       - typescript
+
+  fumadocs-typescript@3.0.3(typescript@5.7.3):
+    dependencies:
+      fast-glob: 3.3.3
+      hast-util-to-jsx-runtime: 2.3.2
+      mdast-util-from-markdown: 2.0.2
+      mdast-util-gfm: 3.0.0
+      mdast-util-to-hast: 13.2.0
+      shiki: 2.1.0
+      ts-morph: 25.0.0
+      typescript: 5.7.3
+    transitivePeerDependencies:
+      - supports-color
 
   fumadocs-ui@15.0.0(@types/react-dom@19.0.3(@types/react@19.0.8))(@types/react@19.0.8)(fumadocs-core@15.0.0(@types/react@19.0.8)(next@15.1.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(next@15.1.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(tailwindcss@4.0.1):
     dependencies:
@@ -6844,6 +6952,8 @@ snapshots:
       path-key: 4.0.0
       unicorn-magic: 0.3.0
 
+  npm-to-yarn@3.0.1: {}
+
   object-assign@4.1.1: {}
 
   object-inspect@1.13.3: {}
@@ -6909,6 +7019,17 @@ snapshots:
       get-intrinsic: 1.2.7
       object-keys: 1.1.1
       safe-push-apply: 1.0.0
+
+  oxc-transform@0.47.1:
+    optionalDependencies:
+      '@oxc-transform/binding-darwin-arm64': 0.47.1
+      '@oxc-transform/binding-darwin-x64': 0.47.1
+      '@oxc-transform/binding-linux-arm64-gnu': 0.47.1
+      '@oxc-transform/binding-linux-arm64-musl': 0.47.1
+      '@oxc-transform/binding-linux-x64-gnu': 0.47.1
+      '@oxc-transform/binding-linux-x64-musl': 0.47.1
+      '@oxc-transform/binding-win32-arm64-msvc': 0.47.1
+      '@oxc-transform/binding-win32-x64-msvc': 0.47.1
 
   p-limit@3.1.0:
     dependencies:

@@ -1,0 +1,14 @@
+{
+  "<-": {
+    "title": "Back to home",
+    "href": "/home"
+  },
+  "-": {
+    "title": "Architecture",
+    "type": "separator"
+  },
+  "index": "Subnets",
+  "consensus": "State & consensus",
+  "wasm-contracts": "Wasm contracts",
+  "state-channels": "Data state channels"
+}

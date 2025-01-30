@@ -1,0 +1,16 @@
+{
+  "<-": {
+    "title": "Back to home",
+    "href": "/home"
+  },
+  "-": {
+    "title": "Event Storage",
+    "type": "separator"
+  },
+  "index": "Overview",
+  "concepts": "Concepts",
+
+  "usage": "Usage",
+  "reference": "Reference",
+  "related-projects": "Related Projects"
+}

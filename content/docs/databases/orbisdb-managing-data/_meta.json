@@ -1,0 +1,11 @@
+{
+  "index": "Overview",
+  "accounts": "Accounts (DIDs)",
+  "contexts": "Contexts (Spaces)",
+  "models": "Models (Tables)",
+  "insert": "Writing data (INSERT)",
+  "update": "Updating data (UPDATE)",
+  "select": "Querying data (SELECT)",
+  "delete": "Removing data (DELETE)",
+  "advanced": "Advanced queries"
+}

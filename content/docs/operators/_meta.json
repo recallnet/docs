@@ -1,0 +1,13 @@
+{
+  "<-": {
+    "title": "Back to home",
+    "href": "/home"
+  },
+  "index": "Overview",
+  "-": {
+    "title": "Local development",
+    "type": "separator"
+  },
+  "setup": "Setup",
+  "local": "Running locally"
+}

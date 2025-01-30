@@ -12,6 +12,7 @@
   "dependencies": {
     "@theguild/remark-mermaid": "^0.2.0",
     "fumadocs-core": "15.0.0",
+    "fumadocs-docgen": "^1.3.5",
     "fumadocs-mdx": "11.3.2",
     "fumadocs-twoslash": "^3.0.0",
     "fumadocs-ui": "15.0.0",

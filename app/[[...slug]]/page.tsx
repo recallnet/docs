@@ -34,11 +34,38 @@ export default async function Page(props: {
   if (!page) notFound();
 
   const MDX = page.data.body;
+  // Don't show the TOC or edit button on the root page
+  const isRootPage = !params.slug || params.slug.length === 0;
+  const path = `docs/${page.file.path}`;
 
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
+    <DocsPage
+      tableOfContent={
+        isRootPage
+          ? undefined
+          : {
+              enabled: true,
+              style: "clerk",
+            }
+      }
+      toc={isRootPage ? undefined : page.data.toc}
+      full={page.data.full}
+      editOnGithub={
+        isRootPage
+          ? undefined
+          : {
+              repo: "docs",
+              owner: "recallnet",
+              sha: "main",
+              path: path,
+            }
+      }
+    >
       <CustomDocsTitle>{page.data.title}</CustomDocsTitle>
-      <DocsDescription>{page.data.description}</DocsDescription>
+      <DocsDescription className="mb-1">
+        {page.data.description}
+      </DocsDescription>
+      <hr className="" />
       <DocsBody>
         <MDX components={{ ...defaultMdxComponents }} />
       </DocsBody>

@@ -1,6 +1,7 @@
 {
   "title": "Recall Docs",
   "description": "Recall Docs",
+  "root": true,
   "pages": [
     "...home",
     "---Services---",

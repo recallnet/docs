@@ -10,6 +10,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       {...baseOptions}
       sidebar={{
         collapsible: false,
+        // footer: <div className="h-2 border-none"></div>, // In case you want to add a footer
       }}
     >
       {children}

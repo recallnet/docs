@@ -8,7 +8,7 @@ import { remarkInstall } from "fumadocs-docgen";
 import { remarkImage } from "fumadocs-core/mdx-plugins";
 
 export const { docs, meta } = defineDocs({
-  dir: "content/docs",
+  dir: "docs",
 });
 
 export default defineConfig({

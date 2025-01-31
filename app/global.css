@@ -90,7 +90,15 @@
   --color-fd-ring: hsl(0, 0%, 34.9%);
 }
 /* Custom styles */
+
+/* Enforce slightly smaller font for code on all pages */
 code {
   color: inherit;
   font-size: 0.875em;
+}
+
+/* Hide elements based on the theme, such as the logo */
+:root[class~="dark"] [data-hide-on-theme="dark"],
+:root:not([class~="dark"]) [data-hide-on-theme="light"] {
+  display: none;
 }

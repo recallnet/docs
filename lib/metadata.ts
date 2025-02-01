@@ -2,7 +2,11 @@ import { createMetadataImage } from "fumadocs-core/server";
 import type { Metadata } from "next/types";
 import { source } from "./source";
 
-export const baseUrl = new URL("https://docs.recall.network");
+export const baseUrl = new URL(
+  process.env.NODE_ENV !== "production"
+    ? process.env.VERCEL_URL || `http://localhost:${process.env.PORT || 3000}`
+    : "https://docs.recall.network"
+);
 
 export const metadataImage = createMetadataImage({
   imageRoute: "/og",

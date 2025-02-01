@@ -38,7 +38,7 @@ export default async function Page(props: {
   const MDX = page.data.body;
   // Don't show the TOC or edit button on the root page
   const isRootPage = !params.slug || params.slug.length === 0;
-  const path = `docs/${page.file.path}`;
+  const githubPath = `docs/${page.file.path}`;
 
   return (
     <DocsPage
@@ -59,7 +59,7 @@ export default async function Page(props: {
               repo: "docs",
               owner: "recallnet",
               sha: "main",
-              path: path,
+              path: githubPath,
             }
       }
     >

@@ -1,5 +1,5 @@
 {
   "title": "Recall Docs",
   "description": "recall docs home",
-  "pages": ["introduction", "features", "use-cases"]
+  "pages": ["introduction", "features", "concepts", "use-cases"]
 }

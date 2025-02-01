@@ -1,5 +1,6 @@
 {
-  "title": "Ceramic",
-  "description": "Ceramic",
+  "title": "Event Streams",
+  "description": "Ceramic streaming service",
+  "icon": "FaNetworkWired",
   "pages": ["concepts", "usage", "related-projects"]
 }

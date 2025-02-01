@@ -1,6 +1,7 @@
 {
-  "title": "Recall Databases",
-  "description": "Recall Databases",
+  "title": "Databases",
+  "description": "Indexing and query services",
+  "icon": "FaDatabase",
   "pages": [
     "orbisdb-introduction",
     "orbisdb-setting-up",

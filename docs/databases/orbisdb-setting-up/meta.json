@@ -1,5 +1,3 @@
 {
-  "title": "OrbisDB Setting Up",
-  "description": "OrbisDB Setting Up",
   "pages": ["local", "managed-studio", "self-hosted", "managing-orbisdb"]
 }

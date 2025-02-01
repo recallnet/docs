@@ -2,6 +2,8 @@ import { source } from "@/lib/source";
 import { DocsPage, DocsBody, DocsDescription } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
 import defaultMdxComponents from "fumadocs-ui/mdx";
+import { metadataImage } from "@/lib/metadata";
+import { createMetadata } from "@/lib/metadata";
 
 // Handle titles with backticks to render inline code blocks
 function CustomDocsTitle({ children }: { children: React.ReactNode }) {
@@ -84,8 +86,16 @@ export async function generateMetadata(props: {
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
-  return {
-    title: page.data.title,
-    description: page.data.description,
-  };
+  const description =
+    page.data.description ?? "Recall documentation for building agent memory";
+
+  return createMetadata(
+    metadataImage.withImage(page.slugs, {
+      title: page.data.title,
+      description,
+      openGraph: {
+        url: `/${page.slugs.join("/")}`,
+      },
+    })
+  );
 }

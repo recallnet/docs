@@ -71,17 +71,17 @@ object to the bucket given a provider, signer, the object's desired key (e.g., `
 options that control its behavior. For example, you can add other metadata to an object or specify
 how to handle overwriting an existing object.
 
-```rust {3}
+```rust
 use std::collections::HashMap;
 
 use recall_sdk::{
     machine::{
-        bucket::{AddOptions, Bucket},
+        bucket::{AddOptions, Bucket}, // [!code highlight]
         Machine,
     },
     network::Network,
 };
-use tokio::io::{AsyncSeekExt, AsyncWriteExt};
+use tokio::io::{AsyncSeekExt, AsyncWriteExt}; // [!code highlight]
 
 #[tokio::main]
 async fn main() {
@@ -138,10 +138,10 @@ refine your results:
 - `limit`: The maximum number of keys to list.
 - `height`: The block height to list objects for (defaults to the latest committed height).
 
-```rust {3}
+```rust
 use recall_sdk::{
     machine::{
-        objectstore::{AddOptions, ObjectStore, QueryOptions},
+        objectstore::{AddOptions, ObjectStore, QueryOptions}, // [!code highlight]
         Machine,
     },
     network::Network,
@@ -193,10 +193,10 @@ available to refine your results:
 - `height`: The height of the bucket to list keys from (defaults to the latest committed height).
 - `show_progress`: Visually show the download progress (useful with CLI tools).
 
-```rust {3}
+```rust
 use recall_sdk::{
     machine::{
-        objectstore::{AddOptions, GetOptions, ObjectStore, QueryOptions},
+        objectstore::{AddOptions, GetOptions, ObjectStore, QueryOptions}, // [!code highlight]
         Machine,
     },
     network::Network,

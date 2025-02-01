@@ -1,10 +1,22 @@
 import "./global.css";
 import { RootProvider } from "fumadocs-ui/provider";
 import { Inter } from "next/font/google";
+import { ThemeProviderProps } from "next-themes";
 import type { ReactNode } from "react";
 import { createMetadata, baseUrl } from "@/lib/metadata";
 import { Metadata } from "next";
+import { DocsLayout, type DocsLayoutProps } from "fumadocs-ui/layouts/notebook";
+import { baseOptions } from "@/app/layout.config";
+import { source } from "@/lib/source";
 import "katex/dist/katex.css";
+
+const docsOptions: DocsLayoutProps = {
+  ...baseOptions,
+  tree: source.pageTree,
+  sidebar: {
+    collapsible: false,
+  },
+};
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,11 +35,18 @@ export const metadata: Metadata = createMetadata({
   metadataBase: baseUrl,
 });
 
-export default function Layout({ children }: { children: ReactNode }) {
+const theme: ThemeProviderProps = {
+  themes: ["light", "dark"],
+  defaultTheme: "dark",
+};
+
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
-        <RootProvider>{children}</RootProvider>
+        <RootProvider theme={theme}>
+          <DocsLayout {...docsOptions}>{children}</DocsLayout>
+        </RootProvider>
       </body>
     </html>
   );

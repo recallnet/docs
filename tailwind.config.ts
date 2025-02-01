@@ -6,7 +6,11 @@ const config = {
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
     "./docs/**/*.mdx",
+    "./node_modules/fumadocs-ui/**/*.{js,ts,jsx,tsx}",
   ],
+  theme: {
+    extend: {},
+  },
   plugins: [tailwindcssAnimate],
 } satisfies Config;
 

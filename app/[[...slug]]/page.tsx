@@ -2,6 +2,15 @@ import { source } from "@/lib/source";
 import { DocsPage, DocsBody, DocsDescription } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
 import defaultMdxComponents from "fumadocs-ui/mdx";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+import { File, Folder, Files } from "fumadocs-ui/components/files";
+import {
+  ImageZoom,
+  type ImageZoomProps,
+} from "fumadocs-ui/components/image-zoom";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { TypeTable } from "fumadocs-ui/components/type-table";
 import { metadataImage } from "@/lib/metadata";
 import { createMetadata } from "@/lib/metadata";
 
@@ -39,6 +48,11 @@ export default async function Page(props: {
   // Don't show the TOC or edit button on the root page
   const isRootPage = !params.slug || params.slug.length === 0;
   const githubPath = `docs/${page.file.path}`;
+  const githubInfo = {
+    repo: "docs",
+    owner: "recallnet",
+    path: githubPath,
+  };
 
   return (
     <DocsPage
@@ -52,24 +66,30 @@ export default async function Page(props: {
       }
       toc={isRootPage ? undefined : page.data.toc}
       full={page.data.full}
-      editOnGithub={
-        isRootPage
-          ? undefined
-          : {
-              repo: "docs",
-              owner: "recallnet",
-              sha: "main",
-              path: githubPath,
-            }
-      }
+      editOnGithub={isRootPage ? undefined : githubInfo}
     >
       <CustomDocsTitle>{page.data.title}</CustomDocsTitle>
       <DocsDescription className="mb-1">
         {page.data.description}
       </DocsDescription>
-      <hr className="" />
+      <hr />
       <DocsBody>
-        <MDX components={{ ...defaultMdxComponents }} />
+        <MDX
+          components={{
+            ...defaultMdxComponents,
+            Accordion,
+            Accordions,
+            File,
+            Folder,
+            Files,
+            Step,
+            Steps,
+            Tab,
+            Tabs,
+            TypeTable,
+            img: (props: ImageZoomProps) => <ImageZoom {...props} />,
+          }}
+        />
       </DocsBody>
     </DocsPage>
   );

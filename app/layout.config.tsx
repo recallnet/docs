@@ -1,5 +1,5 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
-import { FaXTwitter } from "react-icons/fa6";
+import { FaGithub, FaXTwitter } from "react-icons/fa6";
 import Image from "next/image";
 
 /**
@@ -10,12 +10,52 @@ import Image from "next/image";
  * Docs Layout: app/docs/layout.tsx
  */
 export const baseOptions: BaseLayoutProps = {
-  githubUrl: "https://github.com/recallnet",
   links: [
     {
-      text: "Home",
-      url: "/",
-      active: "nested-url",
+      type: "menu",
+      text: "Getting started",
+      items: [
+        {
+          text: "What is Recall?",
+          url: "/intro/what-is-recall",
+        },
+      ],
+    },
+    {
+      type: "menu",
+      text: "Protocol",
+      items: [
+        {
+          text: "Architecture ",
+          url: "/architecture",
+        },
+      ],
+    },
+    {
+      type: "menu",
+      text: "Services",
+      items: [
+        {
+          text: "Ceramic",
+          url: "/ceramic",
+        },
+        {
+          text: "Databases",
+          url: "/databases",
+        },
+      ],
+    },
+    // External links
+    {
+      external: true,
+      text: "Studio",
+      description: "Studio",
+      url: "https://studio.recall.network",
+    },
+    {
+      external: true,
+      text: "Explorer",
+      url: "https://explorer.testnet.recall.network",
     },
     {
       type: "icon",
@@ -23,6 +63,13 @@ export const baseOptions: BaseLayoutProps = {
       text: "X",
       icon: <FaXTwitter />,
       url: "https://x.com/recallnet",
+    },
+    {
+      type: "icon",
+      external: true,
+      text: "GitHub",
+      icon: <FaGithub />,
+      url: "https://github.com/recallnet",
     },
   ],
   nav: {

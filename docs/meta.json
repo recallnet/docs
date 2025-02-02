@@ -1,7 +1,6 @@
 {
   "title": "Core",
   "description": "Agent memory & storage",
-  "icon": "FaMemory",
   "pages": [
     "---Getting started---",
     "...intro",
@@ -16,6 +15,9 @@
     "---Protocol---",
     "network",
     "operators",
-    "architecture"
+    "architecture",
+    "---Services---",
+    "ceramic",
+    "databases"
   ]
 }

@@ -1,4 +1,3 @@
-import "./global.css";
 import { RootProvider } from "fumadocs-ui/provider";
 import { Inter } from "next/font/google";
 import { ThemeProviderProps } from "next-themes";
@@ -6,8 +5,10 @@ import type { ReactNode } from "react";
 import { createMetadata, baseUrl } from "@/lib/metadata";
 import { Metadata } from "next";
 import { DocsLayout, type DocsLayoutProps } from "fumadocs-ui/layouts/notebook";
+import { ThemeToggle } from "fumadocs-ui/components/layout/theme-toggle";
 import { baseOptions } from "@/app/layout.config";
 import { source } from "@/lib/source";
+import "./global.css";
 import "katex/dist/katex.css";
 
 const docsOptions: DocsLayoutProps = {
@@ -15,6 +16,7 @@ const docsOptions: DocsLayoutProps = {
   tree: source.pageTree,
   sidebar: {
     collapsible: false,
+    footer: <ThemeToggle mode="light-dark" className="w-fit" />,
   },
 };
 

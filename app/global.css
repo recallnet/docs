@@ -98,8 +98,61 @@ code {
   font-size: 0.875em;
 }
 
+button {
+  cursor: pointer;
+}
+
 /* Hide elements based on the theme, such as the logo */
 :root[class~="dark"] [data-hide-on-theme="dark"],
 :root:not([class~="dark"]) [data-hide-on-theme="light"] {
   display: none;
+}
+
+/* Hide the "data-theme-toggle" buttons in the navbar */
+header [data-theme-toggle] {
+  display: none;
+}
+
+/* Hide the duplicate "data-theme-toggle" buttons in the sidebar footer only on small screens */
+@media (max-width: 768px) {
+  aside [data-theme-toggle]:not(:first-child) {
+    display: none;
+  }
+}
+
+/* Allow navbar items to float left or right, depending on if they're internal or external links */
+#nd-subnav .flex-1 {
+  display: flex !important;
+  justify-content: space-between !important; /* External links go to end */
+}
+
+/* Create a flex container for internal links */
+#nd-subnav .flex-1 > div {
+  display: flex !important;
+  gap: 1rem !important;
+  margin-right: auto !important; /* Push to start */
+}
+
+/* External links container */
+#nd-subnav .flex-1 > a[rel="noreferrer noopener"][target="_blank"] {
+  margin-left: auto !important; /* Push to end */
+}
+
+/* External link spacing */
+#nd-subnav
+  a[rel="noreferrer noopener"][target="_blank"]:not(:has(svg)):last-child {
+  margin-right: 1rem !important; /* Add some spacing prior to the Github & Twitter icons */
+}
+
+/* Ensure all external links stay together */
+#nd-subnav
+  .flex-1
+  > a[rel="noreferrer noopener"][target="_blank"]
+  ~ a[rel="noreferrer noopener"][target="_blank"] {
+  margin-left: 0 !important; /* Remove auto margin from subsequent external links */
+}
+
+/* Adjust spacing between the sidebar title and the first item in the sidebar */
+#nd-sidebar > div > div:nth-child(2) {
+  margin-top: 1rem;
 }

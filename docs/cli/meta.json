@@ -1,5 +1,5 @@
 {
-  "title": "Basin CLI",
-  "description": "Basin CLI",
+  "title": "CLI",
+  "description": "CLI",
   "pages": ["installation", "commands"]
 }

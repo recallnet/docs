@@ -1,5 +1,5 @@
 {
-  "title": "Basin Rust SDK",
-  "description": "Basin Rust SDK",
+  "title": "Rust SDK",
+  "description": "Rust SDK",
   "pages": ["installation", "usage", "examples"]
 }

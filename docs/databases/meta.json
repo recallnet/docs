@@ -1,13 +1,11 @@
 {
   "title": "Databases",
   "description": "Indexing and query services",
-  "icon": "FaDatabase",
   "pages": [
     "orbisdb-introduction",
     "orbisdb-setting-up",
     "orbisdb-managing-data",
     "orbisdb-sdk-reference",
-    "---Tableland---",
     "tableland"
   ]
 }

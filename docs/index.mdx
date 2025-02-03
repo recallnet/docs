@@ -3,10 +3,12 @@ title: Recall Documentation
 description: Get started with tutorials that showcase how to build with the Recall stack.
 ---
 
+import { useEffect, useState } from "react";
+
 import LandingSvg from "@/components/landing-svg";
 
 <div className="flex gap-8 items-center">
-  <div className="">
+  <div>
     Recall is a **datachain** built for general purpose **_application_ data availability** (DA) to solve problems for data-intensive workflows. Anyone can openly create and use Recall Data Services to help store, access, and process large amounts of information through flexible data services:
 
     - **Basin**: Simple object storage with S3 compatibility for storing & managing arbitrary blobs.
@@ -16,7 +18,9 @@ import LandingSvg from "@/components/landing-svg";
     Build programmable and verifiable data with onchain contracts powered by **fast consensus**, hierarchical **subnets**, and a **polyglot execution** layer (EVM & Wasm)—designed to let you manage and monetize your data in a cost-effective and scalable way.
 
   </div>
-
+  <div>
+    <LandingSvg />
+  </div>
 </div>
 
 ## Get started

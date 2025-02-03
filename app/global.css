@@ -107,3 +107,10 @@ button {
 :root:not([class~="dark"]) [data-hide-on-theme="light"] {
   display: none;
 }
+
+/* Hide the landing SVG on smaller widths */
+@media (max-width: 1023px) {
+  #landing-svg {
+    display: none !important;
+  }
+}

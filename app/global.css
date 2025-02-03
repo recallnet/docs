@@ -151,3 +151,20 @@ button {
     display: none !important;
   }
 }
+
+/* Floating animation on landing page */
+@keyframes floating {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(var(--x-offset), var(--y-offset));
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.floating-item {
+  animation: floating 6s ease-in-out infinite;
+}

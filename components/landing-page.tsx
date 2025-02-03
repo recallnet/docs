@@ -66,21 +66,21 @@ export function LandingPage() {
     <div className="space-y-16 pb-8 lg:mt-4">
       {/* Hero Section with Features */}
       <div className="relative mx-auto max-w-7xl px-4">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
+        <div className="grid items-center gap-12 pt-2 lg:grid-cols-2">
           {/* Left side - Hero */}
           <div className="max-w-xl">
             <h1 className="text-4xl font-bold sm:text-5xl">
               Build agents with{" "}
-              <span className="text-purple">intelligent </span>
-              <span className="text-purple font-extrabold italic">memory</span>
+              <span className="text-purple font-extrabold">intelligent </span>
+              <span className="text-purple font-extrabold">memory</span>
             </h1>
             <p className="text-muted-foreground mt-6 text-lg">
               Recall is an intelligence network that enables agents to store,
               access, and trade{" "}
               <span className="text-primary font-bold">memory</span> in a
               verifiable way. Build smarter agents with{" "}
-              <span className="text-primary font-bold">programmable data</span>,
-              fast consensus, and{" "}
+              <span className="text-primary font-bold">programmable data</span>{" "}
+              backed by fast consensus and{" "}
               <span className="text-primary font-bold">scalable storage</span>.
             </p>
             <div className="mt-8 flex gap-4">
@@ -100,7 +100,7 @@ export function LandingPage() {
           </div>
 
           {/* Right side - Features */}
-          <div className="overflow-hidden">
+          <div className="">
             <div className="space-y-6 lg:pr-8">
               {features.map((feature, index) => (
                 <Card
@@ -110,8 +110,10 @@ export function LandingPage() {
                   descriptionClassName="text-md"
                   key={index}
                   className={cn(
-                    "bg-fd-card rounded-lg border p-4 transition-transform",
-                    index % 2 === 0 ? "translate-x-0" : "lg:translate-x-8",
+                    "bg-fd-card floating-item rounded-lg border p-4 transition-transform",
+                    index % 2 === 0
+                      ? "[--x-offset:2px] [--y-offset:-2px]"
+                      : "[--x-offset:-2px] [--y-offset:2px] lg:translate-x-6",
                   )}
                   icon={
                     <div className="text-purple bg-fd-card mb-2">

@@ -171,13 +171,11 @@ function DocsNavbar({
           {links
             .filter((item) => item.position === "right")
             .map((item, i) => (
-              <>
-                <NavbarLinkItem
-                  key={i}
-                  item={item}
-                  className="text-fd-muted-foreground hover:text-fd-accent-foreground text-sm transition-colors max-lg:hidden"
-                />
-              </>
+              <NavbarLinkItem
+                key={i}
+                item={item}
+                className="text-fd-muted-foreground hover:text-fd-accent-foreground text-sm transition-colors max-lg:hidden"
+              />
             ))}
         </div>
       </div>

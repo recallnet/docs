@@ -9,7 +9,7 @@ import {
   forwardRef,
 } from "react";
 
-import { isActive } from "../../lib/theme/is-active";
+import { isActive } from "@/lib/theme/is-active";
 
 interface BaseItem {
   /**
@@ -18,6 +18,7 @@ interface BaseItem {
    * @defaultValue 'all'
    */
   on?: "menu" | "nav" | "all";
+  position?: "left" | "right";
 }
 
 export interface BaseLinkType extends BaseItem {

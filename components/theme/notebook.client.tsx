@@ -5,7 +5,8 @@ import { useSidebar } from "fumadocs-ui/provider";
 import { Menu, X } from "lucide-react";
 import type { ButtonHTMLAttributes, HTMLAttributes } from "react";
 
-import { cn } from "../../lib/theme/cn";
+import { cn } from "@/lib/theme/cn";
+
 import { useNav } from "./layout/nav";
 import { buttonVariants } from "./ui/button";
 

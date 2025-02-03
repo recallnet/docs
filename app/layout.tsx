@@ -18,7 +18,6 @@ const docsOptions: DocsLayoutProps = {
   tree: source.pageTree,
   sidebar: {
     collapsible: false,
-    footer: <ThemeToggle mode="light-dark" className="w-fit" />,
   },
 };
 

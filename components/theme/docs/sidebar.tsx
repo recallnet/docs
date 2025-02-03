@@ -27,15 +27,16 @@ import {
   useState,
 } from "react";
 
-import { cn } from "../../../lib/theme/cn";
-import { isActive } from "../../../lib/theme/is-active";
-import { buttonVariants } from "../ui/button";
+import { buttonVariants } from "@/components/theme/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../ui/collapsible";
-import { ScrollArea, ScrollViewport } from "../ui/scroll-area";
+} from "@/components/theme/ui/collapsible";
+import { ScrollArea, ScrollViewport } from "@/components/theme/ui/scroll-area";
+import { cn } from "@/lib/theme/cn";
+import { isActive } from "@/lib/theme/is-active";
+
 import type { SidebarComponents } from "./shared";
 
 export interface SidebarProps extends HTMLAttributes<HTMLElement> {
@@ -214,6 +215,7 @@ export function SidebarViewport(props: ScrollAreaProps) {
         className="p-4"
         style={{
           maskImage: "linear-gradient(to bottom, transparent 2px, white 16px)",
+          marginTop: "0.5rem",
         }}
       >
         {props.children}

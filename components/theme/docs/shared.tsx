@@ -2,10 +2,11 @@ import type { PageTree } from "fumadocs-core/server";
 import { notFound } from "next/navigation";
 import type { FC, ReactNode } from "react";
 
-import { cn } from "../../../lib/theme/cn";
-import type { Option } from "../layout/root-toggle";
-import { BaseLinkItem, type LinkItemType } from "../links";
-import { buttonVariants } from "../ui/button";
+import type { Option } from "@/components/theme/layout/root-toggle";
+import { BaseLinkItem, type LinkItemType } from "@/components/theme/links";
+import { buttonVariants } from "@/components/theme/ui/button";
+import { cn } from "@/lib/theme/cn";
+
 import {
   SidebarFolder,
   SidebarFolderContent,

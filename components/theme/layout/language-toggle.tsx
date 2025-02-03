@@ -3,9 +3,13 @@
 import { useI18n } from "fumadocs-ui/provider";
 import { type ButtonHTMLAttributes, type HTMLAttributes } from "react";
 
-import { cn } from "../../../lib/theme/cn";
-import { buttonVariants } from "../ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { buttonVariants } from "@/components/theme/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/theme/ui/popover";
+import { cn } from "@/lib/theme/cn";
 
 export type LanguageSelectProps = ButtonHTMLAttributes<HTMLButtonElement>;
 

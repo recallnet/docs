@@ -1,6 +1,7 @@
-import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import Image from "next/image";
 import { FaGithub, FaXTwitter } from "react-icons/fa6";
+
+import type { BaseLayoutProps } from "@/components/theme/shared";
 
 /**
  * Shared layout configurations
@@ -51,11 +52,13 @@ export const baseOptions: BaseLayoutProps = {
       text: "Studio",
       description: "Studio",
       url: "https://studio.recall.network",
+      position: "right",
     },
     {
       external: true,
       text: "Explorer",
       url: "https://explorer.testnet.recall.network",
+      position: "right",
     },
     {
       type: "icon",

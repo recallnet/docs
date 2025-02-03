@@ -1,7 +1,7 @@
 import * as CollapsiblePrimitive from "@radix-ui/react-collapsible";
 import { forwardRef } from "react";
 
-import { cn } from "../../../lib/theme/cn";
+import { cn } from "@/lib/theme/cn";
 
 const Collapsible = CollapsiblePrimitive.Root;
 

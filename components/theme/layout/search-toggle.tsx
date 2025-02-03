@@ -5,8 +5,8 @@ import { useI18n } from "fumadocs-ui/provider";
 import { SearchIcon } from "lucide-react";
 import { type ButtonHTMLAttributes } from "react";
 
-import { cn } from "../../../lib/theme/cn";
-import { buttonVariants } from "../ui/button";
+import { buttonVariants } from "@/components/theme/ui/button";
+import { cn } from "@/lib/theme/cn";
 
 export function SearchToggle({
   hideIfDisabled,

@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 
-import { cn } from "../../../lib/theme/cn";
+import { cn } from "@/lib/theme/cn";
 
 export interface NavProviderProps {
   /**

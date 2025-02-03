@@ -6,9 +6,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type HTMLAttributes, type ReactNode, useMemo, useState } from "react";
 
-import { cn } from "../../../lib/theme/cn";
-import { isActive } from "../../../lib/theme/is-active";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/theme/ui/popover";
+import { cn } from "@/lib/theme/cn";
+import { isActive } from "@/lib/theme/is-active";
 
 export interface Option {
   /**

@@ -1,11 +1,12 @@
 import type { PageTree } from "fumadocs-core/server";
 import { TreeContextProvider } from "fumadocs-ui/provider";
 import { type PageStyles, StylesProvider } from "fumadocs-ui/provider";
-import { ChevronDown, Languages } from "lucide-react";
+import { ChevronDown, ExternalLink, Languages } from "lucide-react";
 import Link from "next/link";
 import { Fragment, type HTMLAttributes, type ReactNode } from "react";
 
-import { cn } from "../../lib/theme/cn";
+import { cn } from "@/lib/theme/cn";
+
 import {
   SidebarLinkItem,
   type SidebarOptions,
@@ -112,9 +113,9 @@ export function DocsLayout({
               </div>
               <SidebarPageTree components={sidebarComponents} />
             </SidebarViewport>
-            <SidebarFooter className={cn(!sidebarFooter && "md:hidden")}>
+            <SidebarFooter>
               {!props.disableThemeSwitch ? (
-                <ThemeToggle className="w-fit md:hidden" />
+                <ThemeToggle className="w-fit" />
               ) : null}
               {sidebarFooter}
             </SidebarFooter>
@@ -153,17 +154,32 @@ function DocsNavbar({
         className="w-full max-w-[240px] rounded-lg max-md:hidden"
       />
       <Title url={nav.url} title={nav.title} className="md:hidden" />
-      <div className="flex flex-1 flex-row items-center gap-6 px-2">
-        {links
-          .filter((item) => item.type !== "icon")
-          .map((item, i) => (
-            <NavbarLinkItem
-              key={i}
-              item={item}
-              className="text-fd-muted-foreground hover:text-fd-accent-foreground text-sm transition-colors max-lg:hidden"
-            />
-          ))}
-        {nav.children}
+      <div className="flex flex-1 flex-row items-center justify-between gap-6 px-2">
+        <div className="flex items-center gap-6">
+          {links
+            .filter((item) => item.type !== "icon" && item.position !== "right")
+            .map((item, i) => (
+              <NavbarLinkItem
+                key={i}
+                item={item}
+                className="text-fd-muted-foreground hover:text-fd-accent-foreground text-sm transition-colors max-lg:hidden"
+              />
+            ))}
+          {nav.children}
+        </div>
+        <div className="flex items-center gap-6">
+          {links
+            .filter((item) => item.position === "right")
+            .map((item, i) => (
+              <>
+                <NavbarLinkItem
+                  key={i}
+                  item={item}
+                  className="text-fd-muted-foreground hover:text-fd-accent-foreground text-sm transition-colors max-lg:hidden"
+                />
+              </>
+            ))}
+        </div>
       </div>
       <SearchToggle hideIfDisabled className="md:hidden" />
       <NavbarSidebarTrigger className="-me-1.5 md:hidden" />
@@ -189,7 +205,6 @@ function DocsNavbar({
           <Languages className="size-5" />
         </LanguageToggle>
       ) : null}
-      <ThemeToggle className="max-md:hidden" mode="light-dark-system" />
     </Navbar>
   );
 }
@@ -230,6 +245,17 @@ function NavbarLinkItem({
   }
 
   if (item.type === "custom") return item.children;
+
+  if (item.external) {
+    return (
+      <BaseLinkItem item={item} {...props}>
+        <div className="inline-flex items-center gap-1">
+          {item.text}
+          <ExternalLink className="size-3" />
+        </div>
+      </BaseLinkItem>
+    );
+  }
 
   return (
     <BaseLinkItem item={item} {...props}>

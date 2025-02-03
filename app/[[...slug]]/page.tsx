@@ -7,13 +7,21 @@ import {
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { TypeTable } from "fumadocs-ui/components/type-table";
-import defaultMdxComponents from "fumadocs-ui/mdx";
+import fumadocsMdxComponents from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
+import { HTMLAttributes } from "react";
 
+import { Card, CardProps, Cards } from "@/components/theme/card";
 import { metadataImage } from "@/lib/metadata";
 import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
+
+const defaultsMdxComponents = {
+  ...fumadocsMdxComponents,
+  Card: (props: CardProps) => <Card {...props} />,
+  Cards: (props: HTMLAttributes<HTMLDivElement>) => <Cards {...props} />,
+};
 
 // Handle titles with backticks to render inline code blocks
 function CustomDocsTitle({ children }: { children: React.ReactNode }) {
@@ -69,15 +77,17 @@ export default async function Page(props: {
       full={page.data.full}
       editOnGithub={isRootPage ? undefined : githubInfo}
     >
-      <CustomDocsTitle>{page.data.title}</CustomDocsTitle>
-      <DocsDescription className="mb-1">
-        {page.data.description}
-      </DocsDescription>
-      <hr />
+      {!isRootPage && <CustomDocsTitle>{page.data.title}</CustomDocsTitle>}
+      {!isRootPage && (
+        <DocsDescription className="mb-1">
+          {page.data.description}
+        </DocsDescription>
+      )}
+      {!isRootPage && <hr />}
       <DocsBody>
         <MDX
           components={{
-            ...defaultMdxComponents,
+            ...defaultsMdxComponents,
             Accordion,
             Accordions,
             File,

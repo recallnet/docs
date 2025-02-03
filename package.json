@@ -35,18 +35,32 @@
     "shiki": "^2.1.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.19.0",
     "@fumadocs/cli": "^0.0.7",
+    "@next/eslint-plugin-next": "^15.1.6",
     "@tailwindcss/postcss": "^4.0.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/mdx": "^2.0.13",
     "@types/node": "22.10.9",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
-    "eslint": "^8",
+    "@typescript-eslint/eslint-plugin": "^8.22.0",
+    "@typescript-eslint/parser": "^8.22.0",
+    "eslint": "^8.57.1",
     "eslint-config-next": "15.1.6",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-only-warn": "^1.1.0",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-turbo": "^2.4.0",
+    "globals": "^15.14.0",
     "postcss": "^8.5.1",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwind-merge": "^3.0.1",
     "tailwindcss": "^4.0.0",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.22.0"
   }
 }

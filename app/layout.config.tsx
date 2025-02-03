@@ -1,6 +1,6 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
-import { FaGithub, FaXTwitter } from "react-icons/fa6";
 import Image from "next/image";
+import { FaGithub, FaXTwitter } from "react-icons/fa6";
 
 /**
  * Shared layout configurations

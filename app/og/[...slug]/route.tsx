@@ -1,5 +1,6 @@
-import { generateOGImage } from "./og";
 import { metadataImage } from "@/lib/metadata";
+
+import { generateOGImage } from "./og";
 
 export const GET = metadataImage.createAPI(async (page) => {
   return generateOGImage({

@@ -1,9 +1,5 @@
-import { source } from "@/lib/source";
-import { DocsPage, DocsBody, DocsDescription } from "fumadocs-ui/page";
-import { notFound } from "next/navigation";
-import defaultMdxComponents from "fumadocs-ui/mdx";
 import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
-import { File, Folder, Files } from "fumadocs-ui/components/files";
+import { File, Files, Folder } from "fumadocs-ui/components/files";
 import {
   ImageZoom,
   type ImageZoomProps,
@@ -11,8 +7,13 @@ import {
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { TypeTable } from "fumadocs-ui/components/type-table";
+import defaultMdxComponents from "fumadocs-ui/mdx";
+import { DocsBody, DocsDescription, DocsPage } from "fumadocs-ui/page";
+import { notFound } from "next/navigation";
+
 import { metadataImage } from "@/lib/metadata";
 import { createMetadata } from "@/lib/metadata";
+import { source } from "@/lib/source";
 
 // Handle titles with backticks to render inline code blocks
 function CustomDocsTitle({ children }: { children: React.ReactNode }) {
@@ -25,11 +26,11 @@ function CustomDocsTitle({ children }: { children: React.ReactNode }) {
           ) : (
             <code
               key={i}
-              className="px-[3px] border border-[var(--color-fd-border)] rounded font-normal bg-[var(--color-fd-muted)] text-[var(--tw-prose-code)]"
+              className="rounded border border-[var(--color-fd-border)] bg-[var(--color-fd-muted)] px-[3px] font-normal text-[var(--tw-prose-code)]"
             >
               {part}
             </code>
-          )
+          ),
         )}
       </h1>
     );
@@ -116,6 +117,6 @@ export async function generateMetadata(props: {
       openGraph: {
         url: `/${page.slugs.join("/")}`,
       },
-    })
+    }),
   );
 }

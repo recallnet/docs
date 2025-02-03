@@ -1,13 +1,13 @@
-import { defineDocs, defineConfig } from "fumadocs-mdx/config";
+import { remarkMermaid } from "@theguild/remark-mermaid";
+import { rehypeCodeDefaultOptions } from "fumadocs-core/mdx-plugins";
+import { remarkImage } from "fumadocs-core/mdx-plugins";
+import { remarkInstall } from "fumadocs-docgen";
+import { defineConfig, defineDocs } from "fumadocs-mdx/config";
+import { transformerTwoslash } from "fumadocs-twoslash";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
-import { remarkMermaid } from "@theguild/remark-mermaid";
-import { transformerTwoslash } from "fumadocs-twoslash";
-import { rehypeCodeDefaultOptions } from "fumadocs-core/mdx-plugins";
-import { remarkInstall } from "fumadocs-docgen";
-import { remarkImage } from "fumadocs-core/mdx-plugins";
 
-export const { docs, meta } = defineDocs({
+export const { docs, meta }: ReturnType<typeof defineDocs> = defineDocs({
   dir: "docs",
 });
 

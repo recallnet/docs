@@ -86,7 +86,7 @@ export const baseOptions: BaseLayoutProps = {
             src="/img/recall-light.svg"
             width={100}
           />
-          <span className="ml-1 text-2xl font-normal">Docs</span>
+          <span className="ml-1 text-2xl">Docs</span>
         </div>
         <div data-hide-on-theme="light" className="flex items-center gap-2">
           <Image
@@ -96,7 +96,7 @@ export const baseOptions: BaseLayoutProps = {
             src="/img/recall-dark.svg"
             width={100}
           />
-          <span className="ml-1 text-2xl font-normal">Docs</span>
+          <span className="ml-1 text-2xl">Docs</span>
         </div>
       </>
     ),

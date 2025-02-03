@@ -1,11 +1,10 @@
 import "./global.css";
 import "katex/dist/katex.css";
 
-import { ThemeToggle } from "fumadocs-ui/components/layout/theme-toggle";
 import { RootProvider } from "fumadocs-ui/provider";
 import { Metadata } from "next";
 import { ThemeProviderProps } from "next-themes";
-import { Inter } from "next/font/google";
+import { Geist } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { baseOptions } from "@/app/layout.config";
@@ -21,8 +20,9 @@ const docsOptions: DocsLayoutProps = {
   },
 };
 
-const inter = Inter({
+const font = Geist({
   subsets: ["latin"],
+  variable: "--font-sans",
 });
 
 export const metadata: Metadata = createMetadata({
@@ -45,7 +45,7 @@ const theme: ThemeProviderProps = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={inter.className} suppressHydrationWarning>
+    <html lang="en" className={font.className} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
         <RootProvider theme={theme}>
           <DocsLayout {...docsOptions}>{children}</DocsLayout>

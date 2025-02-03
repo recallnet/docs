@@ -2,7 +2,6 @@ import "./global.css";
 import "katex/dist/katex.css";
 
 import { ThemeToggle } from "fumadocs-ui/components/layout/theme-toggle";
-import { DocsLayout, type DocsLayoutProps } from "fumadocs-ui/layouts/notebook";
 import { RootProvider } from "fumadocs-ui/provider";
 import { Metadata } from "next";
 import { ThemeProviderProps } from "next-themes";
@@ -10,6 +9,7 @@ import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { baseOptions } from "@/app/layout.config";
+import { DocsLayout, type DocsLayoutProps } from "@/components/theme/notebook";
 import { baseUrl, createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
 

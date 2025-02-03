@@ -4,7 +4,7 @@ import "katex/dist/katex.css";
 import { RootProvider } from "fumadocs-ui/provider";
 import { Metadata } from "next";
 import { ThemeProviderProps } from "next-themes";
-import { Geist } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { baseOptions } from "@/app/layout.config";
@@ -20,9 +20,14 @@ const docsOptions: DocsLayoutProps = {
   },
 };
 
-const font = Geist({
+const sans = Geist({
   subsets: ["latin"],
   variable: "--font-sans",
+});
+
+const mono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = createMetadata({
@@ -45,7 +50,11 @@ const theme: ThemeProviderProps = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={font.className} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${sans.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
       <body className="flex min-h-screen flex-col">
         <RootProvider theme={theme}>
           <DocsLayout {...docsOptions}>{children}</DocsLayout>

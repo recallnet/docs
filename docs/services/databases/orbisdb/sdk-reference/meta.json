@@ -1,0 +1,4 @@
+{
+  "title": "SDK reference",
+  "pages": ["getting-started", "auth", "insert", "update", "select"]
+}

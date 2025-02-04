@@ -1,0 +1,298 @@
+---
+title: Running a local subnet
+description: Leverage a Dockerized multi-node setup for development.
+---
+
+This page walks through how to spin up a local Recall network with either Docker (`localnet`) or on
+your machine (`devnet`) and presumes you've done the steps described in the preceding
+[setup page](/operators/setup).
+
+## Localnet
+
+The following outlines how to run a localnet with Docker. It assumes you've already installed the
+prerequisites and also are in the root of the `ipc` repo.
+
+### Docker
+
+All scripts use `cargo make` to start Docker containers, volumes, and a Docker network. Before
+getting started, make sure that Docker is running by checking the status of the Docker daemon:
+
+```sh
+docker ps
+```
+
+If it's not running, start it:
+
+<Tabs items={["macOS", "Linux"]}>
+
+  <Tab value="macOS">
+
+    Make sure the [Docker Desktop app](https://www.docker.com/products/docker-desktop/) is installed, and then open it.
+
+    ```sh
+    open /Applications/Docker.app
+    ```
+
+  </Tab>
+  <Tab value="Linux">
+
+    Use `systemctl` to start the daemon.
+
+    ```sh
+    sudo systemctl start docker
+    ```
+
+  </Tab>
+</Tabs>
+
+Make sure you're currently in the `ipc` repository's root directory (from the previous setup and
+installation step). We'll be running the local network from the `scripts` folder.
+
+All scripts use `cargo make` to start docker containers, volumes, and a docker network. You can use
+`docker ps` to check the status of each container. Also, you **must** run the scripts from the root
+of the repo!
+
+### Startup & shutdown
+
+A localnet deployments will create a subnet with `anvil` as the rootnet (parent). The scripts will
+handle localnet validator keys (using the standard `anvil` accounts) and configs in the config
+folder (defaults to `~/.ipc`). In the root of the `ipc` repo, you can run the localnet with the
+following `Makefile` command:
+
+```shell
+make run-localnet
+```
+
+Alternatively, the `deploy.sh` can be ran directly. The key callout here is that you **must**
+specify `localnet` (or `local`) as the argument, and it's _not_ possible to pass a specific branch
+as an argument (i.e., it uses whatever branch is currently checked out in the local repo).
+
+```shell
+./scripts/deploy_subnet/deploy.sh localnet
+```
+
+If you want to, for example, skip the build and dependency installation steps, you can do so with:
+
+```shell
+SKIP_BUILD=true SKIP_DEPENDENCIES=true ./scripts/deploy_subnet/deploy.sh localnet
+```
+
+Lastly, if you're ready to stop the network, you can run `stop_local.sh`:
+
+```shell
+./scripts/deploy_subnet/stop_local.sh
+```
+
+Also optional is the `recall` CLI, which (if installed) will pre-buy credits for all accounts in the
+localnet subnet setup. Follow the instructions in the `rust-recall` repo to install it:
+[here](https://github.com/recallnet/rust-recall).
+
+The following outlines general observations for how long the localnet deployment process takes and
+various metrics:
+
+- Deploy + build images: ~7 minutes
+- Deploy with prebuilt images: ~5 minutes (i.e., `SKIP_BUILD=true`)
+- Blocks: ~1 per second
+- Topdown messages: ~2 minutes (e.g., depositing funds from the rootnet)
+- Bottomup messages: ~15 seconds
+- Stopping the network: ~40–45 seconds
+
+### Logging
+
+Deploying a network will log various steps and summary information to the console, including the RPC
+URLs and contracts. If you're running a localnet, it'll also show the available accounts, private
+keys, and respective balances.
+
+Once the startup process is complete, each Docker container will also log its own information to the
+console.
+
+### Docker containers
+
+Use `docker ps` to list the network's containers. Each validator has six containers, and there are a
+few others used across the full network.
+
+You can check a validator's logs with `docker logs <container-name>`. The following containers are
+created (as shown for validator `0`), and you can replace the `0` with `1` or `2` to inspect the
+other validators:
+
+- `validator-0-fendermint`
+- `validator-0-cometbft`
+- `validator-0-promtail`
+- `validator-0-objects`
+- `validator-0-ethapi`
+- `validator-0-iroh`
+- `prometheus`
+- `grafana`
+- `anvil`
+- `loki`
+
+### Usage
+
+You can test using the subnet with the
+[`recall` SDK & CLI](https://github.com/recallnet/rust-recall). Keys _are not_ logged if you're
+running a testnet. For localnet, keys _are_ logged with their corresponding balances. You'll notice
+the first three accounts correspond to the validators and marked as reserved. If you're trying to do
+non-validator actions (e.g., create a bucket or timehub), it's best to avoid these accounts since
+nonce race conditions can occur.
+
+```txt
+Account balances:
+Parent native: 10000 ETH
+Parent RECALL: 100 RECALL
+Subnet native: 5000 RECALL
+Subnet credits: 5000000000000000000000
+
+Accounts:
+(0) 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 (reserved)
+(1) 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 (reserved)
+(2) 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc (reserved)
+(3) 0x90f79bf6eb2c4f870365e785982e1f101e93b906 (available)
+...
+
+Private keys:
+(0) ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+(1) 59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+(2) 5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
+(3) 7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6
+...
+```
+
+You can use then these keys with the `recall` SDK and CLI by creating an `.env` file and sourcing
+it, or by setting the variables in your shell. Keep in mind a `NETWORK` variable is used by
+`fendermint` and `ipc-cli` but with a different value, so it's best to use separate terminal windows
+when using the `recall` CLI alongside the others.
+
+```dotenv
+export RECALL_NETWORK=localnet
+export RECALL_PRIVATE_KEY=<private_key>
+```
+
+You can now use `recall` as normal, e.g., `recall account deposit`, `recall os create`, etc.
+Similarly, the SDK lets you use the `localnet` by explicitly initializing it with
+`recall_sdk::network::Network::Localnet.init()`.
+
+When developing locally, it's ideal to use the `localnet` setup in the `deploy_subnet` directory.
+But `devnet` is much faster to set up and teardown since it doesn't require building Docker images
+or running any networked services, and instead, relies on installed binaries.
+
+## Devnet
+
+The devnet requires you run multiple services manually and have the binaries installed on your host
+machine. At a minimum, you'll need to install CometBFT, Fendermint, and Iroh. Optionally, you can
+also install the EVM RPC service, in case you want to interact with the devnet via EVM RPCs (e.g.,
+deploying Solidity contracts).
+
+### Build dependencies
+
+The following assumes you're working in the root of the `ipc` repo, and **not** in this `scripts`
+directory.
+
+#### CometBFT
+
+Navigate outside this repo and install CometBFT (note: you **must** install v0.37.1 since the latest
+version is not compatible with the rest of the codebase):
+
+```
+git clone https://github.com/cometbft/cometbft.git
+cd cometbft
+git checkout v0.37.1
+make install
+```
+
+#### Fendermint & IPC CLI
+
+The default `make` task will build the contracts, libraries, and CLIs needed to run a `devnet`.
+
+```
+make
+```
+
+### Running the devnet
+
+#### Setup
+
+First, configure the `devnet` with the following, which creates some keys and alters the
+configuration located in `~/.fendermint`:
+
+```
+make config-devnet
+```
+
+The keys used here are a bit different from how the `localnet` setup works. The `localnet` relies on
+the `ipc-cli` for much of its logic, whereas the `devnet` relies primarily on the `fendermint` CLI.
+
+#### Accounts
+
+The keys you'll use can be found in the `test-network/keys` directory within this `scripts` folder.
+Only the `alice` key is deterministically coded into the Fendermint startup process. You can export
+any of the keys to a hex encoded EVM format.
+
+From the root of this repo, run the following command, replacing `alice.sk` with the corresponding
+filename and `alice_eth` with a desired name (for files that get created later):
+
+```
+fendermint key into-eth --secret-key ./scripts/test-network/keys/alice.sk --name alice_eth
+```
+
+Since the `alice.sk` will always be the same, the following is consistent across machines and can be
+used for `devnet` interactions (e.g., creating buckets, timehubs, writing data, etc.):
+
+- EVM address: `0xc05fe6b63ffa4b3c518e6ff1e597358ee839db01`
+- Hex private key: `1c323d494d1d069fe4c891350a1ec691c4216c17418a0cb3c7533b143bd2b812`
+
+#### Startup & shutdown
+
+Finally, start all the services in separate terminal windows in the following order. The associated
+endpoints are shown below.
+
+1. Iroh: `http://127.0.0.1:4919`
+
+```
+make run-devnet-iroh
+```
+
+2. Objects API: `http://127.0.0.8001`
+
+```
+make run-devnet-objects
+```
+
+3. Fendermint: `http://127.0.0.1:26658`
+
+```
+make run-devnet-fendermint
+```
+
+4. CometBFT: `http://127.0.0.1:26657`
+
+```
+make run-devnet-cometbft
+```
+
+5. EVM RPC: `http://127.0.0.1:8545` (this is optional)
+
+```
+make run-devnet-evm
+```
+
+Once these are running, you should be able to interact with the `devnet` and _most_ of the expected
+functionality. One thing to be aware of: there's no parent (rootnet), so certain parts of the
+protocol (like Solidity contracts) don't happen automatically.
+
+Lastly, keep in mind that if you ever make changes to the core `ipc` codebase and want the devnet to
+use these changes, you'll need to shut these services down (i.e., exit the processes), run `make`,
+and then `make config-devnet` again.
+
+### Usage
+
+If you're using the `recall` CLI, you must set the `RECALL_NETWORK` environment variable to `devnet`
+in order to use it. Note that `fendermint` `ipc-cli` the `NETWORK` flag but with different target
+functionality, so be sure the `RECALL_` prefix is attached.
+
+```
+export RECALL_NETWORK=devnet
+export RECALL_PRIVATE_KEY=1c323d494d1d069fe4c891350a1ec691c4216c17418a0cb3c7533b143bd2b812
+```
+
+Similarly, you'll use the `devnet` in the SDK where necessary—e.g.,
+`recall_sdk::network::Network::Devnet.init()`.

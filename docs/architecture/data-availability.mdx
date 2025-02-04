@@ -1,0 +1,197 @@
+---
+title: Data availability
+description: A general purpose data overlay fulfilling data availability requirements.
+---
+
+In Recall, data commitments are maintained onchain but actual data storage is managed offchain. This
+design choice is driven by the need to maintain chain liveness and limit the demands on validator
+resources, as storing large volumes of data onchain can lead to bloating and reduced efficiency.
+Recall partly addresses these scalability issues through the use of hierarchical consensus and
+detached payload transactions with a custom synchronization and consensus protocol. However, this
+requires care in order to maintain the overall integrity, and reliability of our system. In
+particular, Recall needs to support the following additional core requirements to maintain data
+security:
+
+- **Data integrity**: Stakeholders must have mechanisms to verify that the data has not been altered
+  or tampered with since its original commitment,
+- **Data robustness**: The system must be designed to handle situations where data becomes
+  inaccessible or corrupted, including methods for recovering or reconstructing lost or compromised
+  data,
+- **Data accessibility**: Stakeholders must have mechanisms to ensure that their data is being
+  correctly stored and retrievable across the network, and
+- **Data availability**: Stakeholders must have a means to request and receive offchain data when
+  required.
+
+## Data availability approaches
+
+Existing projects address one or more of these security requirements but seldom cover all four
+comprehensively. For instance, most blockchain-based systems provide a degree of data **integrity**
+through the use of data commitment schemes (i.e., authenticated data structures), whereas
+storage-centric protocols predominantly focus on proofs of storage, emphasizing data possession and
+validator access (i.e., data **accessibility**). Recently,
+[data **availability**](https://arxiv.org/abs/1809.09044) has become a focal point in blockchain
+scaling discussions, with systems increasingly concentrating on ensuring that clients can reliably
+access transaction data from rollups, and/or via light-clients. In all these cases, data
+**robustness** is often addressed through a combination of replication, and data redundancy
+techniques.
+
+Alternative protocols used in some data-focused blockchain systems to ensure (some variant of) data
+availability include
+[proofs of data possession, proofs of of retreivability](https://www.usenix.org/system/files/sec21-anthoine.pdf),
+and Filecoin's
+[proof of replication (PoRep)](https://research.protocol.ai/publications/proof-of-replication/benet2017.pdf)
+and related mechanisms. In systems where the consensus protocol itself is used to ensure data
+availability, such as Arweave's [proofs of access](https://www.arweave.org/yellow-paper.pdf),
+proposers are required to include additional (past) data in their blocks (called a recall block),
+and validators are required to verify the included proof of access. In practice, these types of
+proofs are designed to demonstrate that a prover actually has the bytes of data that they should
+have, and perhaps more importantly, that they _continue_ to have the bytes of data that they should
+have for the period of time that they should have them.
+
+In order to address all four of Recall's core data security requirements, we employ features from
+both data availability and data accessibility protocol designs.
+
+## Erasure coding
+
+[Erasure coding](https://en.wikipedia.org/wiki/Erasure_code) is a technique used in data storage and
+transmission systems to enhance data reliability and fault tolerance. It involves breaking down a
+data object into smaller fragments and then generating additional redundant fragments using
+mathematical algorithms. These redundant fragments are distributed across different storage nodes or
+transmitted through different channels. In the event of data loss or corruption, the original data
+can be reconstructed from a subset of the fragments, as long as a sufficient number of fragments
+remain intact.
+
+Most existing data availability protocols rely on a combination of random sampling and erasure
+coding, an approach we also adopt in Recall. In the context of data availability sampling, when a
+node needs to verify data availability, it randomly samples a subset of the _coded_ fragments. Due
+to the properties of erasure encoding, any sufficiently large subset of fragments (defined by the
+encoding scheme) can be used to reconstruct the original data. This allows nodes to verify the
+presence of the entire dataset without needing to store or access all fragments. By combining
+erasure encoding with data availability sampling, a system can efficiently detect and mitigate data
+withholding or loss, thereby maintaining the robustness and reliability of the distributed storage
+solution.
+
+### Alpha entanglement
+
+Recall employs [Alpha Entanglement (AE) codes](https://arxiv.org/abs/1810.02974) to encode data
+fragments, which differs from commonly deployed Reed-Solomon erasure codes,. AE codes are a
+specialized XOR-based coding scheme specifically designed for distributed systems, and provide a
+number of advantages over other commonly used erasure codes.
+
+Advantages of Alpha Entanglement codes include:
+
+- **Space Efficiency**: AE codes create redundancy with less storage overhead compared to simple
+  replication methods.
+- **Data Integrity**: The entanglement of blocks provides an additional layer of integrity
+  protection, making unauthorized modifications easily detectable.
+- **Efficient Repairs**: AE codes allow for efficient recovery of missing data blocks using other
+  entangled blocks, reducing the bandwidth required for repairs.
+- **Decentralized Repair**: The repair process can be distributed among multiple nodes, balancing
+  the load and improving the speed of recovery.
+- **Random Access**: AE codes support efficient random access to data blocks, unlike some
+  traditional erasure codes that require reconstructing larger portions of data.
+- **Scalability**: The interdependencies between blocks help in maintaining data integrity and
+  availability even in large and dynamic network environments.
+- **Code Locality**: Alpha entanglement codes excel at code locality, hence they reduce repair cost
+  and are less dependent on storage locations with poor availability.
+
+Alpha entanglement codes are constructed by "entangling" data and redundant blocks in a
+multi-dimensional lattice structure. The encoding process involves creating interconnected
+_strands_, where each strand represents a specific type of entanglement. The entanglement function
+computes the exclusive-or (XOR) of consecutive data/parity blocks within a strand, **propagating
+redundant information across the mesh-like structure**. The number of parities per data block,
+determined by the parameter $α$, influences the level of redundancy and fault tolerance in the
+system. Additionally, the parameters $s$ and $p$ dictate the number of horizontal and helical
+strands, respectively, further shaping the resilience of the storage architecture without
+significantly increasing storage overhead.
+
+<Callout>
+
+Alpha increases storage overhead linearly but increases the possible paths to recover data
+exponentially.
+
+</Callout>
+
+The encoder builds chains of blocks (i.e., strands) that alternate data and redundant (parity)
+blocks. The entanglement function computes the XOR of two consecutive blocks at the head of a strand
+and inserts the output adjacent to the last block. The strands are intertwined creating a mesh of
+entangled blocks, a so-called **cylindrical helical lattice**. This process is similar to a
+functional scan over the input data, providing intermediate entangled outputs that can be used to
+recover the original data in case of data loss, or used for availability sampling by the network.
+
+The outputs from alpha entanglement can be arranged in a Merkle structure, known as an
+[entangled Merkle tree](https://dl.acm.org/doi/pdf/10.1145/3464298.3493397) (eMT) or more generally,
+an entangled directed acyclic graph (eDAG). These eDAGs are based on a specialized arrangement of
+data blocks from Merkle structures, which when coded, form an authenticated data structure that
+reduces the impact of hierarchical dependencies in the internal DAG structure. We apply the
+IPLD-based adjustments to entangled Merkle trees as suggested
+[here](https://arxiv.org/pdf/2404.16210) and
+[here](https://www.epfl.ch/labs/dedis/wp-content/uploads/2023/01/report-2022-3-QiyuanandYuening-making_IPFS_More_Reliable.pdf).
+
+<Callout>
+
+See the [original Snarl paper](https://dl.acm.org/doi/pdf/10.1145/3464298.3493397) for details on
+mapping a Merkle DAG into an authenticated lattice structure.
+
+</Callout>
+
+Initially, the entangled Merkle tree blocks are automatically distributed (evenly) across the
+network, and Recall uses [consistent hashing](https://en.wikipedia.org/wiki/Consistent_hashing), to
+distribute the data and parity blocks among a dynamic set of validator nodes. In practice, Recall
+uses a redundancy strategy that ensures that the replication factor for each node in the lattice is
+a function of its depth in the resulting eDAG (i.e., nodes closer to the root are replicated more
+than data and parity blocks closer to the leafs).
+
+<Callout>
+
+This replication strategy is simply an
+[implementation detail](https://github.com/dedis/student_23_ipfs_reliability), and the protocol
+itself does not require any specific strategy. This allows for flexibility in the design of the
+network and the ability to adapt to different use cases and requirements. Additionally, it leaves
+room for future optimizations and improvements to the replication strategy based on real-world data
+and the tokenomics of the system. Another feature of AE codes that is useful here, is that the codes
+themselves can be adaptive, and parameters can be allowed to change over time.
+
+</Callout>
+
+## Data accessibility
+
+Recall from the previous section that alpha entanglement works by **propagating redundant
+information across the mesh-like structure.** In practice, this means that in order to compute
+parity blocks for new incoming data, the new data must be combined (XOR) with past/current data.
+Recall takes advantage of this process by requiring validators to alpha entangle new chunks of data
+with past chunks, to create a self-repairing data lattice.
+
+Each new data file/blob that is added to a Recall bucket machine via a detached payload transaction
+has already been chunked into fixed size chunks, and forms a content-addressable DAG. Each data
+chunk within the DAG, including intermediate nodes of the tree, have a unique hash address (i.e.,
+CID). As each chunk is ingested into the system it is entangled with a pseudorandomly selected past
+chunk from the existing data lattice.
+
+<Callout>
+
+Note that this chunking and DAG construction process is already part of the object API that Recall
+uses for detached payloads. The input data is essentially an IPFS-compatible IPLD encoded DAG.
+
+</Callout>
+
+### A note on data retention
+
+One of the stated goals of Recall is to support custom time-to-live (TTL) data life-cycles in
+subnets. This is in contrast to existing data availability solutions, where there are very
+well-defined and fixed TTL requirements. Again, we leverage the entanglement process to our
+advantage to
+[support varying TTL requirements](https://www.researchgate.net/publication/328416034_Practical_erasure_codes_for_storage_systems_The_study_of_entanglement_codes_an_approach_that_propagates_redundancy_to_increase_reliability_and_performance)
+within a bucket.
+
+Each new file or blob added to a bucket is required to have an associated _retention policy_ as part
+of its object metadata. Given that time in Recall is measured in block time, this retention policy
+is specified as a TTL in blocks (e.g., TTL = 5). For a file/blob added at block 10, with a TTL of
+(at least) 5 blocks, we then assign it to _retention group_ 15. When entangling data, validators
+must always entangle incoming data (and associated chunks) with pseudorandom chunks from the correct
+retention group (or a retention group with a longer TTL). This ensures that data that should remain
+"available" together are physically and semantically grouped. If it is not possible to entangle a
+given data chunk with other data from its intended retention group (e.g., due to lack of preexisting
+data), it can be entangled with data in a later group, or with itself (creating a so-called _closed_
+entanglement) in the worst case. Note that this process must be done in conjunction with the
+deterministic blockweave based approach to selecting recall/entanglement blocks.

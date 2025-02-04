@@ -1,0 +1,10 @@
+{
+  "title": "Architecture",
+  "description": "Architecture",
+  "pages": [
+    "consensus",
+    "wasm-contracts",
+    "state-channels",
+    "data-availability"
+  ]
+}

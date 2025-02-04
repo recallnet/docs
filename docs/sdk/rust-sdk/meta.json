@@ -1,0 +1,5 @@
+{
+  "title": "Rust SDK",
+  "description": "Rust SDK",
+  "pages": ["installation", "usage", "examples"]
+}

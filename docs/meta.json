@@ -1,0 +1,22 @@
+{
+  "title": "Core",
+  "description": "Agent memory & storage",
+  "pages": [
+    "---Getting started---",
+    "...intro",
+    "---Build---",
+    "cli",
+    "...sdk",
+    "s3",
+    "reference",
+    "---Guides---",
+    "apps",
+    "tutorials",
+    "---Protocol---",
+    "network",
+    "operators",
+    "architecture",
+    "---Services---",
+    "...services"
+  ]
+}

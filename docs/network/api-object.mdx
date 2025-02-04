@@ -1,0 +1,148 @@
+---
+title: Object API
+description: Endpoints for interacting with the Recall network's object API.
+---
+
+The object API exposes a set of endpoints for interacting with the Recall network's blob storage.
+Buckets are an abstraction around blobs the help you manage these blobs. Under the hood, Recall
+nodes use [Iroh](https://www.iroh.computer/) and expose the HTTP API to allow anyone to upload
+signed data to the Recall network.
+
+### Base URL
+
+The object API endpoints for each of the Recall chain environments are listed below:
+
+- `testnet`: `https://objects.node-0.testnet.recall.network`
+- `localnet` or `devnet`: `http://127.0.0.1:8001`
+
+## Endpoints
+
+- `GET /health`: Check the health of the node.
+- `GET /v1/node`: Get information about the node.
+- `POST /v1/objects`: Create a new bucket.
+- `GET /v1/objects/<bucket>/<object_key>`: Download an object from a bucket.
+
+## Node health
+
+### `GET /health`
+
+The node health endpoint is used to check the health of the node. It returns a `200` status code if
+the node is healthy.
+
+### Example
+
+```bash
+curl -X GET http://localhost:8001/health
+```
+
+## Node information
+
+### `GET /v1/node`
+
+The node information endpoint is used to get information about the node, particularly, with respect
+to Iroh. It lists the node's ID (a public key, base32 encoded), relay URL, and the set of direct
+addresses it is connected to.
+
+### Example
+
+```bash
+curl -X GET http://localhost:8001/v1/node
+```
+
+It returns a JSON object with the following fields:
+
+```json
+{
+  "node_id": "3jlwzcxgdd25z5uun3skbqiottw44s3t5tpl2nwsugo3nujsqw6q",
+  "info": {
+    "relay_url": "https://staging-use1-1.relay.iroh.network./",
+    "direct_addresses": ["172.18.0.3:11204"]
+  }
+}
+```
+
+When you upload data to the Recall network, you will need to know the information above to properly
+stage your data for the asynchronous-sync transaction and data upload process.
+
+## Downloading an object
+
+### `GET /v1/objects/<bucket>/<object_key>`
+
+The object download endpoint is used to download an object from a bucket.
+
+### Example
+
+We'll set an environment variable for the bucket and object key.
+
+```bash
+export BUCKET="0xff000000000000000000000000000000000000ac"
+export OBJECT_KEY="hello/world"
+```
+
+Then, we'll download the object. The API currently expects the FVM-style bucket ID address, which is
+a `f0` or `t0` prefixed before the bucket ID's decimal value.
+
+```bash
+curl -X GET http://localhost:8001/v1/objects/$BUCKET_ID/$OBJECT_KEY > downloaded.txt
+```
+
+Note the the contents will be written to stdout unless you redirect it to a file.
+
+## Uploading an object
+
+### `POST /v1/objects`
+
+The object upload endpoint is a two step process. It is best recommended to avoid using this API
+directly and, instead, use the Recall CLI, SDK, or other clients that help you manage the process.
+
+The upload endpoint is designed to accept multipart form data with the following fields:
+
+- `chain_id`: The chain ID for Recall.
+- `msg`: The signed message to upload. This accepts either an EVM EIP-1559 signed transaction, or an
+  FVM signed message, where the bytes are encoded as a base64 string.
+- `hash`: The blake3 hash of the object.
+- `size`: The size of the object, in bytes.
+- `source`: The Iroh source node ID.
+
+If you do want to use this API directly, you can do so by following the steps below:
+
+1. Get node information from the `/v1/node` endpoint.
+2. Calculate the blake3 hash of the object.
+3. Calculate the size of the object, in bytes.
+4. Create a signed message from the EVM EIP-1559 signed transaction or FVM signed message, and then
+   base64 encode it.
+5. Create a multipart form data request.
+6. Upload the form data to the endpoint.
+
+Below is an example where we have set the environment variables for the chain ID, signed message,
+and source node ID. The `hash` corresponds to a simple file with contents `hello\n`, and the
+`source` is shown for demonstration purposes. Note a validator's API expects the `source` ID to be
+different than its own node ID. Thus, this staging process will require you run some in-memory or
+persistent Iroh node in the background.
+
+```
+curl -X POST http://localhost:8001/v1/objects \
+  -F "chain_id=$CHAIN_ID" \
+  -F "msg=$MSG" \
+  -F "hash=rzghyg4z3p6vbz5jkgc75lk64fci7kieul65o6hk6xznx7lctkmq" \
+  -F "size=6" \
+  -F "source=r4md6oqwcbb2my4jkjqnah2yhvcvyjhefdmdruoiknawuedg2kja"
+```
+
+This will return the following, which confirms the object was uploaded successfully:
+
+```json
+{
+  "hash": "rzghyg4z3p6vbz5jkgc75lk64fci7kieul65o6hk6xznx7lctkmq",
+  "metadata_hash": "layatwp4aemy3mavbdogxspg6effz34runowi3ltuw32qgonwbgq"
+}
+```
+
+The `metadata_hash` is a blake3 hash used by Recall for data availability and recovery purposes.
+
+<Callout type="info">
+
+We'll put out more detailed examples for how to do this in the future. For now, it's best to rely on
+the Recall clients that handle the upload process.
+
+</Callout>

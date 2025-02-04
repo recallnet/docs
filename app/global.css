@@ -131,40 +131,43 @@
 
 /* Enforce slightly smaller font for code on all pages */
 code {
-  color: inherit;
-  font-size: 0.875em;
+  @apply text-sm text-inherit;
 }
 
 button {
-  cursor: pointer;
+  @apply cursor-pointer;
 }
 
 /* Hide elements based on the theme, such as the logo */
 :root[class~="dark"] [data-hide-on-theme="dark"],
 :root:not([class~="dark"]) [data-hide-on-theme="light"] {
-  display: none;
+  @apply hidden;
 }
 
 /* Hide the landing SVG on smaller widths */
 @media (max-width: 1023px) {
   #landing-svg {
-    display: none !important;
+    @apply hidden;
   }
 }
 
 /* Floating animation on landing page */
 @keyframes floating {
-  0% {
+  from,
+  to {
     transform: translate(0, 0);
   }
   50% {
     transform: translate(var(--x-offset), var(--y-offset));
   }
-  100% {
-    transform: translate(0, 0);
-  }
 }
 
 .floating-item {
   animation: floating 6s ease-in-out infinite;
+}
+
+@media (max-width: 1023px) {
+  .floating-item {
+    @apply motion-safe:animate-none;
+  }
 }

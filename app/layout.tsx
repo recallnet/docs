@@ -35,7 +35,7 @@ export const metadata: Metadata = createMetadata({
     template: "%s | Recall Docs",
     default: "Recall Docs",
   },
-  description: "Recall documentation for agent memory builders",
+  description: "Recall documentation for intelligent agent memory",
   icons: {
     icon: [{ url: "/favicon.ico" }, { url: "/icon.png", type: "image/png" }],
     shortcut: "/favicon.ico",

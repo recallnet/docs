@@ -61,6 +61,7 @@ export default async function Page(props: {
     repo: "docs",
     owner: "recallnet",
     path: githubPath,
+    sha: "main",
   };
 
   return (
@@ -117,12 +118,13 @@ export async function generateMetadata(props: {
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
+  const isRootPage = !params.slug || params.slug.length === 0;
   const description =
     page.data.description ?? "Recall documentation for building agent memory";
 
   return createMetadata(
     metadataImage.withImage(page.slugs, {
-      title: page.data.title,
+      title: isRootPage ? "Home" : page.data.title,
       description,
       openGraph: {
         url: `/${page.slugs.join("/")}`,

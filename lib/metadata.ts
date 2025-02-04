@@ -11,7 +11,6 @@ export const baseUrl = new URL(
     "https://docs.recall.network",
 );
 
-// @eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const metadataImage: ReturnType<typeof createMetadataImage> =
   createMetadataImage({
     imageRoute: "/og",

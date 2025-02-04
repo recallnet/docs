@@ -25,62 +25,49 @@ horizontal scaling (similar to traditional web applications).
 
 ```mermaid
 graph TD
-  subgraph Recall
-    subgraph Relayer1["Relayer 1"]
-      ParentNode1["Parent subnet<br/>node"]
-      LightClient1["CometBFT light<br/>client"]
-    end
-    subgraph Subnet1["Subnet 1"]
-      CometBFT1["CometBFT"]
-      CometBFT1 --"Consensus"--> CometBFT1
-      subgraph ABCI1["Fendermint (ABCI++)"]
-        subgraph Machines1["Machines"]
-          Bucket1["Bucket"]
-          MachineManager1["Machine Manager"]
-        end
-        ParentView1["Parent View"]
-      end
-      subgraph IPLD1["IPLD"]
-        Store1["Store"]
-        Resolver1["Resolver"]
-        Store1 <--> Resolver1
-      end
-      Bucket1 --> Store1
-      ABCI1 --> Resolver1
-      CometBFT1 --> ABCI1
-    end
+    %% Root network
+    Root["Rootnet"]
+    class Root component
+
+    %% Relayer section
     subgraph RelayerN["Relayer N"]
-      ParentNodeN["Parent subnet<br/>node"]
-      LightClientN["CometBFT light<br/>client"]
+        ParentNodeN["Parent subnet node"]
+        LightClientN["CometBFT light client"]
     end
+    class RelayerN relayer
+
+    %% Subnet section
     subgraph SubnetN["Subnet N"]
-      CometBFTN["CometBFT"]
-      CometBFTN --"Consensus"--> CometBFTN
-      subgraph ABCIN["Fendermint (ABCI++)"]
-        subgraph MachinesN["Machines"]
-          BucketN["Bucket"]
-          MachineManagerN["Machine Manager"]
+        %% Consensus layer
+        CometBFTN["CometBFT<br/>(Consensus)"]
+
+        %% Storage layer - moved up
+        subgraph IPLDN["IPLD"]
+            StoreN["Store"]
+            ResolverN["Resolver"]
         end
-        ParentViewN["Parent View"]
-      end
-      subgraph IPLDN["IPLD"]
-        StoreN["Store"]
-        ResolverN["Resolver"]
+
+        %% ABCI layer
+        subgraph ABCIN["Fendermint (ABCI++)"]
+            subgraph MachinesN["Machines"]
+                BucketN["Bucket"]
+                MachineManagerN["Machine Manager"]
+            end
+            ParentViewN["Parent View"]
+        end
+
+        %% Internal connections
+        CometBFTN --> ABCIN --> CometBFTN
+        BucketN --> StoreN
         StoreN <--> ResolverN
-      end
-      BucketN --> StoreN
-      ABCIN --> ResolverN
-      CometBFTN --> ABCIN
+        ABCIN --> ResolverN
     end
-  end
-  Root["Rootnet"] <--"Checkpoint"--> Relayer1
-  Root <-."Message<br/>passing".-> Relayer1
-  Root <-."Message<br/>passing".-> RelayerN
-  Root["Rootnet"] <--"Checkpoint"--> RelayerN
-  Relayer1 <--"Checkpoint"--> Subnet1
-  Relayer1 <-."Message<br/>passing".-> Subnet1
-  RelayerN <-."Message<br/>passing".-> SubnetN
-  RelayerN <--"Checkpoint"--> SubnetN
+    class SubnetN subnet
+
+    %% External connections
+    Root <--"Checkpoint"--> RelayerN
+    RelayerN <-."Message passing".-> SubnetN
+    RelayerN <--"Checkpoint"--> SubnetN
 ```
 
 ## Subnet scaling

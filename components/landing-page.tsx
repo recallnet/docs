@@ -30,7 +30,7 @@ const features = [
     icon: <Network className="h-6 w-6" />,
     title: "Scalable & reliable",
     description:
-      "Built on decentralized, hierarchical subnets with polyglot execution (EVM + Wasm) and native data availability",
+      "Powered by decentralized subnets with polyglot execution (EVM + Wasm) and native data availability",
   },
 ];
 

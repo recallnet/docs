@@ -1,8 +1,0 @@
-{
-  "aliases": {
-    "cn": "./lib/theme/utils.ts",
-    "componentsDir": "./components/theme",
-    "uiDir": "./components/theme/ui",
-    "libDir": "./lib/theme"
-  }
-}

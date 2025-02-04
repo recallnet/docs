@@ -6,11 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type HTMLAttributes, type ReactNode, useMemo, useState } from "react";
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/theme/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/theme/ui/popover";
 import { cn } from "@/lib/theme/cn";
 import { isActive } from "@/lib/theme/is-active";
 
@@ -47,10 +43,8 @@ export function RootToggle({
   const selected = useMemo(() => {
     return options.findLast((item) =>
       item.urls
-        ? item.urls.has(
-            pathname.endsWith("/") ? pathname.slice(0, -1) : pathname,
-          )
-        : isActive(item.url, pathname, true),
+        ? item.urls.has(pathname.endsWith("/") ? pathname.slice(0, -1) : pathname)
+        : isActive(item.url, pathname, true)
     );
   }, [options, pathname]);
 
@@ -68,7 +62,7 @@ export function RootToggle({
           {...props}
           className={cn(
             "hover:bg-fd-accent/50 hover:text-fd-accent-foreground flex flex-row items-center gap-2 rounded-lg px-2 py-1.5",
-            props.className,
+            props.className
           )}
         >
           {item}
@@ -87,7 +81,7 @@ export function RootToggle({
               selected === item
                 ? "bg-fd-accent text-fd-accent-foreground"
                 : "hover:bg-fd-accent/50",
-              item.props?.className,
+              item.props?.className
             )}
           >
             <Item {...item} />
@@ -105,9 +99,7 @@ function Item(props: Option) {
       <div className="flex-1 text-start">
         <p className="text-sm font-medium">{props.title}</p>
         {props.description ? (
-          <p className="text-fd-muted-foreground text-xs">
-            {props.description}
-          </p>
+          <p className="text-fd-muted-foreground text-xs">{props.description}</p>
         ) : null}
       </div>
     </>

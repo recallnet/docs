@@ -4,14 +4,9 @@ import * as React from "react";
 
 import { cn } from "@/lib/theme/cn";
 
-export function Cards(
-  props: HTMLAttributes<HTMLDivElement>,
-): React.ReactElement {
+export function Cards(props: HTMLAttributes<HTMLDivElement>): React.ReactElement {
   return (
-    <div
-      {...props}
-      className={cn("grid grid-cols-1 gap-4 sm:grid-cols-2", props.className)}
-    >
+    <div {...props} className={cn("grid grid-cols-1 gap-4 sm:grid-cols-2", props.className)}>
       {props.children}
     </div>
   );
@@ -44,7 +39,7 @@ export function Card({
       className={cn(
         "bg-fd-card text-fd-card-foreground block rounded-lg border p-4 shadow-md transition-colors",
         props.href && "hover:bg-fd-accent/80",
-        props.className,
+        props.className
       )}
     >
       {icon ? (
@@ -53,29 +48,20 @@ export function Card({
             "not-prose mb-2 w-fit rounded-md p-1.5",
             isValidElement(icon)
               ? (icon as { props: { className?: string } }).props.className
-              : "bg-fd-muted text-fd-muted-foreground",
+              : "bg-fd-muted text-fd-muted-foreground"
           )}
         >
           {icon}
         </div>
       ) : null}
-      <h3 className={cn("not-prose mb-1 text-sm font-medium", titleClassName)}>
-        {title}
-      </h3>
+      <h3 className={cn("not-prose mb-1 text-sm font-medium", titleClassName)}>{title}</h3>
       {description ? (
-        <p
-          className={cn(
-            "text-fd-muted-foreground my-0 text-sm",
-            descriptionClassName,
-          )}
-        >
+        <p className={cn("text-fd-muted-foreground my-0 text-sm", descriptionClassName)}>
           {description}
         </p>
       ) : null}
       {props.children ? (
-        <div className="text-fd-muted-foreground prose-no-margin text-sm">
-          {props.children}
-        </div>
+        <div className="text-fd-muted-foreground prose-no-margin text-sm">{props.children}</div>
       ) : null}
     </E>
   );

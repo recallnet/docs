@@ -50,11 +50,7 @@ const theme: ThemeProviderProps = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${sans.variable} ${mono.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="en" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
         <RootProvider theme={theme}>
           <DocsLayout {...docsOptions}>{children}</DocsLayout>

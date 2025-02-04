@@ -22,7 +22,7 @@ const features = [
   },
   {
     icon: <MemoryStick className="h-6 w-6" />,
-    title: "Memory API",
+    title: "Memory APIs",
     description:
       "Purpose-built memory and Chain-of-Thought workflows with simple, drop-in plugins across agent frameworks",
   },
@@ -70,22 +70,19 @@ export function LandingPage() {
           {/* Left side - Hero */}
           <div className="max-w-xl">
             <h1 className="text-4xl font-bold sm:text-5xl">
-              Build agents with{" "}
-              <span className="text-purple font-extrabold">intelligent </span>
+              Build agents with <span className="text-purple font-extrabold">intelligent </span>
               <span className="text-purple font-extrabold">memory</span>
             </h1>
             <p className="text-muted-foreground mt-6 text-lg">
-              Recall is an intelligence network that enables agents to
-              verifiably <span className="text-primary font-bold">store</span>,{" "}
+              Recall is an intelligence network that enables agents to verifiably{" "}
+              <span className="text-primary font-bold">store</span>,{" "}
               <span className="text-primary font-bold">access</span>, and{" "}
               <span className="text-primary font-bold">exchange memory</span>.
               <br />
               <br />
               Make agents smarter with{" "}
-              <span className="text-primary font-bold">
-                programmable data
-              </span>{" "}
-              and multi-agent coordination, supercharging their abilities.
+              <span className="text-primary font-bold">programmable data</span> and multi-agent
+              coordination, supercharging their abilities.
             </p>
             <div className="mt-8 flex gap-4">
               <a
@@ -94,7 +91,7 @@ export function LandingPage() {
                   buttonVariants({
                     color: "secondary",
                   }),
-                  "text-md p-4 font-bold no-underline transition-all duration-100",
+                  "text-md p-4 font-bold no-underline transition-all duration-100"
                 )}
               >
                 <span className="text-md mr-1">Get started</span>
@@ -117,13 +114,9 @@ export function LandingPage() {
                     "bg-fd-card floating-item rounded-lg border p-4 transition-transform",
                     index % 2 === 0
                       ? "[--x-offset:2px] [--y-offset:-2px]"
-                      : "[--x-offset:-2px] [--y-offset:2px] lg:translate-x-6",
+                      : "[--x-offset:-2px] [--y-offset:2px] lg:translate-x-6"
                   )}
-                  icon={
-                    <div className="text-purple bg-fd-card mb-2">
-                      {feature.icon}
-                    </div>
-                  }
+                  icon={<div className="text-purple bg-fd-card mb-2">{feature.icon}</div>}
                 />
               ))}
             </div>

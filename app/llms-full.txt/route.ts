@@ -34,8 +34,7 @@ export async function GET() {
     const fileContent = await fs.readFile(file);
     const { content, data } = matter(fileContent.toString());
     const dir = path.dirname(file).split(path.sep).at(2) || "root";
-    const category =
-      dir in categories ? categories[dir as CategoryType] : categories.root;
+    const category = dir in categories ? categories[dir as CategoryType] : categories.root;
 
     if (data._mdx?.mirror) {
       return;
@@ -57,11 +56,7 @@ ${processed}`;
 }
 
 async function processContent(content: string): Promise<string> {
-  const file = await remark()
-    .use(remarkMdx)
-    .use(remarkGfm)
-    .use(remarkStringify)
-    .process(content);
+  const file = await remark().use(remarkMdx).use(remarkGfm).use(remarkStringify).process(content);
 
   return String(file);
 }

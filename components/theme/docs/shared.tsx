@@ -53,13 +53,7 @@ export interface SidebarComponents {
   Separator: FC<{ item: PageTree.Separator }>;
 }
 
-export function SidebarLinkItem({
-  item,
-  ...props
-}: {
-  item: LinkItemType;
-  className?: string;
-}) {
+export function SidebarLinkItem({ item, ...props }: { item: LinkItemType; className?: string }) {
   if (item.type === "menu")
     return (
       <SidebarFolder {...props}>
@@ -92,7 +86,7 @@ export function SidebarLinkItem({
             color: "secondary",
           }),
           "gap-1.5 [&_svg]:size-4",
-          props.className,
+          props.className
         )}
       >
         {item.icon}
@@ -104,12 +98,7 @@ export function SidebarLinkItem({
   if (item.type === "custom") return item.children;
 
   return (
-    <SidebarItem
-      href={item.url}
-      icon={item.icon}
-      external={item.external}
-      {...props}
-    >
+    <SidebarItem href={item.url} icon={item.icon} external={item.external} {...props}>
       {item.text}
     </SidebarItem>
   );
@@ -117,22 +106,14 @@ export function SidebarLinkItem({
 
 export function checkPageTree(passed: unknown) {
   if (!passed) notFound();
-  if (
-    typeof passed === "object" &&
-    "children" in passed &&
-    Array.isArray(passed.children)
-  )
-    return;
+  if (typeof passed === "object" && "children" in passed && Array.isArray(passed.children)) return;
 
   throw new Error(
-    "You passed an invalid page tree to `<DocsLayout />`. Check your usage in layout.tsx if you have enabled i18n.",
+    "You passed an invalid page tree to `<DocsLayout />`. Check your usage in layout.tsx if you have enabled i18n."
   );
 }
 
-export function getSidebarTabsFromOptions(
-  options: SidebarOptions["tabs"],
-  tree: PageTree.Root,
-) {
+export function getSidebarTabsFromOptions(options: SidebarOptions["tabs"], tree: PageTree.Root) {
   if (Array.isArray(options)) {
     return options;
   } else if (typeof options === "object") {
@@ -157,7 +138,7 @@ const defaultTransform: TabOptions["transform"] = (option, node) => {
 
 function getSidebarTabs(
   pageTree: PageTree.Root,
-  { transform = defaultTransform }: TabOptions = {},
+  { transform = defaultTransform }: TabOptions = {}
 ): Option[] {
   function findOptions(node: PageTree.Folder): Option[] {
     const results: Option[] = [];
@@ -190,10 +171,7 @@ function getSidebarTabs(
   return findOptions(pageTree as PageTree.Folder);
 }
 
-function getFolderUrls(
-  folder: PageTree.Folder,
-  output: Set<string>,
-): Set<string> {
+function getFolderUrls(folder: PageTree.Folder, output: Set<string>): Set<string> {
   if (folder.index) output.add(folder.index.url);
 
   for (const child of folder.children) {

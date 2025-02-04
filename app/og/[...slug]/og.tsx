@@ -11,18 +11,8 @@ interface GenerateProps {
   site?: ReactNode;
 }
 
-export function generateOGImage(
-  options: GenerateProps & ImageResponseOptions,
-): ImageResponse {
-  const {
-    title,
-    description,
-    icon,
-    site,
-    primaryColor,
-    primaryTextColor,
-    ...rest
-  } = options;
+export function generateOGImage(options: GenerateProps & ImageResponseOptions): ImageResponse {
+  const { title, description, icon, site, primaryColor, primaryTextColor, ...rest } = options;
 
   return new ImageResponse(
     generate({
@@ -37,7 +27,7 @@ export function generateOGImage(
       width: 1200,
       height: 630,
       ...rest,
-    },
+    }
   );
 }
 

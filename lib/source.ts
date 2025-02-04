@@ -1,8 +1,4 @@
-import {
-  type LoaderConfig,
-  type LoaderOutput,
-  loader,
-} from "fumadocs-core/source";
+import { type LoaderConfig, type LoaderOutput, loader } from "fumadocs-core/source";
 import { createMDXSource } from "fumadocs-mdx";
 import { createElement } from "react";
 import * as icons from "react-icons/fa6";

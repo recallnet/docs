@@ -21,7 +21,7 @@ export function Navbar(props: HTMLAttributes<HTMLElement>) {
       className={cn(
         "fixed inset-x-0 top-[var(--fd-banner-height)] z-10 h-14 pe-[var(--fd-layout-offset)] backdrop-blur-lg transition-colors",
         (!isTransparent || open) && "bg-fd-background/80",
-        props.className,
+        props.className
       )}
       style={
         {
@@ -38,9 +38,7 @@ export function Navbar(props: HTMLAttributes<HTMLElement>) {
   );
 }
 
-export function NavbarSidebarTrigger(
-  props: ButtonHTMLAttributes<HTMLButtonElement>,
-) {
+export function NavbarSidebarTrigger(props: ButtonHTMLAttributes<HTMLButtonElement>) {
   const { open } = useSidebar();
 
   return (
@@ -51,7 +49,7 @@ export function NavbarSidebarTrigger(
           color: "ghost",
           size: "icon",
         }),
-        props.className,
+        props.className
       )}
     >
       {open ? <X /> : <Menu />}

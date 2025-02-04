@@ -103,9 +103,9 @@ Identifier), a payload, and optional JWS creation options, and returns a `Signed
 ### Import functions and create a DID
 
 ```typescript
-import { getAuthenticatedDID } from "@didtools/key-did";
-import { StreamID } from "@ceramicnetwork/streamid";
 import { InitEventPayload, signEvent, signedEventToCAR } from "@ceramic-sdk/events";
+import { StreamID } from "@ceramicnetwork/streamid";
+import { getAuthenticatedDID } from "@didtools/key-did";
 
 // Create an authenticated DID
 const did = await getAuthenticatedDID(new Uint8Array(32));
@@ -164,7 +164,7 @@ This is useful when you have received event data as a string, typically encoded 
 ### Import functions
 
 ```typescript
-import { eventFromString, InitEventPayload } from "@ceramic-sdk/events";
+import { InitEventPayload, eventFromString } from "@ceramic-sdk/events";
 ```
 
 </Step>
@@ -210,15 +210,15 @@ aRchive (CAR).
 ```typescript
 import {
   InitEventPayload,
-  eventFromCAR,
-  encodeEventToCAR,
-  signedEventToCAR,
   SignedEvent,
+  encodeEventToCAR,
+  eventFromCAR,
+  signedEventToCAR,
 } from "@ceramic-sdk/events";
-import { getAuthenticatedDID } from "@didtools/key-did";
+import { signEvent } from "@ceramic-sdk/events";
 import { randomStreamID } from "@ceramic-sdk/identifiers";
 import { asDIDString } from "@didtools/codecs";
-import { signEvent } from "@ceramic-sdk/events";
+import { getAuthenticatedDID } from "@didtools/key-did";
 
 // Create an authenticated DID
 const did = await getAuthenticatedDID(new Uint8Array(32));

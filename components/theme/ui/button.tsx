@@ -5,8 +5,7 @@ export const buttonVariants = cva(
   {
     variants: {
       color: {
-        primary:
-          "bg-fd-primary text-fd-primary-foreground hover:bg-fd-primary/80",
+        primary: "bg-fd-primary text-fd-primary-foreground hover:bg-fd-primary/80",
         outline: "border hover:bg-fd-accent hover:text-fd-accent-foreground",
         ghost: "hover:bg-fd-accent hover:text-fd-accent-foreground",
         secondary:
@@ -17,5 +16,5 @@ export const buttonVariants = cva(
         icon: "p-1.5 [&_svg]:size-5",
       },
     },
-  },
+  }
 );

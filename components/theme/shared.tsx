@@ -49,10 +49,7 @@ export interface BaseLayoutProps {
 /**
  * Get Links Items with shortcuts
  */
-export function getLinks(
-  links?: LinkItemType[],
-  githubUrl?: string,
-): LinkItemType[] {
+export function getLinks(links?: LinkItemType[], githubUrl?: string): LinkItemType[] {
   let result = links ?? [];
 
   if (githubUrl)
@@ -84,11 +81,10 @@ export function replaceOrDefault(
     | undefined,
   def: ReactNode,
   customComponentProps?: object,
-  disabled?: ReactNode,
+  disabled?: ReactNode
 ): ReactNode {
   if (obj?.enabled === false) return disabled;
-  if (obj?.component !== undefined)
-    return <Slot {...customComponentProps}>{obj.component}</Slot>;
+  if (obj?.component !== undefined) return <Slot {...customComponentProps}>{obj.component}</Slot>;
 
   return def;
 }

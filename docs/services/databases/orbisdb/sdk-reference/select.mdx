@@ -108,10 +108,10 @@ To scope raw SQL statements filter by `_metadata_context` column using a `WHERE`
 ```tsx
 const { columns, rows } = await orbis
   .select()
-  .raw(
-    "SELECT * FROM table WHERE column_name = $1 AND _metadata_context = $2",
-    ["value", "CONTEXT_ID"],
-  )
+  .raw("SELECT * FROM table WHERE column_name = $1 AND _metadata_context = $2", [
+    "value",
+    "CONTEXT_ID",
+  ])
   .run();
 ```
 

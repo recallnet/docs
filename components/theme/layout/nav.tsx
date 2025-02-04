@@ -2,13 +2,7 @@
 
 import Link, { type LinkProps } from "fumadocs-core/link";
 import { useI18n } from "fumadocs-ui/provider";
-import {
-  type ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { type ReactNode, createContext, useContext, useEffect, useState } from "react";
 
 import { cn } from "@/lib/theme/cn";
 
@@ -60,9 +54,7 @@ export function NavProvider({
   }, [transparentMode]);
 
   return (
-    <NavContext.Provider value={{ isTransparent: transparent }}>
-      {children}
-    </NavContext.Provider>
+    <NavContext.Provider value={{ isTransparent: transparent }}>{children}</NavContext.Provider>
   );
 }
 
@@ -70,21 +62,14 @@ export function useNav(): NavContextType {
   return useContext(NavContext);
 }
 
-export function Title({
-  title,
-  url,
-  ...props
-}: TitleProps & Omit<LinkProps, "title">) {
+export function Title({ title, url, ...props }: TitleProps & Omit<LinkProps, "title">) {
   const { locale } = useI18n();
 
   return (
     <Link
       href={url ?? (locale ? `/${locale}` : "/")}
       {...props}
-      className={cn(
-        "inline-flex items-center gap-2.5 font-semibold",
-        props.className,
-      )}
+      className={cn("inline-flex items-center gap-2.5 font-semibold", props.className)}
     >
       {title}
     </Link>

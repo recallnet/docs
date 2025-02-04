@@ -233,11 +233,7 @@ Orbis client (which will be used in separate components for reading and writing 
 authenticating users:
 
 ```tsx
-import {
-  type OrbisConnectResult,
-  OrbisDB,
-  type SiwxAttestation,
-} from "@useorbis/db-sdk";
+import { type OrbisConnectResult, OrbisDB, type SiwxAttestation } from "@useorbis/db-sdk";
 import { OrbisEVMAuth } from "@useorbis/db-sdk/auth";
 
 // instantiating an OrbisDB client instance (using your ENV_ID)
@@ -375,7 +371,7 @@ const getPost = async (stream_id: string): Promise<void> => {
 						    ) AS comments
 						FROM ${env.NEXT_PUBLIC_POST_ID} AS post
 						WHERE post.stream_id = '${stream_id}'
-          `,
+          `
         )
         .run();
       const postResult = query.rows as Post[];

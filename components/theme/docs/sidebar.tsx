@@ -1,9 +1,6 @@
 "use client";
 
-import type {
-  CollapsibleContentProps,
-  CollapsibleTriggerProps,
-} from "@radix-ui/react-collapsible";
+import type { CollapsibleContentProps, CollapsibleTriggerProps } from "@radix-ui/react-collapsible";
 import { type ScrollAreaProps } from "@radix-ui/react-scroll-area";
 import { cva } from "class-variance-authority";
 import Link, { type LinkProps } from "fumadocs-core/link";
@@ -72,7 +69,7 @@ const itemVariants = cva(
           "transition-colors hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none",
       },
     },
-  },
+  }
 );
 
 const Context = createContext<InternalContext | null>(null);
@@ -107,9 +104,7 @@ export function CollapsibleSidebar(props: SidebarProps) {
         setHover(false);
         closeTimeRef.current = Date.now() + 150;
       },
-      Math.min(e.clientX, document.body.clientWidth - e.clientX) > 100
-        ? 0
-        : 500,
+      Math.min(e.clientX, document.body.clientWidth - e.clientX) > 100 ? 0 : 500
     );
   }, []);
 
@@ -125,7 +120,7 @@ export function CollapsibleSidebar(props: SidebarProps) {
           "md:-me-[var(--fd-sidebar-width)] md:translate-x-[calc(var(--fd-sidebar-offset)*-1)] rtl:md:translate-x-[var(--fd-sidebar-offset)]",
         collapsed && hover && "z-50 md:translate-x-0",
         collapsed && !hover && "md:opacity-0",
-        props.className,
+        props.className
       )}
       style={
         {
@@ -159,13 +154,12 @@ export function Sidebar({
         className={cn(
           "bg-fd-card fixed top-[calc(var(--fd-banner-height)+var(--fd-nav-height))] z-30 text-sm md:sticky md:h-[var(--fd-sidebar-height)]",
           "max-md:bg-fd-background/80 max-md:inset-x-0 max-md:bottom-0 max-md:text-[15px] max-md:backdrop-blur-lg max-md:data-[open=false]:invisible",
-          props.className,
+          props.className
         )}
         style={
           {
             ...props.style,
-            "--fd-sidebar-height":
-              "calc(100dvh - var(--fd-banner-height) - var(--fd-nav-height))",
+            "--fd-sidebar-height": "calc(100dvh - var(--fd-banner-height) - var(--fd-nav-height))",
           } as object
         }
       >
@@ -173,7 +167,7 @@ export function Sidebar({
           {...inner}
           className={cn(
             "flex size-full max-w-full flex-col pt-2 md:ms-auto md:w-[var(--fd-sidebar-width)] md:border-e md:pt-4",
-            inner?.className,
+            inner?.className
           )}
         >
           {props.children}
@@ -185,10 +179,7 @@ export function Sidebar({
 
 export function SidebarHeader(props: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div
-      {...props}
-      className={cn("flex flex-col gap-2 px-4 empty:hidden", props.className)}
-    >
+    <div {...props} className={cn("flex flex-col gap-2 px-4 empty:hidden", props.className)}>
       {props.children}
     </div>
   );
@@ -198,10 +189,7 @@ export function SidebarFooter(props: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       {...props}
-      className={cn(
-        "flex flex-col border-t px-4 py-3 empty:hidden",
-        props.className,
-      )}
+      className={cn("flex flex-col border-t px-4 py-3 empty:hidden", props.className)}
     >
       {props.children}
     </div>
@@ -248,8 +236,7 @@ export function SidebarItem({
   icon?: ReactNode;
 }) {
   const pathname = usePathname();
-  const active =
-    props.href !== undefined && isActive(props.href, pathname, false);
+  const active = props.href !== undefined && isActive(props.href, pathname, false);
   const { prefetch, level } = useInternalContext();
 
   return (
@@ -284,9 +271,7 @@ export function SidebarFolder({
 
   return (
     <Collapsible open={open} onOpenChange={setOpen} {...props}>
-      <FolderContext.Provider
-        value={useMemo(() => ({ open, setOpen }), [open])}
-      >
+      <FolderContext.Provider value={useMemo(() => ({ open, setOpen }), [open])}>
         {props.children}
       </FolderContext.Provider>
     </Collapsible>
@@ -321,8 +306,7 @@ export function SidebarFolderLink(props: LinkProps) {
   const { prefetch, level } = useInternalContext();
 
   const pathname = usePathname();
-  const active =
-    props.href !== undefined && isActive(props.href, pathname, false);
+  const active = props.href !== undefined && isActive(props.href, pathname, false);
 
   return (
     <Link
@@ -364,7 +348,7 @@ export function SidebarFolderContent(props: CollapsibleContentProps) {
             ...ctx,
             level: ctx.level + 1,
           }),
-          [ctx],
+          [ctx]
         )}
       >
         <div className="bg-fd-border absolute inset-y-0 start-3 w-px" />
@@ -374,9 +358,7 @@ export function SidebarFolderContent(props: CollapsibleContentProps) {
   );
 }
 
-export function SidebarCollapseTrigger(
-  props: ButtonHTMLAttributes<HTMLButtonElement>,
-) {
+export function SidebarCollapseTrigger(props: ButtonHTMLAttributes<HTMLButtonElement>) {
   const { collapsed, setCollapsed } = useSidebar();
 
   return (
@@ -390,7 +372,7 @@ export function SidebarCollapseTrigger(
           color: "ghost",
           size: "icon",
         }),
-        props.className,
+        props.className
       )}
       onClick={() => {
         setCollapsed((prev) => !prev);
@@ -418,18 +400,13 @@ function useInternalContext(): InternalContext {
 /**
  * Render sidebar items from page tree
  */
-export function SidebarPageTree(props: {
-  components?: Partial<SidebarComponents>;
-}) {
+export function SidebarPageTree(props: { components?: Partial<SidebarComponents> }) {
   const { root } = useTreeContext();
 
   return useMemo(() => {
     const { Separator, Item, Folder } = props.components ?? {};
 
-    function renderSidebarList(
-      items: PageTree.Node[],
-      level: number,
-    ): ReactNode[] {
+    function renderSidebarList(items: PageTree.Node[], level: number): ReactNode[] {
       return items.map((item, i) => {
         const id = `${item.type}_${i}`;
 
@@ -460,12 +437,7 @@ export function SidebarPageTree(props: {
 
         if (Item) return <Item key={item.url} item={item} />;
         return (
-          <SidebarItem
-            key={item.url}
-            href={item.url}
-            external={item.external}
-            icon={item.icon}
-          >
+          <SidebarItem key={item.url} href={item.url} external={item.external} icon={item.icon}>
             {item.name}
           </SidebarItem>
         );
@@ -487,16 +459,10 @@ function PageTreeFolder({
 
   return (
     <SidebarFolder
-      defaultOpen={
-        (item.defaultOpen ?? defaultOpenLevel >= level) || path.includes(item)
-      }
+      defaultOpen={(item.defaultOpen ?? defaultOpenLevel >= level) || path.includes(item)}
     >
       {item.index ? (
-        <SidebarFolderLink
-          href={item.index.url}
-          external={item.index.external}
-          {...props}
-        >
+        <SidebarFolderLink href={item.index.url} external={item.index.external} {...props}>
           {item.icon}
           {item.name}
         </SidebarFolderLink>
@@ -518,12 +484,5 @@ function getOffset(level: number) {
 function Border({ level, active }: { level: number; active?: boolean }) {
   if (level <= 1) return null;
 
-  return (
-    <div
-      className={cn(
-        "absolute inset-y-2 start-3 z-[2] w-px",
-        active && "bg-fd-primary",
-      )}
-    />
-  );
+  return <div className={cn("absolute inset-y-2 start-3 z-[2] w-px", active && "bg-fd-primary")} />;
 }

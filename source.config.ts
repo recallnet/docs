@@ -21,10 +21,7 @@ export default defineConfig({
     ],
     rehypePlugins: (v) => [rehypeKatex, ...v],
     rehypeCodeOptions: {
-      transformers: [
-        ...(rehypeCodeDefaultOptions.transformers ?? []),
-        transformerTwoslash(),
-      ],
+      transformers: [...(rehypeCodeDefaultOptions.transformers ?? []), transformerTwoslash()],
     },
   },
 });

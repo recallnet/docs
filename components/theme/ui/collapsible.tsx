@@ -17,7 +17,7 @@ const CollapsibleContent = forwardRef<
       {...props}
       className={cn(
         "data-[state=closed]:animate-fd-collapsible-up data-[state=open]:animate-fd-collapsible-down overflow-hidden [--radix-collapsible-content-height:0px]",
-        props.className,
+        props.className
       )}
     >
       {children}
@@ -25,7 +25,6 @@ const CollapsibleContent = forwardRef<
   );
 });
 
-CollapsibleContent.displayName =
-  CollapsiblePrimitive.CollapsibleContent.displayName;
+CollapsibleContent.displayName = CollapsiblePrimitive.CollapsibleContent.displayName;
 
 export { Collapsible, CollapsibleTrigger, CollapsibleContent };

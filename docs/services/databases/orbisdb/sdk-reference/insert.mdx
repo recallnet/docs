@@ -46,7 +46,7 @@ const { success, errors } = await orbis
     {
       column: value,
       column2: value2,
-    },
+    }
   )
   .run();
 
@@ -136,18 +136,16 @@ const result = await insertStatement.run();
 ### Bulk insert
 
 ```tsx
-const insertStatement = await orbis
-  .bulkInsert("MODEL_ID" | "MODEL_ALIAS")
-  .values(
-    {
-      column: value,
-      column2: value2,
-    },
-    {
-      column: value,
-      column2: value2,
-    },
-  );
+const insertStatement = await orbis.bulkInsert("MODEL_ID" | "MODEL_ALIAS").values(
+  {
+    column: value,
+    column2: value2,
+  },
+  {
+    column: value,
+    column2: value2,
+  }
+);
 
 const validation = await insertStatement.validate();
 if (!validation.valid) {

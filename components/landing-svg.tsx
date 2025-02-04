@@ -8,11 +8,7 @@ interface LandingSvgProps {
   text?: string;
 }
 
-export default function LandingSvg({
-  height = 325,
-  width = 325,
-  text,
-}: LandingSvgProps) {
+export default function LandingSvg({ height = 325, width = 325, text }: LandingSvgProps) {
   const svgWidth = 30.333;
   const svgHeight = 30.333;
   const columns = Math.ceil(width / svgWidth);

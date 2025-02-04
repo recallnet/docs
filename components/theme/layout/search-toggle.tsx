@@ -25,7 +25,7 @@ export function SearchToggle({
           size: "icon",
           color: "ghost",
         }),
-        props.className,
+        props.className
       )}
       data-search=""
       aria-label="Open Search"
@@ -55,7 +55,7 @@ export function LargeSearchToggle({
       {...props}
       className={cn(
         "bg-fd-secondary/50 text-fd-muted-foreground hover:bg-fd-accent hover:text-fd-accent-foreground inline-flex items-center gap-2 rounded-full border p-1.5 text-sm transition-colors",
-        props.className,
+        props.className
       )}
       onClick={() => {
         setOpenSearch(true);

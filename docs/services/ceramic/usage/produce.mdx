@@ -5,7 +5,8 @@ description: Produce model and model instance document streams.
 
 <Callout>
 
-This document assumes that you've already followed our [installation guide](/ceramic/usage/installation).
+This document assumes that you've already followed our
+[installation guide](/ceramic/usage/installation).
 
 </Callout>
 
@@ -194,12 +195,10 @@ const authenticatedDID = await getAuthenticatedDID(new Uint8Array(32));
 const ceramic = new CeramicClient({ url: "http://localhost:5101" });
 
 // a model using the single accountRelation
-const profileModelStreamId =
-  "kjzl6hvfrbw6c77ooylhtrs71a3ddqi5zdzosmvaodxu1upnhl6t8x6ekf5k2t8";
+const profileModelStreamId = "kjzl6hvfrbw6c77ooylhtrs71a3ddqi5zdzosmvaodxu1upnhl6t8x6ekf5k2t8";
 
 // a model using the list accountRelation
-const forumPostModelStreamId =
-  "kjzl6hvfrbw6c8007xlqeudoh0n82j0fepj4y2in7uskh74yv3612d3bi7y7p1j";
+const forumPostModelStreamId = "kjzl6hvfrbw6c8007xlqeudoh0n82j0fepj4y2in7uskh74yv3612d3bi7y7p1j";
 
 // 1. Instantiate a ModelInstanceClient
 const modelInstanceClient = new ModelInstanceClient({
@@ -243,7 +242,5 @@ await modelInstanceClient.updateDocument({
 });
 
 // 4. Read the MID's State
-const currentState = await modelInstanceClient.getDocumentState(
-  listDocumentStream.toString(),
-);
+const currentState = await modelInstanceClient.getDocumentState(listDocumentStream.toString());
 ```

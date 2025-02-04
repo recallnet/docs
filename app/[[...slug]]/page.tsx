@@ -1,19 +1,11 @@
 import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 import { File, Files, Folder } from "fumadocs-ui/components/files";
-import {
-  ImageZoom,
-  type ImageZoomProps,
-} from "fumadocs-ui/components/image-zoom";
+import { ImageZoom, type ImageZoomProps } from "fumadocs-ui/components/image-zoom";
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { TypeTable } from "fumadocs-ui/components/type-table";
 import fumadocsMdxComponents from "fumadocs-ui/mdx";
-import {
-  DocsBody,
-  DocsDescription,
-  DocsPage,
-  DocsTitle,
-} from "fumadocs-ui/page";
+import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
 import { HTMLAttributes } from "react";
 
@@ -28,9 +20,7 @@ const defaultsMdxComponents = {
   Cards: (props: HTMLAttributes<HTMLDivElement>) => <Cards {...props} />,
 };
 
-export default async function Page(props: {
-  params: Promise<{ slug?: string[] }>;
-}) {
+export default async function Page(props: { params: Promise<{ slug?: string[] }> }) {
   const params = await props.params;
   const page = source.getPage(params.slug);
   if (!page) notFound();
@@ -61,11 +51,7 @@ export default async function Page(props: {
       editOnGithub={isRootPage ? undefined : githubInfo}
     >
       {!isRootPage && <DocsTitle>{page.data.title}</DocsTitle>}
-      {!isRootPage && (
-        <DocsDescription className="mb-1">
-          {page.data.description}
-        </DocsDescription>
-      )}
+      {!isRootPage && <DocsDescription className="mb-1">{page.data.description}</DocsDescription>}
       {!isRootPage && <hr />}
       <DocsBody>
         <MDX
@@ -93,16 +79,13 @@ export async function generateStaticParams() {
   return source.generateParams();
 }
 
-export async function generateMetadata(props: {
-  params: Promise<{ slug?: string[] }>;
-}) {
+export async function generateMetadata(props: { params: Promise<{ slug?: string[] }> }) {
   const params = await props.params;
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
   const isRootPage = !params.slug || params.slug.length === 0;
-  const description =
-    page.data.description ?? "Recall documentation for building agent memory";
+  const description = page.data.description ?? "Recall documentation for building agent memory";
 
   return createMetadata(
     metadataImage.withImage(page.slugs, {
@@ -111,6 +94,6 @@ export async function generateMetadata(props: {
       openGraph: {
         url: `/${page.slugs.join("/")}`,
       },
-    }),
+    })
   );
 }

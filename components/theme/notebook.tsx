@@ -61,7 +61,7 @@ export function DocsLayout({
 
   const tabs = getSidebarTabsFromOptions(tabOptions, props.tree) ?? [];
   const variables = cn(
-    "[--fd-nav-height:3.5rem] [--fd-tocnav-height:36px] md:[--fd-sidebar-width:268px] xl:[--fd-toc-width:268px] xl:[--fd-tocnav-height:0px]",
+    "[--fd-nav-height:3.5rem] [--fd-tocnav-height:36px] md:[--fd-sidebar-width:268px] xl:[--fd-toc-width:268px] xl:[--fd-tocnav-height:0px]"
   );
 
   const pageStyles: PageStyles = {
@@ -79,7 +79,7 @@ export function DocsLayout({
           className={cn(
             "flex w-full flex-1 flex-row pe-[var(--fd-layout-offset)]",
             variables,
-            props.containerProps?.className,
+            props.containerProps?.className
           )}
           style={{
             ...layoutVariables,
@@ -90,7 +90,7 @@ export function DocsLayout({
             {...sidebar}
             className={cn(
               "md:ps-[var(--fd-layout-offset)] md:[--fd-nav-height:0px]",
-              sidebar.className,
+              sidebar.className
             )}
           >
             <SidebarHeader>
@@ -101,9 +101,7 @@ export function DocsLayout({
                 ) : null}
               </SidebarHeaderItems>
               {sidebarBanner}
-              {tabs.length > 0 ? (
-                <RootToggle options={tabs} className="-mx-2" />
-              ) : null}
+              {tabs.length > 0 ? <RootToggle options={tabs} className="-mx-2" /> : null}
             </SidebarHeader>
             <SidebarViewport>
               <div className="mb-4 empty:hidden lg:hidden">
@@ -114,18 +112,11 @@ export function DocsLayout({
               <SidebarPageTree components={sidebarComponents} />
             </SidebarViewport>
             <SidebarFooter>
-              {!props.disableThemeSwitch ? (
-                <ThemeToggle className="w-fit" />
-              ) : null}
+              {!props.disableThemeSwitch ? <ThemeToggle className="w-fit" /> : null}
               {sidebarFooter}
             </SidebarFooter>
           </Aside>
-          <DocsNavbar
-            nav={nav}
-            links={links}
-            i18n={i18n}
-            sidebarCollapsible={sidebarCollapsible}
-          />
+          <DocsNavbar nav={nav} links={links} i18n={i18n} sidebarCollapsible={sidebarCollapsible} />
           <StylesProvider {...pageStyles}>{props.children}</StylesProvider>
         </main>
       </NavProvider>
@@ -149,10 +140,7 @@ function DocsNavbar({
       {sidebarCollapsible ? (
         <SidebarCollapseTrigger className="text-fd-muted-foreground -ms-1.5 data-[collapsed=false]:hidden max-md:hidden" />
       ) : null}
-      <LargeSearchToggle
-        hideIfDisabled
-        className="w-full max-w-[240px] rounded-lg max-md:hidden"
-      />
+      <LargeSearchToggle hideIfDisabled className="w-full max-w-[240px] rounded-lg max-md:hidden" />
       <Title url={nav.url} title={nav.title} className="md:hidden" />
       <div className="flex flex-1 flex-row items-center justify-between gap-6 px-2">
         <div className="flex items-center gap-6">
@@ -190,7 +178,7 @@ function DocsNavbar({
               item={item}
               className={cn(
                 buttonVariants({ size: "icon", color: "ghost" }),
-                "text-fd-muted-foreground",
+                "text-fd-muted-foreground"
               )}
               aria-label={item.label}
             >
@@ -207,10 +195,7 @@ function DocsNavbar({
   );
 }
 
-function NavbarLinkItem({
-  item,
-  ...props
-}: { item: LinkItemType } & HTMLAttributes<HTMLElement>) {
+function NavbarLinkItem({ item, ...props }: { item: LinkItemType } & HTMLAttributes<HTMLElement>) {
   if (item.type === "menu") {
     return (
       <Popover>
@@ -223,8 +208,7 @@ function NavbarLinkItem({
         </PopoverTrigger>
         <PopoverContent className="flex flex-col">
           {item.items.map((child, i) => {
-            if (child.type === "custom")
-              return <Fragment key={i}>{child.children}</Fragment>;
+            if (child.type === "custom") return <Fragment key={i}>{child.children}</Fragment>;
 
             return (
               <BaseLinkItem

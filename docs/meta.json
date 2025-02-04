@@ -4,20 +4,19 @@
   "pages": [
     "---Getting started---",
     "...intro",
-    "concepts",
+    "---Build---",
     "cli",
-    "rust-sdk",
+    "...sdk",
     "s3",
     "reference",
+    "---Guides---",
+    "apps",
     "tutorials",
-    "---Apps---",
-    "...apps",
     "---Protocol---",
     "network",
     "operators",
     "architecture",
     "---Services---",
-    "ceramic",
-    "databases"
+    "...services"
   ]
 }

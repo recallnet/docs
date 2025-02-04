@@ -8,7 +8,12 @@ import { Step, Steps } from "fumadocs-ui/components/steps";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { TypeTable } from "fumadocs-ui/components/type-table";
 import fumadocsMdxComponents from "fumadocs-ui/mdx";
-import { DocsBody, DocsDescription, DocsPage } from "fumadocs-ui/page";
+import {
+  DocsBody,
+  DocsDescription,
+  DocsPage,
+  DocsTitle,
+} from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
 import { HTMLAttributes } from "react";
 
@@ -22,29 +27,6 @@ const defaultsMdxComponents = {
   Card: (props: CardProps) => <Card {...props} />,
   Cards: (props: HTMLAttributes<HTMLDivElement>) => <Cards {...props} />,
 };
-
-// Handle titles with backticks to render inline code blocks
-function CustomDocsTitle({ children }: { children: React.ReactNode }) {
-  if (typeof children === "string") {
-    return (
-      <h1 className="text-3xl font-bold" key={children}>
-        {children.split("`").map((part, i) =>
-          i % 2 === 0 ? (
-            part
-          ) : (
-            <code
-              key={i}
-              className="rounded border border-[var(--color-fd-border)] bg-[var(--color-fd-muted)] px-[3px] font-normal text-[var(--tw-prose-code)]"
-            >
-              {part}
-            </code>
-          ),
-        )}
-      </h1>
-    );
-  }
-  return <h1 className="text-3xl font-bold">{children}</h1>;
-}
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -78,7 +60,7 @@ export default async function Page(props: {
       full={page.data.full}
       editOnGithub={isRootPage ? undefined : githubInfo}
     >
-      {!isRootPage && <CustomDocsTitle>{page.data.title}</CustomDocsTitle>}
+      {!isRootPage && <DocsTitle>{page.data.title}</DocsTitle>}
       {!isRootPage && (
         <DocsDescription className="mb-1">
           {page.data.description}

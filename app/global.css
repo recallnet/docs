@@ -131,7 +131,8 @@
 
 /* Enforce slightly smaller font for code on all pages */
 code {
-  @apply text-sm text-inherit;
+  color: inherit;
+  font-size: 0.875em;
 }
 
 button {

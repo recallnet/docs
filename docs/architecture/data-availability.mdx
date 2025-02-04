@@ -190,7 +190,7 @@ is specified as a TTL in blocks (e.g., TTL = 5). For a file/blob added at block 
 (at least) 5 blocks, we then assign it to _retention group_ 15. When entangling data, validators
 must always entangle incoming data (and associated chunks) with pseudorandom chunks from the correct
 retention group (or a retention group with a longer TTL). This ensures that data that should remain
-“available” together are physically and semantically grouped. If it is not possible to entangle a
+"available" together are physically and semantically grouped. If it is not possible to entangle a
 given data chunk with other data from its intended retention group (e.g., due to lack of preexisting
 data), it can be entangled with data in a later group, or with itself (creating a so-called _closed_
 entanglement) in the worst case. Note that this process must be done in conjunction with the

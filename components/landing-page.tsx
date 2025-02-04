@@ -44,20 +44,20 @@ const quickstartCards = [
   {
     title: "Plugins",
     icon: <Plug2 className="text-purple h-5 w-5" />,
-    href: "/rust-sdk",
+    href: "/plugins",
     description: "Store and manage data with easy to use plugins",
   },
   {
-    title: "Event Store",
+    title: "SDKs",
     icon: <Timer className="text-purple h-5 w-5" />,
-    href: "/ceramic",
-    description: "Handle events and streaming data efficiently",
+    href: "/sdk",
+    description: "Build agents with the TypeScript or Rust SDKs",
   },
   {
-    title: "Databases",
+    title: "Services",
     icon: <Database className="text-purple h-5 w-5" />,
-    href: "/databases",
-    description: "Set up and manage your agent's memory stores",
+    href: "/ceramic",
+    description: "Event streaming and databases for your agents",
   },
 ];
 
@@ -75,13 +75,17 @@ export function LandingPage() {
               <span className="text-purple font-extrabold">memory</span>
             </h1>
             <p className="text-muted-foreground mt-6 text-lg">
-              Recall is an intelligence network that enables agents to store,
-              access, and trade{" "}
-              <span className="text-primary font-bold">memory</span> in a
-              verifiable way. Build smarter agents with{" "}
-              <span className="text-primary font-bold">programmable data</span>{" "}
-              backed by fast consensus and{" "}
-              <span className="text-primary font-bold">scalable storage</span>.
+              Recall is an intelligence network that enables agents to
+              verifiably <span className="text-primary font-bold">store</span>,{" "}
+              <span className="text-primary font-bold">access</span>, and{" "}
+              <span className="text-primary font-bold">exchange memory</span>.
+              <br />
+              <br />
+              Make agents smarter with{" "}
+              <span className="text-primary font-bold">
+                programmable data
+              </span>{" "}
+              and multi-agent coordination, supercharging their abilities.
             </p>
             <div className="mt-8 flex gap-4">
               <a

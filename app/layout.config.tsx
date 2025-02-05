@@ -47,13 +47,13 @@ export const baseOptions: BaseLayoutProps = {
       ],
     },
     // External links
-    {
-      external: true,
-      text: "Studio",
-      description: "Studio",
-      url: "https://studio.recall.network",
-      position: "right",
-    },
+    // {
+    //   external: true,
+    //   text: "Portal",
+    //   description: "Portal",
+    //   url: "https://studio.recall.network",
+    //   position: "right",
+    // },
     {
       external: true,
       text: "Explorer",

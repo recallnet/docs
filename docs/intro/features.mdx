@@ -1,5 +1,5 @@
 ---
-title: Features & components
+title: Features & use cases
 description: Review the protocol's overarching features, components, and constraints.
 keywords: features, costs, limits
 ---
@@ -144,5 +144,40 @@ Basin and Ceramic have their own constraints, which are detailed in their respec
 
 Note: TPS is rough estimate and may vary based on network conditions. The node design is still under
 heavy development, optimizations are being made, and benchmarked tests are yet to be finalized.
+
+</Callout>
+
+## AI & machine learning
+
+Recall's flexible data layer can power a variety of AI and machine learning workflows, from data
+storage and retrieval to model training and inference. The full Recall stack can be used in a
+modular fashion to build custom workflows, or the "full stack" of Recall data services can be used
+to power a fully decentralized pipeline.
+
+For example, you might use Recall to:
+
+- Store large datasets in S3 compatible buckets and run an ML pipeline, writing the classification
+  or sentiment analysis results to the bucket.
+- Store large models or checkpoints training states in buckets.
+- Run an event streaming workflow with Ceramic streams, using the event store to power a compute job
+  through a function when a new event is detected.
+- Indexing data from the event pipeline with OrbisDB.
+
+Check out the following tutorials for more ideas:
+
+<Cards>
+  <Card title="Data labeling" href="/tutorials/ceramic/data-labeling" />
+  <Card title="User data" href="/tutorials/ceramic/user-data" />
+  <Card title="OrbisDB indexing" href="/tutorials/orbisdb-indexing" />
+</Cards>
+
+## DePIN networks
+
+Recall's native onchain access controls and privacy help write large scale data to the network while
+preserving the privacy of individual data producers.
+
+<Callout type="info">
+
+This page is a work in progress.
 
 </Callout>

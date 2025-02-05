@@ -1,5 +1,5 @@
 {
   "title": "CLI",
   "description": "CLI",
-  "pages": ["installation", "commands"]
+  "pages": ["account", "bucket", "machine", "storage", "timehub"]
 }

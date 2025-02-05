@@ -106,27 +106,6 @@ async fn main() {
 }
 ```
 
-For reference, a transaction includes the status, hash, block height, gas used, and the object's
-information and metadata.
-
-```json
-{
-  "hash": "1CAF965B9C77D85F8A87FE8097E0912441E74D52ABD2BCC03DC39D47F23E207A",
-  "height": "70312",
-  "gas_used": 249175079,
-  "status": "committed",
-  "object": {
-    "hash": "lioj4xmf3geyffydp2hcj5u3wdtajkcmshb3h32hqsrxjajjadmq",
-    "recovery_hash": "tczmmjk737gya3unto6qrfuomnykwyynan7cx3i355r2ivt7bbpq",
-    "size": 1024,
-    "expiry": 73912,
-    "metadata": {
-      "content-type": "application/octet-stream"
-    }
-  }
-}
-```
-
 ## Querying objects
 
 To list an object, you can use the `query` method. This method comes with available query options to

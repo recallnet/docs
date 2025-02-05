@@ -79,11 +79,10 @@ export BUCKET="0xff000000000000000000000000000000000000ac"
 export OBJECT_KEY="hello/world"
 ```
 
-Then, we'll download the object. The API currently expects the FVM-style bucket ID address, which is
-a `f0` or `t0` prefixed before the bucket ID's decimal value.
+Then, we'll download the object, passing in the bucket and object key.
 
 ```bash
-curl -X GET http://localhost:8001/v1/objects/$BUCKET_ID/$OBJECT_KEY > downloaded.txt
+curl -X GET http://localhost:8001/v1/objects/$BUCKET/$OBJECT_KEY > downloaded.txt
 ```
 
 Note the the contents will be written to stdout unless you redirect it to a file.

@@ -6,7 +6,7 @@ description: Create a labeled dataset for LLM training with event storage and Or
 In the ever-evolving world of machine learning, fine-tuning Large Language Models (LLMs) has become
 a crucial step in achieving optimal performance for specific tasks. One of the most time-consuming
 aspects of this process is data labeling, and facilitating this step with care and attention to
-detail directly impacts your model’s success.
+detail directly impacts your model's success.
 
 As individuals and teams collaborate on these projects, tracking the origin and evolution of
 datasets becomes increasingly important. For example, teams working on LLM pipelines care about:
@@ -24,16 +24,16 @@ datasets becomes increasingly important. For example, teams working on LLM pipel
 - **Iterative Improvement**: Track the evolution of datasets over time, enabling teams to analyze
   and refine their labeling processes.
 
-Given these desires, it’s easy to see how tools that provide strong provenance and data lineage
-characteristics might benefit ML pipeline architects. This is where Recall’s Event Storage
+Given these desires, it's easy to see how tools that provide strong provenance and data lineage
+characteristics might benefit ML pipeline architects. This is where Recall's Event Storage
 capabilities come into play.
 
 ## Recall event storage for data labeling
 
-Recall’s Event Storage capabilities feature Ceramic - a decentralized data network built on
+Recall's Event Storage capabilities feature Ceramic - a decentralized data network built on
 verifiable event streams on top of which relational databases, private storage, and event-driven
 capabilities can be built. A key characteristic of Ceramic is its verifiable data integrity and
-lineage. Here’s how this relates to data labeling:
+lineage. Here's how this relates to data labeling:
 
 - All data (such as labeled datasets) written to Ceramic are "owned" by an account controlled by a
   sovereign decentralized identifier. These identifiers can be owned by an Ethereum address or
@@ -42,11 +42,11 @@ lineage. Here’s how this relates to data labeling:
   to that data (or by granting an application temporary access to make updates on behalf of the
   controlling account).
 - Streams preserve the history of edits made, making historical traversal transparent.
-- Finally, given Ceramic’s private data and inter-node synchronization capabilities, marketplaces
+- Finally, given Ceramic's private data and inter-node synchronization capabilities, marketplaces
   for labeled data can be built on this infrastructure, enabling dataset producers to allow read
   access in exchange for monetary value.
 
-With these qualities and reasoning in mind, we’ve written this technical guide to walk through one
+With these qualities and reasoning in mind, we've written this technical guide to walk through one
 example of how to facilitate data labeling into Recall Event Storage.
 
 ### Key components
@@ -55,7 +55,7 @@ This demo relies on the following frameworks and providers to support our data l
 
 **OrbisDB**
 
-The previous section mentioned that databases can be built on Ceramic’s event streams.
+The previous section mentioned that databases can be built on Ceramic's event streams.
 [OrbisDB](https://useorbis.com/) is one of those implementations, offering a relational database
 interface, and features like plugins, a developer UI, and even a shared hosted instance for
 experimentation.
@@ -215,7 +215,7 @@ will use on your behalf when you submit your labeled dataset.
 ### Labeling Data
 
 Back in your project view, start labeling each row. You can customize your UI when in the labeling
-view to see the review you’re marking using one of the three given options:
+view to see the review you're marking using one of the three given options:
 
 ![labeling data](/img/tutorials/data-labeling/labeling-data.png)
 
@@ -271,4 +271,4 @@ would be to spin up a service to read and consume these datasets, and perhaps ap
 based on the expertise behind who created them.
 
 Are you interested in leveraging Recall for your data labeling needs? Did you find this guide
-helpful? We’d love to hear from you!
+helpful? We'd love to hear from you!

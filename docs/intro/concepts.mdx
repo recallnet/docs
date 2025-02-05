@@ -4,7 +4,7 @@ description: Getting started with basic network concepts.
 ---
 
 Buckets are buckets that take advantage of Recall's subnet scaling infrastructure to enable fast and
-cost-effective storage of large amounts of data. Basin's usage pattern generally consists of two
+cost-effective storage of large amounts of data. Recall's usage pattern generally consists of two
 components:
 
 - Creating an bucket (with certain permissions on who can write data).
@@ -20,7 +20,7 @@ complex data structures.
 The interface is implemented as a _contract_, deployed on a subnet. Data is represented as an
 onchain hash within a contract's state, and the actual data is stored offchain in a node's local
 (networked) block store. Spawning new buckets is handled with a general factory smart contract,
-which the various Basin interfaces (SDK, CLI) call under the hood.
+which the various Recall interfaces (SDK, CLI) call under the hood.
 
 More generally, there are two types of contracts on Recall network: **_Wasm_** contracts, and EVM
 **_smart_** contracts. The two differ in how what they can handle and related intents.
@@ -44,8 +44,7 @@ Wasm runtime supports.
 
 Accounts (ECDSA, secp256k1) are used to send data-carrying transactions as you would on any
 blockchain system. Thus, all mutations are onchain transactions within a subnet, so funds are
-required to pay for writes. Since Basin is built on top of Filecoin's FVM, the addresses can follow
-a _slightly_ different convention than a purely EVM-based account system.
+required to pay for writes.
 
 ### EVM addresses
 
@@ -122,7 +121,7 @@ Commands that write data will broadcast a transaction to the network. You'll see
 `--broadcast-mode` flag that can be set to the following values:
 
 - `commit`: Wait until the transaction is delivered and final (note: this is the default behavior).
-- `sync`: Wait only for the result of a local transaction pre-check, but don’t wait for it to be
+- `sync`: Wait only for the result of a local transaction pre-check, but don't wait for it to be
   delivered to all validators (i.e., added risk the transaction may fail during delivery).
 - `async`: Does not wait at all. You will not see errors in your terminal (i.e., added risk the
   transaction may fail during delivery).
@@ -151,8 +150,8 @@ deleted.
 
 First, to get RECALL tokens, reach out to the Recall team.
 
-Since Basin is built on top of Filecoin, you must also have FIL in your account to interact with the
-network if you are bridging RECALL tokens into the subnet. Recall is currently only live on the
+Since Recall is built on top of Filecoin, you must also have FIL in your account to interact with
+the network if you are bridging RECALL tokens into the subnet. Recall is currently only live on the
 Filecoin Calibration network. You can get tFIL via the faucet
 [here](https://faucet.calibnet.chainsafe-fil.io/funds.html), and for reference, Filecoin chain
 information can be found [here](https://chainlist.org/?search=filecoin&testnets=true).

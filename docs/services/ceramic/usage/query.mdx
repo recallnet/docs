@@ -45,10 +45,10 @@ queried and transmitted efficiently, ideal for intense data workloads.
 
 The `@ceramic-sdk/flight-sql-client` is a package designed to run server-side only. Using this
 client needs a [ceramic-one](https://github.com/ceramicnetwork/rust-ceramic) daemon running with
-experimental flags which point to your Basin-S3 adapter:
+experimental flags which point to your Recall-S3 adapter:
 
 ```bash
-ceramic-one -- daemon --experimental-features --flight-sql-bind-address 0.0.0.0:5102 --s3-bucket your-basin-account.your-bucket-name
+ceramic-one -- daemon --experimental-features --flight-sql-bind-address 0.0.0.0:5102 --s3-bucket your-recall-account.your-bucket-name
 ```
 
 <Steps>

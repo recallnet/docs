@@ -9,7 +9,7 @@ data pipeline through a unified, programmable data layer:
 
 - **Data producers**: Entities that generate or aggregate data (social media, DePINs, blockchain
   networks).
-- **Data service providers**: Builders who develop data services (e.g., Basin, Ceramic, indexers,
+- **Data service providers**: Builders who develop data services (e.g., Recall, Ceramic, indexers,
   compute).
 - **Infrastructure providers**: Decentralized node operators that operate the network and ensure
   data availability.
@@ -32,7 +32,7 @@ flexible use cases.
 
 - **Hierarchical subnet architecture** and layered consensus model that enables scalable,
   cost-effective storage and compute, competitive with traditional cloud providers.
-- Offchain data service integrations, like Ceramic and Basin, allow **offchain data to be settled
+- Offchain data service integrations, like Ceramic and Recall, allow **offchain data to be settled
   onchain** in an efficient manner and with **consensus over data state**.
 
 ### Native data availability
@@ -53,9 +53,9 @@ flexible use cases.
 
 ## Components
 
-The Recall datachain provides novel data availability mechanisms for large volumes of heterogenous
-data. The protocol consists of a few different layers that build upon one another, enabling an
-ecosystem to facilitate different ways to manage your data.
+The Recall chain provides novel data availability mechanisms for large volumes of heterogenous data.
+The protocol consists of a few different layers that build upon one another, enabling an ecosystem
+to facilitate different ways to manage your data.
 
 ### Accounts
 
@@ -95,8 +95,8 @@ blob, but others will be added in the future (e.g., compute for performing trans
 
 _Contracts_ are arbitrary programs that run on the network. The flexible
 [execution environment](https://fvm.filecoin.io/) lets you deploy EVM (Solidity) and Wasm (Rust,
-etc.) contracts that interact with verifiable offchain data stored in the Recall datachain. There
-are two types of contracts that anyone can deploy:
+etc.) contracts that interact with verifiable offchain data stored in the Recall chain. There are
+two types of contracts that anyone can deploy:
 
 - **Bucket**: Key-value object storage for arbitrary data.
 - **Timehub**: Merklized data structures for onchain data anchoring.
@@ -119,7 +119,7 @@ interface for facilitating its usage. The first two data services on Recall incl
 
 - **Ceramic**: Offchain event-log service that relies on the onchain _timehub_ contract for
   anchoring _events_.
-- **Basin**: Provides an S3-compatible object storage service by utilizing the onchain _bucket_
+- **Recall**: Provides an S3-compatible object storage service by utilizing the onchain _bucket_
   contract.
 
 An additional layer of data service providers then build on top of the core data services to offer
@@ -127,14 +127,14 @@ additional functionality:
 
 - **OrbisDB**: High-throughput application database with an index, query, and plugin wrapper around
   Ceramic.
-- **Tableland**: Onchain decentralized SQL database whose state is backed by the Recall datachain.
+- **Tableland**: Onchain decentralized SQL database whose state is backed by the Recall chain.
 
 You can learn more about each of these and how to use them throughout this documentation.
 
 ## Limits
 
 There are a few limitations to be aware of when building on Recall. Keep in mind that services like
-Basin and Ceramic have their own constraints, which are detailed in their respective sections.
+Recall and Ceramic have their own constraints, which are detailed in their respective sections.
 
 - **Block time**: ~1 block per second.
 - **Throughput (TPS)**: Hundreds of transactions per second.

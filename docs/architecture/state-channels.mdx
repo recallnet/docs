@@ -24,7 +24,7 @@ between
 [consistency, availability, and partition tolerance](http://pld.cs.luc.edu/courses/353/spr11/notes/brewer_keynote.pdf)
 (see [Brewer's conjecture](https://dl.acm.org/doi/abs/10.1145/564585.564601)) by leveraging
 peer-base consensus and hierarchical checkpoints to arrive at strong eventual consistency. Another
-important aspect of Recall’s consistency model is the use of _data state channels_, which allows the
+important aspect of Recall's consistency model is the use of _data state channels_, which allows the
 chain to remain "live", while members of a subnet synchronize over correct state in the background.
 
 State channels have emerged as a promising solution to the scalability issues of blockchains. By
@@ -96,7 +96,7 @@ hash in the state of the target machine.
 
 ## End-to-end flow
 
-In Recall, data references are represented as CIDs onchain (within a machine’s state). In most
+In Recall, data references are represented as CIDs onchain (within a machine's state). In most
 cases, the actual data is stored _offchain_, in a node's local (networked) blockstore. The actual
 storage layout etc is an implementation detail of the Recall node, though in practice, this
 currently uses an IPFS-style blockstore. During normal chain operation, nodes are instructed to
@@ -193,7 +193,7 @@ graph LR
         Commit
     end
 
-    subgraph Basin
+    subgraph Recall
         ProcessProposal
         FinalizeBlock
     end
@@ -219,7 +219,7 @@ the block production process in Recall based on the CometBFT ABCI++ framework.
 
 <Callout>
 
-Implicit transactions are specialized FVM transactions which in theory may come from any data
+Implicit transactions are specialized Wasm transactions which in theory may come from any data
 contract, ignore the transaction nonce, and charge no gas (but still account for it). Conversely,
 normal (explicit) transactions may only come from accounts and charge the sending account for gas
 consumed.

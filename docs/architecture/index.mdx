@@ -10,87 +10,38 @@ the needs of modern data-hungry applications and services, and this design enabl
 additional innovations, including Recall's _synchronous data synchronization_ mechanism, allowing
 the network to ingest large data and files while safeguarding chain liveness.
 
-## Hierarchical structure
+## How does it work?
 
-The hierarchical nature of Recall also allows it to naturally and logically shard data across
-multiple subnets, enabling the network to scale horizontally as demand grows. Additionally, the
-arrangement of data and services within unique subnets provides the key substrate upon which
-additional innovations can be added.
+A number of protocol features modularize the technology stack, but the two key enablers for this
+are:
 
-Recall's decentralized network is developed using the
-[Filecoin InterPlanetary Consensus (IPC) framework](https://docs.ipc.space/). IPC is a blockchain
-scaling solution and architectural design that is an alternative to existing
-[L2 scaling solutions](https://l2beat.com/) and based on the design principles of on-demand
-horizontal scaling (similar to traditional web applications).
+- **Hierarchical consensus**: Organized _subnets_, enabling millions of users and billions of bytes.
+- **Erasure coded blob storage**: Storage and retrieval of large binary blobs through efficient
+  _alpha entanglement_.
 
-```mermaid
-graph TD
-    %% Root network
-    Root["Rootnet"]
-    class Root component
+## Subnets
 
-    %% Relayer section
-    subgraph RelayerN["Relayer N"]
-        ParentNodeN["Parent subnet node"]
-        LightClientN["CometBFT light client"]
-    end
-    class RelayerN relayer
+Subnets provide a horizontally scalable, verifiable, and cost-effective data layer. The subnet
+design is purpose built for advanced onchain data storage patterns and use cases, similar to
+on-demand horizontal scaling system in more "traditional" (Web 2.0) applications. These subnets
+function practically independently, under their own consensus, while inheriting security from their
+parent subnet. This hierarchical structure also means subnets themselves can optimize for latency,
+while the overall network can scale horizontally to accommodate greater throughput.
 
-    %% Subnet section
-    subgraph SubnetN["Subnet N"]
-        %% Consensus layer
-        CometBFTN["CometBFT<br/>(Consensus)"]
+## Data availability
 
-        %% Storage layer - moved up
-        subgraph IPLDN["IPLD"]
-            StoreN["Store"]
-            ResolverN["Resolver"]
-        end
+Deterministic ordering of data commitments is part of the core consensus process, but actual data
+storage and synchronization is managed offchain—partly driven by the need to maintain chain liveness
+and limit the demands on validator resources. This system employs the
+[alpha entanglement (AE) codes](https://arxiv.org/abs/1810.02974) erasure coding scheme designed
+specifically for distributed networks. It enhances data reliability and fault tolerance by breaking
+down a data blob into smaller fragments and then generating additional redundant fragments.
 
-        %% ABCI layer
-        subgraph ABCIN["Fendermint (ABCI++)"]
-            subgraph MachinesN["Machines"]
-                BucketN["Bucket"]
-                MachineManagerN["Machine Manager"]
-            end
-            ParentViewN["Parent View"]
-        end
+This process encodes data fragments into a robust and **tamperproof data mesh**, and these codes
+enable efficient data recovery, reduced storage costs, decentralized repair, and data integrity, as
+well as the ability to tie information about the **data recency and retention requirements**
+([TTL](https://en.wikipedia.org/wiki/Time_to_live)) into the way the data is encoded.
 
-        %% Internal connections
-        CometBFTN --> ABCIN --> CometBFTN
-        BucketN --> StoreN
-        StoreN <--> ResolverN
-        ABCIN --> ResolverN
-    end
-    class SubnetN subnet
-
-    %% External connections
-    Root <--"Checkpoint"--> RelayerN
-    RelayerN <-."Message passing".-> SubnetN
-    RelayerN <--"Checkpoint"--> SubnetN
-```
-
-## Subnet scaling
-
-Traditional blockchains often struggle with scalability as data volume and user base increase, and
-Recall tackles this by employing a _subnet_ architecture. This enables parallel processing across
-numerous blockchains (subnets), significantly improving throughput.
-
-IPC is designed to enhance performance, decentralization, and security for decentralized
-applications by allowing permissionless creation of new blockchain subsystems called subnets. These
-subnets are organized hierarchically, enabling seamless internal communication and reducing reliance
-on cross-chain bridges, while each can employ its specific consensus algorithm and inherit security
-from parent subnets. This structure facilitates hosting or sharding applications based on
-performance or cost needs.
-
-Each subnet is associated with exactly one parent. One parent can have many child subnets associated
-with it, forming a tree structure. Child subnets periodically checkpoint information to their parent
-subnet, and these checkpoints are propagated recursively to the rootnet. This ensures that child
-subnets benefit from the security of their parents. Checkpoints cannot be reverted, even if trust is
-violated in a child subnet, as long as the parent continues to operate as expected.
-
-Operators of a subnet run a full validator node for both the parent and the child subnet. Requiring
-the nodes of child subnets to run the nodes of parents is a security parameter to ensure
-checkpointed states of the subnet are appropriately stored, at the right time in the parent. In the
-future, Recall subnets will also be able to dynamically adjust their capacity by spawning temporary
-subnets during peak usage and merging them during lower activity.
+Recall also incorporates mechanisms for proof of data access, proof of correct encoding, and a data
+availability sampling layer that leverages its unique erasure encoding system to ensure that data is
+always accessible and retrievable by all actors on the network.

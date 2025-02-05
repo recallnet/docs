@@ -1,23 +1,25 @@
 ---
-title: Wasm contracts
+title: Contracts
 description: The core building blocks for data exchange.
 ---
 
-Recall’s core functionality is built on top of the FVM as a series of _Wasm contracts_, which are,
-essentially, Wasm-based smart contracts that run on the FVM and are used to manage, query, and
-update the state of the subnet. In effect, the FVM is responsible for executing the logic of the
-Recall protocol.
+Recall's core functionality is built as a series of Wasm-based contracts that run on the Wasm
+execution layer and are used to manage, query, and update the state of the subnet. In effect, the
+Wasm runtime is responsible for executing the logic of the Recall protocol.
 
 ## Contract execution
 
-The FVM executes messages in [Wasm](https://webassembly.org/) over actor state and uses the
+The runtime executes messages in [Wasm](https://webassembly.org/) over actor state and uses the
 [Wasmtime runtime](https://wasmtime.dev/). This includes a Wasm implementation of the
 [EVM bytecode](https://ethereum.github.io/yellowpaper/paper.pdf) interpreter. Under the hood, any
-"built-in" FVM and "custom" (subnet-specific) Wasm contracts are compiled to CAR files and provided
-to the subnet during genesis.
+"built-in" and "custom" (subnet-specific) Wasm contracts are compiled to
+[CAR](https://docs.ipfs.tech/concepts/how-ipfs-works/#how-ipfs-represents-and-addresses-data) files
+and provided to the subnet during genesis.
 
 <Callout>
-For further details on the FVM, see the [Filecoin documentation](https://docs.filecoin.io/smart-contracts/fundamentals/the-fvm).
+
+For further details on how the Wasm runtime works, check out the deep dive
+[here](https://docs.filecoin.io/smart-contracts/fundamentals/the-fvm).
 
 </Callout>
 
@@ -28,7 +30,7 @@ ships with three core Wasm contracts: the _address manager_, _bucket_, and _time
 contracts are responsible for managing the state of a subnet, creating new buckets, timehubs, and
 storing and retrieving data from the subnet.
 
-One of the main advantages of the FVM runtime is its support for [IPLD](https://ipld.io/), a
+One of the main advantages of the Wasm runtime is its support for [IPLD](https://ipld.io/), a
 hash-linked data model that can be used to represent and traverse hash-linked data. It's the basis
 for those familiar with IPFS. All onchain data is represented as IPLD, which is stored in the state
 tree of the subnet. Notably, this means you can create Wasm contracts that _use_ IPLD (e.g., Rust's
@@ -36,8 +38,8 @@ tree of the subnet. Notably, this means you can create Wasm contracts that _use_
 
 ## Wasm vs. smart contracts
 
-Subnets use the FVM Wasm runtime because it offers flexible and data-oriented programmatic control.
-The FVM is simply an IPLD-friendly virtual machine that supports Wasm actors and other handy
+Subnets use the Wasm runtime because it offers flexible and data-oriented programmatic control. The
+runtime is simply an IPLD-friendly virtual machine that supports Wasm actors and other handy
 features.
 
 This flexibility enables the creation of both smart contract and Wasm contracts, the latter of which

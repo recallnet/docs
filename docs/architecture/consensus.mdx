@@ -16,7 +16,7 @@ PBFT's performance and communication overhead (see also the
 [Cosmos whitepaper](https://cosmos.network/resources/whitepaper)). It is a fast, battled-tested, and
 well-designed consensus engine.
 
-Recall’s blockchain functionality is exposed as a unified
+Recall's blockchain functionality is exposed as a unified
 [ABCI++](https://members.delphidigital.io/learn/abci) application controlled by CometBFT. ABCI
 programs are an interface between CometBFT and the actual state machine being replicated. That is,
 ABCIs implement deterministic state machines to be securely replicated by the CometBFT consensus
@@ -32,11 +32,10 @@ The "++" in ABCI++ refers to additional functionality that CometBFT enables comp
 
 Recall consensus is heavily based on IPC
 [Fendermint](https://github.com/consensus-shipyard/ipc/tree/main/fendermint), which is a specialized
-ABCI++ interface to the
-[Filecoin Virtual Machine](https://docs.filecoin.io/smart-contracts/fundamentals/the-fvm) (FVM) and
-Ethereum-compatible FEVM. Fendermint exposes FEVM/FVM-specific functionality within subnets,
-allowing Recall subnets to behave like Filecoin, but with custom parameters to greatly improve
-throughput and features.
+ABCI++ interface to its
+[execution virtual machine](https://docs.filecoin.io/smart-contracts/fundamentals/the-fvm) (Wasm
+with EVM compatibility). Fendermint exposes EVM/Wasm-specific functionality within subnets, allowing
+Recall subnets to behave with custom parameters to greatly improve throughput and features.
 
 The unique features of Fendermint include a modified _interpreter stack_ which is responsible for
 handling commands from CometBFT. This is a layered series of interpreters that are initialized when
@@ -49,13 +48,6 @@ checkpoints, which are collection of messages from a child subnet that should be
 validators. In practice, Recall passes checkpointed headers to its parent and uses the CometBFT
 ledger to gather relevant signatures etc., and the parent subnet then leverages the IPLD resolver to
 fetch the actual messages and execute them.
-
-<Callout>
-
-It is important to note that the FVM is _not_ the same as Filecoin. The FVM is simply an
-IPLD-friendly virtual machine that supports Wasm actors and also EVM compatibility.
-
-</Callout>
 
 ## Checkpointing
 
@@ -73,27 +65,4 @@ latest block hash, power table information, and potentially cross-subnet message
 Accounts in Recall are based on standard public-private key pair cryptography, using the ECDSA
 algorithm with the [secp256k1](https://en.bitcoin.it/wiki/Secp256k1) curve. This is the same curve
 used by Bitcoin and Ethereum, and is widely considered to be secure and efficient. If a user has
-access to a private key, they can sign messages sent from that account. The public key is used to
-derive an address for the account. Public key addresses are referred to as _robust addresses_ as
-they do not depend on the Filecoin chain state.
-
-Accounts are used to send data-carrying transactions, as you would on any blockchain system. Since
-Recall is built on top of the FVM, the addresses derived from public keys follow a slightly
-different convention than a purely EVM-based account system. For example, accounts are registered
-onchain using the the built-in Ethereum Address Manager (EAM), which manages the Ethereum address
-space. It acts like an EVM smart contract _factory_, offering methods to create and assign
-Filecoin-compatible addresses to Ethereum addresses. To ease development, Ethereum addresses can be
-cast as Filecoin addresses, and vice-versa via default Recall tooling.
-
-<Callout>
-
-See the
-[Filecoin documentation](https://docs.filecoin.io/basics/the-blockchain/addresses#public-keys) for
-details on addresses, identifiers, and accounts on the FVM.
-
-</Callout>
-
-In practice, if a user possesses an Ethereum wallet address (starting with `0x`), then the EAM will
-assign a corresponding Filecoin-compatible address (prefixed with `f410`) to it. Filecoin addresses
-starting with either `f0` or `f410f` can be converted to the `0x` format
-[following the Filecoin specification](https://docs.filecoin.io/smart-contracts/filecoin-evm-runtime/address-types#converting-to-a-0x-style-address).
+access to a private key, they can sign messages sent from that account.

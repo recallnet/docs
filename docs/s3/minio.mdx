@@ -14,7 +14,7 @@ Start the adapter with the binary installed and flags described in the
 [installation](/s3/installation) page.
 
 ```sh
-basin_s3 --private-key [your_private_key] --access-key AKEXAMPLES3S --secret-key SKEXAMPLES3S
+recall_s3 --private-key [your_private_key] --access-key AKEXAMPLES3S --secret-key SKEXAMPLES3S
 ```
 
 This will start the adapter on port `8014` by default. Also, recall the `--network` flag can,
@@ -27,25 +27,25 @@ by passing the `-v` flag.
 
 ### Run the S3 client
 
-You can now use an S3-compatible client like MinIO to interact with Basin. First, make sure you have
-the MinIO client installed, such as with Homebrew on Mac:
+You can now use an S3-compatible client like MinIO to interact with Recall. First, make sure you
+have the MinIO client installed, such as with Homebrew on Mac:
 
 ```sh
 brew install minio/stable/mc
 ```
 
-Then, add Basin as an alias to the MinIO configuration, and be sure to specify the API version as
+Then, add Recall as an alias to the MinIO configuration, and be sure to specify the API version as
 `S3v4`. The URL shown below is the default port for the adapter, but you can change it by specifying
 the `--address` flag.
 
 ```sh
-mc alias set basin http://localhost:8014 AKEXAMPLES3S SKEXAMPLES3S --api s3v4
+mc alias set recall http://localhost:8014 AKEXAMPLES3S SKEXAMPLES3S --api s3v4
 ```
 
 You can verify the alias was set properly with `mc alias list`:
 
 ```sh
-basin
+recall
   URL       : http://localhost:8014
   AccessKey : AKEXAMPLES3S
   SecretKey : SKEXAMPLES3S
@@ -62,10 +62,10 @@ basin
 Now, you can directly use MinIO to write or read data! Start by creating a bucket:
 
 ```sh
-mc mb basin/my-store
+mc mb recall/my-store
 ```
 
-This will create the bucket called `my-store` under your `basin` alias. But, recall that the bucket
+This will create the bucket called `my-store` under your `recall` alias. But, recall that the bucket
 will _actually_ get used under `<0x_address>.<bucket_name>`. The step below shows how to check the
 actual bucket name.
 
@@ -75,7 +75,7 @@ actual bucket name.
 
 ### Check the bucket name
 
-You can check the buckets under your alias with `mc ls basin`. This will list the bucket above with
+You can check the buckets under your alias with `mc ls recall`. This will list the bucket above with
 the name we used:
 
 ```sh
@@ -99,18 +99,18 @@ using to run the adapter, simply use its public key as the hex value above.
 
 ### Write & read data
 
-You can write to the address that identifies the bucket, where you'd replace `t2pl...` with your
+You can write to the address that identifies the bucket, where you'd replace `0x90f7...` with your
 system-defined bucket name:
 
 ```sh
-mc put ./test.txt basin/0x90f79bf6eb2c4f870365e785982e1f101e93b906.my-store/world
+mc put ./test.txt recall/0x90f79bf6eb2c4f870365e785982e1f101e93b906.my-store/world
 ```
 
 Then, you can read the data back via stdout, or download it to a file:
 
 ```sh
-mc cat basin/0x90f79bf6eb2c4f870365e785982e1f101e93b906.my-store/world
-mc get basin/0x90f79bf6eb2c4f870365e785982e1f101e93b906.my-store/world ./downloaded-test.txt
+mc cat recall/0x90f79bf6eb2c4f870365e785982e1f101e93b906.my-store/world
+mc get recall/0x90f79bf6eb2c4f870365e785982e1f101e93b906.my-store/world ./downloaded-test.txt
 ```
 
 </Step>

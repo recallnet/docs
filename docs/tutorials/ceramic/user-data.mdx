@@ -29,7 +29,7 @@ capabilities come into play.
 At the core of Recall's Event Storage lies an innovative decentralized data architecture called
 Ceramic that enables the creation of verifiable, traceable event streams. This network technology
 forms the foundation for building sophisticated relational databases, secure private storage
-systems, and responsive event-driven applications. One of Ceramic’s hallmark features is its ability
+systems, and responsive event-driven applications. One of Ceramic's hallmark features is its ability
 to ensure data integrity and maintain a clear lineage of information ownership and origination,
 which is particularly valuable for building decentralized social web forums.
 
@@ -59,8 +59,8 @@ data integrity in online communities.
 
 ## Social Web Forum Overview
 
-As mentioned above, we will set up a web forum that uses one of Recall’s Event Storage
-configurations to store user data. Once setup is complete, you’ll have something up and running that
+As mentioned above, we will set up a web forum that uses one of Recall's Event Storage
+configurations to store user data. Once setup is complete, you'll have something up and running that
 looks similar to this:
 
 ![deforum screenshot](/img/tutorials/deforum/deforum-screenshot.png)
@@ -76,7 +76,7 @@ To bring this use case full circle, this demo implements several key capabilitie
   - A create page
   - Dynamic post pages (displays the original post and corresponding comments)
 - Comments
-  - Ability to create a comment when visiting a post’s page
+  - Ability to create a comment when visiting a post's page
 
 This design will require defining relations between models and query patterns to join and format
 tables to accommodate our UI. This will allow us to explore the implementation of this pattern using
@@ -89,7 +89,7 @@ design:
 
 **OrbisDB**
 
-The previous section mentioned that databases can be built on Ceramic’s event streams.
+The previous section mentioned that databases can be built on Ceramic's event streams.
 [OrbisDB](https://useorbis.com/) is one of those implementations, offering a relational database
 interface, and features like plugins, a developer UI, and even a shared hosted instance for
 experimentation.
@@ -99,8 +99,8 @@ therefore use OrbisDB (and its SDK) to allow our users to create their forum dat
 
 **IPFS**
 
-Recall’s Event Storage solution, Ceramic, is designed to support text-based data. Recall’s data
-availability layer is built to store arbitrary data, making Basin is a good fit for this. However,
+Recall's Event Storage solution, Ceramic, is designed to support text-based data. Recall's data
+availability layer is built to store arbitrary data, making Recall is a good fit for this. However,
 for this tutorial we will rely on IPFS to allow our users to store rich media assets like images for
 user profiles or in the body of posts and comments. For this, we will use the
 [ThirdWeb SDK](https://thirdweb.com/) which will give us access to an IPFS storage solution.
@@ -217,18 +217,18 @@ Do the same for comment --> `NEXT_PUBLIC_COMMENT_ID` and post --> `NEXT_PUBLI
 ## Architecture Overview
 
 Several key pieces of our application are responsible for authenticating users, accessing OrbisDB,
-and writing to our data store. Let’s take a look at a few of them:
+and writing to our data store. Let's take a look at a few of them:
 
 **Authentication**
 
 If you check out the base
 [layout](https://github.com/ceramicstudio/deforum/blob/main/app/layout.tsx) file, you can see where
-the `<WalletProvider>` is imported (from WalletConnect). You’ll also see `<ODB>` (our OrbisDB
+the `<WalletProvider>` is imported (from WalletConnect). You'll also see `<ODB>` (our OrbisDB
 contextual wrapper).
 
 If you navigate to the
 [OrbisContext](https://github.com/ceramicstudio/deforum/blob/main/app/context/OrbisContext.tsx) file
-which houses the wrapper’s logic, you’ll notice how the OrbisDB SDK is being used to instantiate an
+which houses the wrapper's logic, you'll notice how the OrbisDB SDK is being used to instantiate an
 Orbis client (which will be used in separate components for reading and writing data), as well as
 authenticating users:
 
@@ -270,7 +270,7 @@ for these events, query user data, and paint the UI in response.
 **Reading Data**
 
 While the OrbisDB SDK allows data to be queried via GraphQL, this demo will only use SQL. Developers
-can leverage the built-in SDK’s ORM or raw SQL to read data. Queries must reference the table being
+can leverage the built-in SDK's ORM or raw SQL to read data. Queries must reference the table being
 read or written to (as well as the context), which is why corresponding components import the client
 environment variables you created in the previous section.
 
@@ -388,7 +388,7 @@ const getPost = async (stream_id: string): Promise<void> => {
 
 **Writing Data**
 
-Creating records will exclusively make use of the SDK’s ORM. These queries will have a similar feel
+Creating records will exclusively make use of the SDK's ORM. These queries will have a similar feel
 to reads. For example, when creating a post in the
 [newPost-modules](https://github.com/ceramicstudio/deforum/blob/main/components/sections/newPost-modules.tsx)
 file:
@@ -471,7 +471,7 @@ create or edit your data (this removes the necessity to sign individual messages
 perform those actions). The OrbisDB SDK will store the result in local storage assigned to the key
 `orbis:session`.
 
-If this is your first time logging in, your instance won’t have any pre-existing posts or comments:
+If this is your first time logging in, your instance won't have any pre-existing posts or comments:
 
 ![forum home modules](/img/tutorials/deforum/forum-home-modules.png)
 
@@ -482,9 +482,9 @@ profiles, the fields you see on this screen are meant to map back to those colum
 
 Try uploading an avatar or a picture of yourself, and create a username, about me section, and name.
 
-When you hit "Save Profile" using an image you’ve uploaded, the corresponding component (mentioned
+When you hit "Save Profile" using an image you've uploaded, the corresponding component (mentioned
 above) first saves the image to IPFS using the ThirdWeb SDK and stores the resulting image link to
-your profile’s row in the table.
+your profile's row in the table.
 
 ![forum profile avatar](/img/tutorials/deforum/profile-avatar.png)
 
@@ -506,7 +506,7 @@ engaging on posts, a given post page might look something like this:
 
 ![post thread](/img/tutorials/deforum/post-thread.png)
 
-Finally, if you click on someone’s username, you’ll be navigated to a dynamically-created user page
+Finally, if you click on someone's username, you'll be navigated to a dynamically-created user page
 showing information from their bio, and a list of the different posts that user has created:
 
 ![profile related comments](/img/tutorials/deforum/profile-related-comments.png)
@@ -517,4 +517,4 @@ Now that you know how Recall Event Storage (using OrbisDB) can be integrated int
 application to support user data, how might you add features or modifications to improve this demo?
 For example, what tables and query patterns would you use to integrate features such as likes on
 posts, upvotes, or downvotes? What about direct messages between users? This application can be
-improved or extended in numerous ways, so we’re excited to see what you will build!
+improved or extended in numerous ways, so we're excited to see what you will build!

@@ -16,9 +16,9 @@ import { cn } from "@/lib/theme/cn";
 const features = [
   {
     icon: <Zap className="h-6 w-6" />,
-    title: "Datachain",
+    title: "Extensible",
     description:
-      "Build dynamic memory context for your agents with data storage, function triggers, and verifiable execution",
+      "Build dynamic intelligence for your agents with data storage, function triggers, and verifiable execution",
   },
   {
     icon: <MemoryStick className="h-6 w-6" />,
@@ -30,7 +30,7 @@ const features = [
     icon: <Network className="h-6 w-6" />,
     title: "Scalable & reliable",
     description:
-      "Powered by decentralized subnets with polyglot execution (EVM + Wasm) and native data availability",
+      "Powered by blockchain subnets designed from the ground up for AI agents—with native data availability",
   },
 ];
 

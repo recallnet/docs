@@ -11,10 +11,10 @@ keywords: python, object storage, bucket, buckets, web3, s3
 ### Run the adapter
 
 Start the adapter with the binary installed and flags described in the
-[installation](/basin/s3/installation) page.
+[installation](/s3/installation) page.
 
 ```sh
-basin_s3 --private-key [your_private_key] --access-key AKEXAMPLES3S --secret-key SKEXAMPLES3S
+recall_s3 --private-key [your_private_key] --access-key AKEXAMPLES3S --secret-key SKEXAMPLES3S
 ```
 
 This will start the adapter on port `8014` by default. Also, recall the `--network` flag can,
@@ -52,12 +52,12 @@ from boto3 import client as S3Client, session as S3Session
 from botocore.config import Config
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
-# Establish a connection to the Basin S3 adapter
-def connect_to_basin(host: str, access_key: str, secret_key: str) -> S3Client:
+# Establish a connection to the Recall S3 adapter
+def connect_to_recall(host: str, access_key: str, secret_key: str) -> S3Client:
     try:
         # Create a session and S3 client
         session = S3Session.Session()
-        basin = session.client(
+        recall = session.client(
             "s3",
             endpoint_url=host,
             aws_access_key_id=access_key,
@@ -67,23 +67,23 @@ def connect_to_basin(host: str, access_key: str, secret_key: str) -> S3Client:
                 s3={"addressing_style": "path"},
             ),
         )
-        return basin
+        return recall
     except (NoCredentialsError, PartialCredentialsError, Exception) as e:
-        print(f"Failed to connect to Basin: {str(e)}")
+        print(f"Failed to connect to Recall: {str(e)}")
         raise
 ```
 
 #### Create a bucket
 
 Our bucket creation helper does one important thing: it prefixes the bucket name with the creator's
-public key. This is important because the adapter has a slight workaround to work with Basin. Any
+public key. This is important because the adapter has a slight workaround to work with Recall. Any
 time you create a bucket with the S3 adapter, you'll initially define the name as something like
 `my-bucket`. The actual onchain representation stores this as an alias with the bucket's metadata.
 Then, when interacting with a bucket, you'll use the `<owner_address>.<bucket_name>` as the bucket
 name.
 
 ```python
-# Create a bucket in Basin
+# Create a bucket in Recall
 def create_bucket(client: S3Client, bucket_name: str, owner_address: str) -> str | None:
     try:
         # Create a bucket (the name doesn't matter)
@@ -184,13 +184,13 @@ owner_address = (
     getenv("OWNER_ADDRESS") or "0x90f79bf6eb2c4f870365e785982e1f101e93b906"
 )
 
-# Connect to the Basin S3 adapter
-basin = connect_to_basin(host, access_key, secret_key)
-if basin is None:
-    raise RuntimeError("Failed to connect to Basin")
+# Connect to the Recall S3 adapter
+recall = connect_to_recall(host, access_key, secret_key)
+if recall is None:
+    raise RuntimeError("Failed to connect to Recall")
 
 # Create a bucket
-bucket = create_bucket(basin, "my-bucket", owner_address)
+bucket = create_bucket(recall, "my-bucket", owner_address)
 if bucket is None:
     raise RuntimeError("Failed to create bucket")
 print(f"Bucket created successfully: {bucket}")
@@ -198,21 +198,21 @@ print(f"Bucket created successfully: {bucket}")
 # Write an object under the `hello/world` key
 key_prefix = "hello"
 key = f"{key_prefix}/world"
-write_object(basin, bucket, key, b"hello")
-print(f"Uploaded file to Basin at key: {key}")
+write_object(recall, bucket, key, b"hello")
+print(f"Uploaded file to Recall at key: {key}")
 
 print("Waiting for transaction to settle...")
 sleep(3)
 
 # List objects
-objects = list_objects(basin, bucket, f"{key_prefix}/")
+objects = list_objects(recall, bucket, f"{key_prefix}/")
 if not objects:
     print("No objects found after upload")
     return
 
 # Get an object from the list
 object_key = objects[0]["Key"]
-object_data = get_object(basin, bucket, object_key)
+object_data = get_object(recall, bucket, object_key)
 if object_data:
     print(f"Retrieved object: {object_data}")
 else:

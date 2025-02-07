@@ -1,5 +1,0 @@
-{
-  "title": "Databases",
-  "description": "Indexing and query services",
-  "pages": ["orbisdb", "tableland"]
-}

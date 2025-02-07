@@ -1,4 +1,4 @@
 {
-  "title": "Network",
-  "pages": ["config", "rpcs", "faucet", "api-evm", "api-object", "api-cometbft"]
+  "title": "Protocol APIs",
+  "pages": ["api-evm", "api-object", "api-cometbft"]
 }

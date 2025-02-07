@@ -1,0 +1,100 @@
+---
+title: Installation & setup
+description: Use existing S3 tooling alongside the Recall S3 adapter.
+keywords: object storage, recall, bucket, buckets, web3, s3
+---
+
+The `recall_s3` binary is a simple adapter that allows you to use the Recall object storage system
+with S3 APIs. Let's walk through how to set it up, and subsequent pages walk through how to use it
+with ancillary tools like MinIO.
+
+### Setup
+
+<Steps>
+
+<Step>
+
+### Install
+
+First, clone the repo:
+
+```sh
+git clone https://github.com/recallnet/recall-s3
+```
+
+Then, `cd` into `recall-s3` and install the adapter binary:
+
+```sh
+make install
+```
+
+This should make `recall_s3` available in your path, which you can verify with
+`recall_s3 --version`. Alternatively, if you don't want to install it, you can run it directly with
+`cargo run` in the subsequent step.
+
+</Step>
+
+<Step>
+
+### Run the adapter
+
+Starting the Recall S3 adapter uses port `8014` by default. There are three required flags:
+
+- `--private-key`: Hex encoded, Ethereum-style private key (ECDSA, secp256k1) for sending
+  transactions (environment variable: `PRIVATE_KEY`).
+- `--network`: The network to connect to (environment variable: `NETWORK`).
+- `--access-key`: An S3 access key (e.g,. `AKEXAMPLES3S`)
+- `--secret-key`: An S3 secret key (e.g., `SKEXAMPLES3S`)
+
+```sh
+recall_s3 --private-key [your_private_key] --access-key AKEXAMPLES3S --secret-key SKEXAMPLES3S
+```
+
+The access key and secret aren't used for anything other than matching the MinIO client
+configuration. If you want to do read-only queries, simply omit the private key.
+
+If you didn't install the binary in the previous step, you can run it directly with
+`cargo run --features binary -- ...` and the arguments above.
+
+<Callout type="info">
+
+If you do not already have a private key, you can generate one with the Recall CLI. You also _must_
+make sure your account exists on the subnet, which requires you have deposited funds into your
+subnet account. Neglecting this step will lead to errors like
+`failed to init sequence; actor ... cannot be found`.
+
+</Callout>
+
+</Step>
+
+<Step>
+
+### Create an aliased bucket
+
+Bucket usage slightly deviates from how you typically would in S3. This happens due to how the S3
+adapter works alongside Recall by using aliases stored in metadata to help identify the bucket name
+and its relationship with onchain buckets owned by the creator. To interact with any bucket, the
+name you define is always prefixed by the creator's public key (i.e., EVM hex address), delimited by
+a period.
+
+The general format is `<0x_address>.<bucket_name>`. For example, if you create a bucket called
+`my-store` with the private key `0x...`, the actual bucket name will be
+`0x90f79bf6eb2c4f870365e785982e1f101e93b906.my-store`. Subsequent examples will describe this in
+more detail with respect to the client that is used.
+
+<Callout type="warn">
+
+The S3 API prohibits bucket names from being longer than 63 characters: here. Since a hex address is
+42 characters, it leaves 20 characters for the _actual_ bucket name (since bucket "names" are
+defined as `<hex_address>.<name>` with a period in between).
+
+</Callout>
+
+</Step>
+
+</Steps>
+
+## Next steps
+
+You can now use Recall with any S3-compatible tooling! There are a few walkthroughs that show how to
+use it with ancillary tools like MinIO and Python `boto3`.

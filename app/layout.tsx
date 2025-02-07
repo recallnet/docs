@@ -4,7 +4,7 @@ import "katex/dist/katex.css";
 import { RootProvider } from "fumadocs-ui/provider";
 import { Metadata } from "next";
 import { ThemeProviderProps } from "next-themes";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Open_Sans } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { baseOptions } from "@/app/layout.config";
@@ -20,7 +20,7 @@ const docsOptions: DocsLayoutProps = {
   },
 };
 
-const sans = Geist({
+const sans = Open_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
 });

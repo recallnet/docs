@@ -1,0 +1,233 @@
+---
+title: Eliza
+description: A simple agent that can answer questions.
+---
+
+Get started with CoT logs and observability with the Recall agent starter kit. If you have an
+existing agent, all you need to do is drop in a couple of small changes to your character's system
+prompt and then expose the `plugin-recall-storage` to your agent.
+
+<Steps>
+
+<Step>
+
+## Installation
+
+Clone the [Recall agent starter kit](https://github.com/recallnet/recall-agent-starter):
+
+```bash
+git clone https://github.com/recallnet/recall-agent-starter.git
+```
+
+Change into the project directory:
+
+```bash
+cd recall-agent-starter
+```
+
+Install the dependencies:
+
+```package-install
+npm install
+```
+
+Build the project:
+
+```package-install
+npm run build
+```
+
+</Step>
+
+<Step>
+
+## Set up your agent's account
+
+In order to interact with Recall, you need an account (private key) that owns both credits and
+tokens. If needed, you can create one by running the following command with the
+[Recall CLI](/advanced/cli/account#create-an-account), which prints both the private key and the
+public key (address):
+
+```bash
+recall account create
+```
+
+Then, head to the [Recall Faucet](/intro/faucet) request some tokens with your address.
+
+Lastly, you **must** purchase credits to store logs in your agents memory bucket—see the Portal
+guide [here](/intro/portal) for more details. Alternatively, you can use the CLI to
+[purchase credits](http://localhost:3001/advanced/cli/account#buy-credit) for your agent to use, or
+purchase credit for your personal account and
+[delegate access](http://localhost:3001/advanced/cli/account#approve-credit) to your agent's wallet.
+
+</Step>
+
+<Step>
+
+## Set up your environment
+
+Create a `.env` file in the root of the project and add the following.
+
+```bash
+RECALL_PRIVATE_KEY="your-private-key"
+RECALL_BUCKET_ALIAS="logs"
+COT_LOG_PREFIX="cot/"
+OPENAI_API_KEY="your-api-key"
+```
+
+An example character file is provided in `characters/eliza.character.json`, and it defaults to using
+OpenAI models (but you can choose your own provider). You can customize this to your liking, but the
+essential modifications include a CoT and reasoning logging:
+
+- `system`: Modify the system prompt to coerce the model to reason through its response.
+- `messageExamples`: Add examples of CoT and reasoning logging to help the model understand how to
+  respond.
+
+```json title="characters/eliza.character.json"
+{
+  "name": "Recall Agent",
+  "modelProvider": "openai", // Optionally, change the model provider.
+  // ...
+  "system": "# Instructions: Think step-by-step before responding.\n\nPlease follow these steps in your chain-of-thought: ...",
+  // ...
+  "messageExamples": [
+    [
+      {
+        "user": "{{user1}}",
+        "content": {
+          "text": "hey Recall Agent, you can add an object to the bucket named 'foo'?"
+        }
+      },
+      {
+        "user": "Recall Agent",
+        "content": {
+          "text": "<chain-of-thought>...</chain-of-thought>\nFinal Answer:\n..."
+        }
+      }
+    ]
+  ]
+}
+```
+
+</Step>
+
+<Step>
+
+## Run the agent
+
+Being by running the `start` script, passing in the character file:
+
+```package-install
+npm run start -- --character characters/eliza.character.json
+```
+
+This will start up a chat agent that you can interact with. The agent will store CoT logs locally
+and batch them into `jsonl` files at predefined intervals and size thresholds. As the model takes
+actions, you'll be able to see the actions and batching logs:
+
+```
+[2025-02-07 17:13:31] INFO: Starting periodic log sync...
+[2025-02-07 17:13:31] INFO: Looking for bucket with alias: logs
+[2025-02-07 17:13:31] INFO: Bucket with alias "logs" not found, creating a new one.
+c[2025-02-07 17:13:36] INFO: Successfully created new bucket "logs" at 0xff0000000000000000000000000000000000008f
+[2025-02-07 17:13:36] INFO: Found 1 unsynced logs.
+[2025-02-07 17:13:36] INFO: Processing log entry of size: 861 bytes
+[2025-02-07 17:13:36] INFO: Current batch size is 861 bytes, within the limit of 4 KB. Not syncing yet.
+```
+
+Let's send a simple message to the agent:
+
+```
+You: Create a bucket named 'recall-agent'
+Agent: ✅ Successfully created or retrieved bucket **"recall-agent"** at address: **0xff00000000000000000000000000000000000094**
+```
+
+The step above will log information about what the agent is doing, but this is _only_ available
+locally. Fore example, it's printed to the console, and only certain pieces might be included in the
+default databases that come with the Eliza stack.
+
+```
+[2025-02-07 17:14:18] INFO: Executing handler for action: CREATE_BUCKET
+[2025-02-07 17:14:18] INFO: CREATE_BUCKET Handler triggered: Create a bucket named 'recall-agent'
+[2025-02-07 17:14:18] INFO: Creating bucket with alias: recall-agent
+[2025-02-07 17:14:18] INFO: Looking for bucket with alias: recall-agent
+[2025-02-07 17:14:18] INFO: Bucket with alias "recall-agent" not found, creating a new one.
+```
+
+</Step>
+
+<Step>
+
+## Inspect the logs and CoT
+
+Once the batch size is exceeded, the logs will be synced to Recall:
+
+```
+[2025-02-07 17:14:21] INFO: Batch size currently 4423 bytes, exceeding limit of 4 KB. Syncing batch...
+[2025-02-07 17:14:31] INFO: Batched JSONL logs stored under key: cot/1738948461879.jsonl
+```
+
+As the model progresses, you'll notice it automatically pull the logs into its context window:
+
+```
+[2025-02-07 17:14:21] INFO: Looking for bucket with alias: logs
+[2025-02-07 17:14:21] INFO: Found existing bucket "logs" at 0xFF0000000000000000000000000000000000008f
+[2025-02-07 17:14:27] INFO: Retrieving chain-of-thought logs from bucket: 0xFF0000000000000000000000000000000000008f
+```
+
+You can then use any Recall tooling to see _exactly_ what the agent did, such as with the
+[CLI](/advanced/cli):
+
+```bash
+recall bucket query --address 0xFF0000000000000000000000000000000000008f \
+--prefix cot/
+```
+
+This will return all the logs in the bucket:
+
+```
+{
+  "objects": [
+    {
+      "key": "cot/1738948461879.jsonl",
+      "value": {
+        "hash": "xipamlatvtmbub2prsirwywii4wgmhwzubez4dfcpupgagjwcmdq",
+        "size": 682,
+        "metadata": {
+          "content-type": "application/octet-stream"
+        }
+      }
+    }
+  ],
+  "common_prefixes": [],
+  "next_key": null
+}
+```
+
+Then, retrieve the logs and print them to the console:
+
+```bash
+recall bucket get --address 0xFF0000000000000000000000000000000000008f \
+--key cot/1738948461879.jsonl
+```
+
+```json
+{
+  "userMessage": "Create a bucket named 'recall-agent'",
+  "log": "1. The user, 12dea96f-ec20-0935-a6ab-75692c994959, has requested to create a bucket named 'recall-agent'.\n2. From the previous interactions, it is evident that the user has already been interacting with the Recall service, as seen from the queries about Recall.\n3. The task is straightforward: to create a new bucket with the specified name 'recall-agent' on the Recall service.\n4. The most appropriate action from the available actions is CREATE_BUCKET, as it directly aligns with the user's request to create a new bucket on the Recall service.\n5. There is no indication that this bucket already exists, so the action should proceed to create it."
+}
+```
+
+</Step>
+
+<Step>
+
+## Visualize the logs
+
+Head over to the [Recall Portal](https://portal.recall.network) and search for the bucket. This
+gives you constant insight into what your model is doing. Not only help debug its performance, but
+over time, the model and learn (and share) its finding with other agents!
+
+</Step>
+
+</Steps>

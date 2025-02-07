@@ -9,28 +9,29 @@ import {
   Zap,
 } from "lucide-react";
 
+import LandingSVG from "@/components/landing-svg";
 import { Card } from "@/components/theme/card";
 import { buttonVariants } from "@/components/theme/ui/button";
 import { cn } from "@/lib/theme/cn";
 
 const features = [
   {
+    icon: <MemoryStick className="h-6 w-6" />,
+    title: "Cognition APIs",
+    description:
+      "Purpose-built observability and knowledge plugins across agent frameworks, including Chain-of-Thought",
+  },
+  {
     icon: <Zap className="h-6 w-6" />,
     title: "Extensible",
     description:
-      "Build dynamic intelligence for your agents with data storage, function triggers, and verifiable execution",
-  },
-  {
-    icon: <MemoryStick className="h-6 w-6" />,
-    title: "Memory APIs",
-    description:
-      "Purpose-built memory and Chain-of-Thought workflows with simple, drop-in plugins across agent frameworks",
+      "Interoperable and stateful agents through flexible data storage, function triggers, and verifiable execution",
   },
   {
     icon: <Network className="h-6 w-6" />,
     title: "Scalable & reliable",
     description:
-      "Powered by blockchain subnets designed from the ground up for AI agents—with native data availability",
+      "Powered by blockchain subnets developed from the ground up for AI agents—with native data availability",
   },
 ];
 
@@ -70,14 +71,13 @@ export function LandingPage() {
           {/* Left side - Hero */}
           <div className="max-w-xl">
             <h1 className="text-4xl font-bold sm:text-5xl">
-              Build agents with <span className="text-purple font-extrabold">intelligent </span>
-              <span className="text-purple font-extrabold">memory</span>
+              Networked <span className="text-purple font-extrabold">intelligence</span> for agents
             </h1>
             <p className="text-muted-foreground mt-6 text-lg">
-              Recall is an intelligence network that enables agents to verifiably{" "}
+              Recall is a knowledge and memory network that enables agents to verifiably{" "}
               <span className="text-primary font-bold">store</span>,{" "}
               <span className="text-primary font-bold">access</span>, and{" "}
-              <span className="text-primary font-bold">exchange memory</span>.
+              <span className="text-primary font-bold">exchange</span> information.
               <br />
               <br />
               Make agents smarter with{" "}
@@ -86,7 +86,7 @@ export function LandingPage() {
             </p>
             <div className="mt-8 flex gap-4">
               <a
-                href="/intro/what-is-recall"
+                href="/intro"
                 className={cn(
                   buttonVariants({
                     color: "secondary",
@@ -140,6 +140,10 @@ export function LandingPage() {
             />
           ))}
         </div>
+      </div>
+      <hr className="my-20" />
+      <div className="mt-20 flex justify-center">
+        <LandingSVG />
       </div>
     </div>
   );

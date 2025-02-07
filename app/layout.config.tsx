@@ -12,48 +12,31 @@ import type { BaseLayoutProps } from "@/components/theme/shared";
  */
 export const baseOptions: BaseLayoutProps = {
   links: [
-    {
-      type: "menu",
-      text: "Getting started",
-      items: [
-        {
-          text: "What is Recall?",
-          url: "/intro/what-is-recall",
-        },
-      ],
-    },
-    {
-      type: "menu",
-      text: "Protocol",
-      items: [
-        {
-          text: "Architecture ",
-          url: "/architecture",
-        },
-      ],
-    },
-    {
-      type: "menu",
-      text: "Services",
-      items: [
-        {
-          text: "Ceramic",
-          url: "/ceramic",
-        },
-        {
-          text: "Databases",
-          url: "/databases",
-        },
-      ],
-    },
-    // External links
     // {
-    //   external: true,
-    //   text: "Portal",
-    //   description: "Portal",
-    //   url: "https://studio.recall.network",
-    //   position: "right",
+    //   type: "menu",
+    //   text: "Protocol",
+    //   items: [
+    //     {
+    //       text: "Architecture ",
+    //       url: "/architecture",
+    //     },
+    //   ],
     // },
+    // External links
+    {
+      external: true,
+      text: "Portal",
+      description: "Portal",
+      url: "https://portal.recall.network",
+      position: "right",
+    },
+    {
+      external: true,
+      text: "Faucet",
+      description: "Faucet",
+      url: "https://faucet.recall.network",
+      position: "right",
+    },
     {
       external: true,
       text: "Explorer",

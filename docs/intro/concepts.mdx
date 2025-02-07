@@ -3,155 +3,113 @@ title: Concepts
 description: Getting started with basic network concepts.
 ---
 
-Buckets are buckets that take advantage of Recall's subnet scaling infrastructure to enable fast and
-cost-effective storage of large amounts of data. Recall's usage pattern generally consists of two
-components:
+## Memory & knowledge L2
 
-- Creating an bucket (with certain permissions on who can write data).
-- Adding, listing, getting, and deleting objects.
+Recall puts agent data like Chain-of-Thought (CoT) logs and decision making onchain, while also
+connecting agents to _other_ agents or datasets to learn from. It offers features that put it in a
+unique category compared to other blockchain or agent networks, including:
 
-These key-value stores allow you to push and retrieve data in a familiar S3-like fashion. They
-support byte range requests and advanced queries based on key prefix, delimiter, offset, and limit.
-Internally, the state of an bucket is represented in a flexible and extensible way to represent
-complex data structures.
+- **Lightening-fast settlement & consensus**: Hierarchical subnet architecture and layered consensus
+  model that enables scalable, cost-effective storage and compute.
+- **Native data availability**: Custom built for use cases revolving around storing and managing
+  agentic and large scale data with high throughput in a decentralized fashion.
+- **Network-level access control**: Sophisticated access control mechanisms for flexible
+  monetization and data collaboration patterns.
+- **Programmable execution**: Polyglot virtual machine (VM) used to execute onchain data logic in
+  both EVM and Wasm execution runtimes with smart contracts.
+
+The novel data availability mechanism makes it possible to store large volumes of heterogenous data,
+and the protocol consists of a few different layers to facilitate different ways to manage agent
+data.
+
+## Buckets & blobs
+
+The core data storage primitive is a _bucket_, which is a key-value store for arbitrary data is
+represented as a _blob_. You can think of the agent's external "brain" as being a bucket with
+accompanying features to improve its overall intelligence.
+
+## Cognition APIs
+
+Recall SDKs, APIs, and framework plugins make it easy for any agent to have their own, dedicated
+bucket that acts as a home for their data. For example, CoT logs, historical decisions, Retrieval
+Augmented Generation (RAG) documents, model generated data (like images or videos), or anything
+relevant to the agent's decision making.
+
+Developers can create agents with whatever framework they want. Recall is designed to be pluggable
+so that you can drop it into your existing workflows and gain visibility into the agent's decision
+making process. Since all data is stored onchain, it provides a view into your—or other—agents'
+knowledge and memory, making it possible to inspect the agent's reasoning and share knowledge with
+others.
 
 ## Contracts
 
-The interface is implemented as a _contract_, deployed on a subnet. Data is represented as an
-onchain hash within a contract's state, and the actual data is stored offchain in a node's local
-(networked) block store. Spawning new buckets is handled with a general factory smart contract,
-which the various Recall interfaces (SDK, CLI) call under the hood.
-
-More generally, there are two types of contracts on Recall network: **_Wasm_** contracts, and EVM
-**_smart_** contracts. The two differ in how what they can handle and related intents.
-
-### Wasm contract
-
-A _Wasm_ contract is an
-[Wasm runtime contract](https://docs.filecoin.io/basics/the-blockchain/actors) used to store and
-manage data with low-level control. The polyglot execution runtime allows Wasm contracts to be
-written in Rust (or other languages) and then compiled accordingly. Thus, these have more flexible
-and data-oriented programmatic control, so they're called "Wasm contracts" to help distinguish them
-from EVM smart contracts.
-
-### Smart contract
-
-A _smart_ contract is a "traditional" EVM contract, most commonly written in Solidity. These expose
-EVM-specific types, state access, and functionality, but they lack the more robust features that a
-Wasm runtime supports.
+_Contracts_ are arbitrary programs that run on the network, written for either EVM (Solidity) or
+Wasm (Rust, etc.) execution. They provide the interface for reading and writing data, giving agents
+a way to permissionlessly create, manage, and share their knowledge.
 
 ## Accounts
 
-Accounts (ECDSA, secp256k1) are used to send data-carrying transactions as you would on any
-blockchain system. Thus, all mutations are onchain transactions within a subnet, so funds are
-required to pay for writes.
+Like any blockchain system, _accounts_ are used to interact with the network. All transactions are
+signed by an EVM-style key pair (ECDSA, secp256k1) to ensure that the transaction is authentic,
+authorized, and verifiable. Accounts pay for network operations with tokens and credits.
 
-### EVM addresses
+## Tokens
 
-You can use EVM-style (i.e., `0x` prefixed) accounts for typical wallet operations (writes, sending
-transactions, etc.). Wasm contracts, such as buckets, are represented as hex addresses as well.
+The RECALL token is used to pay for network usage. For example, when you create a bucket or send
+transactions, you pay gas fees in the token. However, when you _store_ data on the network, you pay
+in credits, which are a unit of resource to perform a set of operations.
 
-### Wasm addresses
+## Credit
 
-All Wasm contract addresses are represented a bit differently than your typical EVM wallet or
-contract contract. Its usage pattern doesn't change; the format just looks _slightly_ unusual.
+Recall employs a novel _credit_ system to support usage-based pricing and predictable costs,
+purchased with tokens. For example, storing an arbitrary blob for a defined amount of time costs a
+forecastable number of credits, measured by the size of the data, the duration of the storage, and
+the computational complexity of data processing.
 
-Every Wasm contract has an unique internal chain identifier associated with it called an _actor ID_.
-You'll see Wasm contracts are predictably represented as `0xff00...<actor_id>`. For example, a
-bucket with an ID of `143` would be `0xff0000000000000000000000000000000000008f` (since the hex
-value of `143` is `8f`).
+## Virtual gas
 
-## Payment
+Buying credits ensures users can pre-buy storage to that can be drawn down at a predictable rate.
+_Virtual gas_ is the counterpart to this equation, also known as an account's _gas allowance_,
+equivalent to the number of tokens used to purchase credits. When you pay for gas operations, it
+either draws down from your virtual gas balance, or uses your actual token balance if there is no
+gas allowance available.
 
-### Tokens
+## Operator approvals
 
-Tokens are used to pay for typical blockchain operations, like deploying contracts (e.g., creating a
-bucket), adding an object, or transferring funds. Whenever _data is written_ to a contract and
-stored as a blob on the network, _credits_ are used.
+Access to writing data is managed by _credit approvals_ and _sponsors_ (account operators). An
+account that owns credit can authorize other accounts to use and draw down from its balance, and an
+approved account can set its default sponsor to authorizing operator. This allows you to set up
+multi-tiered collaboration and access control patterns.
 
-<Callout>
+## Functions
 
-You'll often see the phrase _native coin_ or _native token_. A Recall subnet doesn't really "care"
-what the native coin is; it simply uses the concept of a token as a medium of exchange for chain
-transactions. In practice, the parent rootnet specifies a _supply source_ upon subnet creation,
-dictating how you move funds into or out of the subnet through deposits and withdrawals. This is
-where the RECALL ERC20 token is used; it's the supply source on the parent chain defined for the
-child subnet.
+At its core, _functions_ are fundamental building blocks for task execution on the network. These
+are implemented with Wasm-defined logic and can be thought of as a single, atomic unit of work that
+can be executed onchain.
+
+The core data storage primitive is a _blob_ function, which tracks opcode usage and reports gas
+spend for tasks such as downloading input data, erasure coding outputs for blob storage, and more.
+
+<Callout type="info">
+
+All subsequent layers are built on top of functions. Currently, the only function available is the
+blob, but others will be added in the future (e.g., compute for performing transformations).
 
 </Callout>
 
-### Credits
+## Limits
 
-Credits are a useful mechanism to predictably manage storage costs and avoid surprises, and they are
-used to pay for all storage within the Recall network. You can sponsor (delegate) your credits to
-contracts on the network, and whenever data is written to a contract, credits are debited from your
-credit balance upon ongoing debit epochs (sparse block heights). It allows for more fine-grained
-accounting because 1 subnet native coin = $10^(18)$ credits.
+There are a few limitations to be aware of when building on Recall. Keep in mind that services like
+Recall and Ceramic have their own constraints, which are detailed in their respective sections.
 
-Namely, you **MUST have credits** to store data on Recall. For example, to add an object to a
-bucket, you spend credits that allocate storage space for the object, including
-[TTL](#time-to-live-ttl) parameters. Credits will automatically get withdrawn from your credit
-balance as storage continues.
+- **Block time**: ~1 block per second.
+- **Throughput (TPS)**: Hundreds of transactions per second.
+- **Maximum blob size**: 5 GiB.
 
-You can manage your credits with the `recall credit` command, further described in the
-[credits](/cli/commands#credits) section below.
+<Callout type="warn">
 
-### Gas allowance
+Note: TPS is rough estimate and may vary based on network conditions. The network design is still
+under heavy development, optimizations are being made, and benchmarked tests are yet to be
+finalized.
 
-Whenever you purchase credits, the number of tokens you spend will also be allocated to a _gas
-allowance_ for your account. Recall that tokens are used to pay for gas. If you have a gas allowance
-balance, you'll instead draw down from this balance. For example, if you create a bucket _and_ you
-have a gas allowance, your token balance will remain unchanged, but your gas allowance will
-decrease. In the same example but with _no gas allowance balance_, you'll simply draw down from your
-token balance.
-
-## Access control
-
-Access control is fully managed by credit workflows with approvals and revocations. You start buy
-purchasing credit with an account (i.e., wallet), and once this account creates a bucket, all object
-related storage operations will draw down from these credits.
-
-If you want to enable other accounts to write to this bucket, you can use a credit _approval_ to
-enable some other account to draw down from this admin account's credit balance. Revocations follow
-the same pattern where you can revoke an approval for a provisioned account.
-
-## Broadcasting transactions
-
-Commands that write data will broadcast a transaction to the network. You'll see a
-`--broadcast-mode` flag that can be set to the following values:
-
-- `commit`: Wait until the transaction is delivered and final (note: this is the default behavior).
-- `sync`: Wait only for the result of a local transaction pre-check, but don't wait for it to be
-  delivered to all validators (i.e., added risk the transaction may fail during delivery).
-- `async`: Does not wait at all. You will not see errors in your terminal (i.e., added risk the
-  transaction may fail during delivery).
-
-## Querying state
-
-Many of the read-only commands let you pass a `--height` option to query the chain's state at a
-specific block height. The following describes the three possible values you can use:
-
-- `committed`: The latest committed block (note: this is the default behavior).
-- `pending`: Consider pending state changes in the query.
-- `<number>`: Pass a specific block height (e.g., `123`) to fetch state from.
-
-## Time-to-live (TTL)
-
-A few operations—like uploading objects to buckets—have a time-to-live (TTL) value (denoted by the
-`--ttl` flag). It's primarily used for objects stored in buckets.
-
-The TTL value you set represents how long the object will be stored in the network before it is
-garbage collected and deleted. If a TTL is specified, credits will be reserved for the duration,
-after which the object will be deleted. If a TTL is not specified, the object will be continuously
-renewed about every hour. If the owner's free credit balance is exhausted, the object will be
-deleted.
-
-## Chain RPCs & funds
-
-First, to get RECALL tokens, reach out to the Recall team.
-
-Since Recall is built on top of Filecoin, you must also have FIL in your account to interact with
-the network if you are bridging RECALL tokens into the subnet. Recall is currently only live on the
-Filecoin Calibration network. You can get tFIL via the faucet
-[here](https://faucet.calibnet.chainsafe-fil.io/funds.html), and for reference, Filecoin chain
-information can be found [here](https://chainlist.org/?search=filecoin&testnets=true).
+</Callout>

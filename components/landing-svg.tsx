@@ -8,7 +8,11 @@ interface LandingSvgProps {
   text?: string;
 }
 
-export default function LandingSvg({ height = 325, width = 325, text }: LandingSvgProps) {
+export default function LandingSvg({
+  height = 325,
+  width = 325,
+  text = "/cot/mem.txt",
+}: LandingSvgProps) {
   const svgWidth = 30.333;
   const svgHeight = 30.333;
   const columns = Math.ceil(width / svgWidth);
@@ -54,7 +58,9 @@ export default function LandingSvg({ height = 325, width = 325, text }: LandingS
             zIndex: 10,
           }}
         >
-          <span className="font-mono dark:text-neutral-300">{text}</span>
+          <span className="cursor-not-allowed font-mono whitespace-pre-wrap dark:text-neutral-300">
+            {text}
+          </span>
         </div>
       )}
 
@@ -88,7 +94,7 @@ export default function LandingSvg({ height = 325, width = 325, text }: LandingS
                 height={`${svgHeight}px`}
                 style={{
                   transform: flippedIndices.has(i) ? "scaleX(-1)" : undefined,
-                  transition: "transform 0.5s ease",
+                  transition: "transform 0.25s ease",
                 }}
               >
                 <path

@@ -1,0 +1,43 @@
+---
+title: Machine
+description: Get contract information.
+---
+
+## `recall machine`
+
+Contracts are the core building blocks of the Recall network. The `machine` command allows you to
+retrieve data contract information relative to a specific address. This helps track which bucket or
+timehub contracts are tied to your account, which are later used in the `bucket` and `timehub`
+subcommands described below.
+
+## Get contract info
+
+Get contract metadata at a specific address.
+
+```sh
+recall machine info <ADDRESS>
+```
+
+| Positionals | Description       |
+| ----------- | ----------------- |
+| `<ADDRESS>` | Contract address. |
+
+| Flag       | Required? | Description                                              |
+| ---------- | --------- | -------------------------------------------------------- |
+| `--height` | No        | Query at a specific block height (default: `committed`). |
+
+**Example:**
+
+```sh
+recall machine info 0xff00000000000000000000000000000000000094
+```
+
+```json
+{
+  "kind": "Bucket",
+  "owner": "0x4d5286d81317e284cd377cb98b478552bbe641ae",
+  "metadata": {
+    "alias": "foo"
+  }
+}
+```

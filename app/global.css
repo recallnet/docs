@@ -38,10 +38,10 @@
   --color-purple: hsl(259, 100%, 65%);
 
   /* Font families */
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
-    Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 
   /* Border radius */
   --radius-lg: var(--radius);
@@ -171,4 +171,19 @@ button {
   .floating-item {
     @apply motion-safe:animate-none;
   }
+}
+
+/* Reduce gap in list elements */
+
+ul > li {
+  margin-left: 1rem;
+}
+li > p {
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+}
+
+/* Handle nested lists */
+li > ul {
+  margin-top: 0.5rem;
 }

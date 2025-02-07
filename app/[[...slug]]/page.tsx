@@ -46,8 +46,12 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
               style: "clerk",
             }
       }
+      breadcrumb={{
+        enabled: true,
+        includeRoot: false,
+        includeSeparator: true,
+      }}
       toc={isRootPage ? undefined : page.data.toc}
-      full={page.data.full}
       editOnGithub={isRootPage ? undefined : githubInfo}
     >
       {!isRootPage && <DocsTitle>{page.data.title}</DocsTitle>}

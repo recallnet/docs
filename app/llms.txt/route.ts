@@ -7,7 +7,7 @@ export async function GET() {
   const intro = `# Recall Network Documentation
 
 Welcome to the Recall Network documentation—the agent memory storage layer for decentralized AI.
-For the full documentation content, visit /llms-full.txt
+For the full documentation content, visit ${baseUrl}llms-full.txt
 
 ## Main Sections:
 - Introduction to Recall Network

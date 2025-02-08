@@ -70,6 +70,7 @@ async function fetchDocsContext(): Promise<RAGDocument[]> {
 }
 
 function addSourceLinks(content: string, relevantChunks: RelevantChunk[]): string {
+  if (content.includes(rejectionMessage)) return content;
   const topScore = Math.max(...relevantChunks.map((chunk) => chunk.score));
 
   // Only include sources that are within 0.05 of the top score
@@ -85,22 +86,16 @@ function addSourceLinks(content: string, relevantChunks: RelevantChunk[]): strin
     ])
   );
 
-  // Add links section if it doesn't exist
+  if (sources.size === 0) return content;
+
+  // Add linked sources
   if (!content.includes("**Source(s)**:")) {
     content += "\n\n**Source(s)**:\n";
   }
-
-  // Add linked sources
   content += Array.from(sources.values())
     .map(({ file, title }) => `[${title}](${baseUrl}${file})`)
     .join(", ")
     .replace(/,\s*$/, "");
-
-  // Replace footnote references with links
-  sources.forEach(({ file, title }) => {
-    const regex = new RegExp(`\\[\\^(\\d+)\\]: ${file}`, "g");
-    content = content.replace(regex, `[^$1]: [${title}](${baseUrl}${file})`);
-  });
   return content;
 }
 
@@ -160,11 +155,41 @@ function keywordMatch(query: string, keywords?: string): number {
   return matches / queryWords.length;
 }
 
+function calculateCombinedScore(
+  embeddingScore: number,
+  keywordScore: number,
+  hasKeywords: boolean
+): number {
+  const MIN_EMBEDDING_SIMILARITY = 0.6; // Increased from 0.75
+  const MAX_EMBEDDING_SIMILARITY = 0.95; // Added upper bound for normalization
+
+  // If embedding score is too low, return 0
+  if (embeddingScore < MIN_EMBEDDING_SIMILARITY) {
+    return 0;
+  }
+
+  // Normalize embedding score with tighter bounds
+  const normalizedEmbedding =
+    (embeddingScore - MIN_EMBEDDING_SIMILARITY) /
+    (MAX_EMBEDDING_SIMILARITY - MIN_EMBEDDING_SIMILARITY);
+
+  // Cap normalized score at 1
+  const cappedEmbedding = Math.min(normalizedEmbedding, 1);
+
+  // If no keywords exist, use only embedding score
+  if (!hasKeywords) {
+    return cappedEmbedding;
+  }
+
+  // If keywords exist, use weighted combination
+  return cappedEmbedding * 0.7 + keywordScore * 0.3;
+}
 async function getRelevantChunks(
   query: string | undefined,
   docs: RAGDocument[]
 ): Promise<RelevantChunk[]> {
   if (!query) return [];
+
   // Split large documents into smaller chunks
   const allChunks = docs.flatMap((doc) => splitIntoChunks(doc));
 
@@ -183,10 +208,10 @@ async function getRelevantChunks(
 
   const scores = docs.map((doc, index) => {
     const embeddingScore = cosineSimilarity(queryEmbedding, docEmbeddings[index] ?? []);
+    const hasKeywords = !!doc.keywords?.trim();
     const keywordScore = keywordMatch(query, doc.keywords);
 
-    // Weight embedding score 70%, keyword score 30%
-    const combinedScore = embeddingScore * 0.7 + keywordScore * 0.3;
+    const combinedScore = calculateCombinedScore(embeddingScore, keywordScore, hasKeywords);
 
     return {
       content: doc.content,
@@ -198,21 +223,32 @@ async function getRelevantChunks(
         keywords: doc.keywords,
       },
       score: combinedScore,
-      // Add debug info
       debug: {
         embeddingScore,
         keywordScore,
         combinedScore,
+        hasKeywords,
         keywords: doc.keywords,
       },
     };
   });
 
+  const relevantScores = scores
+    .filter((s) => s.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+
+  // If no relevant matches, return empty array
+  if (relevantScores.length === 0) {
+    console.log("No relevant matches found for query:", query);
+    return [];
+  }
+
   // Log for debugging
   console.log("Query:", query);
   console.log(
     "Top 3 matches:",
-    scores
+    relevantScores
       .sort((a, b) => b.score - a.score)
       .slice(0, 3)
       .map(
@@ -226,7 +262,7 @@ Keyword Score: ${s.debug.keywordScore.toFixed(4)}
       )
   );
 
-  return scores.sort((a, b) => b.score - a.score).slice(0, 3);
+  return relevantScores;
 }
 
 function cosineSimilarity(a: number[], b: number[]): number {
@@ -236,14 +272,18 @@ function cosineSimilarity(a: number[], b: number[]): number {
   return dotProduct / (normA * normB);
 }
 
+const rejectionMessage =
+  "Hmm, I'm not sure if that's relevant to Recall. Try asking a different question?";
+
 const SYSTEM_PROMPT = `
 You are a helpful assistant with expert knowledge of the Recall Network and its documentation.
 You are given a question and a list of relevant documentation chunks.
 Your job is to answer the question using the provided documentation.
 You MUST be concise but provide a brief helpful answer. Only answer questions about Recall and its documentation.
-If you don't know the answer, just say "Hmm, I'm not sure if that's relevant to Recall. Try asking a different question?".
+If you don't know the answer, just say "${rejectionMessage}".
 Do NOT make up an answer about Recall-specifics, or make assumptions on what Recall code might look like.
 Only reference code that is provided in the documentation, any remove instances of \`// [!code highlight]\` if applicable.
+Do NOT list the source files in the answer; these are already provided in the **Source(s)** section by logic external to the system.
 You MUST make sure to format as markdown, code blocks, and add language/title to it, like this:
 
 ## Example
@@ -274,9 +314,15 @@ export async function createOpenAIEngine(): Promise<Engine> {
       docsContext
     );
     console.log("relevant", relevant);
+    if (relevant.length === 0) {
+      message.content =
+        "Hmm, I'm not sure if that's relevant to Recall. Try asking a different question?";
+      onEnd?.(message.content);
+      return;
+    }
     try {
       const stream = await openai.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-4o-mini",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           {

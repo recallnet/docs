@@ -14,7 +14,7 @@ import { metadataImage } from "@/lib/metadata";
 import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
 
-const defaultsMdxComponents = {
+const defaultMdxComponents = {
   ...fumadocsMdxComponents,
   Card: (props: CardProps) => <Card {...props} />,
   Cards: (props: HTMLAttributes<HTMLDivElement>) => <Cards {...props} />,
@@ -60,7 +60,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
       <DocsBody>
         <MDX
           components={{
-            ...defaultsMdxComponents,
+            ...defaultMdxComponents,
             Accordion,
             Accordions,
             File,

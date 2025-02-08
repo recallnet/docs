@@ -224,10 +224,11 @@ export function addSourceLinks(content: string, relevantChunks: RelevantChunk[])
     }
   }
   if (sources.size === 0) return content;
-  content += "\n\n**Source(s)**:\n";
-  content += Array.from(sources.values())
-    .map(({ file, title }) => `[${title}](${baseUrl}${file})`)
-    .join(", ");
+  content +=
+    "**Source(s)**: " +
+    Array.from(sources.values())
+      .map(({ file, title }) => `[${title}](${baseUrl}${file})`)
+      .join(", ");
 
   return content;
 }

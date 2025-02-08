@@ -21,7 +21,6 @@ export async function POST(request: Request) {
     const { messages } = (await request.json()) as { messages: MessageRecord[] };
     const query = messages.filter((msg) => msg.role === "user").at(-1)?.content;
     if (!query || !isValidQuery(query)) {
-      console.log("Query rejected as invalid:", query);
       return new Response(
         JSON.stringify({
           rejection: true,
@@ -55,7 +54,7 @@ export async function POST(request: Request) {
           content: `Here are the most relevant documentation sections:\n\n${relevant
             .map(
               (chunk) =>
-                `Source: ${chunk.metadata.file}\nCategory: ${chunk.metadata.category}\n# ${chunk.metadata.title}\n\n${chunk.metadata.description}\n\n${chunk.content}`
+                `Source: ${chunk.metadata.file}\nCategories: ${chunk.metadata.category};${chunk.metadata.keywords}\n# ${chunk.metadata.title}\n\n${chunk.metadata.description}\n\n${chunk.content}`
             )
             .join("\n---\n")}`,
         },
@@ -64,7 +63,20 @@ export async function POST(request: Request) {
       stream: true,
     });
 
-    return new Response(stream.toReadableStream(), {
+    // Create a transform stream to append source links
+    const transform = new TransformStream({
+      transform(chunk, controller) {
+        controller.enqueue(chunk);
+      },
+      flush(controller) {
+        // Add source links after the stream is done
+        const sourceLinks = addSourceLinks("", relevant);
+        const sourceJson = JSON.stringify({ source: sourceLinks }) + "\n"; // Match OpenAI response formatting
+        controller.enqueue(new TextEncoder().encode(sourceJson));
+      },
+    });
+
+    return new Response(stream.toReadableStream().pipeThrough(transform), {
       headers: {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",

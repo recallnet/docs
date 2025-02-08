@@ -1,6 +1,24 @@
-import { Stream } from "openai/streaming";
-
 import type { Engine, MessageRecord } from "@/components/ai/context";
+import { REJECTION_MESSAGE } from "@/lib/embeddings";
+
+type OpenAIResponse = {
+  id: string;
+  object: string;
+  created: number;
+  model: string;
+  service_tier: string;
+  system_fingerprint: string;
+  choices: {
+    index: number;
+    delta: { content: string };
+    logprobs: boolean | null;
+    finish_reason: string | null;
+  }[];
+};
+
+type SourceResponse = {
+  source: string;
+};
 
 export async function createOpenAIEngine(): Promise<Engine> {
   let messages: MessageRecord[] = [];
@@ -52,34 +70,38 @@ export async function createOpenAIEngine(): Promise<Engine> {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let content = "";
-      let partialLine = "";
 
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
-        const fullChunk = partialLine + chunk;
+        const lines = chunk.split("\n");
 
-        // Process each line (SSE streams send data in lines)
-        const lines = fullChunk.split("\n");
-        partialLine = lines.pop() || "";
+        for (const line of lines) {
+          if (aborted || !line.trim()) continue;
 
-        for await (const part of lines) {
-          if (aborted) break;
-          if (!part.trim()) continue;
-          const json = JSON.parse(part);
-          const delta = json.choices?.[0]?.delta?.content || "";
-          if (delta) {
-            content += delta;
+          const json = JSON.parse(line);
+          if ("choices" in json && Array.isArray(json.choices)) {
+            const delta = (json as OpenAIResponse).choices[0]?.delta?.content || "";
+            if (delta) {
+              content += delta;
+              message.content = content;
+              onUpdate?.(content);
+            }
+            continue;
+          }
+          if ("source" in json && !content.includes(REJECTION_MESSAGE)) {
+            if (content.includes("**Source(s)**:")) break;
+            content += `\n\n${(json as SourceResponse).source}\n`;
             message.content = content;
             onUpdate?.(content);
           }
         }
       }
+
       onEnd?.(content);
     } catch (error) {
-      console.error("Error generating completion:", error);
       message.content = "Sorry, something went wrong.";
       onEnd?.(message.content);
     }

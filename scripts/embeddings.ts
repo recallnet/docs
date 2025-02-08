@@ -1,3 +1,4 @@
+import "dotenv/config";
 import fg from "fast-glob";
 import matter from "gray-matter";
 import * as fs from "node:fs/promises";
@@ -10,10 +11,15 @@ import remarkStringify from "remark-stringify";
 
 import type { DocEmbedding, Document } from "@/lib/ai";
 
+const apiKey = process.env.OPENAI_API_KEY;
+if (!apiKey) throw new Error("Missing OpenAI API key");
+
+const openai = new OpenAI({ apiKey });
+
 type CategoryType = keyof typeof categories;
 
 const categories = {
-  root: "Recall Network Overview",
+  root: "Recall Network",
   advanced: "Advanced Topics, including SDKs, CLIs, S3 adapters, etc.",
   agents: "Recall AI Agents data storage, retrieval, and plugins",
   architecture: "System Architecture and protocol design",
@@ -70,12 +76,6 @@ async function processContent(content: string): Promise<string> {
 
   return String(file);
 }
-
-const apiKey = process.env.OPENAI_API_KEY;
-
-if (!apiKey) throw new Error("Missing OpenAI API key");
-
-const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
 
 // Ensure content doesn't hit the ada-002 limit of 8192 tokens
 function splitIntoChunks(doc: Document, maxTokens: number = 6000): Document[] {

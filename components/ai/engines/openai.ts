@@ -21,6 +21,9 @@ type SourceResponse = {
 };
 
 export async function createOpenAIEngine(): Promise<Engine> {
+  const sessionId = localStorage.getItem("chatSessionId") || crypto.randomUUID();
+  localStorage.setItem("chatSessionId", sessionId);
+
   let messages: MessageRecord[] = [];
   let aborted = false;
 
@@ -35,7 +38,7 @@ export async function createOpenAIEngine(): Promise<Engine> {
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
-        body: JSON.stringify({ messages }),
+        body: JSON.stringify({ sessionId, messages }),
         headers: { "Content-Type": "application/json" },
       });
 
@@ -43,7 +46,6 @@ export async function createOpenAIEngine(): Promise<Engine> {
         throw new Error("Chat request failed");
       }
 
-      // Handle rejection message
       // Check if it's a rejection response
       const contentType = response.headers.get("content-type");
       if (contentType?.includes("application/json")) {
@@ -71,6 +73,7 @@ export async function createOpenAIEngine(): Promise<Engine> {
       const decoder = new TextDecoder();
       let content = "";
 
+      // eslint-disable-next-line no-constant-condition
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
@@ -92,6 +95,7 @@ export async function createOpenAIEngine(): Promise<Engine> {
             continue;
           }
           if ("source" in json && !content.includes(REJECTION_MESSAGE)) {
+            console.log("source", (json as SourceResponse).source);
             if (content.includes("**Source(s)**:")) break;
             content += `\n\n${(json as SourceResponse).source}\n`;
             message.content = content;
@@ -101,7 +105,7 @@ export async function createOpenAIEngine(): Promise<Engine> {
       }
 
       onEnd?.(content);
-    } catch (error) {
+    } catch {
       message.content = "Sorry, something went wrong.";
       onEnd?.(message.content);
     }

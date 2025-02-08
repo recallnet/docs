@@ -53,6 +53,7 @@ export async function withRetry<T>(
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       return await operation();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       // Check if it's a rate limit error
       if (error?.status === 429) {

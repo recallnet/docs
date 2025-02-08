@@ -35,7 +35,7 @@ function onUpdate() {
 }
 
 function View() {
-  const [_, update] = useState(0);
+  const [, update] = useState(0);
   const shouldFocus = useRef(false); // should focus on input on next render
   const { loading, setLoading, engine } = use(Context);
 
@@ -159,7 +159,7 @@ function AIInput({ loading, onSubmit }: { loading: boolean; onSubmit: (message: 
     >
       <Input
         value={message}
-        placeholder={loading ? "AI is answering..." : "Ask AI something"}
+        placeholder={loading ? "AI is answering..." : "Ask agent about Recall..."}
         disabled={loading}
         onChange={(e) => {
           setMessage(e.target.value);
@@ -260,8 +260,8 @@ let processor: Processor | undefined;
 const map = new Map<string, ReactNode>();
 
 const roleName: Record<string, string> = {
-  user: "you",
-  assistant: "recall-docs-agent",
+  user: "User",
+  assistant: "Recall Docs Agent",
 };
 
 function Message({
@@ -276,16 +276,11 @@ function Message({
   return (
     <div
       className={cn(
-        message.role === "user" &&
-          "bg-fd-secondary text-fd-secondary-foreground rounded-xl border px-2 py-1.5"
+        "mb-2 rounded-xl border px-2 py-1.5",
+        message.role === "user" ? "bg-fd-secondary text-fd-secondary-foreground" : "border-fd-muted"
       )}
     >
-      <p
-        className={cn(
-          "text-fd-muted-foreground mb-1 text-xs font-medium",
-          message.role === "assistant" && "text-fd-primary"
-        )}
-      >
+      <p className={cn("text-fd-muted-foreground mb-1 text-xs font-bold")}>
         {roleName[message.role] ?? "unknown"}
       </p>
       <div className="prose text-sm">

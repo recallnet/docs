@@ -10,7 +10,6 @@
     "dev": "next dev",
     "start": "next start",
     "postinstall": "fumadocs-mdx",
-    "build:docs": "node ./scripts/generate-docs.mjs",
     "eject": "fumadocs add --config ./fumadocs.cli.json",
     "lint": "eslint . --max-warnings 0",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,mdx}\"",

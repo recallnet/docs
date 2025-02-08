@@ -1,5 +1,5 @@
 import type { Engine, MessageRecord } from "@/components/ai/context";
-import { REJECTION_MESSAGE } from "@/lib/embeddings";
+import { REJECTION_MESSAGE } from "@/lib/ai";
 
 type OpenAIResponse = {
   id: string;

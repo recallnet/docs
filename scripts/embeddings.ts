@@ -8,7 +8,7 @@ import remarkGfm from "remark-gfm";
 import remarkMdx from "remark-mdx";
 import remarkStringify from "remark-stringify";
 
-import type { DocEmbedding, Document } from "@/components/ai/engines/openai";
+import type { DocEmbedding, Document } from "@/lib/ai";
 
 type CategoryType = keyof typeof categories;
 
@@ -76,39 +76,6 @@ const apiKey = process.env.OPENAI_API_KEY;
 if (!apiKey) throw new Error("Missing OpenAI API key");
 
 const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-async function withRetry<T>(
-  operation: () => Promise<T>,
-  maxRetries: number = 3,
-  baseDelay: number = 1000
-): Promise<T> {
-  console.log("withRetry");
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      return await operation();
-    } catch (error: any) {
-      // Check if it's a rate limit error
-      if (error?.status === 429) {
-        const retryAfter =
-          error.response?.headers?.["retry-after"] ||
-          error.message.match(/try again in (\d+\.?\d*)s/)?.[1];
-
-        // Calculate delay: either from header, message, or exponential backoff
-        const delay = retryAfter
-          ? parseFloat(retryAfter) * 1000
-          : Math.min(baseDelay * Math.pow(2, attempt), 30000);
-
-        console.log(`Rate limited. Retrying in ${delay / 1000}s...`);
-        await sleep(delay);
-        continue;
-      }
-      throw error;
-    }
-  }
-  throw new Error(`Failed after ${maxRetries} retries`);
-}
 
 // Ensure content doesn't hit the ada-002 limit of 8192 tokens
 function splitIntoChunks(doc: Document, maxTokens: number = 6000): Document[] {

@@ -10,7 +10,7 @@ import {
   addSourceLinks,
   getRelevantChunks,
   isValidQuery,
-} from "@/lib/embeddings";
+} from "@/lib/ai";
 
 const apiKey = process.env.OPENAI_API_KEY;
 

@@ -21,7 +21,6 @@ You MUST make sure to format as markdown, code blocks, and add language/title to
 \`\`\`typescript
 const x = 1;
 \`\`\`
-
 `;
 
 export type Document = {
@@ -182,24 +181,6 @@ export async function getRelevantChunks(
     console.log("No relevant matches found for query:", query);
     return [];
   }
-
-  // Log for debugging
-  console.log("Query:", query);
-  console.log(
-    "Top 3 matches:",
-    relevantScores
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 3)
-      .map(
-        (s) => `
-Score: ${s.debug.combinedScore.toFixed(4)}
-Title: ${s.metadata.title}
-Keywords: ${s.metadata.keywords}
-Embedding Score: ${s.debug.embeddingScore.toFixed(4)}
-Keyword Score: ${s.debug.keywordScore.toFixed(4)}
-`
-      )
-  );
 
   return relevantScores;
 }

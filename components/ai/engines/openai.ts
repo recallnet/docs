@@ -3,7 +3,7 @@ import { OpenAI } from "openai";
 import type { Engine, MessageRecord } from "@/components/ai/context";
 import { baseUrl } from "@/lib/metadata";
 
-export type RAGDocument = {
+export type Document = {
   file: string;
   category: string;
   title: string;
@@ -12,15 +12,13 @@ export type RAGDocument = {
   content: string;
 };
 
-type RelevantChunk = {
+export type DocEmbedding = {
+  embedding: number[];
+  metadata: Pick<Document, "file" | "title" | "description" | "category" | "keywords">;
   content: string;
-  metadata: {
-    file: string;
-    title: string;
-    description: string;
-    category: string;
-    keywords?: string;
-  };
+};
+
+type RelevantChunk = Omit<DocEmbedding, "embedding"> & {
   score: number;
 };
 
@@ -48,7 +46,6 @@ async function withRetry<T>(
           error.response?.headers?.["retry-after"] ||
           error.message.match(/try again in (\d+\.?\d*)s/)?.[1];
 
-        // Calculate delay: either from header, message, or exponential backoff
         const delay = retryAfter
           ? parseFloat(retryAfter) * 1000
           : Math.min(baseDelay * Math.pow(2, attempt), 30000);
@@ -63,83 +60,38 @@ async function withRetry<T>(
   throw new Error(`Failed after ${maxRetries} retries`);
 }
 
-async function fetchDocsContext(): Promise<RAGDocument[]> {
+async function fetchDocsContext(): Promise<DocEmbedding[]> {
   const response = await fetch("/api/rag");
   if (!response.ok) throw new Error("Failed to fetch docs context");
-  return (await response.json()) as RAGDocument[];
+  return (await response.json()) as DocEmbedding[];
 }
 
 function addSourceLinks(content: string, relevantChunks: RelevantChunk[]): string {
-  if (content.includes(rejectionMessage)) return content;
-  const topScore = Math.max(...relevantChunks.map((chunk) => chunk.score));
-
-  // Only include sources that are within 0.05 of the top score
-  const closeMatches = relevantChunks.filter((chunk) => chunk.score >= topScore - 0.05);
-  // First, collect all unique source files
-  const sources = new Map(
-    closeMatches.map((chunk) => [
-      chunk.metadata.file,
-      {
-        file: chunk.metadata.file,
-        title: chunk.metadata.title,
-      },
-    ])
-  );
-
-  if (sources.size === 0) return content;
-
-  // Add linked sources
-  if (!content.includes("**Source(s)**:")) {
-    content += "\n\n**Source(s)**:\n";
+  if (content.includes(REJECTION_MESSAGE)) return content;
+  if (content.includes("**Source(s)**:")) {
+    return content;
   }
+
+  // Only include sources that are within 0.10 of the top score
+  const topScore = Math.max(...relevantChunks.map((chunk) => chunk.score));
+  const closeMatches = relevantChunks.filter((chunk) => chunk.score >= topScore - 0.1);
+  const sources = new Map<string, { file: string; title: string }>();
+  for (const chunk of closeMatches) {
+    const file = chunk.metadata.file;
+    if (!sources.has(file)) {
+      sources.set(file, {
+        file,
+        title: chunk.metadata.title,
+      });
+    }
+  }
+  if (sources.size === 0) return content;
+  content += "\n\n**Source(s)**:\n";
   content += Array.from(sources.values())
     .map(({ file, title }) => `[${title}](${baseUrl}${file})`)
-    .join(", ")
-    .replace(/,\s*$/, "");
+    .join(", ");
+
   return content;
-}
-
-// Ensure content doesn't hit the ada-002 limit of 8192 tokens
-function splitIntoChunks(doc: RAGDocument, maxTokens: number = 6000): RAGDocument[] {
-  // Rough estimate: 1 token ≈ 4 characters
-  const maxChars = maxTokens * 4;
-
-  if (doc.content.length <= maxChars) {
-    return [doc];
-  }
-
-  // Split at major section boundaries first
-  const sections = doc.content.split(/(?=^#{1,3}\s)/m);
-
-  // If sections are still too large, split them further
-  const chunks: RAGDocument[] = [];
-  let currentChunk = "";
-  let chunkIndex = 0;
-
-  for (const section of sections) {
-    if ((currentChunk + section).length > maxChars && currentChunk) {
-      chunks.push({
-        ...doc,
-        content: currentChunk.trim(),
-        title: `${doc.title} (Part ${chunkIndex + 1})`,
-        file: `${doc.file}#section-${chunkIndex + 1}`,
-      });
-      currentChunk = "";
-      chunkIndex++;
-    }
-    currentChunk += (currentChunk ? "\n\n" : "") + section;
-  }
-
-  // Add the last chunk
-  if (currentChunk) {
-    chunks.push({
-      ...doc,
-      content: currentChunk.trim(),
-      title: `${doc.title} (Part ${chunkIndex + 1})`,
-      file: `${doc.file}#section-${chunkIndex + 1}`,
-    });
-  }
-  return chunks;
 }
 
 function keywordMatch(query: string, keywords?: string): number {
@@ -160,67 +112,70 @@ function calculateCombinedScore(
   keywordScore: number,
   hasKeywords: boolean
 ): number {
-  const MIN_EMBEDDING_SIMILARITY = 0.6; // Increased from 0.75
-  const MAX_EMBEDDING_SIMILARITY = 0.95; // Added upper bound for normalization
+  const MIN_EMBEDDING_SIMILARITY = 0.6; // Ensure the embedding score is not too low
+  const MAX_EMBEDDING_SIMILARITY = 0.95; // Upper bound for normalization
 
-  // If embedding score is too low, return 0
   if (embeddingScore < MIN_EMBEDDING_SIMILARITY) {
     return 0;
   }
-
-  // Normalize embedding score with tighter bounds
   const normalizedEmbedding =
     (embeddingScore - MIN_EMBEDDING_SIMILARITY) /
     (MAX_EMBEDDING_SIMILARITY - MIN_EMBEDDING_SIMILARITY);
 
-  // Cap normalized score at 1
-  const cappedEmbedding = Math.min(normalizedEmbedding, 1);
-
-  // If no keywords exist, use only embedding score
+  const cappedEmbedding = Math.min(normalizedEmbedding, 1); // Cap normalized score at 1
+  // If no keywords exist, use only embedding score; else, boost the score
   if (!hasKeywords) {
     return cappedEmbedding;
   }
-
-  // If keywords exist, use weighted combination
-  return cappedEmbedding * 0.7 + keywordScore * 0.3;
+  return Math.min(1, cappedEmbedding + keywordScore * 0.3);
 }
+
+function isValidQuery(query: string): boolean {
+  // Basic sanity checks
+  if (!query?.trim()) return false;
+
+  // Check for nonsense patterns
+  const repeatedChars = /(.)\1{4,}/; // 5+ repeated characters
+  const specialCharsOnly = /^[^a-zA-Z0-9]+$/; // Only special characters
+  const tooShort = query.length < 3;
+
+  return !(repeatedChars.test(query) || specialCharsOnly.test(query) || tooShort);
+}
+
 async function getRelevantChunks(
   query: string | undefined,
-  docs: RAGDocument[]
+  docs: DocEmbedding[]
 ): Promise<RelevantChunk[]> {
-  if (!query) return [];
-
-  // Split large documents into smaller chunks
-  const allChunks = docs.flatMap((doc) => splitIntoChunks(doc));
+  if (!query || !isValidQuery(query)) {
+    console.log("Query rejected as invalid:", query);
+    return [];
+  }
 
   const embeddingResponse = await withRetry(() =>
     openai.embeddings.create({
       model: "text-embedding-ada-002",
-      input: [query, ...allChunks.map((chunk) => chunk.content)]
-        .map((text) => text.trim())
-        .filter((text) => text.length > 0),
+      input: [query],
     })
   );
 
   if (!embeddingResponse.data[0]?.embedding) throw new Error("Failed to get embedding response");
   const queryEmbedding = embeddingResponse.data[0].embedding;
-  const docEmbeddings = embeddingResponse.data.slice(1).map((e) => e.embedding);
 
-  const scores = docs.map((doc, index) => {
-    const embeddingScore = cosineSimilarity(queryEmbedding, docEmbeddings[index] ?? []);
-    const hasKeywords = !!doc.keywords?.trim();
-    const keywordScore = keywordMatch(query, doc.keywords);
+  const scores = docs.map((doc) => {
+    const embeddingScore = cosineSimilarity(queryEmbedding, doc.embedding);
+    const hasKeywords = !!doc.metadata.keywords?.trim();
+    const keywordScore = keywordMatch(query, doc.metadata.keywords);
 
     const combinedScore = calculateCombinedScore(embeddingScore, keywordScore, hasKeywords);
 
     return {
       content: doc.content,
       metadata: {
-        file: doc.file,
-        title: doc.title,
-        description: doc.description,
-        category: doc.category,
-        keywords: doc.keywords,
+        file: doc.metadata.file,
+        title: doc.metadata.title,
+        description: doc.metadata.description,
+        category: doc.metadata.category,
+        keywords: doc.metadata.keywords,
       },
       score: combinedScore,
       debug: {
@@ -228,7 +183,7 @@ async function getRelevantChunks(
         keywordScore,
         combinedScore,
         hasKeywords,
-        keywords: doc.keywords,
+        keywords: doc.metadata.keywords,
       },
     };
   });
@@ -272,7 +227,7 @@ function cosineSimilarity(a: number[], b: number[]): number {
   return dotProduct / (normA * normB);
 }
 
-const rejectionMessage =
+const REJECTION_MESSAGE =
   "Hmm, I'm not sure if that's relevant to Recall. Try asking a different question?";
 
 const SYSTEM_PROMPT = `
@@ -280,7 +235,7 @@ You are a helpful assistant with expert knowledge of the Recall Network and its 
 You are given a question and a list of relevant documentation chunks.
 Your job is to answer the question using the provided documentation.
 You MUST be concise but provide a brief helpful answer. Only answer questions about Recall and its documentation.
-If you don't know the answer, just say "${rejectionMessage}".
+If you don't know the answer, just say "${REJECTION_MESSAGE}".
 Do NOT make up an answer about Recall-specifics, or make assumptions on what Recall code might look like.
 Only reference code that is provided in the documentation, any remove instances of \`// [!code highlight]\` if applicable.
 Do NOT list the source files in the answer; these are already provided in the **Source(s)** section by logic external to the system.
@@ -298,7 +253,6 @@ export async function createOpenAIEngine(): Promise<Engine> {
   let messages: MessageRecord[] = [];
   let docsContext = await fetchDocsContext();
   let aborted = false;
-  console.log("docsContext", docsContext);
 
   async function generateNew(onUpdate?: (full: string) => void, onEnd?: (full: string) => void) {
     aborted = false;
@@ -308,16 +262,30 @@ export async function createOpenAIEngine(): Promise<Engine> {
     };
 
     messages.push(message);
-    console.log("messages", messages.at(-1));
+    console.log("messages", messages);
     const relevant = await getRelevantChunks(
       messages.filter((msg) => msg.role === "user").at(-1)?.content,
       docsContext
     );
     console.log("relevant", relevant);
     if (relevant.length === 0) {
-      message.content =
-        "Hmm, I'm not sure if that's relevant to Recall. Try asking a different question?";
-      onEnd?.(message.content);
+      await new Promise((resolve) => setTimeout(resolve, 150)); // Brief "wait" to mimic awaiting response
+      let content = "";
+      const streamText = async function* streamText(text: string, delay: number = 5) {
+        for (const char of text) {
+          yield char;
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+      };
+
+      // Simulate streaming for rejection message
+      for await (const char of streamText(REJECTION_MESSAGE)) {
+        if (aborted) break;
+        content += char;
+        message.content = content;
+        onUpdate?.(content);
+      }
+      onEnd?.(content);
       return;
     }
     try {

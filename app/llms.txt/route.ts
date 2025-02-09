@@ -1,8 +1,6 @@
 import { baseUrl } from "@/lib/metadata";
 import { source } from "@/lib/source";
 
-export const revalidate = false;
-
 export async function GET() {
   const intro = `# Recall Network Documentation
 

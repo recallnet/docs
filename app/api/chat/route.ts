@@ -12,6 +12,8 @@ import {
   isValidQuery,
 } from "@/lib/ai";
 
+export const revalidate = false;
+
 const apiKey = process.env.OPENAI_API_KEY;
 const openai = apiKey ? new OpenAI({ apiKey }) : null;
 

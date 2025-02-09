@@ -7,8 +7,6 @@ import remarkGfm from "remark-gfm";
 import remarkMdx from "remark-mdx";
 import remarkStringify from "remark-stringify";
 
-export const revalidate = false;
-
 const categories = {
   root: "Recall network",
   apps: "Applications to explore or build with Recall",

@@ -1,10 +1,11 @@
 import { promises as fs } from "fs";
 import path from "path";
 
+const EMBEDDINGS_FILE = path.join(process.cwd(), "public", "static", "embeddings.json");
+
 export async function GET() {
   try {
-    const filePath = path.join(process.cwd(), "public/embeddings.json");
-    const embeddings = await fs.readFile(filePath, "utf-8");
+    const embeddings = await fs.readFile(EMBEDDINGS_FILE, "utf-8");
     return new Response(embeddings, {
       headers: {
         "Content-Type": "application/json",

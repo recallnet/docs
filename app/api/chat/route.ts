@@ -18,6 +18,7 @@ const openai = apiKey ? new OpenAI({ apiKey }) : null;
 const MODEL = "gpt-4o-mini";
 const MAX_SESSION_REQUESTS = 50;
 const MAX_SESSION_AGE = 60 * 60 * 1000;
+const EMBEDDINGS_FILE = path.join(process.cwd(), "public", "static", "embeddings.json");
 
 // Naive session management
 const sessions = new Map<
@@ -88,8 +89,7 @@ export async function POST(request: Request) {
     }
 
     // Get relevant chunks for the query
-    const filePath = path.join(process.cwd(), "public/embeddings.json");
-    const embeddings = JSON.parse(await fs.readFile(filePath, "utf-8")) as DocEmbedding[];
+    const embeddings = JSON.parse(await fs.readFile(EMBEDDINGS_FILE, "utf-8")) as DocEmbedding[];
     const relevant = await getRelevantChunks(openai, query, embeddings);
     if (relevant.length === 0) {
       return new Response(

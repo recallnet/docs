@@ -17,6 +17,8 @@ if (!apiKey) throw new Error("Missing OpenAI API key");
 const openai = new OpenAI({ apiKey });
 
 const MODEL = "text-embedding-ada-002";
+const EMBEDDINGS_DIR = path.join(process.cwd(), "public", "static");
+const EMBEDDINGS_FILE = path.join(EMBEDDINGS_DIR, "embeddings.json");
 
 type CategoryType = keyof typeof categories;
 
@@ -123,7 +125,7 @@ function splitIntoChunks(doc: Document, maxTokens: number = 6000): Document[] {
 }
 
 async function generateEmbeddings() {
-  // Read your docs
+  await fs.mkdir(EMBEDDINGS_DIR, { recursive: true });
   const docs = await getDocsContent();
   const chunks = docs.flatMap((doc) => splitIntoChunks(doc));
 
@@ -148,10 +150,7 @@ async function generateEmbeddings() {
     })
   );
 
-  await fs.writeFile(
-    path.join(process.cwd(), "public", "embeddings.json"),
-    JSON.stringify(embeddings)
-  );
+  await fs.writeFile(EMBEDDINGS_FILE, JSON.stringify(embeddings));
 }
 
 generateEmbeddings().catch((error) => {

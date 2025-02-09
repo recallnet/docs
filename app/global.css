@@ -154,6 +154,10 @@ code {
   font-size: 0.875em;
 }
 
+/* Customize inline code colors within callouts */
+.nd-callout code {
+  @apply border-fd-card-foreground/10 bg-fd-card-foreground/5;
+}
 button {
   @apply cursor-pointer;
 }

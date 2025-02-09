@@ -9,6 +9,7 @@ import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/page
 import { notFound } from "next/navigation";
 import { HTMLAttributes } from "react";
 
+import { Callout, CalloutProps } from "@/components/theme/callout";
 import { Card, CardProps, Cards } from "@/components/theme/card";
 import { metadataImage } from "@/lib/metadata";
 import { createMetadata } from "@/lib/metadata";
@@ -18,6 +19,7 @@ const defaultMdxComponents = {
   ...fumadocsMdxComponents,
   Card: (props: CardProps) => <Card {...props} />,
   Cards: (props: HTMLAttributes<HTMLDivElement>) => <Cards {...props} />,
+  Callout: (props: CalloutProps) => <Callout {...props} />,
 };
 
 export default async function Page(props: { params: Promise<{ slug?: string[] }> }) {

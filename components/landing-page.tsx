@@ -92,10 +92,10 @@ export function LandingPage() {
                   buttonVariants({
                     color: "secondary",
                   }),
-                  "text-md p-4 font-bold no-underline transition-all duration-100"
+                  "p-4 text-base font-bold no-underline transition-all duration-100"
                 )}
               >
-                <span className="text-md mr-1">Get started</span>
+                <span className="mr-1 text-base">Get started</span>
                 <ArrowRight className="size-4" />
               </Link>
             </div>
@@ -109,7 +109,7 @@ export function LandingPage() {
                   title={feature.title}
                   titleClassName="text-lg font-bold"
                   description={feature.description}
-                  descriptionClassName="text-md"
+                  descriptionClassName="text-base"
                   key={index}
                   className={cn(
                     "bg-fd-card floating-item rounded-lg border p-4 transition-transform",
@@ -134,7 +134,7 @@ export function LandingPage() {
               key={index}
               className="bg-secondary hover:bg-secondary/90 rounded-lg border p-4 no-underline transition-all duration-100"
               title={card.title}
-              titleClassName="text-md pt-1"
+              titleClassName="text-base pt-1"
               icon={card.icon}
               href={card.href}
               description={card.description}

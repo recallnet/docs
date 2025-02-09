@@ -12,6 +12,7 @@
 /out/
 /build
 *.tsbuildinfo
+/public/embeddings.json
 
 # misc
 .DS_Store

@@ -46,7 +46,7 @@ export const baseOptions: BaseLayoutProps = {
     {
       type: "icon",
       external: true,
-      text: "X",
+      text: "X / Twitter",
       icon: <FaXTwitter />,
       url: "https://x.com/recallnet",
     },

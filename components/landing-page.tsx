@@ -18,7 +18,7 @@ import { cn } from "@/lib/theme/cn";
 const features = [
   {
     icon: <MemoryStick className="h-6 w-6" />,
-    title: "Cognition APIs",
+    title: "Cognitive APIs",
     description:
       "Purpose-built observability and knowledge plugins across agent frameworks, including Chain-of-Thought",
   },

@@ -134,7 +134,8 @@
   @apply bg-fd-background backdrop-blur-none;
 }
 
-#nd-subnav {
+#nd-subnav,
+#nd-tocnav {
   @apply bg-fd-background backdrop-blur-none;
 }
 

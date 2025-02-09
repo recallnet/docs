@@ -3,11 +3,11 @@ import {
   ArrowRight,
   BookOpen,
   Database,
+  Expand,
   MemoryStick,
   Network,
   Plug2,
   Timer,
-  Zap,
 } from "lucide-react";
 
 import LandingSVG from "@/components/landing-svg";
@@ -23,7 +23,7 @@ const features = [
       "Purpose-built observability and knowledge plugins across agent frameworks, including Chain-of-Thought",
   },
   {
-    icon: <Zap className="h-6 w-6" />,
+    icon: <Expand className="h-6 w-6" />,
     title: "Extensible",
     description:
       "Interoperable and stateful agents through flexible data storage, function triggers, and verifiable execution",

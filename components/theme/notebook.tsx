@@ -271,7 +271,7 @@ function SidebarHeaderItems({
   if (isEmpty) return null;
 
   return (
-    <div className="flex flex-row items-center max-md:hidden">
+    <div className="center ml-2 flex flex-row items-center max-md:hidden">
       {nav.title ? (
         <Link href={nav.url ?? "/"} className="inline-flex items-center gap-2.5 font-medium">
           {nav.title}

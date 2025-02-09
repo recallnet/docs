@@ -14,11 +14,11 @@ export const baseOptions: BaseLayoutProps = {
   links: [
     // {
     //   type: "menu",
-    //   text: "Protocol",
+    //   text: "Get started",
     //   items: [
     //     {
-    //       text: "Architecture ",
-    //       url: "/architecture",
+    //       text: "Introduction",
+    //       url: "/intro",
     //     },
     //   ],
     // },
@@ -66,8 +66,8 @@ export const baseOptions: BaseLayoutProps = {
             alt="Recall"
             className="theme-light"
             height={22}
-            src="/img/recall-light.svg"
             width={100}
+            src="/img/recall-light.svg"
           />
           <span className="ml-1 text-2xl">Docs</span>
         </div>
@@ -76,8 +76,8 @@ export const baseOptions: BaseLayoutProps = {
             alt="Recall"
             className="theme-dark"
             height={22}
-            src="/img/recall-dark.svg"
             width={100}
+            src="/img/recall-dark.svg"
           />
           <span className="ml-1 text-2xl">Docs</span>
         </div>

@@ -1,11 +1,13 @@
 ---
-title: Setup & installation
+title: Local development
 description: Install prerequisites and build the Recall binaries.
 ---
 
-This page outlines how to install the necessary dependencies that precede building and installing
-the underlying Recall binaries. If you already have these installed on your machine, you can proceed
-to the [local development](/operators/local) page.
+For developers looking to test and develop locally, Recall offers a couple of specialized
+development environments. This page outlines how to install the necessary dependencies that precede
+building and installing the underlying Recall binaries required to run the network. If you already
+have these installed on your machine, you can proceed to the [localnet](/protocol/local/localnet) or
+[devnet](/protocol/local/devnet) pages.
 
 ## Background
 
@@ -47,17 +49,17 @@ You'll need the following dependencies installed on your machine:
 - `docker`
 - `jq`
 
-If you run the localnet's `scripts/deploy_subnet/deploy.sh` script, it _will_ check for the
-existence of these dependencies. For Linux machines, the script _will also_ handle installation for
-all build dependencies. For macOS, it _will not_ automatically install them. Instead, you'll have to
-do this manually, but the script _will_ log and let you know what you're missing before proceeding.
-The section below outlines how to do this for macOS.
+If you run the localnet via the `make run-localnet` script, it _will_ check for the existence of
+these dependencies. For Linux machines, the script _will also_ handle installation for all build
+dependencies. For macOS, it _will not_ automatically install them. Instead, you'll have to do this
+manually, but the script _will_ log and let you know what you're missing before proceeding. The
+section below outlines how to do this for macOS.
 
 #### Linux
 
-The `scripts/deploy_subnet/deploy.sh` script will handle all the build dependencies for a Linux
-machine. Note this is specific to the `localnet` environment, and not the `devnet` environment, but
-the dependencies are generally the same.
+The `make run-localnet` script will handle all the build dependencies for a Linux machine. Note this
+is specific to the `localnet` environment, and not the `devnet` environment, but the dependencies
+are generally the same.
 
 #### MacOS
 

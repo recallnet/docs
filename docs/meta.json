@@ -8,11 +8,9 @@
     "...agents",
     "---Verifiable sources---",
     "...sources",
-    "---Low-level APIs---",
-    "...advanced",
+    "---Developer tools---",
+    "...tools",
     "---Protocol---",
-    "network",
-    "operators",
-    "architecture"
+    "...protocol"
   ]
 }

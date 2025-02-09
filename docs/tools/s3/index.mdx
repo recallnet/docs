@@ -47,7 +47,9 @@ Starting the Recall S3 adapter uses port `8014` by default. There are three requ
 - `--secret-key`: An S3 secret key (e.g., `SKEXAMPLES3S`)
 
 ```sh
-recall_s3 --private-key [your_private_key] --access-key AKEXAMPLES3S --secret-key SKEXAMPLES3S
+recall_s3 --private-key [your_private_key] \
+--access-key AKEXAMPLES3S \
+--secret-key SKEXAMPLES3S
 ```
 
 The access key and secret aren't used for anything other than matching the MinIO client

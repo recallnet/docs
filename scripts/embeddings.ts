@@ -1,15 +1,10 @@
 import "dotenv/config";
-import fg from "fast-glob";
-import matter from "gray-matter";
 import * as fs from "node:fs/promises";
 import path from "node:path";
 import { OpenAI } from "openai";
-import { remark } from "remark";
-import remarkGfm from "remark-gfm";
-import remarkMdx from "remark-mdx";
-import remarkStringify from "remark-stringify";
 
-import type { DocEmbedding, Document } from "@/lib/ai";
+import { type DocsEmbedding, type DocsFile } from "@/lib/ai";
+import { getDocsContent } from "@/lib/files";
 
 const apiKey = process.env.OPENAI_API_KEY;
 if (!apiKey) throw new Error("Missing OpenAI API key");
@@ -17,84 +12,22 @@ if (!apiKey) throw new Error("Missing OpenAI API key");
 const openai = new OpenAI({ apiKey });
 
 const MODEL = "text-embedding-ada-002";
+
+const DOCS_DIR = path.join(process.cwd(), "docs");
 const EMBEDDINGS_DIR = path.join(process.cwd(), "public", "static");
 const EMBEDDINGS_FILE = path.join(EMBEDDINGS_DIR, "embeddings.json");
 
-type CategoryType = keyof typeof categories;
-
-const categories = {
-  root: "Recall Network",
-  advanced: "Advanced Topics, including SDKs, CLIs, S3 adapters, etc.",
-  agents: "Recall AI Agents data storage, retrieval, and plugins",
-  architecture: "System Architecture and protocol design",
-  intro:
-    "Getting Started with Recall, including quickstarts, faucet and portal guides, and basic concepts",
-  network: "Network APIs for low-level EVM, objects, and CometBFT consensus",
-  operators: "Node Operators guides for running a Recall node or developing locally",
-  sources: "Data Source creation for pure object storage and data pipelines",
-};
-
-function getCategoryDisplayName(filePath: string): string {
-  const pathParts = filePath.split(path.sep);
-  const mainCategory = pathParts[0];
-  if (mainCategory && mainCategory in categories) return categories[mainCategory as CategoryType];
-
-  return categories.root;
-}
-
-export async function getDocsContent(): Promise<Document[]> {
-  const docsDir = path.join(process.cwd(), "docs");
-  const files = await fg(["**/*.mdx"], {
-    cwd: docsDir,
-    ignore: ["**/openapi/**"],
-    absolute: true,
-    dot: false,
-  });
-
-  const scanned = await Promise.all(
-    files.map(async (file) => {
-      const fileContent = await fs.readFile(file);
-      const { content, data } = matter(fileContent.toString());
-      const relativePath = path.relative(docsDir, file);
-      const category = getCategoryDisplayName(relativePath);
-      const processed = await processContent(content);
-
-      // Make sure `index` is removed from the filename and strip the suffix—creating the slug
-      const filename = relativePath.replace(/\.mdx$/, "").replace(/\/index$/, "");
-      return {
-        file: filename,
-        category,
-        title: data.title || filename,
-        description: data.description || "",
-        keywords: data.keywords || "",
-        content: processed,
-      };
-    })
-  );
-
-  return scanned;
-}
-
-async function processContent(content: string): Promise<string> {
-  const file = await remark().use(remarkMdx).use(remarkGfm).use(remarkStringify).process(content);
-
-  return String(file);
-}
-
 // Ensure content doesn't hit the ada-002 limit of 8192 tokens
-function splitIntoChunks(doc: Document, maxTokens: number = 6000): Document[] {
+function splitIntoChunks(doc: DocsFile, maxTokens: number = 6000): DocsFile[] {
   // Rough estimate: 1 token ≈ 4 characters
   const maxChars = maxTokens * 4;
-
   if (doc.content.length <= maxChars) {
     return [doc];
   }
 
-  // Split at major section boundaries first
+  // Split at major section boundaries, or split into chunks as needed
   const sections = doc.content.split(/(?=^#{1,3}\s)/m);
-
-  // If sections are still too large, split them further
-  const chunks: Document[] = [];
+  const chunks: DocsFile[] = [];
   let currentChunk = "";
   let chunkIndex = 0;
 
@@ -126,10 +59,10 @@ function splitIntoChunks(doc: Document, maxTokens: number = 6000): Document[] {
 
 async function generateEmbeddings() {
   await fs.mkdir(EMBEDDINGS_DIR, { recursive: true });
-  const docs = await getDocsContent();
+  const docs = await getDocsContent(DOCS_DIR);
   const chunks = docs.flatMap((doc) => splitIntoChunks(doc));
 
-  const embeddings: DocEmbedding[] = await Promise.all(
+  const embeddings: DocsEmbedding[] = await Promise.all(
     chunks.map(async (chunk) => {
       const embedding = await openai.embeddings.create({
         model: MODEL,

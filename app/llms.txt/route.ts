@@ -1,3 +1,4 @@
+import { DOCS_CATEGORIES } from "@/lib/files";
 import { baseUrl } from "@/lib/metadata";
 import { source } from "@/lib/source";
 
@@ -7,14 +8,10 @@ export async function GET() {
 Welcome to the Recall Network documentation—the agent memory storage layer for decentralized AI.
 For the full documentation content, visit ${baseUrl}llms-full.txt
 
-## Main Sections:
-- Introduction to Recall Network
-- Network Architecture
-- Developer SDKs
-- Tutorials & Guides
-- Reference Documentation
-
-## Sitemap:
+## Main Sections:\n
+- ${Object.entries(DOCS_CATEGORIES)
+    .map(([key, value]) => `${key.toUpperCase()}: ${value}`)
+    .join("\n- ")}
 `;
 
   // Generate a simple sitemap
@@ -25,5 +22,5 @@ For the full documentation content, visit ${baseUrl}llms-full.txt
     })
     .join("\n");
 
-  return new Response(`${intro}\n\n## Sitemap:\n${sitemap}`);
+  return new Response(`${intro}\n## Sitemap:\n\n${sitemap}`);
 }

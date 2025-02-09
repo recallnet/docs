@@ -25,7 +25,7 @@ const x = 1;
 \`\`\`
 `;
 
-export type Document = {
+export type DocsFile = {
   file: string;
   category: string;
   title: string;
@@ -34,13 +34,13 @@ export type Document = {
   content: string;
 };
 
-export type DocEmbedding = {
+export type DocsEmbedding = {
   embedding: number[];
-  metadata: Pick<Document, "file" | "title" | "description" | "category" | "keywords">;
+  metadata: Pick<DocsFile, "file" | "title" | "description" | "category" | "keywords">;
   content: string;
 };
 
-export type RelevantChunk = Omit<DocEmbedding, "embedding"> & {
+export type RelevantChunk = Omit<DocsEmbedding, "embedding"> & {
   score: number;
 };
 
@@ -133,7 +133,7 @@ export function calculateCombinedScore(
 export async function getRelevantChunks(
   openai: OpenAI,
   query: string,
-  docs: DocEmbedding[]
+  docs: DocsEmbedding[]
 ): Promise<RelevantChunk[]> {
   const embeddingResponse = await withRetry(() =>
     openai.embeddings.create({

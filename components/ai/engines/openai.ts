@@ -1,4 +1,5 @@
 import type { Engine, MessageRecord } from "@/components/ai/context";
+import { MessageReference } from "@/components/ai/context";
 import { REJECTION_MESSAGE } from "@/lib/ai";
 
 type OpenAIResponse = {
@@ -16,8 +17,8 @@ type OpenAIResponse = {
   }[];
 };
 
-type SourceResponse = {
-  source: string;
+type ReferencesResponse = {
+  references: MessageReference[];
 };
 
 export async function createOpenAIEngine(): Promise<Engine> {
@@ -94,10 +95,9 @@ export async function createOpenAIEngine(): Promise<Engine> {
             }
             continue;
           }
-          if ("source" in json && !content.includes(REJECTION_MESSAGE)) {
-            if (content.includes("**Source(s)**:")) break;
-            content += `\n\n${(json as SourceResponse).source}\n`;
-            message.content = content;
+          if ("references" in json && !content.includes(REJECTION_MESSAGE)) {
+            const data = json as ReferencesResponse;
+            message.references = data.references;
             onUpdate?.(content);
           }
         }

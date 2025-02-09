@@ -304,16 +304,17 @@ function Message({
           <Markdown text={message.content} />
         )}
       </div>
+      {references.length > 0 ? <hr className="my-4" /> : null}
       {references.length > 0 ? (
-        <div className="mt-2 flex flex-row flex-wrap items-center gap-1">
+        <div className="flex flex-row flex-wrap items-center gap-1">
+          <p className="mr-1 text-xs font-bold">References:</p>
           {references.map((item, i) => (
             <Link
               key={i}
               href={item.url}
               className="bg-fd-secondary text-fd-secondary-foreground hover:bg-fd-accent hover:text-fd-accent-foreground block rounded-lg border px-2 py-1.5 transition-colors"
             >
-              <p className="text-sm font-medium">{item.title}</p>
-              <p className="text-fd-muted-foreground text-xs">{item.description}</p>
+              <p className="text-xs font-medium">{item.title}</p>
             </Link>
           ))}
         </div>

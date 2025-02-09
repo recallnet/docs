@@ -7,7 +7,7 @@ import {
   DocEmbedding,
   REJECTION_MESSAGE,
   SYSTEM_PROMPT,
-  addSourceLinks,
+  getReferenceLinks,
   getRelevantChunks,
   isValidQuery,
 } from "@/lib/ai";
@@ -126,9 +126,9 @@ export async function POST(request: Request) {
         controller.enqueue(chunk);
       },
       flush(controller) {
-        // Add source links after the stream is done
-        const sourceLinks = addSourceLinks("", relevant);
-        const sourceJson = JSON.stringify({ source: sourceLinks }) + "\n"; // Match OpenAI response formatting
+        // Add reference links after the stream is done
+        const referenceLinks = getReferenceLinks(relevant);
+        const sourceJson = JSON.stringify({ references: referenceLinks }) + "\n"; // Match OpenAI response formatting
         controller.enqueue(new TextEncoder().encode(sourceJson));
       },
     });

@@ -1,5 +1,7 @@
 import { OpenAI } from "openai";
 
+import { MessageReference } from "@/components/ai/context";
+
 import { baseUrl } from "./metadata";
 
 export const REJECTION_MESSAGE =
@@ -183,31 +185,25 @@ export async function getRelevantChunks(
   return relevantScores;
 }
 
-export function addSourceLinks(content: string, relevantChunks: RelevantChunk[]): string {
-  if (content.includes(REJECTION_MESSAGE)) return content;
-  if (content.includes("**Source(s)**:")) {
-    return content;
-  }
-
+export function getReferenceLinks(relevantChunks: RelevantChunk[]): MessageReference[] {
   // Only include sources that are within 0.10 of the top score
   const topScore = Math.max(...relevantChunks.map((chunk) => chunk.score));
   const closeMatches = relevantChunks.filter((chunk) => chunk.score >= topScore - 0.1);
-  const sources = new Map<string, { file: string; title: string }>();
+  const sources = new Map<string, { file: string; title: string; description: string }>();
   for (const chunk of closeMatches) {
     const file = chunk.metadata.file;
     if (!sources.has(file)) {
       sources.set(file, {
         file,
         title: chunk.metadata.title,
+        description: chunk.metadata.description,
       });
     }
   }
-  if (sources.size === 0) return content;
-  content +=
-    "**Source(s)**: " +
-    Array.from(sources.values())
-      .map(({ file, title }) => `[${title}](${baseUrl}${file})`)
-      .join(", ");
-
-  return content;
+  if (sources.size === 0) return [];
+  return Array.from(sources.values()).map(({ file, title, description }) => ({
+    title,
+    description,
+    url: `${baseUrl}${file}`,
+  }));
 }

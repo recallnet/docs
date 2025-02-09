@@ -21,8 +21,8 @@ type SourceResponse = {
 };
 
 export async function createOpenAIEngine(): Promise<Engine> {
-  const sessionId = localStorage.getItem("chatSessionId") || crypto.randomUUID();
-  localStorage.setItem("chatSessionId", sessionId);
+  const sessionId = localStorage.getItem("recallChatSessionId") || crypto.randomUUID();
+  localStorage.setItem("recallChatSessionId", sessionId);
 
   let messages: MessageRecord[] = [];
   let aborted = false;
@@ -95,7 +95,6 @@ export async function createOpenAIEngine(): Promise<Engine> {
             continue;
           }
           if ("source" in json && !content.includes(REJECTION_MESSAGE)) {
-            console.log("source", (json as SourceResponse).source);
             if (content.includes("**Source(s)**:")) break;
             content += `\n\n${(json as SourceResponse).source}\n`;
             message.content = content;

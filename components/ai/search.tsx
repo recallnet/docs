@@ -264,6 +264,16 @@ const roleName: Record<string, string> = {
   assistant: "Recall Docs Agent",
 };
 
+function LoadingDots() {
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className="animate-[bounce_1.4s_infinite] [animation-delay:-0.32s]">.</span>
+      <span className="animate-[bounce_1.4s_infinite] [animation-delay:-0.16s]">.</span>
+      <span className="animate-[bounce_1.4s_infinite]">.</span>
+    </span>
+  );
+}
+
 function Message({
   onSuggestionSelected,
   message,
@@ -271,7 +281,9 @@ function Message({
   message: MessageRecord;
   onSuggestionSelected: (suggestion: string) => void;
 }) {
+  const { loading } = use(Context);
   const { suggestions = [], references = [] } = message;
+  const isEmptyAssistantMessage = message.role === "assistant" && !message.content;
 
   return (
     <div
@@ -284,7 +296,13 @@ function Message({
         {roleName[message.role] ?? "unknown"}
       </p>
       <div className="prose text-sm">
-        <Markdown text={message.content} />
+        {isEmptyAssistantMessage && loading ? (
+          <p className="text-fd-muted-foreground">
+            <LoadingDots />
+          </p>
+        ) : (
+          <Markdown text={message.content} />
+        )}
       </div>
       {references.length > 0 ? (
         <div className="mt-2 flex flex-row flex-wrap items-center gap-1">

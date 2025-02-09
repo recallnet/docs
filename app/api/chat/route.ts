@@ -13,8 +13,11 @@ import {
 } from "@/lib/ai";
 
 const apiKey = process.env.OPENAI_API_KEY;
+const openai = apiKey ? new OpenAI({ apiKey }) : null;
 
-const openai = new OpenAI({ apiKey });
+const MODEL = "gpt-4o-mini";
+const MAX_SESSION_REQUESTS = 50;
+const MAX_SESSION_AGE = 60 * 60 * 1000;
 
 // Naive session management
 const sessions = new Map<
@@ -25,9 +28,6 @@ const sessions = new Map<
     lastReset: number; // Track when we last reset requests
   }
 >();
-
-const MAX_SESSION_REQUESTS = 50;
-const MAX_SESSION_AGE = 60 * 60 * 1000;
 
 // Cleanup old sessions every 60 minutes
 setInterval(() => {
@@ -46,31 +46,31 @@ setInterval(() => {
 }, MAX_SESSION_AGE);
 
 export async function POST(request: Request) {
+  if (!openai) {
+    return new Response(JSON.stringify({ error: "OpenAI API key not configured" }), {
+      status: 503,
+    });
+  }
   try {
     const { sessionId, messages } = (await request.json()) as {
       sessionId: string;
       messages: MessageRecord[];
     };
-
-    // Rate limiting: 50 requests per hour
-    console.log("sessionId", sessionId);
     const session = sessions.get(sessionId) || {
       requests: 0,
       lastAccess: Date.now(),
       lastReset: Date.now(),
     };
-
     session.requests++;
     session.lastAccess = Date.now();
     sessions.set(sessionId, session);
-    console.log("session", session);
 
     if (session.requests > MAX_SESSION_REQUESTS) {
       return new Response(
         JSON.stringify({
           rejection: true,
           content:
-            "You've hit your maximum number of chat requests...join our Discord server and reach out to us there!",
+            "You've maxed out your number of chats...join our Discord server and reach out to us there!",
         }),
         { headers: { "Content-Type": "application/json" } }
       );
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
 
     // Create chat completion stream
     const stream = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: MODEL,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         {

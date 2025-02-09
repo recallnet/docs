@@ -16,6 +16,8 @@ if (!apiKey) throw new Error("Missing OpenAI API key");
 
 const openai = new OpenAI({ apiKey });
 
+const MODEL = "text-embedding-ada-002";
+
 type CategoryType = keyof typeof categories;
 
 const categories = {
@@ -128,7 +130,7 @@ async function generateEmbeddings() {
   const embeddings: DocEmbedding[] = await Promise.all(
     chunks.map(async (chunk) => {
       const embedding = await openai.embeddings.create({
-        model: "text-embedding-ada-002",
+        model: MODEL,
         input: chunk.content.trim(),
       });
 
@@ -146,7 +148,6 @@ async function generateEmbeddings() {
     })
   );
 
-  // Save to file
   await fs.writeFile(
     path.join(process.cwd(), "public", "embeddings.json"),
     JSON.stringify(embeddings)

@@ -49,7 +49,6 @@ export async function withRetry<T>(
   maxRetries: number = 3,
   baseDelay: number = 1000
 ): Promise<T> {
-  console.log("withRetry");
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       return await operation();
@@ -65,7 +64,6 @@ export async function withRetry<T>(
           ? parseFloat(retryAfter) * 1000
           : Math.min(baseDelay * Math.pow(2, attempt), 30000);
 
-        console.log(`Rate limited. Retrying in ${delay / 1000}s...`);
         await sleep(delay);
         continue;
       }
@@ -179,7 +177,6 @@ export async function getRelevantChunks(
 
   // If no relevant matches, return empty array
   if (relevantScores.length === 0) {
-    console.log("No relevant matches found for query:", query);
     return [];
   }
 

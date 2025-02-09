@@ -1,3 +1,4 @@
+import Link from "fumadocs-core/link";
 import {
   ArrowRight,
   BookOpen,
@@ -85,7 +86,7 @@ export function LandingPage() {
               coordination, supercharging their abilities.
             </p>
             <div className="mt-8 flex gap-4">
-              <a
+              <Link
                 href="/intro"
                 className={cn(
                   buttonVariants({
@@ -96,7 +97,7 @@ export function LandingPage() {
               >
                 <span className="text-md mr-1">Get started</span>
                 <ArrowRight className="size-4" />
-              </a>
+              </Link>
             </div>
           </div>
 

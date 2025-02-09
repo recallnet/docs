@@ -11,7 +11,7 @@ export async function GET() {
         "Cache-Control": "public, max-age=3600",
       },
     });
-  } catch (error) {
+  } catch {
     return new Response("Embeddings not found", { status: 404 });
   }
 }

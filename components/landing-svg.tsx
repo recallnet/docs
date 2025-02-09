@@ -11,7 +11,7 @@ interface LandingSvgProps {
 export default function LandingSvg({
   height = 325,
   width = 325,
-  text = "/cot/mem.txt",
+  text = "/cot/mem.jsonl",
 }: LandingSvgProps) {
   const svgWidth = 30.333;
   const svgHeight = 30.333;
@@ -36,13 +36,12 @@ export default function LandingSvg({
   return (
     <div
       id="landing-svg"
-      className="invisible relative grid lg:visible"
+      className="relative grid"
       style={{
         width,
         height,
         gridTemplateColumns: `repeat(${columns}, ${svgWidth}px)`,
         gridTemplateRows: `repeat(${rows}, ${svgHeight}px)`,
-        overflow: "hidden", // Prevent SVGs from overflowing
       }}
     >
       {/* Center text */}
@@ -50,7 +49,7 @@ export default function LandingSvg({
         <div
           className="absolute flex items-center justify-center"
           style={{
-            left: "52%",
+            left: "51.5%",
             top: "52%",
             transform: "translate(-50%, -50%)",
             width: "auto",

@@ -129,6 +129,24 @@
 
 /* Custom styles */
 
+/* Navbar changes to make opaque and use different bg on light mode */
+#nd-subnav > div {
+  @apply bg-fd-background backdrop-blur-none;
+}
+
+#nd-subnav {
+  @apply bg-fd-background backdrop-blur-none;
+}
+
+/* Sidebar changes to make opaque and use different bg on light mode */
+#nd-sidebar {
+  @apply bg-fd-secondary backdrop-blur-none;
+}
+
+.dark #nd-sidebar {
+  @apply bg-fd-background;
+}
+
 /* Enforce slightly smaller font for code on all pages */
 code {
   color: inherit;
@@ -143,13 +161,6 @@ button {
 :root[class~="dark"] [data-hide-on-theme="dark"],
 :root:not([class~="dark"]) [data-hide-on-theme="light"] {
   @apply hidden;
-}
-
-/* Hide the landing SVG on smaller widths */
-@media (max-width: 1023px) {
-  #landing-svg {
-    @apply hidden;
-  }
 }
 
 /* Floating animation on landing page */
@@ -174,7 +185,6 @@ button {
 }
 
 /* Reduce gap in list elements */
-
 ul > li {
   margin-left: 1rem;
 }

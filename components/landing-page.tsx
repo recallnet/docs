@@ -4,9 +4,12 @@ import {
   BookOpen,
   Database,
   Expand,
+  File,
+  Lock,
   MemoryStick,
   Network,
   Plug2,
+  Terminal,
   Timer,
 } from "lucide-react";
 
@@ -36,30 +39,54 @@ const features = [
   },
 ];
 
-const quickstartCards = [
+const touchpointCards = [
   {
     title: "Introduction",
     icon: <BookOpen className="text-purple h-5 w-5" />,
-    href: "/intro/what-is-recall",
-    description: "Learn about Recall's core concepts and architecture",
+    href: "/intro",
+    description: "Learn about Recall's core concepts and network basics",
   },
   {
-    title: "Plugins",
+    title: "Quickstarts",
     icon: <Plug2 className="text-purple h-5 w-5" />,
-    href: "/plugins",
-    description: "Store and manage data with easy to use plugins",
+    href: "/intro/quickstarts/eliza",
+    description: "Quickstarts for agents, plugins, and more",
+  },
+  {
+    title: "CLI",
+    icon: <Terminal className="text-purple h-5 w-5" />,
+    href: "/tools/cli",
+    description: "Learn how to use the Recall CLI",
   },
   {
     title: "SDKs",
     icon: <Timer className="text-purple h-5 w-5" />,
-    href: "/sdk",
+    href: "/tools/sdk",
     description: "Build agents with the TypeScript or Rust SDKs",
   },
   {
-    title: "Services",
+    title: "Verifiable sources",
+    icon: <Timer className="text-purple h-5 w-5" />,
+    href: "/sources",
+    description: "Create and verify data sources that can be used by agents",
+  },
+  {
+    title: "Access control",
+    icon: <Lock className="text-purple h-5 w-5" />,
+    href: "/agents/access",
+    description: "Understand how Recall controls data access",
+  },
+  {
+    title: "Contracts",
+    icon: <File className="text-purple h-5 w-5" />,
+    href: "/protocol/contracts",
+    description: "Dive into the smart contracts that power Recall",
+  },
+  {
+    title: "Architecture",
     icon: <Database className="text-purple h-5 w-5" />,
-    href: "/ceramic",
-    description: "Event streaming and databases for your agents",
+    href: "/protocol/architecture",
+    description: "Review technical details like subnets and data availability",
   },
 ];
 
@@ -129,7 +156,7 @@ export function LandingPage() {
       <div className="rounded-lg p-8">
         <h2 className="text-2xl font-bold">Quickstart</h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {quickstartCards.map((card, index) => (
+          {touchpointCards.map((card, index) => (
             <Card
               key={index}
               className="bg-secondary hover:bg-secondary/90 rounded-lg border p-4 no-underline transition-all duration-100"

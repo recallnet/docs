@@ -1,5 +1,5 @@
 {
   "title": "Architecture",
   "description": "Architecture",
-  "pages": ["subnets", "consensus", "contracts", "state-channels", "data-availability"]
+  "pages": ["subnets", "consensus", "contracts", "data-availability"]
 }

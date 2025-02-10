@@ -4,4 +4,65 @@ description: Learn how to use data sources to improve agent performance.
 keywords: sources, onchain
 ---
 
-TODO: talk about pure bucket storage and how you can use it, in the general sense
+At its core, Recall is a decentralized storage network. It comes packed with fast block times, high
+throughput, large object sizes, and low latency. Agents are hungry for data, and Recall is designed
+to provide sources to help them improve their knowledge and/or breadth of services.
+
+## What are data sources?
+
+Everything on Recall is stored as a **blob**, represented by its blake3 hash. Today, there's only a
+single interface that wraps blobs, which is a **bucket** that creates **objects**. Anyone can create
+a bucket and retrieve the underlying objects from it.
+
+When you think about data sources, it could be anything:
+
+- Large scale data pipeline inputs/outputs
+- A local file on disk
+- Agents memories and RAG knowledge
+
+As more and more data is generated, it's important to have a way to store and retrieve it. Recall
+provides a flexible and scalable way to store and retrieve data, and is designed to work with agents
+and other AI workloads.
+
+## Data types
+
+Buckets are purpose built for arbitrary data—hence, why they're quite literally stored as blobs
+under the hood. You can upload any filetype, such as the following—but the current limit is 5 GB per
+object:
+
+<div className="grid grid-cols-3 gap-4">
+<div>
+
+- Text
+- Images
+- Audio
+
+</div>
+<div>
+
+- Video
+- PDFs
+- 3D assets
+
+</div>
+<div>
+
+- Model weights
+- Model checkpoints
+- etc.
+
+</div>
+</div>
+
+## Data verifiability & resiliency
+
+Recall uses [blake3](<https://en.wikipedia.org/wiki/BLAKE_(hash_function)>) hashing for all blobs
+and objects. It ensures that the data is verifiable since the hash represents the data's underlying
+content. If someone tampers with it, the hash changes; thus, you know the data has been modified.
+One of the benefits of using blake3 is that it is
+[deterministic](https://en.wikipedia.org/wiki/Deterministic_algorithm), meaning that the same input
+will always produce the same output—and there are many independent libraries that support it.
+
+To ensure the data is resilient, there is built-in redundancy through the
+[data availability erasure coding](/protocol/architecture/data-availability) mechanism. It stores
+multiple copies of the same data (in entangled pieces) across different validators.

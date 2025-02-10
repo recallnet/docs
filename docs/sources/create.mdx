@@ -4,4 +4,34 @@ description: Learn how to create a data source to improve agent performance.
 keywords: sources, onchain
 ---
 
-TODO: quick how to on creating a bucket and pushing data to it
+Any of the core [developer tools](/tools/cli) can be used to create buckets, write to them, and read
+from them. Every bucket is created as an onchain contract. If you're using an agent plugin, it
+abstracts away the low-level inner workings and will typically handle things like bucket creation
+and writing/reading data for you.
+
+## Bucket creation
+
+For example, the following commands will create a bucket with some metadata:
+
+```sh
+> recall bucket create --metadata 'alias=my-bucket'
+
+{
+  "address": "0xff0000000000000000000000000000000000008f",
+  "tx": {
+    ...
+  }
+}
+```
+
+Notably, the address `0xff0000000000000000000000000000000000008f` is the address of the bucket. They
+will always starts with the `0xff` prefix, indicating that it was create at the low-level Wasm layer
+(but that doesn't change anything about its usage patterns)
+
+## Providing access to a bucket
+
+If anyone is aware of this address, they can read from it—but they _cannot_ write to it unless
+otherwise granted access.
+
+The [credit](/intro/concepts#credit) system is used to control access to buckets. For more details
+on access control, see the [access and collaboration docs](/agents/access).

@@ -1,0 +1,46 @@
+---
+title: Read & write data
+description: Learn how to read and write data to a data source.
+keywords: sources, onchain
+---
+
+Once you've created a data source, you have full control over it. By default, only the owner of a
+bucket can write to it, but _anyone_ can read from it if they know the contract address.
+
+## Writing data
+
+To write data to a bucket, you can use the `recall bucket add` command. Executing the write
+operation will send the data to the network in two steps:
+
+1. Stage the data with the validator whose RPCs / APIs it is calling
+2. Finalize the data onchain with a transaction, which creates the key-value mapping in the bucket
+
+```
+> recall bucket add \
+--address 0xff0000000000000000000000000000000000008f \
+--key "hello/world" \
+~/data/hello.txt
+
+Added object in 1 second (hash=rzghyg4z3p6vbz5jkgc75lk64fci7kieul65o6hk6xznx7lctkmq; size=6)
+```
+
+Sending the data should only take a second or two, and then the data will be available to read from
+the bucket immediately. You'll notice the `rzghyg4z3p6vbz5jkgc75lk64fci7kieul65o6hk6xznx7lctkmq`
+value was logged in the response—this is the blake3 hash of the data.
+
+## Reading data
+
+To read data from a bucket, you can use the `recall bucket get` command by providing the bucket
+address and desired key:
+
+```
+> recall bucket get \
+--address 0xff0000000000000000000000000000000000008f \
+--key "hello/world"
+
+hello
+```
+
+The download speed will depend on both your connection speed and the validator's connection speed.
+Recall has [high requirements](/protocol/operators) for the hardware and bandwidth of the validator
+nodes, so you can expect fast downloads.

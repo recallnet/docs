@@ -13,6 +13,10 @@ const itemVariants = cva("size-7 rounded-full p-1.5 text-fd-muted-foreground", {
       true: "bg-fd-accent text-fd-accent-foreground",
       false: "text-fd-muted-foreground",
     },
+    hover: {
+      true: "hover:text-fd-accent-foreground transition-colors duration-100",
+      false: "",
+    },
   },
 });
 
@@ -30,7 +34,7 @@ export function ThemeToggle({
     setMounted(true);
   }, []);
 
-  const container = cn("inline-flex items-center rounded-full border p-[3px]", className);
+  const container = cn("inline-flex items-center rounded-full p-[3px]", className);
 
   if (mode === "light-dark") {
     const value = mounted ? resolvedTheme : null;
@@ -42,8 +46,11 @@ export function ThemeToggle({
         data-theme-toggle=""
         {...props}
       >
-        <Sun className={cn(itemVariants({ active: value === "light" }))} />
-        <Moon className={cn(itemVariants({ active: value === "dark" }))} />
+        {value === "light" ? (
+          <Moon className={cn(itemVariants({ hover: true }))} />
+        ) : (
+          <Sun className={cn(itemVariants({ hover: true }))} />
+        )}
       </button>
     );
   }

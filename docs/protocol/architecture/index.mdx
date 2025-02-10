@@ -1,0 +1,172 @@
+---
+title: Overview
+description: Understand the basics behind what subnets are and how they work.
+---
+
+The Recall blockchain thus provides high-throughput, low-latency data ingest and retrieval, high
+availability and fault tolerance, permission-less and owner-less operation, and _direct and
+programmatic access_ to data. This means users can access and manipulate stored data directly
+through onchain smart contracts, while offchain services provide scalable data storage, retrieval,
+and computation.
+
+## How does it work?
+
+The patterns described above make Recall better-suited than other blockchain-based solutions, and
+competitive with traditional cloud services in terms of cost, throughput, scalability, usability,
+and features. The three key enablers for this are:
+
+1. **Hierarchical consensus** which allows Recall to scale to millions of users and billions of data
+   objects by organizing the network into multiple _subnets_,
+2. **Consensus coprocessor** framework that moves expensive computation and data synchronization off
+   the blockchain's hotpath, and
+3. **Alpha-entangled** blob storage which enables verifiable storage and retrieval of large binary
+   blobs.
+
+## Subnets
+
+Subnets provide a horizontally scalable, verifiable, and cost-effective data layer. The subnet
+design is purpose built for advanced onchain data storage patterns and use cases, similar to
+on-demand horizontal scaling system in more "traditional" (Web 2.0) applications. These subnets
+function practically independently, under their own consensus, while inheriting security from their
+parent subnet. This hierarchical structure also means subnets themselves can optimize for latency,
+while the overall network can scale horizontally to accommodate greater throughput.
+
+## Data availability
+
+The data availability process encodes data fragments into a robust and **tamperproof data mesh**,
+and these codes enable efficient data recovery, reduced storage costs, decentralized repair, and
+data integrity, as well as the ability to tie information about the **data recency and retention
+requirements** ([TTL](https://en.wikipedia.org/wiki/Time_to_live)) into the way the data is encoded.
+It enhances data reliability and fault tolerance by breaking down a data blob into smaller fragments
+and then generating additional redundant fragments.
+
+## Contracts
+
+The interface is implemented as a _contract_, deployed on a subnet. Data is represented as an
+onchain hash within a contract's state, and the actual data is stored offchain in a node's local
+(networked) block store. Spawning new buckets is handled with a general factory smart contract,
+which the various Recall interfaces (SDK, CLI) call under the hood.
+
+More generally, there are two types of contracts on Recall network: **_Wasm_** contracts, and EVM
+**_smart_** contracts. The two differ in how what they can handle and related intents.
+
+Recall (currently) includes two core contract primitives:
+
+- **Buckets**: Key-value object storage for arbitrary data.
+- **Timehubs**: Merklized data structures for onchain data anchoring (attestation of offchain data).
+
+### Wasm contract
+
+A _Wasm_ contract is an
+[Wasm runtime contract](https://docs.filecoin.io/basics/the-blockchain/actors) used to store and
+manage data with low-level control. The polyglot execution runtime allows Wasm contracts to be
+written in Rust (or other languages) and then compiled accordingly. Thus, these have more flexible
+and data-oriented programmatic control, so they're called "Wasm contracts" to help distinguish them
+from EVM smart contracts.
+
+### Smart contract
+
+A _smart_ contract is a "traditional" EVM contract, most commonly written in Solidity. These expose
+EVM-specific types, state access, and functionality, but they lack the more robust features that a
+Wasm runtime supports.
+
+## Accounts
+
+Accounts (ECDSA, secp256k1) are used to send data-carrying transactions as you would on any
+blockchain system. Thus, all mutations are onchain transactions within a subnet, so funds are
+required to pay for writes.
+
+## Payment
+
+### Tokens
+
+Tokens are used to pay for typical blockchain operations, like deploying contracts (e.g., creating a
+bucket), adding an object, or transferring funds. Whenever _data is written_ to a contract and
+stored as a blob on the network, _credits_ are used.
+
+<Callout>
+
+You'll often see the phrase _native coin_ or _native token_. A Recall subnet doesn't really "care"
+what the native coin is; it simply uses the concept of a token as a medium of exchange for chain
+transactions. In practice, the parent rootnet specifies a _supply source_ upon subnet creation,
+dictating how you move funds into or out of the subnet through deposits and withdrawals. This is
+where the RECALL ERC20 token is used; it's the supply source on the parent chain defined for the
+child subnet.
+
+</Callout>
+
+### Credits
+
+Credits are a useful mechanism to predictably manage storage costs and avoid surprises, and they are
+used to pay for all storage within the Recall network. You can sponsor (delegate) your credits to
+contracts on the network, and whenever data is written to a contract, credits are debited from your
+credit balance upon ongoing debit epochs (sparse block heights). It allows for more fine-grained
+accounting because 1 subnet native coin = $10^{18}$ credits.
+
+Namely, you **MUST have credits** to store data on Recall. For example, to add an object to a
+bucket, you spend credits that allocate storage space for the object, including
+[TTL](#time-to-live-ttl) parameters. Credits will automatically get withdrawn from your credit
+balance as storage continues.
+
+You can manage your credits with the `recall credit` command, further described in the
+[credits](/cli/commands#credits) section below.
+
+### Gas allowance
+
+Whenever you purchase credits, the number of tokens you spend will also be allocated to a _gas
+allowance_ for your account. Recall that tokens are used to pay for gas. If you have a gas allowance
+balance, you'll instead draw down from this balance. For example, if you create a bucket _and_ you
+have a gas allowance, your token balance will remain unchanged, but your gas allowance will
+decrease. In the same example but with _no gas allowance balance_, you'll simply draw down from your
+token balance.
+
+## Access control
+
+Access control is fully managed by credit workflows with approvals and revocations. You start buy
+purchasing credit with an account (i.e., wallet), and once this account creates a bucket, all object
+related storage operations will draw down from these credits.
+
+If you want to enable other accounts to write to this bucket, you can use a credit _approval_ to
+enable some other account to draw down from this admin account's credit balance. Revocations follow
+the same pattern where you can revoke an approval for a provisioned account.
+
+## Broadcasting transactions
+
+Commands that write data will broadcast a transaction to the network. You'll see a
+`--broadcast-mode` flag that can be set to the following values:
+
+- `commit`: Wait until the transaction is delivered and final (note: this is the default behavior).
+- `sync`: Wait only for the result of a local transaction pre-check, but don't wait for it to be
+  delivered to all validators (i.e., added risk the transaction may fail during delivery).
+- `async`: Does not wait at all. You will not see errors in your terminal (i.e., added risk the
+  transaction may fail during delivery).
+
+## Querying state
+
+Many of the read-only commands let you pass a `--height` option to query the chain's state at a
+specific block height. The following describes the three possible values you can use:
+
+- `committed`: The latest committed block (note: this is the default behavior).
+- `pending`: Consider pending state changes in the query.
+- `<number>`: Pass a specific block height (e.g., `123`) to fetch state from.
+
+## Time-to-live (TTL)
+
+A few operations—like uploading objects to buckets—have a time-to-live (TTL) value (denoted by the
+`--ttl` flag). It's primarily used for objects stored in buckets.
+
+The TTL value you set represents how long the object will be stored in the network before it is
+garbage collected and deleted. If a TTL is specified, credits will be reserved for the duration,
+after which the object will be deleted. If a TTL is not specified, the object will be continuously
+renewed about every hour. If the owner's free credit balance is exhausted, the object will be
+deleted.
+
+## Chain RPCs & funds
+
+First, to get RECALL tokens, reach out to the Recall team.
+
+Since Recall is built on top of Filecoin, you must also have FIL in your account to interact with
+the network if you are bridging RECALL tokens into the subnet. Recall is currently only live on the
+Filecoin Calibration network. You can get tFIL via the faucet
+[here](https://faucet.calibnet.chainsafe-fil.io/funds.html), and for reference, Filecoin chain
+information can be found [here](https://chainlist.org/?search=filecoin&testnets=true).

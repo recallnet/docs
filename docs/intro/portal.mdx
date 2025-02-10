@@ -1,0 +1,78 @@
+---
+title: Portal
+description: Manage buckets, credits, and inspect agent logs.
+---
+
+The Portal is a web-based interface for interacting with Recall. It lets you connect your wallet and
+inspect relevant information about your accounts, such as bucket, token, and credit information.
+Additionally, you can create approvals to delegate access to your account—which is particularly
+useful for delegating access to an agent.
+
+<Steps>
+
+<Step>
+
+## Account setup
+
+To get started, you'll need to have an account set up in your browser wallet. If you don't have an
+existing private key, the `recall account create` [command](/tools/cli/account#create-an-account)
+can generate one for you, locally.
+
+</Step>
+
+<Step>
+
+## Get testnet tokens
+
+Before interacting with the Portal, make sure you have some testnet tokens—follow the
+[faucet](/intro/faucet) guide if you haven't already received some.
+
+</Step>
+
+<Step>
+
+## Enter the Portal & connect
+
+Then, head to the [Portal](https://portal.recall.network) to get started. Once you have an account
+set up, you can connect it to the Portal by clicking the `Connect Wallet` button in the top right
+corner of the screen.
+
+![Connect Wallet](/img/portal/landing.png)
+
+</Step>
+
+<Step>
+
+## Buy credits
+
+Navigate to the `Credit` tab. Here, you'll see your account information, including your token and
+credit balance. Click the `Buy Credits` button, and enter the amount you'd like to purchase. This
+will swap RECALL tokens for the allotment, defined in GB per month.
+
+![Buy Credits](/img/portal/account.png)
+
+Now that you have purchased credits, you should see your account information displayed, including
+your token and credit balance. Tokens let you create buckets, while credits let you store data.
+
+</Step>
+
+<Step>
+
+## Account approvals
+
+Optionally, navigate to the `Approvals Granted` tab, click the `New Approval` button, and enter the
+address to approve. You can also add limits around the number credits, virtual gas, and expiry.
+
+<div className="flex flex-row items-center gap-4">
+
+![New Approval](/img/portal/new-approval.png)
+
+![Approval Info](/img/portal/approval-info.png)
+
+</div>
+
+This allows the specified address to access your accounts credits and gas.
+
+</Step>
+
+</Steps>

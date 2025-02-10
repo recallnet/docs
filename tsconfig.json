@@ -30,13 +30,15 @@
     "strict": true,
     "target": "ESNext"
   },
+
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next.config.js",
-    "tailwind.config.ts"
+    "tailwind.config.ts",
+    "scripts/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

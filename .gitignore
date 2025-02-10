@@ -12,6 +12,7 @@
 /out/
 /build
 *.tsbuildinfo
+/public/static/embeddings.json
 
 # misc
 .DS_Store
@@ -23,6 +24,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # others
+.env
 .env*.local
 .vercel
 next-env.d.ts

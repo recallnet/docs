@@ -12,46 +12,29 @@ import type { BaseLayoutProps } from "@/components/theme/shared";
  */
 export const baseOptions: BaseLayoutProps = {
   links: [
-    {
-      type: "menu",
-      text: "Getting started",
-      items: [
-        {
-          text: "What is Recall?",
-          url: "/intro/what-is-recall",
-        },
-      ],
-    },
-    {
-      type: "menu",
-      text: "Protocol",
-      items: [
-        {
-          text: "Architecture ",
-          url: "/architecture",
-        },
-      ],
-    },
-    {
-      type: "menu",
-      text: "Services",
-      items: [
-        {
-          text: "Ceramic",
-          url: "/ceramic",
-        },
-        {
-          text: "Databases",
-          url: "/databases",
-        },
-      ],
-    },
+    // {
+    //   type: "menu",
+    //   text: "Get started",
+    //   items: [
+    //     {
+    //       text: "Introduction",
+    //       url: "/intro",
+    //     },
+    //   ],
+    // },
     // External links
     {
       external: true,
-      text: "Studio",
-      description: "Studio",
-      url: "https://studio.recall.network",
+      text: "Portal",
+      description: "Portal",
+      url: "https://portal.recall.network",
+      position: "right",
+    },
+    {
+      external: true,
+      text: "Faucet",
+      description: "Faucet",
+      url: "https://faucet.recall.network",
       position: "right",
     },
     {
@@ -63,7 +46,7 @@ export const baseOptions: BaseLayoutProps = {
     {
       type: "icon",
       external: true,
-      text: "X",
+      text: "X / Twitter",
       icon: <FaXTwitter />,
       url: "https://x.com/recallnet",
     },
@@ -81,20 +64,20 @@ export const baseOptions: BaseLayoutProps = {
         <div data-hide-on-theme="dark" className="flex items-center gap-2">
           <Image
             alt="Recall"
-            className="theme-light"
-            height={22}
-            src="/img/recall-light.svg"
+            className="theme-light h-[30px] w-[100px]" // Updated
+            height={30}
             width={100}
+            src="/img/recall-light.svg"
           />
           <span className="ml-1 text-2xl">Docs</span>
         </div>
         <div data-hide-on-theme="light" className="flex items-center gap-2">
           <Image
             alt="Recall"
-            className="theme-dark"
-            height={22}
-            src="/img/recall-dark.svg"
+            className="theme-dark h-[30px] w-[100px]" // Updated
+            height={30}
             width={100}
+            src="/img/recall-dark.svg"
           />
           <span className="ml-1 text-2xl">Docs</span>
         </div>

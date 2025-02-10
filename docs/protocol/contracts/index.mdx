@@ -1,0 +1,163 @@
+---
+title: Chain & contract info
+description: Core contracts and related network information.
+keywords:
+  contracts, chain id, testnet, localnet, devnet, subnet, parent,rpc, api, gateway, registry,
+  validator gater, validator rewarder, subnet actor, blob manager, bucket manager, credit manager
+---
+
+You can find all of the testnet information below, such as contract addresses, chain information,
+and available RPCs. The RPCs and APIs listed below are public endpoints for Recall nodes ran by the
+core team. The descriptions below break down the core contracts and their locations:
+
+- **Subnet**: The Recall chain where all transactions and storage operations occur. Most commonly,
+  this what developers will interact with.
+- **Parent**: The "rootnet" chain for managing Recall subnets, validators, checkpointing state, and
+  other core protocol operations. For example, the Recall testnet's parent chain is the Filecoin
+  Calibration testnet.
+
+<Callout type="warn">
+
+The Recall network is still under development, so these values are **heavily** subject to change.
+The testnet will be upgraded every ~2 weeks, and each upgrade will change certain contract addresses
+and **delete all network data**.
+
+</Callout>
+
+## Testnet
+
+### Chain & subnet ID
+
+| Description | Value                                                   |
+| ----------- | ------------------------------------------------------- |
+| Chain ID    | `2481632`                                               |
+| Subnet ID   | `/r314159/t410fxhurcl3in7vbb3l245noc3nace7il74t45js7sa` |
+
+The subnet ID is comprised of the "root" chain ID and a path containing the subnet actor contract
+address. For example, the string above denotes the rootnet L1 is chain ID `314159` (Filecoin
+Calibration), and only one child subnet exists, defined by the subnet actor contract address
+(displayed in its Wasm-style format).
+
+### RPCs and APIs
+
+| Description    | Value                                           |
+| -------------- | ----------------------------------------------- |
+| Subnet EVM RPC | `https://evm.node-0.testnet.recall.network`     |
+| Object API     | `https://objects.node-0.testnet.recall.network` |
+| CometBFT RPC   | `https://api.node-0.testnet.recall.network`     |
+| Parent EVM RPC | `https://api.calibration.node.glif.io/rpc/v1`   |
+
+<Callout type="info">
+
+The Recall team runs three total nodes, so you can replace the `node-0` value with `node-1` or
+`node-2` to connect to a different node.
+
+</Callout>
+
+### Contracts
+
+#### Core
+
+| Description           | Location | Address                                                                                                                                    |
+| --------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Gateway               | Subnet   | [`0x77aa40b105843728088c0132e43fc44348881da8`](https://explorer.testnet.recall.network/address/0x77aa40b105843728088c0132e43fc44348881da8) |
+| Registry              | Subnet   | [`0x74539671a1d2f1c8f200826baba665179f53a1b7`](https://explorer.testnet.recall.network/address/0x74539671a1d2f1c8f200826baba665179f53a1b7) |
+| Supply source (ERC20) | Parent   | [`0x2e6453107b4417eC2fB58ABDcc2968955Bd005Df`](https://calibration.filfox.info/en/address/0x2e6453107b4417eC2fB58ABDcc2968955Bd005Df)      |
+| Gateway               | Parent   | [`0x45da97E918183cA1f2891E277F600fC0B2dDD9dC`](https://calibration.filfox.info/en/address/0x45da97E918183cA1f2891E277F600fC0B2dDD9dC)      |
+| Registry              | Parent   | [`0xd7719695eE7042cDCFF4065ef93346bF33222d78`](https://calibration.filfox.info/en/address/0xd7719695eE7042cDCFF4065ef93346bF33222d78)      |
+| Validator gater       | Parent   | [`0x7180b1e71814a3cdc62a414ae02e3f6e1314b209`](https://calibration.filfox.info/en/address/0x7180b1e71814a3cdc62a414ae02e3f6e1314b209)      |
+| Validator rewarder    | Parent   | [`0xD67851A6888556111087E24519b6D70DA57dAa5F`](https://calibration.filfox.info/en/address/0xD67851A6888556111087E24519b6D70DA57dAa5F)      |
+| Subnet actor          | Parent   | [`0xb9e9112f686fea10ed7ae75ae16da0113e85ff93`](https://calibration.filfox.info/en/address/0xb9e9112f686fea10ed7ae75ae16da0113e85ff93)      |
+
+Note that the subnet contracts will always be the same for any new subnet deployed. The parent
+contracts may change, up until the testnet is stabilized.
+
+#### Solidity wrappers
+
+| Description    | Location | Address                                                                                                                                    |
+| -------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Blob manager   | Subnet   | [`0x7180B1e71814A3cdC62A414Ae02e3f6E1314B209`](https://explorer.testnet.recall.network/address/0x7180B1e71814A3cdC62A414Ae02e3f6E1314B209) |
+| Bucket manager | Subnet   | [`0xfbCF213040240BA86Fed92961BB60625233641a1`](https://explorer.testnet.recall.network/address/0xfbCF213040240BA86Fed92961BB60625233641a1) |
+| Credit manager | Subnet   | [`0xDB85431B6a016e1652c7E898918d787B6aef7185`](https://explorer.testnet.recall.network/address/0xDB85431B6a016e1652c7E898918d787B6aef7185) |
+
+## Localnet
+
+### Chain & subnet ID
+
+Since localnet is a deterministic local-only development network, the subnet ID and chain ID will
+always be the same.
+
+| Description | Value                                                   |
+| ----------- | ------------------------------------------------------- |
+| Chain ID    | `248163216`                                             |
+| Subnet ID   | `/r314159/t410f6gbdxrbehnaeeo4mrq7wc5hgq6smnefys4qanwi` |
+
+### RPCs and APIs
+
+| Description    | Value                    |
+| -------------- | ------------------------ |
+| Subnet EVM RPC | `http://127.0.0.1:8645`  |
+| Object API     | `http://127.0.0.1:8001`  |
+| CometBFT RPC   | `http://127.0.0.1:26657` |
+| Parent EVM RPC | `http://127.0.0.1:8545`  |
+
+Note that the localnet spins up a dockerized three node network. The EVM and CometBFT values
+increment 100, and object API increments 1. You can verify this by inspecting the docker images.
+
+### Contracts
+
+#### Core
+
+| Description           | Location | Address                                      |
+| --------------------- | -------- | -------------------------------------------- |
+| Gateway               | Subnet   | `0x77aa40b105843728088c0132e43fc44348881da8` |
+| Registry              | Subnet   | `0x74539671a1d2f1c8f200826baba665179f53a1b7` |
+| Supply source (ERC20) | Parent   | `0x4A679253410272dd5232B3Ff7cF5dbB88f295319` |
+| Gateway               | Parent   | `0x9A676e781A523b5d0C0e43731313A708CB607508` |
+| Registry              | Parent   | `0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44` |
+| Validator gater       | Parent   | `0x70e0bA845a1A0F2DA3359C97E0285013525FFC49` |
+| Validator rewarder    | Parent   | `0x09635F643e140090A9A8Dcd712eD6285858ceBef` |
+| Subnet actor          | Parent   | `0xf1823bc4243b40423b8c8c3f6174e687a4c690b8` |
+
+#### Solidity wrappers
+
+| Description    | Address                                      |
+| -------------- | -------------------------------------------- |
+| Blob manager   | `0xe1Aa25618fA0c7A1CFDab5d6B456af611873b629` |
+| Bucket manager | `0xf7Cd8fa9b94DB2Aa972023b379c7f72c65E4De9D` |
+| Credit manager | `0x82C6D3ed4cD33d8EC1E51d0B5Cc1d822Eaa0c3dC` |
+
+## Devnet
+
+Since devnet is also a deterministic local-only development network, the subnet ID and chain ID will
+always be the same. It differs from the localnet in that it doesn't have the concept of a "parent"
+chain and is meant for testing core protocol changes.
+
+### Chain & subnet ID
+
+| Description | Value              |
+| ----------- | ------------------ |
+| Chain ID    | `1942764459484029` |
+| Subnet ID   | `test`             |
+
+### RPCs and APIs
+
+| Description    | Value                    |
+| -------------- | ------------------------ |
+| Subnet EVM RPC | `http://127.0.0.1:8545`  |
+| Object API     | `http://127.0.0.1:8001`  |
+| CometBFT RPC   | `http://127.0.0.1:26657` |
+
+<Callout type="info">
+
+Since no "parent" chain is used in the local-only `devnet` network, there's no parent RPCs or
+contracts.
+
+</Callout>
+
+#### Core
+
+| Description     | Address                                      |
+| --------------- | -------------------------------------------- |
+| Subnet gateway  | `0x77aa40b105843728088c0132e43fc44348881da8` |
+| Subnet registry | `0x74539671a1d2f1c8f200826baba665179f53a1b7` |

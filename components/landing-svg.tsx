@@ -8,7 +8,11 @@ interface LandingSvgProps {
   text?: string;
 }
 
-export default function LandingSvg({ height = 325, width = 325, text }: LandingSvgProps) {
+export default function LandingSvg({
+  height = 325,
+  width = 325,
+  text = "/cot/mem.jsonl",
+}: LandingSvgProps) {
   const svgWidth = 30.333;
   const svgHeight = 30.333;
   const columns = Math.ceil(width / svgWidth);
@@ -32,13 +36,12 @@ export default function LandingSvg({ height = 325, width = 325, text }: LandingS
   return (
     <div
       id="landing-svg"
-      className="invisible relative grid lg:visible"
+      className="relative grid"
       style={{
         width,
         height,
         gridTemplateColumns: `repeat(${columns}, ${svgWidth}px)`,
         gridTemplateRows: `repeat(${rows}, ${svgHeight}px)`,
-        overflow: "hidden", // Prevent SVGs from overflowing
       }}
     >
       {/* Center text */}
@@ -46,7 +49,7 @@ export default function LandingSvg({ height = 325, width = 325, text }: LandingS
         <div
           className="absolute flex items-center justify-center"
           style={{
-            left: "52%",
+            left: "51.5%",
             top: "52%",
             transform: "translate(-50%, -50%)",
             width: "auto",
@@ -54,7 +57,9 @@ export default function LandingSvg({ height = 325, width = 325, text }: LandingS
             zIndex: 10,
           }}
         >
-          <span className="font-mono dark:text-neutral-300">{text}</span>
+          <span className="cursor-not-allowed font-mono whitespace-pre-wrap dark:text-neutral-300">
+            {text}
+          </span>
         </div>
       )}
 
@@ -88,7 +93,7 @@ export default function LandingSvg({ height = 325, width = 325, text }: LandingS
                 height={`${svgHeight}px`}
                 style={{
                   transform: flippedIndices.has(i) ? "scaleX(-1)" : undefined,
-                  transition: "transform 0.5s ease",
+                  transition: "transform 0.25s ease",
                 }}
               >
                 <path

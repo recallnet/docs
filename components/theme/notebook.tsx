@@ -103,7 +103,7 @@ export function DocsLayout({
               {sidebarBanner}
               {tabs.length > 0 ? <RootToggle options={tabs} className="-mx-2" /> : null}
             </SidebarHeader>
-            <SidebarViewport>
+            <SidebarViewport className="pb-6">
               <div className="mb-4 empty:hidden lg:hidden">
                 {links.map((item, i) => (
                   <SidebarLinkItem key={i} item={item} />
@@ -112,11 +112,20 @@ export function DocsLayout({
               <SidebarPageTree components={sidebarComponents} />
             </SidebarViewport>
             <SidebarFooter>
-              {!props.disableThemeSwitch ? <ThemeToggle className="w-fit" /> : null}
-              {sidebarFooter}
+              {sidebarFooter ? (
+                sidebarFooter
+              ) : (
+                <>{!props.disableThemeSwitch && <ThemeToggle className="w-fit md:hidden" />}</>
+              )}
             </SidebarFooter>
           </Aside>
-          <DocsNavbar nav={nav} links={links} i18n={i18n} sidebarCollapsible={sidebarCollapsible} />
+          <DocsNavbar
+            nav={nav}
+            links={links}
+            i18n={i18n}
+            sidebarCollapsible={sidebarCollapsible}
+            disableThemeSwitch={props.disableThemeSwitch}
+          />
           <StylesProvider {...pageStyles}>{props.children}</StylesProvider>
         </main>
       </NavProvider>
@@ -129,11 +138,13 @@ function DocsNavbar({
   links,
   nav = {},
   i18n,
+  disableThemeSwitch,
 }: {
   nav: DocsLayoutProps["nav"];
   sidebarCollapsible: boolean;
   i18n: boolean;
   links: LinkItemType[];
+  disableThemeSwitch?: boolean;
 }) {
   return (
     <Navbar>
@@ -191,6 +202,7 @@ function DocsNavbar({
           <Languages className="size-5" />
         </LanguageToggle>
       ) : null}
+      {!disableThemeSwitch ? <ThemeToggle className="w-fit max-md:hidden" /> : null}
     </Navbar>
   );
 }
@@ -259,12 +271,9 @@ function SidebarHeaderItems({
   if (isEmpty) return null;
 
   return (
-    <div className="flex flex-row items-center max-md:hidden">
+    <div className="center ml-2 flex flex-row items-center max-md:hidden">
       {nav.title ? (
-        <Link
-          href={nav.url ?? "/"}
-          className="inline-flex items-center gap-2.5 py-1 font-medium md:px-2"
-        >
+        <Link href={nav.url ?? "/"} className="inline-flex items-center gap-2.5 font-medium">
           {nav.title}
         </Link>
       ) : null}

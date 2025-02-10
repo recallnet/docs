@@ -1,0 +1,45 @@
+---
+title: Core contracts
+description: Protocol contracts for hierarchical subnet communication and state management.
+---
+
+The core contracts manage subnet creation, token bridging, validator entrance, and all activities
+related to the core maintaining consensus over state (checkpointing, etc).
+
+## Gateway
+
+The Gateway is a core component that handles cross-subnet communication and message passing between
+parent and child subnets in the IPC hierarchy. It manages the transfer of funds and messages between
+subnets through checkpointing mechanisms. For example, when you deposit or withdraw RECALL, the
+gateway is responsible for ensuring both the parent and child subnet states are in sync.
+
+## Registry
+
+The Registry maintains the record of all subnets in the IPC hierarchy. It helps track subnet
+relationships and configurations and works alongside the Gateway to enable proper routing and
+validation of cross-subnet communications.
+
+## Supply source
+
+The supply source for a subnet is the RECALL ERC20 token. Funds get deposited (bridged) from the
+parent chain (where the token was originally minted) into the subnet, and withdrawals are supported
+as well.
+
+## Validator gater
+
+The Validator Gater controls actions like staking, unstaking, validator membership adjustments, and
+validator power assignments.
+
+## Validator rewarder
+
+The Validator Rewarder contract handles the distribution of rewards to subnet validators.
+
+## Subnet actor
+
+The Subnet Actor manages subnet operations including: validator set management, collateral handling,
+checkpointing, cross-subnet message processing, and configuration management. It acts as the main
+control point for subnet functionality and governance.
+
+When you see a subnet string ID values (e.g., `r314159/t410...`), the `t410...` part is the contract
+address of the subnet actor but given as its
+[low-level actor ID representation](https://docs.filecoin.io/smart-contracts/filecoin-evm-runtime/address-types#ethereum-address-manager).

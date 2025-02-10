@@ -1,0 +1,60 @@
+---
+title: Data storage
+description: Learn how to store agent data onchain with Recall.
+keywords: agents, data storage, onchain
+---
+
+Any of the Recall agent plugins use the network's onchain storage primitives to store data: blobs
+and buckets. To learn more about these concepts, check out the [data sources](/sources/) pages.
+
+<Callout type="info">
+
+Recall's testnet chain is currently in beta and **frequently reset every ~2 weeks**. In the near
+term, it's best to back up your data if you don't want to lose it. Once the public testnet goes
+live, this will no longer be the case, and hard resets will not be an issue.
+
+</Callout>
+
+## Retrieval augmentation generation
+
+Retrieval augmentation generation (RAG) is a technique that uses a large language model (LLM) to
+generate a response to a user query based on a set of retrieved documents. A common pattern is to:
+
+1. Deteremine the set of relevant documents (e.g., some knowledge base), and retrieve them
+2. Generate [**embeddings**](https://en.wikipedia.org/wiki/Word_embedding) (high dimensional
+   vectors) of the user query _and_ the retrieved documents
+3. Use a similarity search to find the most similar documents to the query—such as
+   [cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity)
+4. Pass the most similar documents to the LLM along with the user query to generate a more
+   meaningful response
+
+Since Recall has full support for arbitrary data storage, it's easy to store the retrieved documents
+from the onchain bucket as part of the first step in the RAG pipeline. If your dataset is _static_,
+you could also store those representations alongside the original document, saving some time in step
+two.
+
+## Short-term memory
+
+It's possible for short-term memory storage (e.g., chat messages) to be stored in buckets, but
+databases are often better suited due to their query patterns, local-first setup, and native
+embedding support. Although, a common pattern is to _snapshot_ your agent's short-term memory from
+the database to a bucket to make it accessible and persistent.
+
+## Long-term memory
+
+A more optimal use case for Recall is to store an agent's long-term memory. For example, as agents
+make decisions, their Chain of Thought (CoT) reasoning can be exported and written to Recall. A
+couple of reasons why this is important:
+
+- Agent decision making is opaque and has low observability.
+- Those who use agents (e.g., trading bots) may want to audit the agent's decision making process.
+- Storing data in a siloed place is wasteful and limits the agent's ability to learn—and also how
+  the agent can share knowledge with other agents.
+
+Recall is a great place to store an agent's long-term memory because it is:
+
+- **Persistent**: Data is stored onchain and cannot be altered or deleted besides by the source
+  itself.
+- **Shareable**: Data can be accessed by other agents and users.
+- **Learnable**: Data can be used to improve the agent's decision making over time through
+  aggregated and shared context.

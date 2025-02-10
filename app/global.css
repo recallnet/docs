@@ -38,10 +38,10 @@
   --color-purple: hsl(259, 100%, 65%);
 
   /* Font families */
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
-    Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 
   /* Border radius */
   --radius-lg: var(--radius);
@@ -129,12 +129,39 @@
 
 /* Custom styles */
 
+/* Navbar changes to make opaque and use different bg on light mode */
+#nd-subnav > div {
+  @apply bg-fd-background backdrop-blur-none;
+}
+
+#nd-subnav,
+#nd-tocnav {
+  @apply bg-fd-background backdrop-blur-none;
+}
+
+/* Sidebar changes to make opaque and use different bg on light mode */
+#nd-sidebar {
+  @apply bg-fd-secondary backdrop-blur-none;
+}
+
+.dark #nd-sidebar {
+  @apply bg-fd-background;
+}
+
+#nd-sidebar > div {
+  @apply bg-fd-background;
+}
+
 /* Enforce slightly smaller font for code on all pages */
 code {
   color: inherit;
   font-size: 0.875em;
 }
 
+/* Customize inline code colors within callouts */
+.nd-callout code {
+  @apply border-fd-card-foreground/10 bg-fd-card-foreground/5;
+}
 button {
   @apply cursor-pointer;
 }
@@ -143,13 +170,6 @@ button {
 :root[class~="dark"] [data-hide-on-theme="dark"],
 :root:not([class~="dark"]) [data-hide-on-theme="light"] {
   @apply hidden;
-}
-
-/* Hide the landing SVG on smaller widths */
-@media (max-width: 1023px) {
-  #landing-svg {
-    @apply hidden;
-  }
 }
 
 /* Floating animation on landing page */
@@ -171,4 +191,28 @@ button {
   .floating-item {
     @apply motion-safe:animate-none;
   }
+}
+
+/* Don't wrap code in tables */
+td > code {
+  @apply whitespace-nowrap;
+}
+
+/* Customize code block styles to preserve new lines */
+.fd-codeblock pre {
+  @apply p-4 [&_.line]:block [&_.line]:min-h-[1.5em];
+}
+
+/* Reduce gap in list elements */
+.prose ul > li {
+  margin-left: 1rem;
+}
+.prose li > p {
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+}
+
+/* Handle nested lists */
+.prose li > ul {
+  margin-top: 0.5rem;
 }

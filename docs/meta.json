@@ -2,21 +2,15 @@
   "title": "Core",
   "description": "Agent memory & storage",
   "pages": [
-    "---Getting started---",
+    "---Get started---",
     "...intro",
-    "---Build---",
-    "cli",
-    "...sdk",
-    "s3",
-    "reference",
-    "---Guides---",
-    "apps",
-    "tutorials",
+    "---Networked agents---",
+    "...agents",
+    "---Verifiable sources---",
+    "...sources",
+    "---Developer tools---",
+    "...tools",
     "---Protocol---",
-    "network",
-    "operators",
-    "architecture",
-    "---Services---",
-    "...services"
+    "...protocol"
   ]
 }

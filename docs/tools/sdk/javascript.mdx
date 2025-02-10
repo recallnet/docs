@@ -1,0 +1,151 @@
+---
+title: JavaScript SDK
+description: Learn how to use the JavaScript SDK to interact with Recall.
+keywords: javascript sdk, js sdk, typescript sdk, ts sdk
+---
+
+## Overview
+
+The `@recall/sdk` package is a JS/TS SDK for the Recall Network. It is built on top of
+[viem](https://viem.sh/) and designed to interact with Recall subnets for various operations,
+including:
+
+- **Buckets**: Create buckets, add objects, get objects, delete objects, etc.
+- **Credit**: Buy credit, approve credit usage, get credit balance, etc.
+- **Accounts**: Get token balance, deposit funds, withdraw funds, etc.
+
+<Callout type="info">
+
+This section is under construction. The current JavaScript SDK is a work in progress and can be
+found [here](https://github.com/recallnet/js-recall). However, it is heavily subject to changes that
+will likely not be backwards compatible.
+
+</Callout>
+
+<Steps>
+
+<Step>
+
+## Installation
+
+First, install the package:
+
+```package-install
+npm install @recall/sdk
+```
+
+</Step>
+
+<Step>
+
+## Create a wallet client
+
+Create a wallet client from a private key:
+
+```ts
+import { createWalletClient } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+
+import { RecallClient, testnet } from "@recall/sdk";
+
+// Create a wallet client from a private key
+const privateKey = "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6";
+const walletClient = createWalletClient({
+  account: privateKeyToAccount(privateKey),
+  chain: testnet,
+  transport: http(),
+});
+
+// Create a client from the wallet client
+const recall = new RecallClient({ walletClient });
+```
+
+</Step>
+
+<Step>
+
+## Purchase credit
+
+```ts
+// Set up credit manager
+const creditManager = client.creditManager();
+
+// Buy 1 credit (swaps for RECALL tokens)
+const { meta: creditMeta } = await creditManager.buy(parseEther("1"));
+console.log("Credit purchased at:", creditMeta?.tx?.transactionHash); // 0x...
+```
+
+</Step>
+
+<Step>
+
+## Create a bucket
+
+```ts
+const bucketManager = client.bucketManager();
+const {
+  result: { bucket },
+} = await bucketManager.create();
+console.log("Bucket created:", bucket); // 0xff00...9d
+```
+
+</Step>
+
+<Step>
+
+## Add an object to a bucket
+
+```typescript
+const key = "hello/world";
+const content = new TextEncoder().encode("hello world");
+const file = new File([content], "file.txt", {
+  type: "text/plain",
+});
+// Or from a file
+// const file = fs.readFileSync("path/to/file.txt");
+
+const { meta: addMeta } = await bucketManager.add(bucket, key, file);
+console.log("Object added at:", addMeta?.tx?.transactionHash); // 0x...
+```
+
+</Step>
+
+<Step>
+
+## Query objects
+
+```typescript
+const prefix = "hello/";
+const {
+  result: { objects },
+} = await bucketManager.query(bucket, { prefix });
+console.log("Objects:", objects);
+// [
+//   {
+//     "key": "hello/world",
+//     "value": {
+//       "hash": "3rne5w4cicybqesaklbtajygs34wo4nghncskcs4c7jqaducgnkq",
+//       "size": 6,
+//       "metadata": {
+//         "content-type": "application/octet-stream"
+//       }
+//     }
+//   }
+// ]
+```
+
+</Step>
+
+<Step>
+
+## Get an object
+
+```typescript
+const { result: object } = await bucketManager.get(bucket, key);
+const contents = new TextDecoder().decode(object);
+console.log("Contents:", contents); // hello world
+```
+
+</Step>
+
+</Steps>

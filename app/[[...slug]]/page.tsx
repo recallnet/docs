@@ -9,15 +9,28 @@ import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/page
 import { notFound } from "next/navigation";
 import { HTMLAttributes } from "react";
 
+import { Callout, CalloutProps } from "@/components/theme/callout";
 import { Card, CardProps, Cards } from "@/components/theme/card";
 import { metadataImage } from "@/lib/metadata";
 import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
 
-const defaultsMdxComponents = {
+const defaultMdxComponents = {
   ...fumadocsMdxComponents,
+  Accordion,
+  Accordions,
+  File,
+  Folder,
+  Files,
+  Step,
+  Steps,
+  Tab,
+  Tabs,
+  TypeTable,
+  img: (props: ImageZoomProps) => <ImageZoom {...props} />,
   Card: (props: CardProps) => <Card {...props} />,
   Cards: (props: HTMLAttributes<HTMLDivElement>) => <Cards {...props} />,
+  Callout: (props: CalloutProps) => <Callout {...props} />,
 };
 
 export default async function Page(props: { params: Promise<{ slug?: string[] }> }) {
@@ -46,8 +59,12 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
               style: "clerk",
             }
       }
+      breadcrumb={{
+        enabled: true,
+        includeRoot: false,
+        includeSeparator: true,
+      }}
       toc={isRootPage ? undefined : page.data.toc}
-      full={page.data.full}
       editOnGithub={isRootPage ? undefined : githubInfo}
     >
       {!isRootPage && <DocsTitle>{page.data.title}</DocsTitle>}
@@ -56,18 +73,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
       <DocsBody>
         <MDX
           components={{
-            ...defaultsMdxComponents,
-            Accordion,
-            Accordions,
-            File,
-            Folder,
-            Files,
-            Step,
-            Steps,
-            Tab,
-            Tabs,
-            TypeTable,
-            img: (props: ImageZoomProps) => <ImageZoom {...props} />,
+            ...defaultMdxComponents,
           }}
         />
       </DocsBody>

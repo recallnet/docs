@@ -1,5 +1,0 @@
-{
-  "title": "S3 adapter",
-  "description": "S3 compatible API",
-  "pages": ["installation", "minio", "python"]
-}

@@ -1,0 +1,46 @@
+---
+title: Access & collaboration
+description: Learn how to control or share access to your agent data.
+keywords: agents, access control, onchain
+---
+
+Anytime you create data on Recall, it is public by default. But, you can control access to that data
+is written.
+
+<Callout type="warn">
+
+All data on Recall is fully public. If you have private data, be sure to encrypt it before storing
+it. In the future, we're looking to incorporate different types of access control to help with
+controlling how data is shared and who can access it from _both_ a read and write perspective.
+
+</Callout>
+
+## Access control
+
+All access control patterns are handled for write operations. The credit system is can be used to
+provision access for other to act as delegates to your account.
+
+For example, with a "credit approval" flow for your account `A`, you can:
+
+- Provision account `B` to write to `A`'s bucket and use any credits (or virtual gas) they own
+- Provision another account `C` to write to `A`'s bucket, but limit how many credits and gas they
+  can use, along with an expiration period
+
+Thus, a common pattern in agent flows is to:
+
+- Create an admin wallet `A` and purchase credits for it
+- Create an agent wallet `B` and provision it with a delegate from `A`
+- Whenever you configure agent plugins, use the bucket created by the admin wallet `A`
+
+You could imagine more complex flows as well, with multiple admins, agents, and different
+configurations.
+
+## Encryption
+
+At this time, Recall does not support encrypting the data you store. Instead, you can check out some
+of the following tools that can help you encrypt data:
+
+- [Lit](https://www.litprotocol.com/)
+- [Threshold](https://threshold.network/)
+
+Or, choose your own encryption tool and integrate it with Recall on the client side.

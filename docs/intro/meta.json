@@ -1,5 +1,3 @@
 {
-  "title": "Recall Docs",
-  "description": "recall docs home",
-  "pages": ["what-is-recall", "features", "concepts", "use-cases"]
+  "pages": ["index", "concepts", "quickstarts", "faucet", "portal"]
 }

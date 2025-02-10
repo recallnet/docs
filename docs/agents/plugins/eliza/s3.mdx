@@ -1,4 +1,353 @@
 ---
 title: S3 plugin
-description: Use S3-compatible storage with your agent.
+description: Use S3-compatible storage with your Eliza agent.
 ---
+
+The Eliza S3 plugin comes by default in its `plugin-node` plugin, which is widely used for its
+multi-purpose tools and actions.
+
+<Steps>
+
+<Step>
+
+## Installation
+
+You can either choose to clone the [Eliza starter kit](https://github.com/elizaos/eliza-starter.git)
+and use one of their examples, or you can install the dependencies directly. We'll run through the
+latter.
+
+First, install core Eliza packages, including `@elizaos/plugin-node` for the S3 plugin, and a couple
+other packages (for database setup, environment variables, etc.):
+
+```package-install
+npm install @elizaos/core @elizaos/plugin-node @elizaos/client-direct @elizaos/plugin-bootstrap @elizaos/adapter-sqlite better-sqlite3 dotenv
+```
+
+You'll also want to make sure you're the correct version of node (v23.3.0). For example, you can use
+either `nvm` or `pnpm` to set it up:
+
+```bash tab="nvm"
+nvm install 23.3.0
+nvm use 23.3.0
+```
+
+```bash tab="pnpm"
+pnpm env use --global 23.3.0
+```
+
+Make sure you've also installed the [Recall S3 adapter](/tools/s3) binary wherever you want to run
+the Eliza agent.
+
+</Step>
+
+<Step>
+
+## Setup
+
+### Start the adapter
+
+Then, start the Recall S3 adapter with the following command, replacing the values with your own:
+
+```sh
+recall_s3 --private-key [your_private_key] \
+--access-key AKEXAMPLES3S \
+--secret-key SKEXAMPLES3S
+```
+
+### Create a bucket
+
+You'll need an existing bucket to use the GAME plugin. You can do this with an S3-compatible tool
+(since we have the adapter running already), or use the [Recall CLI](/tools/cli) to create one. The
+key callout is that you **must** set the `alias` metadata to `eliza-bucket` (or whatever bucket
+alias you like):
+
+```sh
+recall bucket create --metadata 'alias=eliza-bucket'
+```
+
+### Create a `.env` file
+
+Next, we'll copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+There are a few environment variables you'll need to set. You can choose your model provider (as
+defined in your Eliza character file), but we'll use OpenAI for this example.
+
+```bash
+# OpenAI
+OPENAI_API_KEY=sk-...
+
+# Recall S3 adapter
+AWS_ACCESS_KEY_ID=AKEXAMPLES3S
+AWS_SECRET_ACCESS_KEY=SKEXAMPLES3S
+AWS_REGION=us-east-1
+AWS_S3_BUCKET=0x90f79bf6eb2c4f870365e785982e1f101e93b906.eliza-bucket
+AWS_S3_UPLOAD_PATH=logs/
+AWS_S3_ENDPOINT=http://localhost:8014
+AWS_S3_SSL_ENABLED=false
+AWS_S3_FORCE_PATH_STYLE=true
+```
+
+A few callouts:
+
+- The `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, and `S3_ENDPOINT` should be the same as the ones
+  you use to run the `recall_s3` binary.
+- The `S3_BUCKET` is in the format `<0x_wallet_address>.<bucket_name>`. So, you'll want to replace
+  the `0x90f79bf6eb2c4f870365e785982e1f101e93b906` with the public key that matches your agent's
+  private key.
+- The `S3_FORCE_PATH_STYLE` should be set to `true` if you're using a local S3 adapter, which
+  ensures the way objects are added or retrieved matches the adapter's expectation.
+- Optionally, you can set the `AWS_S3_UPLOAD_PATH` to a custom object prefix.
+
+</Step>
+
+<Step>
+
+## Create helper functions
+
+### Set up database and cache
+
+There are quite a few dependencies to import for the Eliza agent, so we'll start by setting up the
+utility methods for database and caching, which are required for the agent to run.
+
+```ts title="util.ts"
+import { SqliteDatabaseAdapter } from "@elizaos/adapter-sqlite";
+import { CacheManager, Character, DbCacheAdapter, IDatabaseCacheAdapter } from "@elizaos/core";
+import Database from "better-sqlite3";
+import { existsSync, mkdirSync } from "fs";
+import path from "path";
+```
+
+Our helpers functions will use a SQLite database to store the agent's state, and a cache to store
+the character's data. Later, we'll use the bootstrap plugin to create the tables in our database
+automatically, which is necessary to store agent memories and state.
+
+```ts title="util.ts"
+export function initializeDatabase(dataDir: string = "./data") {
+  if (!existsSync(dataDir)) {
+    mkdirSync(dataDir, { recursive: true });
+  }
+
+  const filePath = path.resolve(dataDir, "db.sqlite");
+  const db = new SqliteDatabaseAdapter(new Database(filePath));
+  return db;
+}
+
+export function initializeDbCache(character: Character, db: IDatabaseCacheAdapter) {
+  const cache = new CacheManager(new DbCacheAdapter(db, character.id));
+  return cache;
+}
+```
+
+</Step>
+
+<Step>
+
+## Set up the character
+
+First, we'll get our imports set up:
+
+```ts title="index.ts"
+import { DirectClient } from "@elizaos/client-direct";
+import {
+  AgentRuntime,
+  type Character,
+  ModelProviderName,
+  ServiceType,
+  defaultCharacter,
+  elizaLogger,
+} from "@elizaos/core";
+import { bootstrapPlugin } from "@elizaos/plugin-bootstrap";
+import { type AwsS3Service, createNodePlugin } from "@elizaos/plugin-node";
+import * as dotenv from "dotenv";
+
+import { initializeDatabase, initializeDbCache } from "./util.js";
+
+dotenv.config();
+```
+
+Next, we'll need to set up a character file. Eliza has many built-in character examples, and they
+also expose a default character that you can override.
+
+<Callout type="info">
+
+When we initialize the character, we'll override the model provider to use OpenAI, and set the
+`secrets` to use the environment variables we set up earlier. These are required for the S3 plugin
+to work. Also, if you don't set a model provider, it _might_ default to a downloaded model...which
+can be quite large.
+
+</Callout>
+
+```ts title="index.ts"
+// Load environment variables
+const {
+  AWS_ACCESS_KEY_ID,
+  AWS_SECRET_ACCESS_KEY,
+  AWS_REGION,
+  AWS_S3_BUCKET,
+  AWS_S3_UPLOAD_PATH,
+  AWS_S3_ENDPOINT,
+  AWS_S3_SSL_ENABLED,
+  AWS_S3_FORCE_PATH_STYLE,
+  OPENAI_API_KEY,
+} = process.env;
+
+// Create a character with the default settings and overrides
+const character = {
+  ...defaultCharacter,
+  modelProvider: ModelProviderName.OPENAI,
+  settings: {
+    secrets: {
+      AWS_ACCESS_KEY_ID,
+      AWS_SECRET_ACCESS_KEY,
+      AWS_REGION,
+      AWS_S3_BUCKET,
+      AWS_S3_UPLOAD_PATH,
+      AWS_S3_ENDPOINT,
+      AWS_S3_SSL_ENABLED,
+      AWS_S3_FORCE_PATH_STYLE,
+    },
+  },
+};
+```
+
+</Step>
+
+<Step>
+
+## Configure the agent
+
+Now, we'll create a client to interact with the agent. We'll need the node plugin (for the S3
+functionality), database, and cache.
+
+```ts title="index.ts"
+async function main() {
+  const client = new DirectClient();
+  const nodePlugin = createNodePlugin();
+
+  const db = initializeDatabase();
+  await db.init();
+
+  const cache = initializeDbCache(character, db);
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
+```
+
+Then, we need to create the agent runtime, passing the values we set up earlier, and then register
+the agent with the client.
+
+```ts title="index.ts"
+async function main() {
+  // Existing code...
+
+  const runtime = new AgentRuntime({
+    character,
+    token: OPENAI_API_KEY,
+    modelProvider: ModelProviderName.OPENAI,
+    databaseAdapter: db,
+    cacheManager: cache,
+    plugins: [bootstrapPlugin, nodePlugin],
+  });
+
+  await runtime.initialize();
+  client.registerAgent(runtime);
+}
+```
+
+Lastly, we'll need to create a function to run the agent. Here, we'll insert a simple example of
+writing a hardcoded object to the S3 adapter.
+
+```ts title="index.ts"
+async function main() {
+  // Existing code...
+
+  const awsS3Service: AwsS3Service = runtime.getService(ServiceType.AWS_S3);
+  const json = { hello: "world" };
+  const key = "hello/world";
+  const prefix = ""; // We already set the prefix in the environment variables
+  const useSignedUrl = true;
+  const ttl = 3600; // 1 hour
+  const result = await awsS3Service.uploadJson(json, key, prefix, useSignedUrl, ttl);
+  elizaLogger.info(result);
+
+  client.start(); // Default port is 3000
+  elizaLogger.info(`Started ${character.name} as ${runtime.agentId}`);
+}
+```
+
+</Step>
+
+<Step>
+
+## Run the agent
+
+Now, we can finally run the agent by calling the `main` function! Depending on your setup, you may
+need to run the agent with something like `ts-node` or `tsx`, e.g., `npx tsx index.ts`.
+
+This will log the configured agent information, and the we'll see our object uploaded to the S3
+adapter. Afterwards, the client will start and be available for API requests.
+
+```sh
+[2025-02-10 04:09:58] INFO: Eliza(b850bc30-45f8-0041-a00a-83df46d8555d) - Initializing AgentRuntime with options:
+    character: "Eliza"
+    modelProvider: "openai"
+    characterModelProvider: "openai"
+[2025-02-10 04:09:58] INFO: Eliza(b850bc30-45f8-0041-a00a-83df46d8555d) - Setting Model Provider:
+    characterModelProvider: "openai"
+    optsModelProvider: "openai"
+    finalSelection: "openai"
+[2025-02-10 04:09:58] INFO: Eliza(b850bc30-45f8-0041-a00a-83df46d8555d) - Selected model provider: openai
+[2025-02-10 04:09:58] INFO: Eliza(b850bc30-45f8-0041-a00a-83df46d8555d) - Selected image model provider: openai
+[2025-02-10 04:09:58] INFO: Eliza(b850bc30-45f8-0041-a00a-83df46d8555d) - Selected image vision model provider: openai
+[2025-02-10 04:09:58] INFO: Initializing LlamaService...
+[2025-02-10 04:34:21] INFO:
+    success: true
+    key: "logs/hello/world"
+    url: "http://localhost:8014/0x90f79bf6eb2c4f870365e785982e1f101e93b906.eliza-bucket/logs/hello/world?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKEXAMPLES3S%2F20250210%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250210T043421Z&X-Amz-Expires=3600&X-Amz-Signature=7b76ee848cba59fa1c366a3198a1d9114e7010006d9a84b1f8566879315ddded&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+[2025-02-10 04:34:21] INFO: Started Eliza as b850bc30-45f8-0041-a00a-83df46d8555d
+```
+
+We can then use the Recall CLI or other S3-compatible tool to view the object in our bucket! Lastly,
+if you want to interact with the agent, the direct client we started is running on port 3000 (by
+default).
+
+For example, we can send a simple message to the uuid of the agent (logged above as
+`b850bc30-45f8-0041-a00a-83df46d8555d`):
+
+```sh
+curl -X POST http://localhost:3002/b850bc30-45f8-0041-a00a-83df46d8555d/message \
+-H "Content-Type: application/json" \
+-d '{
+  "text": "hi there",
+  "userId": "user123",
+  "userName": "dtb",
+  "roomId": "room123"
+}'
+```
+
+And the model will respond with something like:
+
+```sh
+[
+  {
+    "user": "Eliza",
+    "text": "back again, i see. tell me, are we on a quest to decode the mysteries of Recall today, or is there another digital adventure on the horizon?",
+    "action": "NONE"
+  }
+]
+```
+
+Although interacting with these APIs does not explicitly use our bucket upload logic, it'd be
+straightforward to enhance this setup to persist agent state or relevant interactions (e.g.,
+user-provided files) within Recall.
+
+</Step>
+
+</Steps>

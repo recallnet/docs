@@ -17,6 +17,17 @@ import { source } from "@/lib/source";
 
 const defaultMdxComponents = {
   ...fumadocsMdxComponents,
+  Accordion,
+  Accordions,
+  File,
+  Folder,
+  Files,
+  Step,
+  Steps,
+  Tab,
+  Tabs,
+  TypeTable,
+  img: (props: ImageZoomProps) => <ImageZoom {...props} />,
   Card: (props: CardProps) => <Card {...props} />,
   Cards: (props: HTMLAttributes<HTMLDivElement>) => <Cards {...props} />,
   Callout: (props: CalloutProps) => <Callout {...props} />,
@@ -63,17 +74,6 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
         <MDX
           components={{
             ...defaultMdxComponents,
-            Accordion,
-            Accordions,
-            File,
-            Folder,
-            Files,
-            Step,
-            Steps,
-            Tab,
-            Tabs,
-            TypeTable,
-            img: (props: ImageZoomProps) => <ImageZoom {...props} />,
           }}
         />
       </DocsBody>

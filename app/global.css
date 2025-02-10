@@ -189,6 +189,11 @@ button {
   }
 }
 
+/* Customize code block styles to preserve new lines */
+.fd-codeblock pre {
+  @apply p-4 [&_.line]:block [&_.line]:min-h-[1.5em];
+}
+
 /* Reduce gap in list elements */
 ul > li {
   margin-left: 1rem;

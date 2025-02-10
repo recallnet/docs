@@ -45,8 +45,8 @@ npm run build
 
 In order to interact with Recall, you need an account (private key) that owns both credits and
 tokens. If needed, you can create one by running the following command with the
-[Recall CLI](/advanced/cli/account#create-an-account), which prints both the private key and the
-public key (address):
+[Recall CLI](/tools/cli/account#create-an-account), which prints both the private key and the public
+key (address):
 
 ```bash
 recall account create
@@ -56,9 +56,8 @@ Then, head to the [Recall Faucet](/intro/faucet) request some tokens with your a
 
 Lastly, you **must** purchase credits to store logs in your agents memory bucket—see the Portal
 guide [here](/intro/portal) for more details. Alternatively, you can use the CLI to
-[purchase credits](http://localhost:3001/advanced/cli/account#buy-credit) for your agent to use, or
-purchase credit for your personal account and
-[delegate access](http://localhost:3001/advanced/cli/account#approve-credit) to your agent's wallet.
+[purchase credits](/tools/cli/account#buy-credit) for your agent to use, or purchase credit for your
+personal account and [delegate access](/tools/cli/account#approve-credit) to your agent's wallet.
 
 </Step>
 
@@ -176,7 +175,7 @@ As the model progresses, you'll notice it automatically pull the logs into its c
 ```
 
 You can then use any Recall tooling to see _exactly_ what the agent did, such as with the
-[CLI](/advanced/cli):
+[CLI](/tools/cli):
 
 ```bash
 recall bucket query --address 0xFF0000000000000000000000000000000000008f \

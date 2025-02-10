@@ -3,21 +3,24 @@ title: Overview
 description: Understand the basics behind what subnets are and how they work.
 ---
 
-Recall is a decentralized at data network optimized for data-intensive applications. It exposes a
-unified data layer backed by a consensus-driven network of actors supporting a fully decentralized,
-permissionless, and ownerless architecture. The consensus layer itself is purpose-built to address
-the needs of modern data-hungry applications and services, and this design enables a number of
-additional innovations, including Recall's _synchronous data synchronization_ mechanism, allowing
-the network to ingest large data and files while safeguarding chain liveness.
+The Recall blockchain thus provides high-throughput, low-latency data ingest and retrieval, high
+availability and fault tolerance, permission-less and owner-less operation, and _direct and
+programmatic access_ to data. This means users can access and manipulate stored data directly
+through onchain smart contracts, while offchain services provide scalable data storage, retrieval,
+and computation.
 
 ## How does it work?
 
-A number of protocol features modularize the technology stack, but the two key enablers for this
-are:
+The patterns described above make Recall better-suited than other blockchain-based solutions, and
+competitive with traditional cloud services in terms of cost, throughput, scalability, usability,
+and features. The three key enablers for this are:
 
-- **Hierarchical consensus**: Organized _subnets_, enabling millions of users and billions of bytes.
-- **Erasure coded blob storage**: Storage and retrieval of large binary blobs through efficient
-  _alpha entanglement_.
+1. **Hierarchical consensus** which allows Recall to scale to millions of users and billions of data
+   objects by organizing the network into multiple _subnets_,
+2. **Consensus coprocessor** framework that moves expensive computation and data synchronization off
+   the blockchain's hotpath, and
+3. **Alpha-entangled** blob storage which enables verifiable storage and retrieval of large binary
+   blobs.
 
 ## Subnets
 
@@ -30,21 +33,12 @@ while the overall network can scale horizontally to accommodate greater throughp
 
 ## Data availability
 
-Deterministic ordering of data commitments is part of the core consensus process, but actual data
-storage and synchronization is managed offchain—partly driven by the need to maintain chain liveness
-and limit the demands on validator resources. This system employs the
-[alpha entanglement (AE) codes](https://arxiv.org/abs/1810.02974) erasure coding scheme designed
-specifically for distributed networks. It enhances data reliability and fault tolerance by breaking
-down a data blob into smaller fragments and then generating additional redundant fragments.
-
-This process encodes data fragments into a robust and **tamperproof data mesh**, and these codes
-enable efficient data recovery, reduced storage costs, decentralized repair, and data integrity, as
-well as the ability to tie information about the **data recency and retention requirements**
-([TTL](https://en.wikipedia.org/wiki/Time_to_live)) into the way the data is encoded.
-
-Recall also incorporates mechanisms for proof of data access, proof of correct encoding, and a data
-availability sampling layer that leverages its unique erasure encoding system to ensure that data is
-always accessible and retrievable by all actors on the network.
+The data availability process encodes data fragments into a robust and **tamperproof data mesh**,
+and these codes enable efficient data recovery, reduced storage costs, decentralized repair, and
+data integrity, as well as the ability to tie information about the **data recency and retention
+requirements** ([TTL](https://en.wikipedia.org/wiki/Time_to_live)) into the way the data is encoded.
+It enhances data reliability and fault tolerance by breaking down a data blob into smaller fragments
+and then generating additional redundant fragments.
 
 ## Contracts
 
@@ -81,21 +75,6 @@ Wasm runtime supports.
 Accounts (ECDSA, secp256k1) are used to send data-carrying transactions as you would on any
 blockchain system. Thus, all mutations are onchain transactions within a subnet, so funds are
 required to pay for writes.
-
-### EVM addresses
-
-You can use EVM-style (i.e., `0x` prefixed) accounts for typical wallet operations (writes, sending
-transactions, etc.). Wasm contracts, such as buckets, are represented as hex addresses as well.
-
-### Wasm addresses
-
-All Wasm contract addresses are represented a bit differently than your typical EVM wallet or
-contract contract. Its usage pattern doesn't change; the format just looks _slightly_ unusual.
-
-Every Wasm contract has an unique internal chain identifier associated with it called an _actor ID_.
-You'll see Wasm contracts are predictably represented as `0xff00...<actor_id>`. For example, a
-bucket with an ID of `143` would be `0xff0000000000000000000000000000000000008f` (since the hex
-value of `143` is `8f`).
 
 ## Payment
 

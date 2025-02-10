@@ -34,11 +34,8 @@ graph TD
         %% Consensus layer
         CometBFTN["CometBFT<br/>(Consensus)"]
 
-        %% Storage layer - moved up
-        subgraph IPLDN["IPLD"]
-            StoreN["Store"]
-            ResolverN["Resolver"]
-        end
+        %% Storage layer
+        Iroh["Iroh<br/>(Storage)"]
 
         %% ABCI layer
         subgraph ABCIN["Fendermint (ABCI++)"]
@@ -51,9 +48,7 @@ graph TD
 
         %% Internal connections
         CometBFTN --> ABCIN --> CometBFTN
-        BucketN --> StoreN
-        StoreN <--> ResolverN
-        ABCIN --> ResolverN
+        BucketN <--> Iroh
     end
     class SubnetN subnet
 

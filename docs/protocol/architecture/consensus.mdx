@@ -1,7 +1,35 @@
 ---
-title: State machine replication
-description: Dig into the consensus mechanisms behind Recall's state replication.
+title: Consensus & state replication
+description: Dig into the consensus mechanisms behind Recall's consensus mechanisms.
 ---
+
+## Consensus Coprocessor
+
+In addition to scaling through hierarchical subnets, Recall employs a unique approach to consensus
+that allows each subnet to efficiently process large volumes of data. This approach is based on a
+_parallel consensus [coprocessor](https://vitalik.eth.limo/general/2024/09/02/gluecp.html)_ that
+enables the network to reach agreement on the order of data-carrying transactions, even as the data
+itself is being optimistically synchronized among validators in the background. This coprocessor
+protocol is designed to be fast, secure, and flexible.
+
+Recall’s consensus coprocessor decouples execution from consensus, allowing the blockchain to
+process transactions and manage data in parallel, while retaining deterministic state updates and
+security. This coprocessor leverages five key components to achieve this:
+
+1. **Multi-phase BFT coprocessor**: Recall's coprocessor operates as a layer between consensus and
+   execution, dividing state machine replication into distinct phases (e.g., proposal, pre-vote,
+   pre-commit, and commit).
+2. **Optimistic data sync and execution**: Transactions and data synchronization tasks are
+   optimistically executed in parallel prior to commit stage, significantly reducing latency and
+   improving processing speed.
+3. **Async execution off the hotpath**: Execution of data-carrying transactions is handled
+   separately from the consensus mechanism, using a distributed task pool, which allows for
+   independent/async processing.
+4. **Multi-phase data availability**: A quorum voting process ensures data availability and
+   integrity during consensus, supported by robust erasure coding techniques to protect against
+   longer-term data loss.
+5. **Distributed execution pool**: Separating task execution from ordering enables continuous task
+   processing even as data synchronization occurs asynchronously in the background.
 
 ## CometBFT
 
@@ -59,10 +87,3 @@ Recall subnets are continuously exchanging data with their parent chain (another
 like Filecoin) and (possibly) child subnets, so in addition to bottom-up checkpoints, subnet may
 leverage _top-down sync_, when subnets must have a view of their parent finality, which includes the
 latest block hash, power table information, and potentially cross-subnet message passing.
-
-## Accounts
-
-Accounts in Recall are based on standard public-private key pair cryptography, using the ECDSA
-algorithm with the [secp256k1](https://en.bitcoin.it/wiki/Secp256k1) curve. This is the same curve
-used by Bitcoin and Ethereum, and is widely considered to be secure and efficient. If a user has
-access to a private key, they can sign messages sent from that account.

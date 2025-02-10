@@ -14,7 +14,8 @@ Start the adapter with the binary installed and flags described in the
 [installation](/s3/installation) page.
 
 ```bash
-recall_s3 --private-key [your_private_key] \
+recall_s3 \
+--private-key [your_private_key] \
 --access-key AKEXAMPLES3S \
 --secret-key SKEXAMPLES3S
 ```
@@ -78,11 +79,8 @@ def connect_to_recall(host: str, access_key: str, secret_key: str) -> S3Client:
 #### Create a bucket
 
 Our bucket creation helper does one important thing: it prefixes the bucket name with the creator's
-public key. This is important because the adapter has a slight workaround to work with Recall. Any
-time you create a bucket with the S3 adapter, you'll initially define the name as something like
-`my-bucket`. The actual onchain representation stores this as an alias with the bucket's metadata.
-Then, when interacting with a bucket, you'll use the `<owner_address>.<bucket_name>` as the bucket
-name.
+public key. This is optional, as described in the [bucket usage](/tools/s3#create-an-aliased-bucket)
+docs. You could choose to simply use the alias name you define upon creation.
 
 ```python
 # Create a bucket in Recall
@@ -114,7 +112,7 @@ def create_bucket(client: S3Client, bucket_name: str, owner_address: str) -> str
 
 #### Interact with objects
 
-The following functions interact with objects in the store, including writing, listing, and getting
+The following functions interact with objects in the bucket, including writing, listing, and getting
 objects.
 
 ```python

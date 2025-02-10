@@ -193,6 +193,11 @@ button {
   }
 }
 
+/* Don't wrap code in tables */
+td > code {
+  @apply whitespace-nowrap;
+}
+
 /* Customize code block styles to preserve new lines */
 .fd-codeblock pre {
   @apply p-4 [&_.line]:block [&_.line]:min-h-[1.5em];

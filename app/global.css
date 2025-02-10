@@ -148,6 +148,10 @@
   @apply bg-fd-background;
 }
 
+#nd-sidebar > div {
+  @apply bg-fd-background;
+}
+
 /* Enforce slightly smaller font for code on all pages */
 code {
   color: inherit;
@@ -195,15 +199,15 @@ button {
 }
 
 /* Reduce gap in list elements */
-ul > li {
+.prose ul > li {
   margin-left: 1rem;
 }
-li > p {
+.prose li > p {
   margin-bottom: 0.5rem;
   margin-top: 0;
 }
 
 /* Handle nested lists */
-li > ul {
+.prose li > ul {
   margin-top: 0.5rem;
 }

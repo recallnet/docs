@@ -64,8 +64,8 @@ export const baseOptions: BaseLayoutProps = {
         <div data-hide-on-theme="dark" className="flex items-center gap-2">
           <Image
             alt="Recall"
-            className="theme-light"
-            height={22}
+            className="theme-light h-[30px] w-[100px]" // Updated
+            height={30}
             width={100}
             src="/img/recall-light.svg"
           />
@@ -74,8 +74,8 @@ export const baseOptions: BaseLayoutProps = {
         <div data-hide-on-theme="light" className="flex items-center gap-2">
           <Image
             alt="Recall"
-            className="theme-dark"
-            height={22}
+            className="theme-dark h-[30px] w-[100px]" // Updated
+            height={30}
             width={100}
             src="/img/recall-dark.svg"
           />

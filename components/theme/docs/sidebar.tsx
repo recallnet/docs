@@ -166,7 +166,7 @@ export function Sidebar({
         <div
           {...inner}
           className={cn(
-            "flex size-full max-w-full flex-col pt-2 md:ms-auto md:w-[var(--fd-sidebar-width)] md:border-e md:pt-3",
+            "flex size-full max-w-full flex-col md:ms-auto md:w-[var(--fd-sidebar-width)] md:border-e",
             inner?.className
           )}
         >
@@ -179,8 +179,11 @@ export function Sidebar({
 
 export function SidebarHeader(props: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div {...props} className={cn("flex flex-col gap-2 px-4 empty:hidden", props.className)}>
-      {props.children}
+    <div
+      {...props}
+      className={cn("flex h-15 flex-col px-4 empty:hidden max-md:hidden", props.className)}
+    >
+      <div className="flex h-full items-center">{props.children}</div>
     </div>
   );
 }
@@ -200,7 +203,7 @@ export function SidebarViewport(props: ScrollAreaProps) {
   return (
     <ScrollArea {...props} className={cn("h-full", props.className)}>
       <ScrollViewport
-        className="p-4"
+        className="p-4 pt-0 lg:pt-2"
         style={{
           // maskImage: "linear-gradient(to bottom, transparent 2px, white 16px)",
           marginTop: "0.5rem",

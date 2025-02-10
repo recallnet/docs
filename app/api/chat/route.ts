@@ -4,7 +4,7 @@ import path from "path";
 
 import { MessageRecord } from "@/components/ai/context";
 import {
-  DocEmbedding,
+  DocsEmbedding,
   REJECTION_MESSAGE,
   SYSTEM_PROMPT,
   getReferenceLinks,
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
     }
 
     // Get relevant chunks for the query
-    const embeddings = JSON.parse(await fs.readFile(EMBEDDINGS_FILE, "utf-8")) as DocEmbedding[];
+    const embeddings = JSON.parse(await fs.readFile(EMBEDDINGS_FILE, "utf-8")) as DocsEmbedding[];
     const relevant = await getRelevantChunks(openai, query, embeddings);
     if (relevant.length === 0) {
       return new Response(

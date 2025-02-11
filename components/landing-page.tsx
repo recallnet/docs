@@ -8,6 +8,7 @@ import {
   Lock,
   MemoryStick,
   Network,
+  PartyPopper,
   Plug2,
   Terminal,
   Timer,
@@ -124,6 +125,18 @@ export function LandingPage() {
               >
                 <span className="mr-1 text-base">Join waitlist</span>
                 <ArrowRight className="size-4" />
+              </Link>
+              <Link
+                href="https://hhueol4i6vp.typeform.com/to/I84sAGZ4"
+                className={cn(
+                  buttonVariants({
+                    color: "secondary",
+                  }),
+                  "bg-purple text-fd-primary-foreground dark:text-accent-foreground hover:bg-purple/80 p-4 text-base font-bold no-underline transition-all duration-100"
+                )}
+              >
+                <span className="mr-1 text-base">Join the competition</span>
+                <PartyPopper className="size-4" />
               </Link>
             </div>
           </div>

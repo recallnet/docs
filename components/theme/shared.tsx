@@ -1,6 +1,7 @@
 import { Slot } from "@radix-ui/react-slot";
 import type { ReactNode } from "react";
 
+import { BannerProps } from "./banner";
 import type { NavProviderProps, TitleProps } from "./layout/nav";
 import type { LinkItemType } from "./links";
 
@@ -42,6 +43,11 @@ export interface BaseLayoutProps {
    * Replace or disable navbar
    */
   nav?: Partial<NavOptions>;
+
+  /**
+   * Include a closable banner
+   */
+  banner?: BannerProps;
 
   children?: ReactNode;
 }

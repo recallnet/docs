@@ -7,6 +7,7 @@ import { Fragment, type HTMLAttributes, type ReactNode } from "react";
 
 import { cn } from "@/lib/theme/cn";
 
+import { Banner } from "./banner";
 import {
   SidebarLinkItem,
   type SidebarOptions,
@@ -72,6 +73,7 @@ export function DocsLayout({
 
   return (
     <TreeContextProvider tree={props.tree}>
+      {props.banner && <Banner {...props.banner} />}
       <NavProvider transparentMode={transparentMode}>
         <main
           id="nd-docs-layout"

@@ -110,7 +110,7 @@ export const BaseLinkItem = forwardRef<
       href={item.url}
       external={item.external}
       {...props}
-      className={cn(item.className, className)} // Merge both className sources
+      className={cn(item.className, className)}
       data-active={active}
     >
       {props.children}

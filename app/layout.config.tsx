@@ -1,5 +1,6 @@
-import { PartyPopper } from "lucide-react";
+import { Link as LinkIcon, PartyPopper } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { FaDiscord, FaGithub, FaXTwitter } from "react-icons/fa6";
 
 import type { BaseLayoutProps } from "@/components/theme/shared";
@@ -13,14 +14,6 @@ import type { BaseLayoutProps } from "@/components/theme/shared";
  */
 export const baseOptions: BaseLayoutProps = {
   links: [
-    {
-      type: "main",
-      text: "Competition",
-      url: "https://hhueol4i6vp.typeform.com/to/I84sAGZ4",
-      icon: <PartyPopper size={16} />,
-      className: "navbar-button ml-2",
-      position: "left",
-    },
     // External links
     // {
     //   external: true,
@@ -64,6 +57,23 @@ export const baseOptions: BaseLayoutProps = {
       url: "https://github.com/recallnet",
     },
   ],
+  banner: {
+    id: "competition-banner",
+    variant: "rainbow",
+    children: (
+      <>
+        <Link
+          href="https://hhueol4i6vp.typeform.com/to/I84sAGZ4"
+          target="_blank"
+          className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center transition-colors duration-200"
+        >
+          <PartyPopper size={16} className="mr-2" />
+          Join the AlphaWaves competition
+          <LinkIcon size={16} className="ml-1" />
+        </Link>
+      </>
+    ),
+  },
   nav: {
     title: (
       <>

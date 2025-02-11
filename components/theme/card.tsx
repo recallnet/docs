@@ -45,7 +45,7 @@ export function Card({
       {icon ? (
         <div
           className={cn(
-            "not-prose mb-2 w-fit rounded-md p-1.5",
+            "not-prose mb-2 w-fit rounded-md py-1.5",
             isValidElement(icon)
               ? (icon as { props: { className?: string } }).props.className
               : "bg-fd-muted text-fd-muted-foreground"

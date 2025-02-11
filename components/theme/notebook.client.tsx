@@ -31,7 +31,7 @@ export function Navbar(props: HTMLAttributes<HTMLElement>) {
         } as object
       }
     >
-      <div className="border-fd-foreground/10 mx-auto flex size-full flex-row items-center border-b pr-4 pl-6 md:gap-1.5">
+      <div className="mx-auto flex size-full flex-row items-center border-b pr-4 pl-6 md:gap-1.5">
         {props.children}
       </div>
     </header>

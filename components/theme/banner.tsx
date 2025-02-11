@@ -138,15 +138,16 @@ const rainbowLayer = (
           maskImage,
           maskComposite: "intersect",
           animation: "fd-moving-banner 16s linear infinite",
-          "--start": "rgba(0,87,255,0.5)",
-          "--mid": "rgba(255,0,166,0.77)",
-          "--end": "rgba(255,77,0,0.4)",
-          "--via": "rgba(164,255,68,0.4)",
+          "--start": "var(--color-blue)",
+          "--mid": "var(--color-red)",
+          "--end": "var(--color-yellow)",
+          "--via": "var(--color-green)",
           animationDirection: "reverse",
           backgroundImage:
             "repeating-linear-gradient(60deg, var(--end), var(--start) 2%, var(--start) 5%, transparent 8%, transparent 14%, var(--via) 18%, var(--via) 22%, var(--mid) 28%, var(--mid) 30%, var(--via) 34%, var(--via) 36%, transparent, var(--end) calc(50% - 12px))",
           backgroundSize: "200% 100%",
           mixBlendMode: "difference",
+          opacity: 0.5,
         } as object
       }
     />
@@ -157,14 +158,15 @@ const rainbowLayer = (
           maskImage,
           maskComposite: "intersect",
           animation: "fd-moving-banner 20s linear infinite",
-          "--start": "rgba(255,120,120,0.5)",
-          "--mid": "rgba(36,188,255,0.4)",
-          "--end": "rgba(64,0,255,0.51)",
-          "--via": "rgba(255,89,0,0.56)",
+          "--start": "var(--color-red)",
+          "--mid": "var(--color-blue)",
+          "--end": "var(--color-green)",
+          "--via": "var(--color-yellow)",
           backgroundImage:
             "repeating-linear-gradient(45deg, var(--end), var(--start) 4%, var(--start) 8%, transparent 9%, transparent 14%, var(--mid) 16%, var(--mid) 20%, transparent, var(--via) 36%, var(--via) 40%, transparent 42%, var(--end) 46%, var(--end) calc(50% - 16.8px))",
           backgroundSize: "200% 100%",
           mixBlendMode: "color-dodge",
+          opacity: 0.45,
         } as object
       }
     />

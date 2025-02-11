@@ -21,19 +21,19 @@ import { cn } from "@/lib/theme/cn";
 
 const features = [
   {
-    icon: <MemoryStick className="h-6 w-6" />,
+    icon: <MemoryStick className="text-red h-6 w-6" />,
     title: "Cognitive APIs",
     description:
       "Purpose-built observability and knowledge plugins across agent frameworks, including Chain-of-Thought",
   },
   {
-    icon: <Expand className="h-6 w-6" />,
+    icon: <Expand className="text-yellow h-6 w-6" />,
     title: "Extensible",
     description:
       "Interoperable and stateful agents through flexible data storage, function triggers, and verifiable execution",
   },
   {
-    icon: <Network className="h-6 w-6" />,
+    icon: <Network className="text-primary h-6 w-6" />,
     title: "Scalable & reliable",
     description:
       "Powered by blockchain subnets developed from the ground up for AI agents—with native data availability",
@@ -43,49 +43,49 @@ const features = [
 const touchpointCards = [
   {
     title: "Introduction",
-    icon: <BookOpen className="text-purple h-5 w-5" />,
+    icon: <BookOpen className="text-red h-5 w-5" />,
     href: "/intro",
     description: "Learn about Recall's core concepts and network basics",
   },
   {
     title: "Quickstarts",
-    icon: <Plug2 className="text-purple h-5 w-5" />,
+    icon: <Plug2 className="text-yellow h-5 w-5" />,
     href: "/intro/quickstarts/eliza",
     description: "Quickstarts for agents, plugins, and more",
   },
   {
     title: "CLI",
-    icon: <Terminal className="text-purple h-5 w-5" />,
+    icon: <Terminal className="dark:text-grey-light-2 h-5 w-5" />,
     href: "/tools/cli",
     description: "Learn how to use the Recall CLI",
   },
   {
     title: "SDKs",
-    icon: <Timer className="text-purple h-5 w-5" />,
+    icon: <Timer className="text-blue h-5 w-5" />,
     href: "/tools/sdk",
     description: "Build agents with the TypeScript or Rust SDKs",
   },
   {
     title: "Verifiable sources",
-    icon: <Timer className="text-purple h-5 w-5" />,
+    icon: <Timer className="text-grey-darker dark:text-grey-light h-5 w-5" />,
     href: "/sources",
     description: "Create and verify data sources that can be used by agents",
   },
   {
     title: "Access control",
-    icon: <Lock className="text-purple h-5 w-5" />,
+    icon: <Lock className="text-green h-5 w-5" />,
     href: "/agents/access",
     description: "Understand how Recall controls data access",
   },
   {
     title: "Contracts",
-    icon: <File className="text-purple h-5 w-5" />,
+    icon: <File className="text-black-44 h-5 w-5" />,
     href: "/protocol/contracts",
     description: "Dive into the smart contracts that power Recall",
   },
   {
     title: "Architecture",
-    icon: <Database className="text-purple h-5 w-5" />,
+    icon: <Database className="text-black-13 dark:text-white-off h-5 w-5" />,
     href: "/protocol/architecture",
     description: "Review technical details like subnets and data availability",
   },
@@ -100,7 +100,7 @@ export function LandingPage() {
           {/* Left side - Hero */}
           <div className="max-w-xl">
             <h1 className="text-4xl font-bold sm:text-5xl">
-              Networked <span className="text-purple font-extrabold">intelligence</span> for agents
+              Networked <span className="text-blue font-extrabold">intelligence</span> for agents
             </h1>
             <p className="text-muted-foreground mt-6 text-lg">
               Recall is a knowledge and memory network that enables agents to verifiably{" "}
@@ -132,7 +132,7 @@ export function LandingPage() {
                   buttonVariants({
                     color: "secondary",
                   }),
-                  "bg-purple text-fd-primary-foreground dark:text-accent-foreground hover:bg-purple/80 p-4 text-base font-bold no-underline transition-all duration-100"
+                  "bg-blue text-fd-primary-foreground hover:text-fd-primary-foreground dark:hover:text-fd-secondary-foreground dark:text-accent-foreground hover:bg-blue/80 p-4 text-base font-bold no-underline transition-all duration-100"
                 )}
               >
                 <span className="mr-1 text-base">Join competition</span>
@@ -157,7 +157,7 @@ export function LandingPage() {
                       ? "[--x-offset:2px] [--y-offset:-2px]"
                       : "[--x-offset:-2px] [--y-offset:2px] lg:translate-x-6"
                   )}
-                  icon={<div className="text-purple bg-fd-card mb-2">{feature.icon}</div>}
+                  icon={<div className="text-blue bg-fd-card mb-2">{feature.icon}</div>}
                 />
               ))}
             </div>
@@ -174,7 +174,7 @@ export function LandingPage() {
               key={index}
               className="bg-secondary hover:bg-secondary/90 rounded-lg border p-4 no-underline transition-all duration-100"
               title={card.title}
-              titleClassName="text-base pt-1"
+              titleClassName="text-base pt-2"
               icon={card.icon}
               href={card.href}
               description={card.description}

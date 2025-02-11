@@ -254,6 +254,7 @@ function NavbarLinkItem({ item, ...props }: { item: LinkItemType } & HTMLAttribu
   return (
     <BaseLinkItem item={item} {...props}>
       {item.text}
+      <span className="ml-1">{item.icon}</span>
     </BaseLinkItem>
   );
 }

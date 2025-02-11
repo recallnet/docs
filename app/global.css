@@ -148,10 +148,6 @@
   @apply bg-fd-background;
 }
 
-#nd-sidebar > div {
-  @apply bg-fd-background;
-}
-
 /* Enforce slightly smaller font for code on all pages */
 code {
   color: inherit;
@@ -215,4 +211,9 @@ td > code {
 /* Handle nested lists */
 .prose li > ul {
   margin-top: 0.5rem;
+}
+
+/* Navbar button (for callout / banner-like links) */
+.navbar-button {
+  @apply bg-purple text-fd-primary-foreground dark:text-accent-foreground hover:bg-purple/80 inline-flex items-center justify-center rounded-md p-2 text-sm font-medium transition-colors duration-100 max-md:hidden;
 }

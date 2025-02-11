@@ -1,6 +1,6 @@
 import { PartyPopper } from "lucide-react";
 import Image from "next/image";
-import { FaGithub, FaXTwitter } from "react-icons/fa6";
+import { FaDiscord, FaGithub, FaXTwitter } from "react-icons/fa6";
 
 import type { BaseLayoutProps } from "@/components/theme/shared";
 
@@ -48,6 +48,13 @@ export const baseOptions: BaseLayoutProps = {
       text: "X / Twitter",
       icon: <FaXTwitter />,
       url: "https://x.com/recallnet",
+    },
+    {
+      type: "icon",
+      external: true,
+      text: "Discord",
+      icon: <FaDiscord />,
+      url: "http://discord.recall.network",
     },
     {
       type: "icon",

@@ -1,3 +1,4 @@
+import { PartyPopper } from "lucide-react";
 import Image from "next/image";
 import { FaGithub, FaXTwitter } from "react-icons/fa6";
 
@@ -12,31 +13,29 @@ import type { BaseLayoutProps } from "@/components/theme/shared";
  */
 export const baseOptions: BaseLayoutProps = {
   links: [
-    // {
-    //   type: "menu",
-    //   text: "Get started",
-    //   items: [
-    //     {
-    //       text: "Introduction",
-    //       url: "/intro",
-    //     },
-    //   ],
-    // },
+    {
+      type: "main",
+      text: "Competition",
+      url: "https://hhueol4i6vp.typeform.com/to/I84sAGZ4",
+      icon: <PartyPopper size={16} />,
+      className: "navbar-button ml-2",
+      position: "left",
+    },
     // External links
-    {
-      external: true,
-      text: "Portal",
-      description: "Portal",
-      url: "https://portal.recall.network",
-      position: "right",
-    },
-    {
-      external: true,
-      text: "Faucet",
-      description: "Faucet",
-      url: "https://faucet.recall.network",
-      position: "right",
-    },
+    // {
+    //   external: true,
+    //   text: "Portal",
+    //   description: "Portal",
+    //   url: "https://portal.recall.network",
+    //   position: "right",
+    // },
+    // {
+    //   external: true,
+    //   text: "Faucet",
+    //   description: "Faucet",
+    //   url: "https://faucet.recall.network",
+    //   position: "right",
+    // },
     {
       external: true,
       text: "Explorer",

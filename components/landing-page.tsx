@@ -114,7 +114,7 @@ export function LandingPage() {
             </p>
             <div className="mt-8 flex gap-4">
               <Link
-                href="/intro"
+                href="https://hhueol4i6vp.typeform.com/to/v0CnYf1t"
                 className={cn(
                   buttonVariants({
                     color: "secondary",
@@ -122,7 +122,7 @@ export function LandingPage() {
                   "p-4 text-base font-bold no-underline transition-all duration-100"
                 )}
               >
-                <span className="mr-1 text-base">Get started</span>
+                <span className="mr-1 text-base">Join waitlist</span>
                 <ArrowRight className="size-4" />
               </Link>
             </div>
@@ -152,9 +152,9 @@ export function LandingPage() {
         </div>
       </div>
 
-      {/* Quick Start Section */}
+      {/* Entrypoints */}
       <div className="rounded-lg p-8">
-        <h2 className="text-2xl font-bold">Quickstart</h2>
+        <h2 className="text-2xl font-bold">Learn & build</h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {touchpointCards.map((card, index) => (
             <Card

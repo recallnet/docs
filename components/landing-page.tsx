@@ -135,7 +135,7 @@ export function LandingPage() {
                   "bg-purple text-fd-primary-foreground dark:text-accent-foreground hover:bg-purple/80 p-4 text-base font-bold no-underline transition-all duration-100"
                 )}
               >
-                <span className="mr-1 text-base">Join the competition</span>
+                <span className="mr-1 text-base">Join competition</span>
                 <PartyPopper className="size-4" />
               </Link>
             </div>

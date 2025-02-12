@@ -4,6 +4,7 @@ import Link from "fumadocs-core/link";
 import { usePathname } from "next/navigation";
 import { type AnchorHTMLAttributes, type HTMLAttributes, type ReactNode, forwardRef } from "react";
 
+import { cn } from "@/lib/theme/cn";
 import { isActive } from "@/lib/theme/is-active";
 
 interface BaseItem {
@@ -25,6 +26,7 @@ export interface BaseLinkType extends BaseItem {
    */
   active?: "url" | "nested-url" | "none";
   external?: boolean;
+  className?: string;
 }
 
 export interface MainItemType extends BaseLinkType {
@@ -97,13 +99,20 @@ export type LinkItemType = MainItemType | IconItemType | ButtonItem | MenuItemTy
 export const BaseLinkItem = forwardRef<
   HTMLAnchorElement,
   Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & { item: BaseLinkType }
->(({ item, ...props }, ref) => {
+>(({ item, className, ...props }, ref) => {
   const pathname = usePathname();
   const activeType = item.active ?? "url";
   const active = activeType !== "none" && isActive(item.url, pathname, activeType === "nested-url");
 
   return (
-    <Link ref={ref} href={item.url} external={item.external} {...props} data-active={active}>
+    <Link
+      ref={ref}
+      href={item.url}
+      external={item.external}
+      {...props}
+      className={cn(item.className, className)}
+      data-active={active}
+    >
       {props.children}
     </Link>
   );

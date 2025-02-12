@@ -9,41 +9,61 @@
   https://github.com/recallnet/js-recall/blob/main/packages/ui/tailwind.config.ts 
 */
 @theme {
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(240 10% 3.9%);
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(240 10% 3.9%);
-  --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(240 10% 3.9%);
-  --color-primary: hsl(259, 100%, 65%);
-  --color-primary-foreground: hsl(0 0% 98%);
-  --color-secondary: hsl(240 4.8% 95.9%);
-  --color-secondary-foreground: hsl(259, 100%, 65%);
-  --color-muted: hsl(240 4.8% 95.9%);
-  --color-muted-foreground: hsl(240 3.8% 46.1%);
-  --color-accent: hsl(240 4.8% 95.9%);
-  --color-accent-foreground: hsl(259, 100%, 65%);
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-destructive-foreground: hsl(0 0% 98%);
-  --color-border: hsl(240 5.9% 90%);
-  --color-input: hsl(240 5.9% 90%);
-  --color-ring: hsl(240 10% 3.9%);
-  --color-chart-1: hsl(12 76% 61%);
-  --color-chart-2: hsl(173 58% 39%);
-  --color-chart-3: hsl(197 37% 24%);
-  --color-chart-4: hsl(43 74% 66%);
-  --color-chart-5: hsl(27 87% 67%);
-  --radius: 0rem;
+  /* Base color definitions */
+  --color-black: hsl(0, 0%, 0%); /* rgb(0, 0, 0) */
+  --color-black-5: hsl(0, 23%, 5%); /* rgb(16, 10, 10) */
+  --color-black-8: hsl(0 0% 8%); /* rgb(21, 21, 21) */
+  --color-black-13: hsl(0 0% 13%); /* rgb(32, 32, 32) */
+  --color-black-44: hsl(0 0% 44%); /* rgb(112, 112, 112) */
+  --color-white: hsl(0 0% 100%); /* rgb(255, 255, 255) */
+  --color-white-off: hsl(220 8% 83%); /* rgb(207, 210, 212) */
 
-  --color-purple: hsl(259, 100%, 65%);
+  --color-grey-light: hsl(220 9% 62%); /* rgb(150, 156, 165) */
+  --color-grey-light-2: hsl(220 13% 74%); /* rgb(180, 187, 197) */
+  --color-grey-medium: hsl(220 19% 28%); /* rgb(89, 101, 117) */
+  --color-grey-dark: hsl(217 19% 14%); /* rgb(29, 35, 43) */
+  --color-grey-darker: hsl(220 18% 14%); /* rgb(29, 31, 42) */
+
+  /* Accent colors */
+  --color-blue: hsl(218 64% 46%); /* rgb(41, 98, 192) */
+  --color-green: hsl(100 42% 45%); /* rgb(88, 162, 66) */
+  --color-yellow: hsl(43 85% 59%); /* rgb(239, 186, 64) */
+  --color-red: hsl(13 82% 55%); /* rgb(235, 79, 43) */
+
+  /* Light mode theme */
+  --color-background: var(--color-white-off);
+  --color-foreground: var(--color-grey-dark);
+  --color-card: var(--color-white);
+  --color-card-foreground: var(--color-grey-dark);
+  --color-popover: var(--color-white);
+  --color-popover-foreground: var(--color-grey-dark);
+  --color-primary: var(--color-grey-dark);
+  --color-primary-foreground: var(--color-white);
+  --color-secondary: var(--color-grey-light-2);
+  --color-secondary-foreground: var(--color-grey-dark);
+  --color-muted: var(--color-grey-light-2);
+  --color-muted-foreground: var(--color-grey-medium);
+  --color-accent: var(--color-grey-light-2);
+  --color-accent-foreground: var(--color-grey-dark);
+  --color-destructive: var(--color-red);
+  --color-destructive-foreground: var(--color-white);
+  --color-border: var(--color-grey-light);
+  --color-input: var(--color-grey-light);
+  --color-ring: var(--color-grey-dark);
+
+  /* Chart colors - using your existing accent colors */
+  --color-chart-1: var(--color-red);
+  --color-chart-2: var(--color-green);
+  --color-chart-3: var(--color-grey-darker);
+  --color-chart-4: var(--color-yellow);
+  --color-chart-5: var(--color-blue);
 
   /* Font families */
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
+  --font-sans: "ABCDiatype", Arial, Helvetica, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "ABCDiatypeMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* Border radius */
+  --radius: 0rem;
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -84,49 +104,26 @@
 }
 
 .dark {
-  --color-background: hsl(240 10% 3.9%);
-  --color-foreground: hsl(0 0% 98%);
-  --color-card: hsl(240 10% 3.9%);
-  --color-card-foreground: hsl(0 0% 98%);
-  --color-popover: hsl(240 10% 3.9%);
-  --color-popover-foreground: hsl(0 0% 98%);
-  --color-primary: hsl(0 0% 98%);
-  --color-primary-foreground: hsl(240 5.9% 10%);
-  --color-secondary: hsl(240 3.7% 15.9%);
-  --color-secondary-foreground: hsl(0 0% 98%);
-  --color-muted: hsl(240 3.7% 15.9%);
-  --color-muted-foreground: hsl(240 5% 64.9%);
-  --color-accent: hsl(240 3.7% 15.9%);
-  --color-accent-foreground: hsl(0 0% 98%);
-  --color-destructive: hsl(0 62.8% 30.6%);
-  --color-destructive-foreground: hsl(0 0% 98%);
-  --color-border: hsl(240 3.7% 15.9%);
-  --color-input: hsl(240 3.7% 15.9%);
-  --color-ring: hsl(240 4.9% 83.9%);
-  --color-chart-1: hsl(220 70% 50%);
-  --color-chart-2: hsl(160 60% 45%);
-  --color-chart-3: hsl(30 80% 55%);
-  --color-chart-4: hsl(259, 100%, 65%);
-  --color-chart-5: hsl(340 75% 55%);
-
-  --color-fd-background: var(--color-background);
-  --color-fd-foreground: var(--color-foreground);
-  --color-fd-muted: var(--color-muted);
-  --color-fd-muted-foreground: var(--color-muted-foreground);
-  --color-fd-popover: var(--color-popover);
-  --color-fd-popover-foreground: var(--color-popover-foreground);
-  --color-fd-card: var(--color-card);
-  --color-fd-card-foreground: var(--color-card-foreground);
-  --color-fd-border: var(--color-border);
-  --color-fd-primary: var(--color-primary);
-  --color-fd-primary-foreground: var(--color-primary-foreground);
-  --color-fd-secondary: var(--color-secondary);
-  --color-fd-secondary-foreground: var(--color-secondary-foreground);
-  --color-fd-accent: var(--color-accent);
-  --color-fd-accent-foreground: var(--color-accent-foreground);
-  --color-fd-ring: var(--color-ring);
+  --color-background: var(--color-black-8);
+  --color-foreground: var(--color-white-off);
+  --color-card: var(--color-black-13);
+  --color-card-foreground: var(--color-white-off);
+  --color-popover: var(--color-black-8);
+  --color-popover-foreground: var(--color-white-off);
+  --color-primary: var(--color-white-off);
+  --color-primary-foreground: var(--color-black-8);
+  --color-secondary: var(--color-black-13);
+  --color-secondary-foreground: var(--color-white-off);
+  --color-muted: var(--color-black-5);
+  --color-muted-foreground: var(--color-grey-light-2);
+  --color-accent: var(--color-black-13);
+  --color-accent-foreground: var(--color-white-off);
+  --color-destructive: var(--color-red);
+  --color-destructive-foreground: var(--color-white-off);
+  --color-border: var(--color-black-13);
+  --color-input: var(--color-black-13);
+  --color-ring: var(--color-grey-light-2);
 }
-
 /* Custom styles */
 
 /* Navbar changes to make opaque and use different bg on light mode */
@@ -141,14 +138,10 @@
 
 /* Sidebar changes to make opaque and use different bg on light mode */
 #nd-sidebar {
-  @apply bg-fd-secondary backdrop-blur-none;
+  @apply bg-fd-background backdrop-blur-none;
 }
 
 .dark #nd-sidebar {
-  @apply bg-fd-background;
-}
-
-#nd-sidebar > div {
   @apply bg-fd-background;
 }
 
@@ -215,4 +208,187 @@ td > code {
 /* Handle nested lists */
 .prose li > ul {
   margin-top: 0.5rem;
+}
+
+/* Navbar button (for callout / banner-like links) */
+.navbar-button {
+  @apply bg-blue text-fd-primary-foreground dark:text-accent-foreground hover:bg-blue/80 inline-flex items-center justify-center rounded-md p-2 text-sm font-medium transition-colors duration-100 max-md:hidden;
+}
+
+/* Sans-serif fonts */
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-Ultra.woff2") format("woff2");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-UltraItalic.woff2") format("woff2");
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-Thin.woff2") format("woff2");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-ThinItalic.woff2") format("woff2");
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-LightItalic.woff2") format("woff2");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-RegularItalic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-MediumItalic.woff2") format("woff2");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-BoldItalic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-Heavy.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-HeavyItalic.woff2") format("woff2");
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-Black.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatype";
+  src: url("/fonts/ABCDiatype/ABCDiatype-BlackItalic.woff2") format("woff2");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Monospace fonts */
+@font-face {
+  font-family: "ABCDiatypeMono";
+  src: url("/fonts/ABCDiatypeMono/ABCDiatypeMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatypeMono";
+  src: url("/fonts/ABCDiatypeMono/ABCDiatypeMono-RegularItalic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatypeMono";
+  src: url("/fonts/ABCDiatypeMono/ABCDiatypeMono-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatypeMono";
+  src: url("/fonts/ABCDiatypeMono/ABCDiatypeMono-MediumItalic.woff2") format("woff2");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatypeMono";
+  src: url("/fonts/ABCDiatypeMono/ABCDiatypeMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABCDiatypeMono";
+  src: url("/fonts/ABCDiatypeMono/ABCDiatypeMono-BoldItalic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
 }

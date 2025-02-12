@@ -1,11 +1,11 @@
 import "./global.css";
 import "katex/dist/katex.css";
 
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { RootProvider } from "fumadocs-ui/provider";
 import { MessageCircle } from "lucide-react";
 import { Metadata } from "next";
 import { ThemeProviderProps } from "next-themes";
-import { Geist_Mono, Open_Sans } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { baseOptions } from "@/app/layout.config";
@@ -23,16 +23,6 @@ const docsOptions: DocsLayoutProps = {
     collapsible: false,
   },
 };
-
-const sans = Open_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
-
-const mono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-});
 
 export const metadata: Metadata = createMetadata({
   title: {
@@ -54,7 +44,7 @@ const theme: ThemeProviderProps = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
         <RootProvider theme={theme}>
           <DocsLayout {...docsOptions}>{children}</DocsLayout>
@@ -71,6 +61,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </AISearchTrigger>
         </RootProvider>
       </body>
+      {process.env.NODE_ENV !== "development" && process.env.NEXT_PUBLIC_GA_ID && (
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID ?? ""} />
+      )}
     </html>
   );
 }

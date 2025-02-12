@@ -14,7 +14,7 @@ const itemVariants = cva("size-7 rounded-full p-1.5 text-fd-muted-foreground", {
       false: "text-fd-muted-foreground",
     },
     hover: {
-      true: "hover:text-fd-accent-foreground transition-colors duration-100",
+      true: "hover:text-fd-accent-foreground transition-colors duration-100 hover:bg-fd-accent",
       false: "",
     },
   },

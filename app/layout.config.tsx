@@ -1,5 +1,7 @@
+import { Link as LinkIcon, PartyPopper } from "lucide-react";
 import Image from "next/image";
-import { FaGithub, FaXTwitter } from "react-icons/fa6";
+import Link from "next/link";
+import { FaDiscord, FaGithub, FaXTwitter } from "react-icons/fa6";
 
 import type { BaseLayoutProps } from "@/components/theme/shared";
 
@@ -12,31 +14,21 @@ import type { BaseLayoutProps } from "@/components/theme/shared";
  */
 export const baseOptions: BaseLayoutProps = {
   links: [
-    // {
-    //   type: "menu",
-    //   text: "Get started",
-    //   items: [
-    //     {
-    //       text: "Introduction",
-    //       url: "/intro",
-    //     },
-    //   ],
-    // },
     // External links
-    {
-      external: true,
-      text: "Portal",
-      description: "Portal",
-      url: "https://portal.recall.network",
-      position: "right",
-    },
-    {
-      external: true,
-      text: "Faucet",
-      description: "Faucet",
-      url: "https://faucet.recall.network",
-      position: "right",
-    },
+    // {
+    //   external: true,
+    //   text: "Portal",
+    //   description: "Portal",
+    //   url: "https://portal.recall.network",
+    //   position: "right",
+    // },
+    // {
+    //   external: true,
+    //   text: "Faucet",
+    //   description: "Faucet",
+    //   url: "https://faucet.recall.network",
+    //   position: "right",
+    // },
     {
       external: true,
       text: "Explorer",
@@ -53,11 +45,35 @@ export const baseOptions: BaseLayoutProps = {
     {
       type: "icon",
       external: true,
+      text: "Discord",
+      icon: <FaDiscord />,
+      url: "http://discord.recall.network",
+    },
+    {
+      type: "icon",
+      external: true,
       text: "GitHub",
       icon: <FaGithub />,
       url: "https://github.com/recallnet",
     },
   ],
+  banner: {
+    id: "competition-banner",
+    variant: "rainbow",
+    children: (
+      <>
+        <Link
+          href="https://hhueol4i6vp.typeform.com/to/I84sAGZ4"
+          target="_blank"
+          className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center transition-colors duration-200"
+        >
+          <PartyPopper size={16} className="mr-2" />
+          Join the AlphaWaves competition
+          <LinkIcon size={16} className="ml-1" />
+        </Link>
+      </>
+    ),
+  },
   nav: {
     title: (
       <>

@@ -53,28 +53,28 @@ a way to permissionlessly create, manage, and share their knowledge.
 
 Like any blockchain system, _accounts_ are used to interact with the network. All transactions are
 signed by an EVM-style key pair (ECDSA, secp256k1) to ensure that the transaction is authentic,
-authorized, and verifiable. Accounts pay for network operations with tokens and credits.
+authorized, and verifiable. Accounts pay for network operations.
 
-## Tokens
+## Gas
 
-The RECALL token is used to pay for network usage. For example, when you create a bucket or send
-transactions, you pay gas fees in the token. However, when you _store_ data on the network, you pay
-in credits, which are a unit of resource to perform a set of operations.
+Gas is used to pay for network usage. For example, when you create a bucket or send transactions,
+you pay gas fees. However, when you _store_ data on the network, you pay in credits, which are a
+unit of resource to perform a set of operations.
 
 ## Credit
 
-Recall employs a novel _credit_ system to support usage-based pricing and predictable costs,
-purchased with tokens. For example, storing an arbitrary blob for a defined amount of time costs a
-forecastable number of credits, measured by the size of the data, the duration of the storage, and
-the computational complexity of data processing.
+Recall employs a novel _credit_ system to support usage-based pricing and predictable costs. For
+example, storing an arbitrary blob for a defined amount of time costs a forecastable number of
+credits, measured by the size of the data, the duration of the storage, and the computational
+complexity of data processing.
 
 ## Virtual gas
 
 Buying credits ensures users can pre-buy storage to that can be drawn down at a predictable rate.
 _Virtual gas_ is the counterpart to this equation, also known as an account's _gas allowance_,
-equivalent to the number of tokens used to purchase credits. When you pay for gas operations, it
-either draws down from your virtual gas balance, or uses your actual token balance if there is no
-gas allowance available.
+equivalent to the gas used to purchase credits. When you pay for gas operations, it either draws
+down from your virtual gas balance, or uses your actual gas balance if there is no gas allowance
+available.
 
 ## Operator approvals
 

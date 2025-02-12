@@ -1,5 +1,5 @@
 ---
-title: Eliza
+title: Eliza CoT starter kit
 description: A simple agent that can answer questions.
 ---
 
@@ -9,7 +9,7 @@ prompt and then expose the `plugin-recall-storage` to your agent.
 
 <Callout type="warning">
 
-You'll have to join the waitlist to get access to the Recall testnet. Fill out your information:
+Join the waitlist to get access to the Recall testnet:
 [here](https://hhueol4i6vp.typeform.com/to/v0CnYf1t)
 
 </Callout>
@@ -44,6 +44,9 @@ Build the project:
 npm run build
 ```
 
+You'll also want to make sure the Recall CLI is installed—follow the instructions
+[here](/tools/cli/installation).
+
 </Step>
 
 <Step>
@@ -59,12 +62,36 @@ key (address):
 recall account create
 ```
 
+<Callout type="error">
+
+**Never share your private key** with anyone! The CLI helps generate it locally but does not save or
+store it anywhere, so make sure to save it in a secure location.
+
+</Callout>
+
 Then, head to the [Recall Faucet](/intro/faucet) request some tokens with your address.
 
 Lastly, you **must** purchase credits to store logs in your agents memory bucket—see the Portal
 guide [here](/intro/portal) for more details. Alternatively, you can use the CLI to
 [purchase credits](/tools/cli/account#buy-credit) for your agent to use, or purchase credit for your
 personal account and [delegate access](/tools/cli/account#approve-credit) to your agent's wallet.
+
+</Step>
+
+<Step>
+
+## Create an agent memory store
+
+You'll need to create a bucket to store your agent's CoT logs. You can do this with the CLI by
+attaching metadata with an `alias` key:
+
+```bash
+recall bucket create --metadata "alias=logs"
+```
+
+The created bucket will be represented onchain as a contract address (like `0xff00...8f`), but will
+have referenceable metadata (i.e., `{"alias": "logs"}`) which are automatically used by the agent to
+find the correct bucket.
 
 </Step>
 

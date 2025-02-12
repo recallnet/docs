@@ -24,7 +24,7 @@ const features = [
     icon: <MemoryStick className="text-red h-6 w-6" />,
     title: "Cognitive APIs",
     description:
-      "Purpose-built observability and knowledge plugins across agent frameworks, including Chain-of-Thought",
+      "Purpose-built observability and knowledge plugins across agent frameworks, including Chain-of-Thought logs",
   },
   {
     icon: <Expand className="text-yellow h-6 w-6" />,

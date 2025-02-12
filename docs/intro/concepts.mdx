@@ -3,7 +3,7 @@ title: Concepts
 description: Getting started with basic network concepts.
 ---
 
-## Memory & knowledge L2
+## Memory & knowledge blockchain
 
 Recall puts agent data like Chain-of-Thought (CoT) logs and decision making onchain, while also
 connecting agents to _other_ agents or datasets to learn from. It offers features that put it in a
@@ -26,7 +26,9 @@ data.
 
 The core data storage primitive is a _bucket_, which is a key-value store for arbitrary data is
 represented as a _blob_. You can think of the agent's external "brain" as being a bucket with
-accompanying features to improve its overall intelligence.
+accompanying features to improve its overall intelligence. Optionally, you can also define a
+time-to-live (TTL) for the data, which is the amount of time the data will be stored before
+expiring.
 
 ## Cognitive APIs
 
@@ -99,17 +101,7 @@ blob, but others will be added in the future (e.g., compute for performing trans
 
 ## Limits
 
-There are a few limitations to be aware of when building on Recall. Keep in mind that services like
-Recall and Ceramic have their own constraints, which are detailed in their respective sections.
+There are a few constraints to be aware of when building on Recall:
 
 - **Block time**: ~1 block per second.
-- **Throughput (TPS)**: Hundreds of transactions per second.
-- **Maximum blob size**: 5 GiB.
-
-<Callout type="warn">
-
-Note: TPS is rough estimate and may vary based on network conditions. The network design is still
-under heavy development, optimizations are being made, and benchmarked tests are yet to be
-finalized.
-
-</Callout>
+- **Maximum object (blob) size**: 5 GiB.

@@ -21,19 +21,19 @@ import { cn } from "@/lib/theme/cn";
 
 const features = [
   {
-    icon: <MemoryStick className="text-red h-6 w-6" />,
+    icon: <MemoryStick className="text-blue h-6 w-6" />,
     title: "Cognitive APIs",
     description:
       "Purpose-built observability and knowledge plugins across agent frameworks, including Chain-of-Thought logs",
   },
   {
-    icon: <Expand className="text-yellow h-6 w-6" />,
+    icon: <Expand className="text-blue h-6 w-6" />,
     title: "Extensible",
     description:
       "Interoperable and stateful agents through flexible data storage, function triggers, and verifiable execution",
   },
   {
-    icon: <Network className="text-primary h-6 w-6" />,
+    icon: <Network className="text-blue h-6 w-6" />,
     title: "Scalable & reliable",
     description:
       "Powered by blockchain subnets developed from the ground up for AI agents—with native data availability",
@@ -43,49 +43,49 @@ const features = [
 const touchpointCards = [
   {
     title: "Introduction",
-    icon: <BookOpen className="text-red h-5 w-5" />,
+    icon: <BookOpen className="text-primary h-5 w-5" />,
     href: "/intro",
     description: "Learn about Recall's core concepts and network basics",
   },
   {
     title: "Quickstarts",
-    icon: <Plug2 className="text-yellow h-5 w-5" />,
+    icon: <Plug2 className="text-primary h-5 w-5" />,
     href: "/intro/quickstarts/eliza",
     description: "Quickstarts for agents, plugins, and more",
   },
   {
     title: "CLI",
-    icon: <Terminal className="dark:text-grey-light-2 h-5 w-5" />,
+    icon: <Terminal className="text-primary h-5 w-5" />,
     href: "/tools/cli",
     description: "Learn how to use the Recall CLI",
   },
   {
     title: "SDKs",
-    icon: <Timer className="text-blue h-5 w-5" />,
+    icon: <Timer className="text-primary h-5 w-5" />,
     href: "/tools/sdk",
     description: "Build agents with the TypeScript or Rust SDKs",
   },
   {
     title: "Verifiable sources",
-    icon: <Timer className="text-grey-darker dark:text-grey-light h-5 w-5" />,
+    icon: <Timer className="text-primary h-5 w-5" />,
     href: "/sources",
     description: "Create and verify data sources that can be used by agents",
   },
   {
     title: "Access control",
-    icon: <Lock className="text-green h-5 w-5" />,
+    icon: <Lock className="text-primary h-5 w-5" />,
     href: "/agents/access",
     description: "Understand how Recall controls data access",
   },
   {
     title: "Contracts",
-    icon: <File className="text-black-44 h-5 w-5" />,
+    icon: <File className="text-primary h-5 w-5" />,
     href: "/protocol/contracts",
     description: "Dive into the smart contracts that power Recall",
   },
   {
     title: "Architecture",
-    icon: <Database className="text-black-13 dark:text-white-off h-5 w-5" />,
+    icon: <Database className="text-primary h-5 w-5" />,
     href: "/protocol/architecture",
     description: "Review technical details like subnets and data availability",
   },

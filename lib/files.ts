@@ -12,8 +12,7 @@ import { type DocsFile } from "@/lib/ai";
 // Note: these map to the folder names in the `docs` directory
 export const DOCS_CATEGORIES = {
   agents: "Building AI agents with data storage, retrieval, and plugins",
-  intro:
-    "Getting Started with Recall, including quickstarts, faucet and portal guides, and basic concepts",
+  intro: "Getting Started with Recall, including quickstarts, and basic concepts",
   protocol: "System architecture, contracts, RPCs, and protocol design",
   sources: "Data source creation for pure object storage and data pipelines",
   tools: "Developer tools, including SDKs, CLIs, and the S3 adapter",
@@ -34,7 +33,7 @@ export function getCategoryDisplayName(filePath: string): string {
 export async function getDocsContent(docsDir: string): Promise<DocsFile[]> {
   const files = await fg(["**/*.mdx"], {
     cwd: docsDir,
-    ignore: ["**/openapi/**"],
+    ignore: ["**/openapi/**", "**/_*.mdx"],
     absolute: true,
     dot: false,
   });

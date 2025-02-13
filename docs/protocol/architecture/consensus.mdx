@@ -1,9 +1,7 @@
 ---
-title: Consensus & state replication
+title: Consensus coprocessor
 description: Dig into the consensus mechanisms behind Recall's consensus mechanisms.
 ---
-
-## Consensus Coprocessor
 
 In addition to scaling through hierarchical subnets, Recall employs a unique approach to consensus
 that allows each subnet to efficiently process large volumes of data. This approach is based on a
@@ -11,6 +9,8 @@ _parallel consensus [coprocessor](https://vitalik.eth.limo/general/2024/09/02/gl
 enables the network to reach agreement on the order of data-carrying transactions, even as the data
 itself is being optimistically synchronized among validators in the background. This coprocessor
 protocol is designed to be fast, secure, and flexible.
+
+## Features
 
 Recall’s consensus coprocessor decouples execution from consensus, allowing the blockchain to
 process transactions and manage data in parallel, while retaining deterministic state updates and
@@ -30,60 +30,3 @@ security. This coprocessor leverages five key components to achieve this:
    longer-term data loss.
 5. **Distributed execution pool**: Separating task execution from ordering enables continuous task
    processing even as data synchronization occurs asynchronously in the background.
-
-## CometBFT
-
-Within a subnet,
-[state machine replication](https://en.wikipedia.org/wiki/State_machine_replication) is achieved via
-[CometBFT](https://cometbft.com/) (originally known as
-[_Tendermint_](https://atrium.lib.uoguelph.ca/items/5459099e-67aa-4a23-83ae-d3471d8d8336)).
-CometBFT's consensus algorithm is based on a variant of
-[Practical Byzantine Fault Tolerance](https://dl.acm.org/doi/abs/10.1145/571637.571640) (PBFT) and
-relies on a round-robin proposer selection mechanism, while incorporating elements that improve on
-PBFT's performance and communication overhead (see also the
-[Cosmos whitepaper](https://cosmos.network/resources/whitepaper)). It is a fast, battled-tested, and
-well-designed consensus engine.
-
-Recall's blockchain functionality is exposed as a unified
-[ABCI++](https://members.delphidigital.io/learn/abci) application controlled by CometBFT. ABCI
-programs are an interface between CometBFT and the actual state machine being replicated. That is,
-ABCIs implement deterministic state machines to be securely replicated by the CometBFT consensus
-engine. In this sense, CometBFT acts as a standalone process that issues commands to an underlying
-ABCI++ application and exposes a public JSON RPC API, much like the Ethereum JSON RPC API.
-
-<Callout>
-The "++" in ABCI++ refers to additional functionality that CometBFT enables compared to the original ABCI, which helps improve the overall scalability and feature surface area.
-
-</Callout>
-
-## Fendermint
-
-Recall consensus is heavily based on IPC
-[Fendermint](https://github.com/consensus-shipyard/ipc/tree/main/fendermint), which is a specialized
-ABCI++ interface to its
-[execution virtual machine](https://docs.filecoin.io/smart-contracts/fundamentals/the-fvm) (Wasm
-with EVM compatibility). Fendermint exposes EVM/Wasm-specific functionality within subnets, allowing
-Recall subnets to behave with custom parameters to greatly improve throughput and features.
-
-The unique features of Fendermint include a modified _interpreter stack_ which is responsible for
-handling commands from CometBFT. This is a layered series of interpreters that are initialized when
-the ABCI++ application is built. Fendermint also includes a _snapshot manager_ that allows
-[CAR files](https://ipld.io/specs/transport/car/) to be offered to peers for quick chain sync, and
-an _IPLD resolver_ that is used to resolve
-[content identifiers (CIDs)](https://docs.ipfs.tech/concepts/content-addressing/#) between peers.
-This IPLD resolver is a libp2p-based service that was originally developed to support bottom-up
-checkpoints, which are collection of messages from a child subnet that should be executed by parent
-validators. In practice, Recall passes checkpointed headers to its parent and uses the CometBFT
-ledger to gather relevant signatures etc., and the parent subnet then leverages the IPLD resolver to
-fetch the actual messages and execute them.
-
-## Checkpointing
-
-Checkpointing is how Recall subnets push data commitments up the hierarchy to the root subnet, as
-well as other chains. This check-pointing process is a key component of the hierarchical
-architecture of Recall, and is a core component of the IPC protocol.
-
-Recall subnets are continuously exchanging data with their parent chain (another subnet or a rootnet
-like Filecoin) and (possibly) child subnets, so in addition to bottom-up checkpoints, subnet may
-leverage _top-down sync_, when subnets must have a view of their parent finality, which includes the
-latest block hash, power table information, and potentially cross-subnet message passing.

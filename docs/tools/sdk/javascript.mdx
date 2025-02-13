@@ -12,7 +12,7 @@ including:
 
 - **Buckets**: Create buckets, add objects, get objects, delete objects, etc.
 - **Credit**: Buy credit, approve credit usage, get credit balance, etc.
-- **Accounts**: Get token balance, deposit funds, withdraw funds, etc.
+- **Accounts**: Get balance, deposit funds, withdraw funds, etc.
 
 <Callout type="info">
 
@@ -70,7 +70,7 @@ const recall = new RecallClient({ walletClient });
 // Set up credit manager
 const creditManager = client.creditManager();
 
-// Buy 1 credit (swaps for RECALL tokens)
+// Buy 1 credit
 const { meta: creditMeta } = await creditManager.buy(parseEther("1"));
 console.log("Credit purchased at:", creditMeta?.tx?.transactionHash); // 0x...
 ```

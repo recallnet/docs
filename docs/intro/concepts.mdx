@@ -3,7 +3,7 @@ title: Concepts
 description: Getting started with basic network concepts.
 ---
 
-## Memory & knowledge L2
+## Memory & knowledge blockchain
 
 Recall puts agent data like Chain-of-Thought (CoT) logs and decision making onchain, while also
 connecting agents to _other_ agents or datasets to learn from. It offers features that put it in a
@@ -26,7 +26,9 @@ data.
 
 The core data storage primitive is a _bucket_, which is a key-value store for arbitrary data is
 represented as a _blob_. You can think of the agent's external "brain" as being a bucket with
-accompanying features to improve its overall intelligence.
+accompanying features to improve its overall intelligence. Optionally, you can also define a
+time-to-live (TTL) for the data, which is the amount of time the data will be stored before
+expiring.
 
 ## Cognitive APIs
 
@@ -51,28 +53,28 @@ a way to permissionlessly create, manage, and share their knowledge.
 
 Like any blockchain system, _accounts_ are used to interact with the network. All transactions are
 signed by an EVM-style key pair (ECDSA, secp256k1) to ensure that the transaction is authentic,
-authorized, and verifiable. Accounts pay for network operations with tokens and credits.
+authorized, and verifiable. Accounts pay for network operations.
 
-## Tokens
+## Gas
 
-The RECALL token is used to pay for network usage. For example, when you create a bucket or send
-transactions, you pay gas fees in the token. However, when you _store_ data on the network, you pay
-in credits, which are a unit of resource to perform a set of operations.
+Gas is used to pay for network usage. For example, when you create a bucket or send transactions,
+you pay gas fees. However, when you _store_ data on the network, you pay in credits, which are a
+unit of resource to perform a set of operations.
 
 ## Credit
 
-Recall employs a novel _credit_ system to support usage-based pricing and predictable costs,
-purchased with tokens. For example, storing an arbitrary blob for a defined amount of time costs a
-forecastable number of credits, measured by the size of the data, the duration of the storage, and
-the computational complexity of data processing.
+Recall employs a novel _credit_ system to support usage-based pricing and predictable costs. For
+example, storing an arbitrary blob for a defined amount of time costs a forecastable number of
+credits, measured by the size of the data, the duration of the storage, and the computational
+complexity of data processing.
 
 ## Virtual gas
 
 Buying credits ensures users can pre-buy storage to that can be drawn down at a predictable rate.
 _Virtual gas_ is the counterpart to this equation, also known as an account's _gas allowance_,
-equivalent to the number of tokens used to purchase credits. When you pay for gas operations, it
-either draws down from your virtual gas balance, or uses your actual token balance if there is no
-gas allowance available.
+equivalent to the gas used to purchase credits. When you pay for gas operations, it either draws
+down from your virtual gas balance, or uses your actual gas balance if there is no gas allowance
+available.
 
 ## Operator approvals
 
@@ -99,17 +101,7 @@ blob, but others will be added in the future (e.g., compute for performing trans
 
 ## Limits
 
-There are a few limitations to be aware of when building on Recall. Keep in mind that services like
-Recall and Ceramic have their own constraints, which are detailed in their respective sections.
+There are a few constraints to be aware of when building on Recall:
 
 - **Block time**: ~1 block per second.
-- **Throughput (TPS)**: Hundreds of transactions per second.
-- **Maximum blob size**: 5 GiB.
-
-<Callout type="warn">
-
-Note: TPS is rough estimate and may vary based on network conditions. The network design is still
-under heavy development, optimizations are being made, and benchmarked tests are yet to be
-finalized.
-
-</Callout>
+- **Maximum object (blob) size**: 5 GiB.

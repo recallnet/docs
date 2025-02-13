@@ -3,74 +3,18 @@ title: Data availability
 description: A general purpose data overlay fulfilling data availability requirements.
 ---
 
-In Recall, data commitments are maintained onchain but actual data storage is managed offchain. This
-design choice is driven by the need to maintain chain liveness and limit the demands on validator
-resources, as storing large volumes of data onchain can lead to bloating and reduced efficiency.
-Recall partly addresses these scalability issues through the use of hierarchical consensus and
-detached payload transactions with a custom synchronization and consensus protocol. However, this
-requires care in order to maintain the overall integrity, and reliability of our system. In
-particular, Recall needs to support the following additional core requirements to maintain data
-security:
-
-- **Data integrity**: Stakeholders must have mechanisms to verify that the data has not been altered
-  or tampered with since its original commitment,
-- **Data robustness**: The system must be designed to handle situations where data becomes
-  inaccessible or corrupted, including methods for recovering or reconstructing lost or compromised
-  data,
-- **Data accessibility**: Stakeholders must have mechanisms to ensure that their data is being
-  correctly stored and retrievable across the network, and
-- **Data availability**: Stakeholders must have a means to request and receive offchain data when
-  required.
-
-## Data availability approaches
-
-Existing projects address one or more of these security requirements but seldom cover all four
-comprehensively. For instance, most blockchain-based systems provide a degree of data **integrity**
-through the use of data commitment schemes (i.e., authenticated data structures), whereas
-storage-centric protocols predominantly focus on proofs of storage, emphasizing data possession and
-validator access (i.e., data **accessibility**). Recently,
-[data **availability**](https://arxiv.org/abs/1809.09044) has become a focal point in blockchain
-scaling discussions, with systems increasingly concentrating on ensuring that clients can reliably
-access transaction data from rollups, and/or via light-clients. In all these cases, data
-**robustness** is often addressed through a combination of replication, and data redundancy
-techniques.
-
-In order to address all four of Recall's core data security requirements, we employ features from
-both data availability and data accessibility protocol designs.
-
-## Erasure coding
-
-[Erasure coding](https://en.wikipedia.org/wiki/Erasure_code) is a technique used in data storage and
-transmission systems to enhance data reliability and fault tolerance. It involves breaking down a
-data object into smaller fragments and then generating additional redundant fragments using
-mathematical algorithms. These redundant fragments are distributed across different storage nodes or
-transmitted through different channels. In the event of data loss or corruption, the original data
-can be reconstructed from a subset of the fragments, as long as a sufficient number of fragments
-remain intact.
-
-Most existing data availability protocols rely on a combination of random sampling and erasure
-coding, an approach we also adopt in Recall. In the context of data availability sampling, when a
-node needs to verify data availability, it randomly samples a subset of the _coded_ fragments.
-
-Due to the properties of erasure encoding, any sufficiently large subset of fragments (defined by
-the encoding scheme) can be used to reconstruct the original data. This allows nodes to verify the
-presence of the entire dataset without needing to store or access all fragments. By combining
-erasure encoding with data availability sampling, a system can efficiently detect and mitigate data
-withholding or loss, thereby maintaining the robustness and reliability of the distributed storage
-solution.
-
-### Alpha entanglement
-
 Deterministic ordering of data commitments is part of the onchain consensus, but actual data
 storage, synchronization, and function/task execution is performed offchain. Like most existing data
 availability protocols, Recall relies on a combination of _random sampling_ and _erasure coding_.
-Unlike many systems which use Reed-Solomon erasure codes, Recall employs
-[_Alpha entanglement_ (AE) codes](https://arxiv.org/abs/1810.02974), a specialized erasure coding
-scheme designed for distributed systems.
 
-AE codes create redundancy with less storage overhead, enhance data integrity through block
-entanglement, and enable efficient recovery of missing data blocks without reconstructing large
-portions of data. This reduces repair costs and improves scalability, even in dynamic environments.
+## Alpha entanglement
+
+Unlike many systems which use Reed-Solomon erasure codes, Recall employs
+[_alpha entanglement_ (AE)](https://arxiv.org/pdf/2404.16210) codes, a specialized erasure coding
+scheme designed for distributed systems. AE codes create redundancy with less storage overhead,
+enhance data integrity through block entanglement, and enable efficient recovery of missing data
+blocks without reconstructing large portions of data. This reduces repair costs and improves
+scalability, even in dynamic environments.
 
 Alpha entanglement codes are constructed by "entangling" data and redundant blocks in a
 multi-dimensional lattice structure. This entanglement process _propagates redundant information
@@ -78,39 +22,3 @@ across the mesh-like structure_. This process allows for decentralized and scala
 supports random access to data, and optimizes storage by grouping data based on retention periods
 (TTL). The result is a highly efficient, decentralized system that maintains data availability and
 integrity even under challenging conditions.
-
-## Data accessibility
-
-Recall from the previous section that alpha entanglement works by **propagating redundant
-information across the mesh-like structure.** In practice, this means that in order to compute
-parity blocks for new incoming data, the new data must be combined (XOR) with past/current data.
-Recall takes advantage of this process by requiring validators to alpha entangle new chunks of data
-with past chunks, to create a self-repairing data lattice.
-
-Each new data file/blob that is added to a Recall bucket machine via a detached payload transaction
-has already been chunked into fixed size chunks, and each chunk is ingested into the system it is
-entangled with a pseudorandomly selected past chunk from the existing data lattice.
-
-<Callout>
-
-Note that this chunking and DAG construction process is already part of the object API that Recall
-uses for detached payloads.
-
-</Callout>
-
-### A note on data retention
-
-Each new file or blob added to a bucket is required to have an associated _retention policy_ as part
-of its object metadata. Given that time in Recall is measured in block time, this retention policy
-is specified as a TTL in blocks (e.g., TTL = 5). For a file/blob added at block 10, with a TTL of
-(at least) 5 blocks, we then assign it to _retention group_ 15.
-
-When entangling data, validators must always entangle incoming data (and associated chunks) with
-pseudorandom chunks from the correct retention group (or a retention group with a longer TTL). This
-ensures that data that should remain "available" together are physically and semantically grouped.
-
-If it is not possible to entangle a given data chunk with other data from its intended retention
-group (e.g., due to lack of preexisting data), it can be entangled with data in a later group, or
-with itself (creating a so-called _closed_ entanglement) in the worst case. Note that this process
-must be done in conjunction with the deterministic blockweave based approach to selecting
-recall/entanglement blocks.

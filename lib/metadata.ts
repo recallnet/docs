@@ -1,7 +1,4 @@
-import { createMetadataImage } from "fumadocs-core/server";
 import type { Metadata } from "next/types";
-
-import { source } from "./source";
 
 export const baseUrl = new URL(
   process.env.NEXT_PUBLIC_SITE_URL ||
@@ -10,29 +7,48 @@ export const baseUrl = new URL(
     "https://docs.recall.network"
 );
 
-export const metadataImage: ReturnType<typeof createMetadataImage> = createMetadataImage({
-  imageRoute: "/og",
-  source,
-});
+const defaultTitle = "Recall Docs";
+const defaultDescription = "Docs and guides for the Recall Network";
+const images = `${baseUrl.toString()}img/og-image.png`;
+
+export const defaultMetadata = {
+  title: defaultTitle,
+  description: defaultDescription,
+  openGraph: {
+    title: defaultTitle,
+    siteName: defaultTitle,
+    type: "website",
+    locale: "en_US",
+    description: defaultDescription,
+    url: baseUrl.toString(),
+    images,
+  },
+  twitter: {
+    card: "summary_large_image",
+    creator: "@recallnet",
+    title: defaultTitle,
+    description: defaultDescription,
+    images,
+    site: defaultTitle,
+  },
+  metadataBase: baseUrl,
+};
 
 export function createMetadata(override: Metadata): Metadata {
   return {
-    ...override,
+    ...defaultMetadata,
+    title: override.title ? `${override.title} | ${defaultTitle}` : defaultTitle,
+    description: override.description ?? defaultDescription,
     openGraph: {
-      title: override.title ?? undefined,
-      description: override.description ?? undefined,
-      url: baseUrl.toString(),
-      images: "/img/recall-dark.svg",
-      siteName: "Recall",
-      ...override.openGraph,
+      ...defaultMetadata.openGraph,
+      title: override.title ?? defaultTitle,
+      description: override.description ?? defaultDescription,
+      url: override.openGraph?.url ?? baseUrl.toString(),
     },
     twitter: {
-      card: "summary_large_image",
-      creator: "@recallnet",
-      title: override.title ?? undefined,
-      description: override.description ?? undefined,
-      images: "/img/recall-dark.svg",
-      ...override.twitter,
+      ...defaultMetadata.twitter,
+      title: override.title ?? defaultTitle,
+      description: override.description ?? defaultDescription,
     },
   };
 }

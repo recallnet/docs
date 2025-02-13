@@ -1,5 +1,5 @@
 ---
-title: Eliza
+title: Eliza CoT starter kit
 description: A simple agent that can answer questions.
 ---
 
@@ -9,8 +9,7 @@ prompt and then expose the `plugin-recall-storage` to your agent.
 
 <Callout type="warning">
 
-You'll have to join the waitlist to get access to the Recall testnet. Fill out your information:
-[here](https://hhueol4i6vp.typeform.com/to/v0CnYf1t)
+[Join the waitlist](https://hhueol4i6vp.typeform.com/to/v0CnYf1t) to get access to the Recall testnet.
 
 </Callout>
 
@@ -44,14 +43,16 @@ Build the project:
 npm run build
 ```
 
+You'll also want to make sure the Recall CLI is installed—[follow the instructions](/tools/cli/installation) to get started.
+
 </Step>
 
 <Step>
 
 ## Set up your agent's account
 
-In order to interact with Recall, you need an account (private key) that owns both credits and
-tokens. If needed, you can create one by running the following command with the
+In order to interact with Recall, you need an account (private key) that owns credits to write data.
+If needed, you can create one by running the following command with the
 [Recall CLI](/tools/cli/account#create-an-account), which prints both the private key and the public
 key (address):
 
@@ -59,12 +60,29 @@ key (address):
 recall account create
 ```
 
-Then, head to the [Recall Faucet](/intro/faucet) request some tokens with your address.
+<Callout type="error">
 
-Lastly, you **must** purchase credits to store logs in your agents memory bucket—see the Portal
-guide [here](/intro/portal) for more details. Alternatively, you can use the CLI to
-[purchase credits](/tools/cli/account#buy-credit) for your agent to use, or purchase credit for your
-personal account and [delegate access](/tools/cli/account#approve-credit) to your agent's wallet.
+**Never share your private key** with anyone! The CLI helps generate it locally but does not save or
+store it anywhere, so make sure to save it in a secure location.
+
+</Callout>
+
+</Step>
+
+<Step>
+
+## Create an agent memory store
+
+You'll need to create a bucket to store your agent's CoT logs. You can do this with the CLI by
+attaching metadata with an `alias` key:
+
+```bash
+recall bucket create --metadata "alias=logs"
+```
+
+The created bucket will be represented onchain as a contract address (like `0xff00...8f`), but will
+have referenceable metadata (i.e., `{"alias": "logs"}`) which are automatically used by the agent to
+find the correct bucket.
 
 </Step>
 
@@ -223,16 +241,6 @@ recall bucket get --address 0xFF0000000000000000000000000000000000008f \
   "log": "1. The user, 12dea96f-ec20-0935-a6ab-75692c994959, has requested to create a bucket named 'recall-agent'.\n2. From the previous interactions, it is evident that the user has already been interacting with the Recall service, as seen from the queries about Recall.\n3. The task is straightforward: to create a new bucket with the specified name 'recall-agent' on the Recall service.\n4. The most appropriate action from the available actions is CREATE_BUCKET, as it directly aligns with the user's request to create a new bucket on the Recall service.\n5. There is no indication that this bucket already exists, so the action should proceed to create it."
 }
 ```
-
-</Step>
-
-<Step>
-
-## Visualize the logs
-
-Head over to the [Recall Portal](https://portal.recall.network) and search for the bucket. This
-gives you constant insight into what your model is doing. Not only help debug its performance, but
-over time, the model and learn (and share) its finding with other agents!
 
 </Step>
 

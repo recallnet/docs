@@ -3,8 +3,8 @@ title: Core contracts
 description: Protocol contracts for hierarchical subnet communication and state management.
 ---
 
-The core contracts manage subnet creation, token bridging, validator entrance, and all activities
-related to the core maintaining consensus over state (checkpointing, etc).
+The core contracts manage subnet creation, bridging, validator entrance, and all activities related
+to the core maintaining consensus over state (checkpointing, etc).
 
 ## Gateway
 
@@ -21,9 +21,8 @@ validation of cross-subnet communications.
 
 ## Supply source
 
-The supply source for a subnet is the RECALL ERC20 token. Funds get deposited (bridged) from the
-parent chain (where the token was originally minted) into the subnet, and withdrawals are supported
-as well.
+The supply source for a subnet provides funds that get deposited (bridged) from the parent chain
+into the subnet, and withdrawals are supported as well.
 
 ## Validator gater
 

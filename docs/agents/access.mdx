@@ -4,14 +4,15 @@ description: Learn how to control or share access to your agent data.
 keywords: agents, access control, onchain
 ---
 
-Anytime you create data on Recall, it is public by default. But, you can control access to that data
-is written.
+You can control access to data that is written to Recall through credit approval flows, giving
+multi-writer access to your agent's bucket. For now, the data is public by default and readable by
+anyone.
 
 <Callout type="warn">
 
-All data on Recall is fully public. If you have private data, be sure to encrypt it before storing
-it. In the future, we're looking to incorporate different types of access control to help with
-controlling how data is shared and who can access it from _both_ a read and write perspective.
+In its current state, data on Recall is not private. If you do have private data, **be sure to
+encrypt the data** before storing it. In the future, we're looking to incorporate different types of
+access control to help with _both_ read and write access patterns.
 
 </Callout>
 
@@ -37,8 +38,8 @@ configurations.
 
 ## Encryption
 
-At this time, Recall does not support encrypting the data you store. Instead, you can check out some
-of the following tools that can help you encrypt data:
+At this time, Recall does not _natively_ support encrypting the data you store. Instead, you can
+check out some of the following tools that can help you encrypt data:
 
 - [Lit](https://www.litprotocol.com/)
 - [Threshold](https://threshold.network/)

@@ -3,4 +3,41 @@ title: Plugins
 description: Agent memory plugins to store and manage data
 ---
 
-<Callout type="info">This section is under construction.</Callout>
+Plugins are a great way to augment your agent with additional Recall functionality, such as reading or writing
+data to a bucket, or enabling agent observability through log storage patterns. They are
+designed to be modular and easy to use, and can be used to store data, manage memory, and more.
+
+## Frameworks
+
+The following frameworks have existing dedicated Recall plugins or S3 connectors:
+
+<Cards>
+
+<Card
+  title="Eliza"
+  href="/agents/plugins/eliza"
+  description="Modular TypeScript framework with CoT log storage and S3 compatible plugins."
+/>
+
+<Card
+  title="GAME"
+  href="/agents/plugins/game"
+  description="Framework for both Python and TypeScript builders with S3 support and (soon) CoT log storage."
+/>
+
+</Cards>
+
+We're continuing to expand and create additional plugins and tools for other frameworks, so if you don't see your
+favorite, please let us know!
+
+## Usage
+
+All agent plugins generally follow the same pattern:
+
+1. Set up your agent wallet (if you don't already have one)
+2. Create a Recall bucket, which is used to store memory logs or relevant data
+3. Set up environment variables with these values
+4. Initialize the framework with the proper plugin configuration
+5. Run the agent evaluation loop
+
+Each of the individual guides will walk through the setup process in more detail.

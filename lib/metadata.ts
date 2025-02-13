@@ -7,58 +7,48 @@ export const baseUrl = new URL(
     "https://docs.recall.network"
 );
 
+const defaultTitle = "Recall Docs";
+const defaultDescription = "Docs and guides for the Recall Network";
+const images = `${baseUrl.toString()}img/og-image.png`;
+
 export const defaultMetadata = {
-  title: {
-    template: "%s | Recall Docs",
-    default: "Recall Docs",
-  },
-  description: "Docs and guides for the Recall Network",
+  title: defaultTitle,
+  description: defaultDescription,
   openGraph: {
-    title: "Recall Docs",
-    siteName: "Recall Docs",
+    title: defaultTitle,
+    siteName: defaultTitle,
     type: "website",
     locale: "en_US",
-    description: "Docs and guides for the Recall Network",
+    description: defaultDescription,
     url: baseUrl.toString(),
-    images: "/img/og-image.png",
+    images,
   },
   twitter: {
     card: "summary_large_image",
     creator: "@recallnet",
-    title: "Recall Docs",
-    description: "Docs and guides for the Recall Network",
-    images: "/img/og-image.png",
-    site: "Recall Docs",
-  },
-  icons: {
-    icon: [{ url: "/favicon.ico" }, { url: "/icon.png", type: "image/png" }],
-    shortcut: "/favicon.ico",
+    title: defaultTitle,
+    description: defaultDescription,
+    images,
+    site: defaultTitle,
   },
   metadataBase: baseUrl,
 };
 
 export function createMetadata(override: Metadata): Metadata {
-  const title = override.title ?? defaultMetadata.title.default;
-  const description = override.description ?? defaultMetadata.description;
-  const ogUrl = override.openGraph?.url ?? baseUrl.toString();
-
   return {
     ...defaultMetadata,
-    ...override,
-    title,
-    description,
+    title: override.title ? `${override.title} | ${defaultTitle}` : defaultTitle,
+    description: override.description ?? defaultDescription,
     openGraph: {
       ...defaultMetadata.openGraph,
-      ...override.openGraph,
-      title,
-      description,
-      url: ogUrl,
+      title: override.title ?? defaultTitle,
+      description: override.description ?? defaultDescription,
+      url: override.openGraph?.url ?? baseUrl.toString(),
     },
     twitter: {
       ...defaultMetadata.twitter,
-      ...override.twitter,
-      title,
-      description,
+      title: override.title ?? defaultTitle,
+      description: override.description ?? defaultDescription,
     },
   };
 }

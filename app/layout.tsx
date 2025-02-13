@@ -4,7 +4,6 @@ import "katex/dist/katex.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { RootProvider } from "fumadocs-ui/provider";
 import { MessageCircle } from "lucide-react";
-import { Metadata } from "next";
 import { ThemeProviderProps } from "next-themes";
 import type { ReactNode } from "react";
 
@@ -12,11 +11,17 @@ import { baseOptions } from "@/app/layout.config";
 import { AISearchTrigger } from "@/components/ai";
 import { DocsLayout, type DocsLayoutProps } from "@/components/theme/notebook";
 import { buttonVariants } from "@/components/theme/ui/button";
-import { defaultMetadata } from "@/lib/metadata";
+import { createMetadata, defaultMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
 import { cn } from "@/lib/theme/cn";
 
-export const metadata: Metadata = defaultMetadata;
+export const metadata = createMetadata({
+  ...defaultMetadata,
+  icons: {
+    icon: [{ url: "/favicon.ico" }, { url: "/icon.png", type: "image/png" }],
+    shortcut: "/favicon.ico",
+  },
+});
 
 const docsOptions: DocsLayoutProps = {
   ...baseOptions,

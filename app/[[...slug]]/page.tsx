@@ -11,7 +11,6 @@ import { HTMLAttributes } from "react";
 
 import { Callout, CalloutProps } from "@/components/theme/callout";
 import { Card, CardProps, Cards } from "@/components/theme/card";
-import { metadataImage } from "@/lib/metadata";
 import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
 
@@ -91,15 +90,13 @@ export async function generateMetadata(props: { params: Promise<{ slug?: string[
   if (!page) notFound();
 
   const isRootPage = !params.slug || params.slug.length === 0;
-  const description = page.data.description ?? "Recall documentation for building agent memory";
+  const description = page.data.description;
 
-  return createMetadata(
-    metadataImage.withImage(page.slugs, {
-      title: isRootPage ? "Home" : page.data.title,
-      description,
-      openGraph: {
-        url: `/${page.slugs.join("/")}`,
-      },
-    })
-  );
+  return createMetadata({
+    title: isRootPage ? null : page.data.title,
+    description: isRootPage ? null : description,
+    openGraph: {
+      url: `/${page.slugs.join("/")}`,
+    },
+  });
 }

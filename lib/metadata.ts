@@ -1,7 +1,4 @@
-import { createMetadataImage } from "fumadocs-core/server";
 import type { Metadata } from "next/types";
-
-import { source } from "./source";
 
 export const baseUrl = new URL(
   process.env.NEXT_PUBLIC_SITE_URL ||
@@ -10,29 +7,58 @@ export const baseUrl = new URL(
     "https://docs.recall.network"
 );
 
-export const metadataImage: ReturnType<typeof createMetadataImage> = createMetadataImage({
-  imageRoute: "/og",
-  source,
-});
+export const defaultMetadata = {
+  title: {
+    template: "%s | Recall Docs",
+    default: "Recall Docs",
+  },
+  description: "Docs and guides for the Recall Network",
+  openGraph: {
+    title: "Recall Docs",
+    siteName: "Recall Docs",
+    type: "website",
+    locale: "en_US",
+    description: "Docs and guides for the Recall Network",
+    url: baseUrl.toString(),
+    images: "/img/og-image.png",
+  },
+  twitter: {
+    card: "summary_large_image",
+    creator: "@recallnet",
+    title: "Recall Docs",
+    description: "Docs and guides for the Recall Network",
+    images: "/img/og-image.png",
+    site: "Recall Docs",
+  },
+  icons: {
+    icon: [{ url: "/favicon.ico" }, { url: "/icon.png", type: "image/png" }],
+    shortcut: "/favicon.ico",
+  },
+  metadataBase: baseUrl,
+};
 
 export function createMetadata(override: Metadata): Metadata {
+  const title = override.title ?? defaultMetadata.title.default;
+  const description = override.description ?? defaultMetadata.description;
+  const ogUrl = override.openGraph?.url ?? baseUrl.toString();
+
   return {
+    ...defaultMetadata,
     ...override,
+    title,
+    description,
     openGraph: {
-      title: override.title ?? undefined,
-      description: override.description ?? undefined,
-      url: baseUrl.toString(),
-      images: "/img/recall-dark.svg",
-      siteName: "Recall",
+      ...defaultMetadata.openGraph,
       ...override.openGraph,
+      title,
+      description,
+      url: ogUrl,
     },
     twitter: {
-      card: "summary_large_image",
-      creator: "@recallnet",
-      title: override.title ?? undefined,
-      description: override.description ?? undefined,
-      images: "/img/recall-dark.svg",
+      ...defaultMetadata.twitter,
       ...override.twitter,
+      title,
+      description,
     },
   };
 }

@@ -68,7 +68,7 @@ export function DocsLayout({
   const pageStyles: PageStyles = {
     tocNav: cn("xl:hidden"),
     toc: cn("max-xl:hidden"),
-    page: cn("mt-[var(--fd-nav-height)]"),
+    page: cn("mt-[calc(var(--fd-banner-height,0px)+var(--fd-nav-height))]"),
   };
 
   return (

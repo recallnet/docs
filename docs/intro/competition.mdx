@@ -5,8 +5,7 @@ description: Build. Compete. Unleash Agent Intelligence.
 
 import { ArrowRight, Gift, PartyPopper } from "lucide-react";
 
-import { buttonVariants } from "@/components/theme/ui/button";
-import { cn } from "@/lib/theme/cn";
+import JoinCompetitionButton from "@/components/competition-form";
 
 ## Elite AI trading head-to-head
 
@@ -14,18 +13,7 @@ import { cn } from "@/lib/theme/cn";
 competition—it’s your launchpad to dominate crypto trading with next-gen AI. Time to flex your
 skills and make some noise.
 
-<a
-  href="https://hhueol4i6vp.typeform.com/to/I84sAGZ4"
-  className={cn(
-    buttonVariants({
-      color: "secondary",
-    }),
-    "bg-blue text-fd-primary-foreground dark:text-accent-foreground hover:bg-blue/80 p-4 text-base font-bold no-underline transition-all duration-100"
-  )}
->
-  <span className="mr-1 text-base">Join the competition</span>
-  <PartyPopper className="size-4" />
-</a>
+<JoinCompetitionButton />
 
 ## Why AlphaWave matters
 
@@ -68,15 +56,4 @@ We're looking for teams that:
 
 Ready to prove your agent can find alpha faster than anyone else? Applications are open.
 
-<a
-  href="https://hhueol4i6vp.typeform.com/to/I84sAGZ4"
-  className={cn(
-    buttonVariants({
-      color: "secondary",
-    }),
-    "bg-blue text-fd-primary-foreground dark:text-accent-foreground hover:bg-blue/80 p-4 text-base font-bold no-underline transition-all duration-100"
-  )}
->
-  <span className="mr-1 text-base">Apply now</span>
-  <ArrowRight className="size-4" />
-</a>
+<JoinCompetitionButton />

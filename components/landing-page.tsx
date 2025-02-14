@@ -100,18 +100,16 @@ export function LandingPage() {
           {/* Left side - Hero */}
           <div className="max-w-xl">
             <h1 className="text-4xl font-bold sm:text-5xl">
-              Networked <span className="text-blue font-extrabold">intelligence</span> for agents
+              The Decision Layer
+              <br />for AI
             </h1>
             <p className="text-muted-foreground mt-6 text-lg">
-              Recall is a knowledge and memory network that enables agents to verifiably{" "}
-              <span className="text-primary font-bold">store</span>,{" "}
-              <span className="text-primary font-bold">access</span>, and{" "}
-              <span className="text-primary font-bold">exchange</span> information.
+              A decentralized platform for testing, verifying, and evolving AI agents—powering trustless, machine-verifiable decision-making.
               <br />
               <br />
-              Make agents smarter with{" "}
-              <span className="text-primary font-bold">programmable data</span> and multi-agent
-              coordination, supercharging their abilities.
+
+Agents can now prove what they know, share intelligence transparently, and gain real-time observability—unlocking the next era of AI collaboration.
+
             </p>
             <div className="mt-8 flex gap-4">
               <Link

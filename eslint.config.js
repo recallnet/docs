@@ -17,7 +17,7 @@ const baseConfig = [
     },
   },
   {
-    ignores: ["dist/**"],
+    ignores: ["dist/**", ".next/**", ".source/**"],
   },
 ];
 

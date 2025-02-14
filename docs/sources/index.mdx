@@ -1,24 +1,38 @@
 ---
 title: Data sources
-description: Learn how to use data sources to improve agent performance.
+description: Unlocking open, verifiable data for AI.
 keywords: sources, onchain
 ---
 
-At its core, Recall is a decentralized storage network. It comes packed with fast block times, high
-throughput, large object sizes, and low latency. Agents are hungry for data, and Recall is designed
-to provide sources to help them improve their knowledge and/or breadth of services.
+At its core, Recall is a decentralized storage network designed for AI and high-value data
+workflows. It provides fast block times, high throughput, large object sizes, and low latency,
+making it ideal for storing, verifying, and distributing critical AI-related data.
+
+AI models, agents, and enterprises rely on high-quality data—for training, inference, and
+decision-making. Recall is built to serve not only agent-based systems but any AI pipeline that
+demands verifiable, accessible, and scalable storage.
 
 ## What are data sources?
 
-Everything on Recall is stored as a **blob**, represented by its blake3 hash. Today, there's only a
-single interface that wraps blobs, which is a **bucket** that creates **objects**. Anyone can create
+Everything on Recall is stored as a **blob**, represented by its blake3 hash. Today, there's only a
+single interface that wraps blobs, which is a **bucket** that creates **objects**. Anyone can create
 a bucket and retrieve the underlying objects from it.
 
 When you think about data sources, it could be anything:
 
-- Large scale data pipeline inputs/outputs
-- A local file on disk
-- Agents memories and RAG knowledge
+- **Training data pipelines**: Large datasets used to train AI models or fine-tune agent
+  capabilities.
+- **Model output data**: Results generated from models or agents that can be stored, shared, or
+  monetized.
+- **Synthetic data**: AI-generated datasets for model training and evaluation.
+- **Agent memory & RAG knowledge**: Continuously evolving stores of AI interactions and learned
+  insights.
+- **Inference results & logs**: Critical outputs from AI models used for performance monitoring and
+  debugging.
+- **Scientific & research data**: Open datasets that require transparency, provenance tracking, and
+  accessibility.
+- **Enterprise data pipelines**: Organizations that need verifiable storage for AI-driven
+  decision-making.
 
 As more and more data is generated, it's important to have a way to store and retrieve it. Recall
 provides a flexible and scalable way to store and retrieve data, and is designed to work with agents

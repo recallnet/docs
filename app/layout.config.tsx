@@ -68,7 +68,7 @@ export const baseOptions: BaseLayoutProps = {
           className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center transition-colors duration-200"
         >
           <PartyPopper size={16} className="mr-2" />
-          Join the AlphaWaves competition
+          Join the AlphaWave competition
           <LinkIcon size={16} className="ml-1" />
         </Link>
       </>

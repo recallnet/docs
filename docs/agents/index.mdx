@@ -7,13 +7,14 @@ keywords: agents, memory, collaboration
 ## What is an agent?
 
 Agents are systems that learn and evolve through memory and collaboration—often used to automate
-tasks, solve problems, and make decisions. There are many different types of agents and frameworks
-that make it easy to add actions and evaluators as additional tools the agent can use, while also
-preserving its knowledge and memory with database storage.
+tasks, solve problems, and make decisions.
+
+Many agent frameworks allow developers to add actions (tools the agent can use) and evaluators
+(feedback mechanisms) while preserving long-term knowledge.
 
 ### Agent layers
 
-An agent is made up of four layers:
+Every agent is built with four core layers:
 
 - **Perception**: Acts as the agent's sensory system, gathering and interpreting data from the
   environment, such as analyzing text / images, or accessing information from external sources.
@@ -25,6 +26,11 @@ An agent is made up of four layers:
 - **Memory**: Stores and manages the agent's knowledge and experiences, including short-term memory
   for immediate tasks and long-term memory for accumulated knowledge, allowing the agent to learn
   and adapt over time.
+
+### Where Recall fits
+
+Memory & Execution are where Recall shines—storing AI-generated insights, preserving decision
+traces, and enabling verifiable, persistent knowledge across interactions.
 
 ### Memory types
 
@@ -73,12 +79,12 @@ plugins and support in the future.
 | [ZerePy](https://github.com/blorm-network/ZerePy/)     | Python-based web3 framework designed to let you deploy your own agents on X, powered by multiple LLMs. | Built as a modularized version of the [Zerebro](https://zerebro.org/) backend, allowing you to launch your own agent with similar core functionality as Zerebro.                          |
 | [Rig](https://github.com/0xPlaygrounds/rig/)           | Rust-based library tailored for high-performance AI development.                                       | Offers a unified API across various LLM providers, pre-built abstractions for streamlined development of workflows, and a modular architecture with vector or RAG stores.                 |
 | [LangChain](https://github.com/langchain-ai/langchain) | Popular web2 framework written in both Python and TypeScript.                                          | Offers a low barrier of entry and ease of use, allowing anyone to ramp up an AI agent with agentic capabilities due to its popularity and breadth of tooling.                             |
-| [Letta](https://docs.letta.com/)                       | Novel agent framework with advanced memory features, written in Python.                                                              | Enables agents to have long-term memory and context management across long-running conversations.                                                                                         |
+| [Letta](https://docs.letta.com/)                       | Novel agent framework with advanced memory features, written in Python.                                | Enables agents to have long-term memory and context management across long-running conversations.                                                                                         |
 
 <Callout type="info">
 
 Many frameworks offer S3-compatible storage, allowing you to store agent data alongside the
-[Recall S3 adapter](/tols/s3). However, we're working to add more Recall-native plugins to make it
+[Recall S3 adapter](/tools/s3). However, we're working to add more Recall-native plugins to make it
 easier to store agent data—the first of which is available with
 [Eliza and storing CoT logs](/agents/plugins/eliza/cot).
 

@@ -31,7 +31,7 @@ and **delete all network data**.
 | Description | Value                                                   |
 | ----------- | ------------------------------------------------------- |
 | Chain ID    | `2481632`                                               |
-| Subnet ID   | `/r314159/t410fxhurcl3in7vbb3l245noc3nace7il74t45js7sa` |
+| Subnet ID   | `/r314159/t410f6mgygsxksvrptmf43vaopcwmni4tbw7jx3mo4gi` |
 
 The subnet ID is comprised of the "root" chain ID and a path containing the subnet actor contract
 address. For example, the string above denotes the rootnet L1 is chain ID `314159` (Filecoin
@@ -40,12 +40,12 @@ Calibration), and only one child subnet exists, defined by the subnet actor cont
 
 ### RPCs and APIs
 
-| Description    | Value                                           |
-| -------------- | ----------------------------------------------- |
-| Subnet EVM RPC | `https://evm.node-0.testnet.recall.network`     |
-| Object API     | `https://objects.node-0.testnet.recall.network` |
-| CometBFT RPC   | `https://api.node-0.testnet.recall.network`     |
-| Parent EVM RPC | `https://api.calibration.node.glif.io/rpc/v1`   |
+| Description    | Value                                                |
+| -------------- | ---------------------------------------------------- |
+| Subnet EVM RPC | `https://evm.v013.node-0.testnet.recall.network`     |
+| Object API     | `https://objects.v013.node-0.testnet.recall.network` |
+| CometBFT RPC   | `https://api.v013.node-0.testnet.recall.network`     |
+| Parent EVM RPC | `https://api.calibration.node.glif.io/rpc/v1`        |
 
 <Callout type="info">
 
@@ -62,12 +62,12 @@ The Recall team runs three total nodes, so you can replace the `node-0` value wi
 | --------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | Gateway               | Subnet   | [`0x77aa40b105843728088c0132e43fc44348881da8`](https://explorer.testnet.recall.network/address/0x77aa40b105843728088c0132e43fc44348881da8) |
 | Registry              | Subnet   | [`0x74539671a1d2f1c8f200826baba665179f53a1b7`](https://explorer.testnet.recall.network/address/0x74539671a1d2f1c8f200826baba665179f53a1b7) |
-| Supply source (ERC20) | Parent   | [`0x2e6453107b4417eC2fB58ABDcc2968955Bd005Df`](https://calibration.filfox.info/en/address/0x2e6453107b4417eC2fB58ABDcc2968955Bd005Df)      |
-| Gateway               | Parent   | [`0x45da97E918183cA1f2891E277F600fC0B2dDD9dC`](https://calibration.filfox.info/en/address/0x45da97E918183cA1f2891E277F600fC0B2dDD9dC)      |
-| Registry              | Parent   | [`0xd7719695eE7042cDCFF4065ef93346bF33222d78`](https://calibration.filfox.info/en/address/0xd7719695eE7042cDCFF4065ef93346bF33222d78)      |
-| Validator gater       | Parent   | [`0x7180b1e71814a3cdc62a414ae02e3f6e1314b209`](https://calibration.filfox.info/en/address/0x7180b1e71814a3cdc62a414ae02e3f6e1314b209)      |
-| Validator rewarder    | Parent   | [`0xD67851A6888556111087E24519b6D70DA57dAa5F`](https://calibration.filfox.info/en/address/0xD67851A6888556111087E24519b6D70DA57dAa5F)      |
-| Subnet actor          | Parent   | [`0xb9e9112f686fea10ed7ae75ae16da0113e85ff93`](https://calibration.filfox.info/en/address/0xb9e9112f686fea10ed7ae75ae16da0113e85ff93)      |
+| Supply source (ERC20) | Parent   | [`0xF084d7543d3B1c3beb2a1D26b5Ae554051D797F9`](https://calibration.filfox.info/en/address/0xF084d7543d3B1c3beb2a1D26b5Ae554051D797F9)      |
+| Gateway               | Parent   | [`0x83BaA1161529413e1c61D7b66BD252Bc5c10A6Cd`](https://calibration.filfox.info/en/address/0x83BaA1161529413e1c61D7b66BD252Bc5c10A6Cd)      |
+| Registry              | Parent   | [`0x7e974301C8a8aB3502AaB1ed36f155354c84505f`](https://calibration.filfox.info/en/address/0x7e974301C8a8aB3502AaB1ed36f155354c84505f)      |
+| Validator gater       | Parent   | [`0xfc36b72fea862f8b27d818de37c515c5768cf6b6`](https://calibration.filfox.info/en/address/0xfc36b72fea862f8b27d818de37c515c5768cf6b6)      |
+| Validator rewarder    | Parent   | [`0x53BA6BC01d930Cd7974d3EB78E0E6283cFfbdD70`](https://calibration.filfox.info/en/address/0x53BA6BC01d930Cd7974d3EB78E0E6283cFfbdD70)      |
+| Subnet actor          | Parent   | [`0xf30d834aea9562f9b0bcdd40e78acc6a3930dbe9`](https://calibration.filfox.info/en/address/0xf30d834aea9562f9b0bcdd40e78acc6a3930dbe9)      |
 
 Note that the subnet contracts will always be the same for any new subnet deployed. The parent
 contracts may change, up until the testnet is stabilized.
@@ -76,9 +76,9 @@ contracts may change, up until the testnet is stabilized.
 
 | Description    | Location | Address                                                                                                                                    |
 | -------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Blob manager   | Subnet   | [`0x7180B1e71814A3cdC62A414Ae02e3f6E1314B209`](https://explorer.testnet.recall.network/address/0x7180B1e71814A3cdC62A414Ae02e3f6E1314B209) |
-| Bucket manager | Subnet   | [`0xfbCF213040240BA86Fed92961BB60625233641a1`](https://explorer.testnet.recall.network/address/0xfbCF213040240BA86Fed92961BB60625233641a1) |
-| Credit manager | Subnet   | [`0xDB85431B6a016e1652c7E898918d787B6aef7185`](https://explorer.testnet.recall.network/address/0xDB85431B6a016e1652c7E898918d787B6aef7185) |
+| Blob manager   | Subnet   | [`0x22F1039343b4F5cE3C74872B239524d4fFb7CABF`](https://explorer.testnet.recall.network/address/0x22F1039343b4F5cE3C74872B239524d4fFb7CABF) |
+| Bucket manager | Subnet   | [`0x8ce218Fc1e9C443a5A7255B6845d35C104b91516`](https://explorer.testnet.recall.network/address/0x8ce218Fc1e9C443a5A7255B6845d35C104b91516) |
+| Credit manager | Subnet   | [`0xe62FBa17E5B9965434C2871492c7Ac851fA8BAF7`](https://explorer.testnet.recall.network/address/0xe62FBa17E5B9965434C2871492c7Ac851fA8BAF7) |
 
 ## Localnet
 

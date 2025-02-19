@@ -3,6 +3,9 @@ title: Node operators
 description: Learn how to run a Recall node.
 ---
 
+import { buttonVariants } from "@/components/theme/ui/button";
+import { cn } from "@/lib/theme/cn";
+
 ## Hardware requirements
 
 To run a Recall node, we **_strongly_** recommend the following hardware. However, these values are
@@ -17,18 +20,35 @@ progresses toward mainnet.
 | Network bandwidth | 1 GB/s  | 1 GB/s             |
 | Public IP Address | 1       | 1                  |
 
-## Parent-child nodes
+## Validators
 
-Recall leverages a parent-child subnet architecture. Operators of a subnet **must** run a full
-validator node for **both the parent and the child subnet**. In the future, Recall subnets will also
-be able to dynamically adjust their capacity by spawning temporary subnets during peak usage and
-merging them during lower activity.
+Validators maintain the Recall blockchain through a Proof-of-Stake (PoS) protocol, where they are
+selected to produce blocks based on their staked assets. This selection is proportional to their
+stake, ensuring that those with more significant investment in the network have a larger role in its
+maintenance. Validators are incentivized to act honestly, as any malicious activity can lead to the
+loss of their staked assets through slashing.
 
-However, today, there is only a single subnet that rolls up to an L1 rootnet, so only a single node
-is required.
+Validators are also responsible for securely storing and maintaining data. This is crucial for the
+network's primary function as a data storage system. The integrity and availability of data are
+ensured through mechanisms that require validators to verifiably store and retrieve data. Validators
+are rewarded for this service, with fees paid by users for storing and retrieving data. As such,
+staking is somewhat "dynamic", with validators required to increase their stake proportionally to
+the amount of storage and compute they commit to the network.
 
-<Callout type="warn">
+## Interested in running a node?
 
-If you are interested in running a node, please reach out in our Discord!
+We're actively looking for operators to run Recall nodes. If you're interested in running a node,
+please reach out to us and fill out the form below.
 
-</Callout>
+<Link
+  href="https://hhueol4i6vp.typeform.com/to/aRpGp9Zz"
+  className={cn(
+    buttonVariants({
+      color: "secondary",
+    }),
+    "bg-blue text-fd-primary-foreground hover:text-fd-primary-foreground dark:hover:text-fd-secondary-foreground dark:text-accent-foreground hover:bg-blue/80 p-4 text-base font-bold no-underline transition-all duration-100"
+  )}
+>
+  <span className="mr-1 text-base">Contact us</span>
+  <PartyPopper className="size-4" />
+</Link>

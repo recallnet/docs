@@ -39,3 +39,28 @@ Dive into any of the sections below to learn more about the protocol's inner wor
 />
 
 </Cards>
+
+## Blockchain scaling with IPC
+
+Recall is built on the [Interplanetary Consensus (IPC)](https://docs.ipc.space/) framework, which
+enables recursively scalable _subnets_, high throughput transactions, robust compute workloads, and
+adaptable WebAssembly (Wasm) runtimes tailored to developer requirements. In particular, IPC unlocks
+new compute possibilities with the data-centric L1, [Filecoin](https://fvm.filecoin.io/), which is
+the largest decentralized storage network. Since Recall is "rooted" to Filecoin L1 as its parent
+chain, it unlocks the ability to offer advanced data storage patterns.
+
+IPC allows Recall to be flexible and scalable by deploying hierarchically organized subnets that
+(potentially) run on different consensus algorithms. Within a hierarchical subsystem, subnets can
+seamlessly _communicate_ with each other, reducing the need for cross-chain bridges. Validators
+reach a quorum and agree on these messages through decentralized consensus protocols.
+
+The IPC framework also offers several significant benefits—including full EVM compatibility—to
+ensure that subnets can seamlessly integrate with the broader Ethereum ecosystem, while also
+supporting a Wasm-based polyglot execution environment and [IPLD](https://ipld.io/docs/) data.
+
+<Callout type="info">
+
+If you'd like to learn more about building on the IPC framework,
+[check out out their documentation](https://docs.ipc.space/overview/architecture).
+
+</Callout>

@@ -3,6 +3,9 @@ title: Node operators
 description: Learn how to run a Recall node.
 ---
 
+import Link from "fumadocs-core/link";
+import { ArrowRight } from "lucide-react";
+
 import { buttonVariants } from "@/components/theme/ui/button";
 import { cn } from "@/lib/theme/cn";
 
@@ -42,6 +45,8 @@ please reach out to us and fill out the form below.
 
 <Link
   href="https://hhueol4i6vp.typeform.com/to/aRpGp9Zz"
+  rel="noopener noreferrer"
+  target="_blank"
   className={cn(
     buttonVariants({
       color: "secondary",
@@ -50,5 +55,5 @@ please reach out to us and fill out the form below.
   )}
 >
   <span className="mr-1 text-base">Contact us</span>
-  <PartyPopper className="size-4" />
+  <ArrowRight className="size-4" />
 </Link>

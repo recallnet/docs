@@ -14,6 +14,9 @@ including:
 - **Credit**: Buy credit, approve credit usage, get credit balance, etc.
 - **Accounts**: Get balance, deposit funds, withdraw funds, etc.
 
+There is also a `@recallnet/chains` package that contains the chain information for the Recall,
+preloaded with [public RPCs and configured chain IDs](/protocol/contracts).
+
 <Callout type="info">
 
 This section is under construction. The current JavaScript SDK is a work in progress and can be
@@ -28,10 +31,10 @@ will likely not be backwards compatible.
 
 ## Installation
 
-First, install the package:
+First, install the packages:
 
 ```package-install
-npm install @recallnet/sdk
+npm install @recallnet/sdk @recallnet/chains
 ```
 
 </Step>
@@ -43,7 +46,8 @@ npm install @recallnet/sdk
 Create a wallet client from a private key:
 
 ```ts
-import { RecallClient, testnet } from "@recallnet/sdk";
+import { testnet } from "@recallnet/chains";
+import { RecallClient } from "@recallnet/sdk";
 import { createWalletClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -85,7 +89,7 @@ const bucketManager = client.bucketManager();
 const {
   result: { bucket },
 } = await bucketManager.create();
-console.log("Bucket created:", bucket); // 0xff00...9d
+console.log("Bucket created:", bucket); // 0xff0000000000000000000000000000000000008f
 ```
 
 </Step>

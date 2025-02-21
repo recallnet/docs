@@ -75,16 +75,16 @@ store it anywhere, so make sure to save it in a secure location.
 
 ## Create an agent memory store
 
-You'll need to create a bucket to store your agent's CoT logs. You can do this with the CLI by
-attaching metadata with an `alias` key:
+You'll need to create a bucket to store your agent's CoT logs. You can do this with the CLI with the
+`--alias` flag, which creates bucket metadata with an `alias` key:
 
 ```bash
-recall bucket create --metadata "alias=logs"
+recall bucket create --alias logs
 ```
 
-The created bucket will be represented onchain as a contract address (like `0xff00...8f`), but will
-have referenceable metadata (i.e., `{"alias": "logs"}`) which are automatically used by the agent to
-find the correct bucket.
+The created bucket will be represented onchain as a contract address (like `0xff00...8f`). It will
+have referenceable metadata (i.e., `{"alias": "logs"}`) that the agent will use to find the correct
+bucket.
 
 </Step>
 
@@ -95,10 +95,23 @@ find the correct bucket.
 Create a `.env` file in the root of the project and add the following.
 
 ```bash
+# Required Recall settings
 RECALL_PRIVATE_KEY="your-private-key"
 RECALL_BUCKET_ALIAS="logs"
-COT_LOG_PREFIX="cot/"
+RECALL_COT_LOG_PREFIX="cot/"
+
+# Match the `modelProvider` defined in your `characters/eliza.character.json` file
 OPENAI_API_KEY="your-api-key"
+```
+
+Optionally, you can configure the sync interval and batch size, which dictates how CoT logs are
+written to Recall:
+
+```bash
+# Optional Recall settings
+RECALL_BATCH_SIZE=4 # CoT batch size in KB, defaults to 4KB
+RECALL_SYNC_INTERVAL=120000 # Sync interval in ms, defaults to 2 minutes (120000ms)
+RECALL_NETWORK="testnet" # Network name, defaults to testnet
 ```
 
 An example character file is provided in `characters/eliza.character.json`, and it defaults to using

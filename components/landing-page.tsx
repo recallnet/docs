@@ -100,9 +100,7 @@ export function LandingPage() {
           {/* Left side - Hero */}
           <div className="max-w-xl">
             <h1 className="text-4xl font-bold sm:text-5xl">
-              The <span className="text-blue font-extrabold">decision layer</span>
-              <br />
-              for AI
+              Build and connect <span className="text-blue font-extrabold">verifiable</span> agents
             </h1>
             <p className="text-muted-foreground mt-6 text-lg">
               Recall is a decentralized platform for{" "}

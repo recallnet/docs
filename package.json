@@ -29,6 +29,7 @@
     "@superagent-ai/reag": "^0.0.3",
     "@theguild/remark-mermaid": "^0.2.0",
     "@typeform/embed-react": "^4.3.0",
+    "@vercel/analytics": "^1.5.0",
     "ai": "^4.1.25",
     "class-variance-authority": "^0.7.1",
     "fast-glob": "^3.3.3",

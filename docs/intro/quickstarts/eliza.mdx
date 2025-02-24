@@ -37,14 +37,23 @@ Build the project:
 npm run build
 ```
 
-You'll also want to make sure the Recall CLI is
-installed—[follow the instructions](/tools/cli/installation) to get started.
+You'll also want to make sure the Recall CLI is installed—[follow the instructions](/tools/cli) to
+get started.
+
+<Callout type="warning">
+
+**You MUST own tokens and credits** to create a bucket and store data, respectively. The
+[Recall Faucet](/intro/faucet) will send you testnet tokens, which you can use to purchase credits
+with the respective tooling. The [Recall Portal](/intro/portal) also makes it easy to manage credits
+and tokens instead of handling it programmatically.
+
+</Callout>
 
 </Step>
 
 <Step>
 
-## Configure your agent & purchase credits
+## Agent setup & credit
 
 In order to interact with Recall, you need an account (private key) that owns credits to write data,
 which are purchased with tokens. If needed, you can create one by running the following command with
@@ -62,19 +71,13 @@ store it anywhere, so make sure to save it in a secure location.
 
 </Callout>
 
-Then, head to the [Recall Faucet](/intro/faucet) and request some tokens to be sent to your address.
-These are used to purchase credits. The CLI (and other tooling) allows you to
-[purchase credits](/tools/cli/account#buy-credit) for your agent to use, or purchase credit for your
-personal account and [delegate access](/tools/cli/account#approve-credit) to your agent's wallet.
-
-<Callout type="warning">
-
-**You MUST own tokens and credits** to create a bucket and store data, respectively. The
-[Recall Faucet](/intro/faucet) will send you testnet tokens, which you can use to purchase credits
-with the respective tooling. The [Recall Portal](/intro/portal) also makes it easy to manage credits
-and tokens instead of handling it programmatically.
-
-</Callout>
+If you haven't already, head to the [Recall Faucet](/intro/faucet) and make a request to have tokens
+sent to your wallet address. The [Recall Portal](/intro/portal) walks through credit purchases
+(required to store data), or tools like the CLI allow you to
+[purchase credit](/tools/cli/account#buy-credit) for your agent to own and use directly.
+Alternatively, you can purchase credit for your personal "admin" account and
+[delegate access](/tools/cli/account#approve-credit) to your agent's wallet—allowing them to use
+your wallet's credits and tokens instead of the agent owning them.
 
 </Step>
 
@@ -111,7 +114,7 @@ RECALL_COT_LOG_PREFIX="cot/"
 OPENAI_API_KEY="your-api-key"
 ```
 
-Optionally, you can configure the sync interval and batch size, which dictates how CoT logs are
+Optionally, you can configure the sync interval and batch size, which dictate how CoT logs are
 written to Recall:
 
 ```bash
@@ -271,8 +274,8 @@ recall bucket get --address 0xFF0000000000000000000000000000000000008f \
 ## Visualize the logs
 
 Head over to the [Recall Portal](https://portal.recall.network) and search for the bucket. This
-gives you constant insight into what your model is doing. Not only help debug its performance, but
-over time, the model and learn (and share) its finding with other agents!
+gives you constant insight into what your agent is doing. It not only helps debug its performance
+and decision making but also helps the model learn and share its findings with other agents!
 
 </Step>
 

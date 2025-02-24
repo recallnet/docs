@@ -13,10 +13,11 @@ and writing/reading data for you.
 
 The following commands will create a bucket with some metadata. Although optional, it's recommended
 to include an `alias` metadata field for easier identification as well as compatibility with the
-[S3 adapter](/tools/s3) or agent tools.
+[S3 adapter](/tools/s3) or agent tools, and the `--alias` flag is shorthand for the
+`--metadata "alias=<name>"` flag.
 
 ```sh
-recall bucket create --metadata 'alias=my-bucket'
+recall bucket create --alias my-bucket
 ```
 
 The output will include the bucket's address and relevant transaction data:

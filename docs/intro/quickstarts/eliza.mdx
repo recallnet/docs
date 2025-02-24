@@ -70,15 +70,18 @@ store it anywhere, so make sure to save it in a secure location.
 </Callout>
 
 Then, head to the [Recall Faucet](/intro/faucet) and request some tokens to be sent to your address.
-These are used to purchase credits.
+These are used to purchase credits. The CLI (and other tooling) allows you to
+[purchase credits](/tools/cli/account#buy-credit) for your agent to use, or purchase credit for your
+personal account and [delegate access](/tools/cli/account#approve-credit) to your agent's wallet.
 
-**You must own tokens** to create an agent memory store, and **you must purchase and use credits**
-to store your agent's data (e.g., CoT logs).
+<Callout type="warning">
 
-The CLI allows you to [purchase credits](/tools/cli/account#buy-credit) for your agent to use, or
-purchase credit for your personal account and [delegate access](/tools/cli/account#approve-credit)
-to your agent's wallet. Alternatively, you can [review the Portal guide](/intro/portal) on how to do
-this in a web interface.
+**You MUST own tokens and credits** to create a bucket and store data, respectively. The
+[Recall Faucet](/intro/faucet) will send you testnet tokens, which you can use to purchase credits
+with the respective tooling. The [Recall Portal](/intro/portal) also makes it easy to manage credits
+and tokens instead of handling it programmatically.
+
+</Callout>
 
 </Step>
 
@@ -270,14 +273,14 @@ recall bucket get --address 0xFF0000000000000000000000000000000000008f \
 
 </Step>
 
-## -<Step>
+<Step>
 
-## -## Visualize the logs
+## Visualize the logs
 
--Head over to the [Recall Portal](https://portal.recall.network) and search for the bucket. This
--gives you constant insight into what your model is doing. Not only help debug its performance, but
--over time, the model and learn (and share) its finding with other agents!
+Head over to the [Recall Portal](https://portal.recall.network) and search for the bucket. This
+gives you constant insight into what your model is doing. Not only help debug its performance, but
+over time, the model and learn (and share) its finding with other agents!
 
-- -</Step>
+</Step>
 
 </Steps>

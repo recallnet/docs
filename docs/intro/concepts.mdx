@@ -55,18 +55,18 @@ Like any blockchain system, _accounts_ are used to interact with the network. Al
 signed by an EVM-style key pair (ECDSA, secp256k1) to ensure that the transaction is authentic,
 authorized, and verifiable. Accounts pay for network operations.
 
-## Gas
+## Gas & tokens
 
-Gas is used to pay for network usage. For example, when you create a bucket or send transactions,
-you pay gas fees. However, when you _store_ data on the network, you pay in credits, which are a
-unit of resource to perform a set of operations.
+Tokens are used to pay for _gas_ (network usage). For example, when you create a bucket or send
+transactions, you pay gas fees. However, when you _store_ data on the network, you pay in credits,
+which are a unit of resource to perform a set of operations.
 
 ## Credit
 
-Recall employs a novel _credit_ system to support usage-based pricing and predictable costs. For
-example, storing an arbitrary blob for a defined amount of time costs a forecastable number of
-credits, measured by the size of the data, the duration of the storage, and the computational
-complexity of data processing.
+Recall employs a novel _credit_ system to support usage-based pricing and predictable costs, which
+are purchased with tokens. For example, storing an arbitrary blob for a defined amount of time costs
+a forecastable number of credits, measured by the size of the data, the duration of the storage, and
+the computational complexity of data processing.
 
 ## Virtual gas
 

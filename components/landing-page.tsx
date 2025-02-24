@@ -117,7 +117,7 @@ export function LandingPage() {
             </p>
             <div className="mt-8 flex gap-4">
               <Link
-                href="https://hhueol4i6vp.typeform.com/to/v0CnYf1t"
+                href="/intro"
                 className={cn(
                   buttonVariants({
                     color: "secondary",
@@ -125,7 +125,7 @@ export function LandingPage() {
                   "p-4 text-base font-bold no-underline transition-all duration-100"
                 )}
               >
-                <span className="mr-1 text-base">Join waitlist</span>
+                <span className="mr-1 text-base">Get started</span>
                 <ArrowRight className="size-4" />
               </Link>
               <Link

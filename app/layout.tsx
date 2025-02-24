@@ -2,6 +2,7 @@ import "./global.css";
 import "katex/dist/katex.css";
 
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { Analytics } from "@vercel/analytics/react";
 import { RootProvider } from "fumadocs-ui/provider";
 import { MessageCircle } from "lucide-react";
 import { ThemeProviderProps } from "next-themes";
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </AISearchTrigger>
         </RootProvider>
       </body>
+      <Analytics />
       {process.env.NODE_ENV !== "development" && process.env.NEXT_PUBLIC_GA_ID && (
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID ?? ""} />
       )}

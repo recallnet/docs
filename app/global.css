@@ -9,49 +9,63 @@
   https://github.com/recallnet/js-recall/blob/main/packages/ui/tailwind.config.ts 
 */
 @theme {
-  /* Base color definitions */
-  --color-black: hsl(0, 0%, 0%); /* rgb(0, 0, 0) */
-  --color-black-5: hsl(0, 23%, 5%); /* rgb(16, 10, 10) */
-  --color-black-8: hsl(0 0% 8%); /* rgb(21, 21, 21) */
-  --color-black-13: hsl(0 0% 13%); /* rgb(32, 32, 32) */
-  --color-black-44: hsl(0 0% 44%); /* rgb(112, 112, 112) */
-  --color-white: hsl(0 0% 100%); /* rgb(255, 255, 255) */
-  --color-white-off: hsl(220 8% 83%); /* rgb(207, 210, 212) */
+  /* Base color definitions—note that "official" colors have their names shown in comments:
+    - Black: #1D1F2B (hs
+    - Blue: #0064C7 
+    - Green: #38A430
+    - Yellow: #F9B700
+    - Red: #E5342A              
+    - Gray 01: #D2D9E1
+    - Gray 02: #93A5BA
+    - Gray 03: #596E89
+    - Gray 04: #43505F
+    - White: #E9EDF1
 
-  --color-grey-light: hsl(220 9% 62%); /* rgb(150, 156, 165) */
-  --color-grey-light-2: hsl(220 13% 74%); /* rgb(180, 187, 197) */
-  --color-grey-medium: hsl(220 19% 28%); /* rgb(89, 101, 117) */
-  --color-grey-dark: hsl(217 19% 14%); /* rgb(29, 35, 43) */
-  --color-grey-darker: hsl(220 18% 14%); /* rgb(29, 31, 42) */
+    Other colors were manually captured from pixel color pickers on brand assets.
+  */
+  --color-black: hsl(0, 0%, 0%);
+  --color-black-5: hsl(0, 23%, 5%);
+  --color-black-8: hsl(0 0% 8%);
+  --color-black-13: hsl(0 0% 13%);
+  --color-black-44: hsl(0 0% 44%);
+  --color-white: hsl(0 0% 100%);
+  --color-white-off: hsl(210, 22%, 93%); /* White */
+
+  --color-grey-lightest: hsl(212, 20%, 85%); /* Gray 01 */
+  --color-grey-lighter: hsl(215, 13%, 74%); /* Main site primary text color */
+  --color-grey-light: hsl(212, 22%, 65%); /* Gray 02 */
+  --color-grey-medium: hsl(214, 21%, 44%); /* Gray 03 */
+  --color-grey-dark: hsl(212, 17%, 32%); /* Gray 04 */
+  --color-grey-darker: hsl(231, 19%, 14%); /* Black */
 
   /* Accent colors */
-  --color-blue: hsl(218 64% 46%); /* rgb(41, 98, 192) */
-  --color-green: hsl(100 42% 45%); /* rgb(88, 162, 66) */
-  --color-yellow: hsl(43 85% 59%); /* rgb(239, 186, 64) */
-  --color-red: hsl(13 82% 55%); /* rgb(235, 79, 43) */
+  --color-blue: hsl(210, 100%, 39%); /* Blue */
+  --color-green: hsl(116, 55%, 42%); /* Green */
+  --color-yellow: hsl(44, 100%, 49%); /* Yellow */
+  --color-red: hsl(3, 78%, 53%); /* Red */
 
   /* Light mode theme */
   --color-background: var(--color-white-off);
-  --color-foreground: var(--color-grey-dark);
-  --color-card: var(--color-white);
-  --color-card-foreground: var(--color-grey-dark);
-  --color-popover: var(--color-white);
-  --color-popover-foreground: var(--color-grey-dark);
-  --color-primary: var(--color-grey-dark);
-  --color-primary-foreground: var(--color-white);
-  --color-secondary: var(--color-grey-light-2);
-  --color-secondary-foreground: var(--color-grey-dark);
-  --color-muted: var(--color-grey-light-2);
-  --color-muted-foreground: var(--color-grey-medium);
-  --color-accent: var(--color-grey-light-2);
-  --color-accent-foreground: var(--color-grey-dark);
+  --color-foreground: var(--color-grey-darker);
+  --color-card: var(--color-grey-lightest);
+  --color-card-foreground: var(--color-grey-darker);
+  --color-popover: var(--color-white-off);
+  --color-popover-foreground: var(--color-grey-darker);
+  --color-primary: var(--color-grey-darker);
+  --color-primary-foreground: var(--color-white-off);
+  --color-secondary: var(--color-grey-lightest);
+  --color-secondary-foreground: var(--color-grey-darker);
+  --color-muted: var(--color-grey-lightest);
+  --color-muted-foreground: var(--color-grey-dark);
+  --color-accent: var(--color-grey-lightest);
+  --color-accent-foreground: var(--color-grey-darker);
   --color-destructive: var(--color-red);
-  --color-destructive-foreground: var(--color-white);
-  --color-border: var(--color-grey-light);
+  --color-destructive-foreground: var(--color-white-off);
+  --color-border: var(--color-grey-lighter);
   --color-input: var(--color-grey-light);
-  --color-ring: var(--color-grey-dark);
+  --color-ring: var(--color-grey-darker);
 
-  /* Chart colors - using your existing accent colors */
+  /* Chart colors (i.e., accent colors) */
   --color-chart-1: var(--color-red);
   --color-chart-2: var(--color-green);
   --color-chart-3: var(--color-grey-darker);
@@ -115,14 +129,14 @@
   --color-secondary: var(--color-black-13);
   --color-secondary-foreground: var(--color-white-off);
   --color-muted: var(--color-black-5);
-  --color-muted-foreground: var(--color-grey-light-2);
+  --color-muted-foreground: var(--color-grey-lightest);
   --color-accent: var(--color-black-13);
   --color-accent-foreground: var(--color-white-off);
   --color-destructive: var(--color-red);
   --color-destructive-foreground: var(--color-white-off);
   --color-border: var(--color-black-13);
   --color-input: var(--color-black-13);
-  --color-ring: var(--color-grey-light-2);
+  --color-ring: var(--color-grey-lightest);
 }
 /* Custom styles */
 

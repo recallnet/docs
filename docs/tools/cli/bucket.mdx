@@ -33,8 +33,8 @@ recall bucket create
 | Flag                | Required? | Description                                                               |
 | ------------------- | --------- | ------------------------------------------------------------------------- |
 | `-p, --private-key` | Yes       | Wallet private key (ECDSA, secp256k1) for signing transactions.           |
+| `--alias`           | No        | Alias for the bucket (shorthand for `--metadata "alias=value"`).          |
 | `-m, --metadata`    | No        | User-defined metadata.                                                    |
-| `--buy-credit`      | No        | The amount of tokens to spend on credit for the bucket.                   |
 | `--gas-limit`       | No        | Gas limit for the transaction.                                            |
 | `--gas-fee-cap`     | No        | Maximum gas fee for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL). |
 | `--gas-premium`     | No        | Gas premium for the transaction in attoFIL (1FIL = 10\*\*18 attoFIL).     |
@@ -71,10 +71,16 @@ recall bucket create
 }
 ```
 
-Create a new bucket contract with metadata.
+Create a new bucket with an alias.
 
 ```sh
-recall bucket create --metadata "alias=foo"
+recall bucket create --alias foo
+```
+
+Or create a new bucket with arbitrary metadata.
+
+```sh
+recall bucket create --metadata "bar=baz"
 ```
 
 ## List buckets

@@ -7,13 +7,6 @@ Get started with CoT logs and observability with the Recall agent starter kit. I
 existing agent, all you need to do is drop in a couple of small changes to your character's system
 prompt and then expose the `plugin-recall-storage` to your agent.
 
-<Callout type="warning">
-
-[Join the waitlist](https://hhueol4i6vp.typeform.com/to/v0CnYf1t) to get access to the Recall
-testnet.
-
-</Callout>
-
 <Steps>
 
 <Step>
@@ -44,19 +37,28 @@ Build the project:
 npm run build
 ```
 
-You'll also want to make sure the Recall CLI is
-installed—[follow the instructions](/tools/cli/installation) to get started.
+You'll also want to make sure the Recall CLI is installed—[follow the instructions](/tools/cli) to
+get started.
+
+<Callout type="warning">
+
+**You MUST own tokens and credits** to create a bucket and store data, respectively. The
+[Recall Faucet](/intro/faucet) will send you testnet tokens, which you can use to purchase credits
+with any of the Recall tools (SDK, CLI, etc.). The [Recall Portal](/intro/portal), for example,
+makes it easy to manage credits and tokens instead of handling it programmatically.
+
+</Callout>
 
 </Step>
 
 <Step>
 
-## Set up your agent's account
+## Agent setup & credit
 
-In order to interact with Recall, you need an account (private key) that owns credits to write data.
-If needed, you can create one by running the following command with the
-[Recall CLI](/tools/cli/account#create-an-account), which prints both the private key and the public
-key (address):
+In order to interact with Recall, you need an account (private key) that owns credits to write data,
+which are purchased with tokens. If needed, you can create one by running the following command with
+the [Recall CLI](/tools/cli/account#create-an-account), which prints both the private key and the
+public key (address):
 
 ```bash
 recall account create
@@ -69,22 +71,30 @@ store it anywhere, so make sure to save it in a secure location.
 
 </Callout>
 
+If you haven't already, head to the [Recall Faucet](/intro/faucet) and make a request to have tokens
+sent to your wallet address. The [Recall Portal](/intro/portal) walks through credit purchases
+(required to store data), or tools like the CLI allow you to
+[purchase credit](/tools/cli/account#buy-credit) for your agent to own and use directly.
+Alternatively, you can purchase credit for your personal "admin" account and
+[delegate access](/tools/cli/account#approve-credit) to your agent's wallet—allowing them to use
+your wallet's credits and tokens instead of the agent owning them.
+
 </Step>
 
 <Step>
 
 ## Create an agent memory store
 
-You'll need to create a bucket to store your agent's CoT logs. You can do this with the CLI by
-attaching metadata with an `alias` key:
+You'll need to create a bucket to store your agent's CoT logs. You can do this with the CLI with the
+`--alias` flag, which creates bucket metadata with an `alias` key:
 
 ```bash
-recall bucket create --metadata "alias=logs"
+recall bucket create --alias logs
 ```
 
-The created bucket will be represented onchain as a contract address (like `0xff00...8f`), but will
-have referenceable metadata (i.e., `{"alias": "logs"}`) which are automatically used by the agent to
-find the correct bucket.
+The created bucket will be represented onchain as a contract address (like `0xff00...8f`). It will
+have referenceable metadata (i.e., `{"alias": "logs"}`) that the agent will use to find the correct
+bucket.
 
 </Step>
 
@@ -95,10 +105,23 @@ find the correct bucket.
 Create a `.env` file in the root of the project and add the following.
 
 ```bash
+# Required Recall settings
 RECALL_PRIVATE_KEY="your-private-key"
 RECALL_BUCKET_ALIAS="logs"
-COT_LOG_PREFIX="cot/"
+RECALL_COT_LOG_PREFIX="cot/"
+
+# Match the `modelProvider` defined in your `characters/eliza.character.json` file
 OPENAI_API_KEY="your-api-key"
+```
+
+Optionally, you can configure the sync interval and batch size, which dictate how CoT logs are
+written to Recall:
+
+```bash
+# Optional Recall settings
+RECALL_BATCH_SIZE=4 # CoT batch size in KB, defaults to 4KB
+RECALL_SYNC_INTERVAL=120000 # Sync interval in ms, defaults to 2 minutes (120000ms)
+RECALL_NETWORK="testnet" # Network name, defaults to testnet
 ```
 
 An example character file is provided in `characters/eliza.character.json`, and it defaults to using
@@ -243,6 +266,16 @@ recall bucket get --address 0xFF0000000000000000000000000000000000008f \
   "log": "1. The user, 12dea96f-ec20-0935-a6ab-75692c994959, has requested to create a bucket named 'recall-agent'.\n2. From the previous interactions, it is evident that the user has already been interacting with the Recall service, as seen from the queries about Recall.\n3. The task is straightforward: to create a new bucket with the specified name 'recall-agent' on the Recall service.\n4. The most appropriate action from the available actions is CREATE_BUCKET, as it directly aligns with the user's request to create a new bucket on the Recall service.\n5. There is no indication that this bucket already exists, so the action should proceed to create it."
 }
 ```
+
+</Step>
+
+<Step>
+
+## Visualize the logs
+
+Head over to the [Recall Portal](https://portal.recall.network) and search for the bucket. This
+gives you constant insight into what your agent is doing. It not only helps debug its performance
+and decision making but also helps the model learn and share its findings with other agents!
 
 </Step>
 

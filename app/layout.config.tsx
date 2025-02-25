@@ -15,20 +15,20 @@ import type { BaseLayoutProps } from "@/components/theme/shared";
 export const baseOptions: BaseLayoutProps = {
   links: [
     // External links
-    // {
-    //   external: true,
-    //   text: "Portal",
-    //   description: "Portal",
-    //   url: "https://portal.recall.network",
-    //   position: "right",
-    // },
-    // {
-    //   external: true,
-    //   text: "Faucet",
-    //   description: "Faucet",
-    //   url: "https://faucet.recall.network",
-    //   position: "right",
-    // },
+    {
+      external: true,
+      text: "Portal",
+      description: "Portal",
+      url: "https://portal.recall.network",
+      position: "right",
+    },
+    {
+      external: true,
+      text: "Faucet",
+      description: "Faucet",
+      url: "https://faucet.recall.network",
+      position: "right",
+    },
     {
       external: true,
       text: "Explorer",
@@ -65,7 +65,7 @@ export const baseOptions: BaseLayoutProps = {
         <Link
           href="https://hhueol4i6vp.typeform.com/to/I84sAGZ4"
           target="_blank"
-          className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center transition-colors duration-200"
+          className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center font-bold transition-colors duration-200"
         >
           <PartyPopper size={16} className="mr-2" />
           Join the AlphaWave competition

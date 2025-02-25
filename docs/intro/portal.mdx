@@ -8,13 +8,6 @@ It lets you connect your wallet and inspect relevant information about your acco
 bucket, token, and credit information. Additionally, you can create approvals to delegate access to
 your account—which is particularly useful for delegating access to an agent.
 
-<Callout type="warning">
-
-[Join the waitlist](https://hhueol4i6vp.typeform.com/to/v0CnYf1t) to get access to the Recall
-testnet.
-
-</Callout>
-
 <Steps>
 
 <Step>
@@ -42,7 +35,9 @@ Before interacting with the Portal, make sure you have some testnet tokens—fol
 
 Then, head to the [Portal](https://portal.recall.network) to get started. Once you have an account
 set up, you can connect it to the Portal by clicking the `Connect Wallet` button in the top right
-corner of the screen.
+corner of the screen. Once connected, your wallet address will appear within the connect button, and
+you'll see tabs on the top left that let you manage your account (credit, approvals, etc.) and
+buckets (create, add objects, inspect, etc.).
 
 ![Connect Wallet](/img/portal/landing.png)
 
@@ -50,7 +45,7 @@ corner of the screen.
 
 <Step>
 
-## Buy credits
+## Purchase credit
 
 Navigate to the `Credit` tab. Here, you'll see your account information, including your token and
 credit balance. Click the `Buy Credits` button, and enter the amount you'd like to purchase. This
@@ -82,4 +77,64 @@ This allows the specified address to access your accounts credits and gas.
 
 </Step>
 
+<Step>
+
+## Create or inspect buckets
+
+Navigate to the `Buckets` tab. Here, you'll see a list of existing buckets associated with your
+account. If you don't have any, you can create one by clicking the `New Bucket` button, which should
+pull up your connected wallet to execute a transaction.
+
+<div className="flex flex-row items-center gap-4">
+
+![Buckets](/img/portal/buckets.png)
+
+![Create Bucket](/img/portal/create-bucket.png)
+
+</div>
+
+Each listed bucket will show its deployed contract address and any associated metadata (e.g.,
+alias). If you click on into a bucket, you'll then see a list of all objects stored in it—and each
+object has a dropdown that will display some highlights of the object's data.
+
+![Bucket Info](/img/portal/bucket-objects.png)
+
+</Step>
+
+<Step>
+
+## Create or interact with objects
+
+On the bucket's objects page, click into any of the listed objects to access more functionality,
+like the viewing the blob hash, TTL (expiry block), downloading the object, or deleting it.
+
+<Callout type="warn">
+
+Objects are stored on the Recall blockchain, and it natively stores the data publicly. You can
+[learn more about data privacy and encryption](/sources/privacy), which aren't implemented in the
+Portal at this time.
+
+</Callout>
+
+You can also click the `Add Object` button to create a new object. This will prompt you to enter a
+name and optionally add metadata or alter the TTL (i.e., when the object will expire)—and once you
+submit, it'll prompt your wallet to execute a transaction. Note that **every object has a default
+TTL of 24 hours**.
+
+<div className="flex flex-row items-center gap-4">
+
+![Object Info](/img/portal/object-info.png)
+
+![Add Object](/img/portal/add-object.png)
+
+</div>
+
+</Step>
+
 </Steps>
+
+## Next steps
+
+The Portal is a great way to get started with Recall. From here, you can dive into any of the
+[agent plugins](/agents/plugins) or [developer tools](/tools/cli), which allow you to interact with
+Recall programmatically.

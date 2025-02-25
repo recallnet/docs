@@ -54,7 +54,7 @@ export function Card({
           {icon}
         </div>
       ) : null}
-      <h3 className={cn("not-prose mb-1 text-sm font-medium", titleClassName)}>{title}</h3>
+      <h3 className={cn("not-prose mb-1 text-sm font-bold", titleClassName)}>{title}</h3>
       {description ? (
         <p className={cn("text-fd-muted-foreground my-0 text-sm", descriptionClassName)}>
           {description}

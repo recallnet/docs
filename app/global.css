@@ -229,6 +229,16 @@ td > code {
   @apply bg-blue text-fd-primary-foreground dark:text-accent-foreground hover:bg-blue/80 inline-flex items-center justify-center rounded-md p-2 text-sm font-medium transition-colors duration-100 max-md:hidden;
 }
 
+/* Mermaid graph styles */
+.light .label-container {
+  fill: var(--color-grey-lightest) !important;
+  stroke: var(--color-grey-lighter) !important;
+}
+
+.edgeLabel p {
+  background-color: var(--color-fd-background) !important;
+}
+
 /* Sans-serif fonts */
 @font-face {
   font-family: "ABCDiatype";

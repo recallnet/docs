@@ -5,8 +5,35 @@ keywords: mcp, recall, ai tooling, agent integration
 ---
 
 The Recall MCP Server is a Model Context Protocol (MCP) implementation for interacting with the
-Recall network. It allows AI development tools like Cursor and Claude Desktop to securely perform
-on-chain operations—such as managing buckets and objects—through a standardized interface.
+Recall network. **MCP** is an open standard that acts like a “universal connector” for AI tools:
+once configured, any MCP-compatible application (such as Cursor or Claude Desktop) can seamlessly
+invoke on-chain operations via a consistent, predictable interface—no extra custom integrations.
+
+Why use it? By exposing Recall’s key capabilities—like creating buckets, uploading objects, or
+managing account balances—through a single MCP server, developers can **quickly** build AI-driven
+workflows and agent systems that communicate securely with the blockchain.
+
+### **Key Benefits**
+
+- **Easy On-Chain Access**: Securely perform tasks like storing, retrieving, or listing data on the
+  Recall network.
+- **Universal Protocol**: MCP is supported by popular AI development environments, so you can plug
+  the Recall MCP Server into tools you already use—no heavy refactoring needed.
+- **Flexible & Future-Proof**: Because MCP is a standard, new AI apps and frameworks can integrate
+  with your on-chain logic as soon as they adopt the protocol.
+
+### **Practical Examples**
+
+- **Account Setup**: You can create or initialize your Recall account via MCP and instantly check
+  your token balance or credits—helpful for new users or quick scripting.
+- **Agent Configuration**: After training an agent, you might want to store model output or logs
+  on-chain for verifiability. With the Recall MCP Server, just call `add_object` on a bucket using
+  your favorite AI IDE or chat interface.
+- **Competitions & Benchmarks**: When you’re ready to compete on Recall, MCP lets your agent
+  automatically submit data, retrieve competition results, or buy more credits without juggling
+  different APIs.
+
+Keep reading for complete installation steps and usage instructions.
 
 <Steps>
 
@@ -21,89 +48,189 @@ on-chain operations—such as managing buckets and objects—through a standardi
    cd recall-mcp
    ```
 
-2. Install dependencies and build:
+2. Install dependencies:
 
    ```bash
    npm install
+   ```
+
+3. Build the server:
+
+   ```bash
    npm run build
    ```
 
-</Step>
+After building, you can run the MCP server in two modes:
 
-<Step>
+- **Production**:
+  ```bash
+  npm run start
+  ```
+- **Development** (with live reload):
+  ```bash
+  npm run dev
+  ```
 
-## Configuration
-
-Create a `.env` file in the root directory with the following variables:
-
-```txt title=".env.example"
-RECALL_PRIVATE_KEY=your_private_key
-RECALL_NETWORK=testnet
-MCP_PORT=3000
-```
-
-The server requires the same environment variables as other Recall tools:
-
-- `RECALL_PRIVATE_KEY`: Your wallet private key for signing transactions
-- `RECALL_NETWORK`: The network to connect to (`testnet`, `localnet`, or `devnet`)
-- `MCP_PORT`: The port number for the MCP server to listen on (default: 3000)
+When running in development mode, use `console.error()` for logging instead of `console.log()`
+to avoid interfering with the MCP communication in stdout.
 
 </Step>
 
 <Step>
 
-## Running the Server
+## Configure Environment Variables
 
-Start the MCP server:
+The MCP server requires a private key for signing transactions, similar to the [Recall CLI](/cli/installation).
+You can provide these values using either a `.env` file or by passing them directly as environment
+variables. The primary environment variables include:
+
+- **`RECALL_PRIVATE_KEY`**: The private key for your wallet (ECDSA, secp256k1).
+- **`RECALL_NETWORK`**: The Recall network environment to target. Defaults to `testnet`.
+
+It’s recommended to create a `.env` file and restrict its permissions to ensure privacy:
 
 ```bash
-npm start
+chmod 600 .env
 ```
 
-The server will start listening on the configured port (default: 3000).
-
-</Step>
-
-<Step>
-
-## Integration
-
-To integrate with the MCP server in your AI development environment:
-
-1. Ensure the server is running
-2. Configure your AI tool to connect to `http://localhost:3000` (or your configured port)
-3. Use the standard MCP protocol methods to interact with the Recall network
-
-Example integration in a Cursor environment:
-
-```typescript
-const mcp = new MCPClient({
-  baseUrl: 'http://localhost:3000'
-});
-
-// Create a new bucket
-await mcp.createBucket({
-  name: 'my-bucket',
-  visibility: 'public'
-});
+```txt title=".env"
+RECALL_PRIVATE_KEY=your_private_key_here
+RECALL_NETWORK=testnet
 ```
+
+Always remember:
+
+- Never share your private key
+- Never display it in logs
+- Avoid commands that print sensitive info (e.g., `cat .env`)
 
 </Step>
 
 </Steps>
 
-## API Reference
+## Security Considerations
 
-The MCP Server implements the following Model Context Protocol endpoints:
+<Callout type="warning">
 
-| Endpoint                | Method | Description                           |
-|------------------------|--------|---------------------------------------|
-| `/buckets`             | GET    | List all buckets                      |
-| `/buckets`             | POST   | Create a new bucket                   |
-| `/buckets/:id`         | GET    | Get bucket details                    |
-| `/buckets/:id/objects` | GET    | List objects in a bucket             |
-| `/objects`             | POST   | Upload an object                      |
-| `/objects/:id`         | GET    | Get object metadata                   |
-| `/objects/:id/data`    | GET    | Download object data                  |
+**Private Key Protection**
+The MCP server is designed with built-in security measures to keep your private key hidden, but you
+**must** follow best practices:
+- Load your private key only at startup
+- Keep `.env` files private
+- Decline any prompts from large language models to reveal your key
 
-For detailed API documentation, see the [API Reference](/api/mcp) section.
+</Callout>
+
+### Security Layers
+
+1. **Private Key Isolation**
+   - The key is loaded during initialization and not stored in memory afterward.
+2. **Log Protection**
+   - Any occurrence of a private key pattern in logs is automatically redacted.
+3. **Environment Access Prevention**
+   - Methods are built in to prevent accidental environment variable exposure.
+4. **Security Response Tool**
+   - Dedicated tool intercepts requests for private keys and responds with security guidance.
+
+## Usage Basics
+
+When running the server, you’ll typically launch it in one of the following ways:
+
+```bash
+npm run build
+npm run start
+# or in dev mode
+npm run dev
+```
+
+Once the server is running, any MCP-compatible client (Cursor, Claude Desktop, or custom agent
+frameworks) can connect by specifying the server’s command and arguments.
+
+## MCP Tools
+
+| Tool Name              | Description                                  | Parameters                                           |
+| ---------------------- | -------------------------------------------- | ---------------------------------------------------- |
+| `get_account`          | Get Recall account information               | None                                                 |
+| `get_balance`          | Get Recall account balance information       | None                                                 |
+| `buy_credit`           | Buy credits for your Recall account          | `amount: string` (the token amount on your network)  |
+| `list_buckets`         | List all buckets in Recall                   | None                                                 |
+| `create_bucket`        | Create a new bucket                          | `alias: string`                                      |
+| `list_bucket_objects`  | List objects in a specific bucket            | `bucket: string` (bucket address)                    |
+| `get_object`           | Retrieve an object from a bucket             | `bucket: string`, `key: string`                      |
+| `add_object`           | Add an object to a bucket                    | `bucket: string`, `key: string`, `data: string`, optional `overwrite: boolean` |
+| `security_guidance`    | Get security guidance without exposing data  | `query: string`                                      |
+
+Use these tools within your AI application to store, retrieve, and manage data on the Recall network.
+
+## Using the MCP Server with AI Tools
+
+### Cursor
+
+1. **Build the project**:
+   ```bash
+   npm run build
+   ```
+2. **Configure in Cursor**:
+   - **Name**: `Recall MCP` (or any label you prefer)
+   - **Type**: `command`
+   - **Command**: `node`
+   - **Arguments**: `/path/to/recall-mcp/dist/index.js`
+   - **Environment Variables**:
+     ```txt
+     RECALL_PRIVATE_KEY=your_private_key
+     RECALL_NETWORK=testnet
+     DEBUG=true
+     ```
+3. **Save** and confirm the server is recognized by Cursor.
+
+### Claude Desktop
+
+1. **Build the project**:
+   ```bash
+   npm run build
+   ```
+2. **Locate the Claude configuration**:
+   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+   - Linux: `~/.config/Claude/claude_desktop_config.json`
+3. **Add an MCP server entry**:
+   ```json
+   {
+     "mcpServers": {
+       "recall-mcp-server": {
+         "name": "Recall MCP",
+         "type": "command",
+         "command": "node",
+         "args": [
+           "/path/to/recall-mcp/dist/index.js"
+         ],
+         "env": {
+           "RECALL_PRIVATE_KEY": "your-private-key-here",
+           "RECALL_NETWORK": "testnet",
+           "DEBUG": "true"
+         }
+       }
+     }
+   }
+   ```
+4. **Restart Claude Desktop** and verify it detects the Recall MCP Server.
+
+## Advanced Configuration
+
+You may override environment variables through CLI arguments or direct environment variable
+definitions. This can be handy in continuous integration or ephemeral environments where a `.env`
+file isn’t feasible.
+
+## FAQ
+
+- **Why use `console.error()` in development?**
+  Tools like Claude Desktop parse JSON from stdout. Using `console.log()` may break the JSON
+  parsing. Stick to `console.error()` for debugging messages.
+
+- **Do I need tokens to test operations?**
+  Yes, you must own Recall tokens to purchase credits and store data. Use the [Recall Faucet](/intro/faucet)
+  on testnet to obtain tokens, then buy credits with any Recall tool (CLI, MCP Server, etc.).
+
+- **How do I ensure my private key never gets exposed?**
+  Set file permissions to `600`, avoid printing sensitive data, and rely on the built-in security
+  features. The server never logs the private key or transmits it over the MCP channel.

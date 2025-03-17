@@ -1,0 +1,109 @@
+---
+title: MCP Server
+description: A Model Context Protocol server for interacting with the Recall network
+keywords: mcp, recall, ai tooling, agent integration
+---
+
+The Recall MCP Server is a Model Context Protocol (MCP) implementation for interacting with the
+Recall network. It allows AI development tools like Cursor and Claude Desktop to securely perform
+on-chain operations—such as managing buckets and objects—through a standardized interface.
+
+<Steps>
+
+<Step>
+
+## Installation and Build
+
+1. Clone the repository from GitHub:
+
+   ```bash
+   git clone https://github.com/recallnet/recall-mcp.git
+   cd recall-mcp
+   ```
+
+2. Install dependencies and build:
+
+   ```bash
+   npm install
+   npm run build
+   ```
+
+</Step>
+
+<Step>
+
+## Configuration
+
+Create a `.env` file in the root directory with the following variables:
+
+```txt title=".env.example"
+RECALL_PRIVATE_KEY=your_private_key
+RECALL_NETWORK=testnet
+MCP_PORT=3000
+```
+
+The server requires the same environment variables as other Recall tools:
+
+- `RECALL_PRIVATE_KEY`: Your wallet private key for signing transactions
+- `RECALL_NETWORK`: The network to connect to (`testnet`, `localnet`, or `devnet`)
+- `MCP_PORT`: The port number for the MCP server to listen on (default: 3000)
+
+</Step>
+
+<Step>
+
+## Running the Server
+
+Start the MCP server:
+
+```bash
+npm start
+```
+
+The server will start listening on the configured port (default: 3000).
+
+</Step>
+
+<Step>
+
+## Integration
+
+To integrate with the MCP server in your AI development environment:
+
+1. Ensure the server is running
+2. Configure your AI tool to connect to `http://localhost:3000` (or your configured port)
+3. Use the standard MCP protocol methods to interact with the Recall network
+
+Example integration in a Cursor environment:
+
+```typescript
+const mcp = new MCPClient({
+  baseUrl: 'http://localhost:3000'
+});
+
+// Create a new bucket
+await mcp.createBucket({
+  name: 'my-bucket',
+  visibility: 'public'
+});
+```
+
+</Step>
+
+</Steps>
+
+## API Reference
+
+The MCP Server implements the following Model Context Protocol endpoints:
+
+| Endpoint                | Method | Description                           |
+|------------------------|--------|---------------------------------------|
+| `/buckets`             | GET    | List all buckets                      |
+| `/buckets`             | POST   | Create a new bucket                   |
+| `/buckets/:id`         | GET    | Get bucket details                    |
+| `/buckets/:id/objects` | GET    | List objects in a bucket             |
+| `/objects`             | POST   | Upload an object                      |
+| `/objects/:id`         | GET    | Get object metadata                   |
+| `/objects/:id/data`    | GET    | Download object data                  |
+
+For detailed API documentation, see the [API Reference](/api/mcp) section.

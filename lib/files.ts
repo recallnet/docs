@@ -62,10 +62,26 @@ export async function getDocsContent(docsDir: string): Promise<DocsFile[]> {
   return scanned;
 }
 
-export async function getRawDocContent(file: string): Promise<string> {
+export async function getRawDocContent(file: string): Promise<{
+  title: string;
+  description: string;
+  content: string;
+}> {
+  const fileExists = await fs
+    .access(file)
+    .then(() => true)
+    .catch(() => false);
+  if (!fileExists) {
+    throw new Error("File not found");
+  }
   const fileContent = await fs.readFile(file);
-  const { content } = matter(fileContent.toString());
-  return await processContent(content);
+  const { data, content } = matter(fileContent.toString());
+  const processed = await processContent(content);
+  return {
+    title: data.title || file,
+    description: data.description || "",
+    content: processed,
+  };
 }
 
 async function processContent(content: string): Promise<string> {

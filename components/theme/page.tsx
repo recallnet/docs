@@ -82,6 +82,7 @@ interface FooterOptions extends FooterProps {
 
 export interface DocsPageProps {
   toc?: TableOfContents;
+  currentPath?: string;
 
   /**
    * Extend the page to fill all available space
@@ -173,11 +174,13 @@ export function DocsPage({
             props.article?.className
           )}
         >
-          {replaceOrDefault(props.breadcrumb, <Breadcrumb {...props.breadcrumb} />)}
+          <div className="flex items-center justify-between">
+            {replaceOrDefault(props.breadcrumb, <Breadcrumb {...props.breadcrumb} />)}
+            {props.currentPath && <MarkdownActions currentPath={props.currentPath} />}
+          </div>
           {props.children}
           <div role="none" className="flex-1" />
           <div className="flex flex-row flex-wrap items-center justify-between gap-4 empty:hidden">
-            {props.editOnGithub?.path && <MarkdownActions currentPath={props.editOnGithub.path} />}
             {props.editOnGithub ? <EditOnGitHub {...props.editOnGithub} /> : null}
             {props.lastUpdate ? <LastUpdate date={new Date(props.lastUpdate)} /> : null}
           </div>

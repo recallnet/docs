@@ -1,7 +1,7 @@
 "use client";
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { ClipboardCopy, FileText } from "lucide-react";
+import { Check, ChevronDown, ClipboardCopy, ExternalLink, FileText } from "lucide-react";
 import { useState } from "react";
 
 import { buttonVariants } from "@/components/theme/ui/button";
@@ -45,40 +45,77 @@ export function MarkdownActions({ currentPath }: MarkdownActionsProps) {
   };
 
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger
-        className={cn(buttonVariants({ color: "secondary" }), "fixed top-4 right-4 z-50 gap-2")}
+    <div className="flex">
+      <button
+        onClick={handleCopy}
+        className={cn(
+          buttonVariants({ color: "secondary" }),
+          "gap-2 rounded-r-none border-r-0 text-sm font-normal"
+        )}
       >
-        <FileText className="size-4" />
-        Copy page
-      </DropdownMenu.Trigger>
+        {copied ? (
+          <>
+            <Check className="size-4" />
+            Copied!
+          </>
+        ) : error ? (
+          <>
+            <ClipboardCopy className="size-4" />
+            {error}
+          </>
+        ) : (
+          <>
+            <ClipboardCopy className="size-4" />
+            Copy page
+          </>
+        )}
+      </button>
 
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          className="bg-popover text-popover-foreground z-50 min-w-[12rem] overflow-hidden rounded-md border p-1 shadow-md"
-          align="end"
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger
+          className={cn(
+            buttonVariants({ color: "secondary" }),
+            "border-l-border dark:border-l-fd-background rounded-l-none border-l px-2 focus:outline-none"
+          )}
         >
-          <DropdownMenu.Item
-            className={cn(
-              "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none",
-              copied && "text-green-500",
-              error && "text-red-500"
-            )}
-            onClick={handleCopy}
-          >
-            <ClipboardCopy className="mr-2 size-4" />
-            {error ? error : copied ? "Copied!" : "Copy as Markdown"}
-          </DropdownMenu.Item>
+          <ChevronDown className="size-4" />
+        </DropdownMenu.Trigger>
 
-          <DropdownMenu.Item
-            className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none"
-            onClick={handleView}
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content
+            className="bg-popover text-popover-foreground z-50 min-w-[12rem] overflow-hidden rounded-md border p-1 shadow-md"
+            align="end"
           >
-            <FileText className="mr-2 size-4" />
-            View as Markdown
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+            <DropdownMenu.Item
+              className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none"
+              onClick={handleCopy}
+            >
+              <ClipboardCopy className="mr-2 size-4" />
+              <div className="flex flex-col">
+                <span>Copy page</span>
+                <span className="text-muted-foreground text-xs">
+                  Copy this page as markdown for LLMs
+                </span>
+              </div>
+            </DropdownMenu.Item>
+
+            <DropdownMenu.Item
+              className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none"
+              onClick={handleView}
+            >
+              <FileText className="mr-2 size-4" />
+              <div className="flex flex-col">
+                <span className="flex items-center">
+                  View as markdown <ExternalLink className="ml-2 size-3" />
+                </span>
+                <span className="text-muted-foreground text-xs">
+                  View this page as plain markdown text
+                </span>
+              </div>
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    </div>
   );
 }

@@ -65,6 +65,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
       }}
       toc={isRootPage ? undefined : page.data.toc}
       editOnGithub={isRootPage ? undefined : githubInfo}
+      currentPath={isRootPage ? undefined : page.file.path}
     >
       {!isRootPage && <DocsTitle>{page.data.title}</DocsTitle>}
       {!isRootPage && <DocsDescription className="mb-1">{page.data.description}</DocsDescription>}

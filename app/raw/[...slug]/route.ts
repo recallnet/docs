@@ -11,17 +11,17 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
     // 2. They have the `docs` slug prefix removed (removed from the passed github file url)
     const slug = (await params).slug.map((s) => s.replace(".md", ".mdx"));
     const filePath = path.join(process.cwd(), "docs", slug.join("/"));
-    const content = await getRawDocContent(filePath);
+    const { content, title, description } = await getRawDocContent(filePath);
+    const merged = `# ${title}\n\n${description}\n\n${content}`;
     const filename = slug.pop() || "index.md";
 
-    return new NextResponse(content, {
+    return new NextResponse(merged, {
       headers: {
         "Content-Type": "text/markdown",
         "Content-Disposition": `filename="${filename}"`,
       },
     });
-  } catch (error) {
-    console.error("Error serving markdown file:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+  } catch {
+    return new NextResponse("Not found", { status: 404 });
   }
 }

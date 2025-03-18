@@ -1,29 +1,18 @@
-import { readFile } from "fs/promises";
 import { NextResponse } from "next/server";
 import path from "path";
 
-import { source } from "@/lib/source";
+import { getRawDocContent } from "@/lib/files";
 
-export async function GET(request: Request, { params }: { params: { slug: string[] } }) {
+export async function GET(_: Request, { params }: { params: Promise<{ slug: string[] }> }) {
   try {
-    // Remove .md extension if present and handle index.md case
-    console.log("SLUG PASSED IN", await params.slug);
-    const slug = params.slug.map((segment) => segment.replace(/\.md$/, ""));
-    if (slug[slug.length - 1] === "index") {
-      slug.pop(); // Remove 'index' from the end
-    }
-
-    const page = source.getPage(slug);
-    if (!page) {
-      return new NextResponse("Not Found", { status: 404 });
-    }
-
-    // Read the raw markdown file
-    const filePath = path.join(process.cwd(), "docs", page.file.path);
-    const content = await readFile(filePath, "utf-8");
-
-    // Use the same filename format as GitHub
-    const filename = page.file.path.split("/").pop() || "index.mdx";
+    // Slugs are passed in a way that makes the API URL a bit prettier, but we need to convert them
+    // to the correct format for the file system to read the file:
+    // 1. They have the `.mdx` extension converted to `.md`
+    // 2. They have the `docs` slug prefix removed (removed from the passed github file url)
+    const slug = (await params).slug.map((s) => s.replace(".md", ".mdx"));
+    const filePath = path.join(process.cwd(), "docs", slug.join("/"));
+    const content = await getRawDocContent(filePath);
+    const filename = slug.pop() || "index.md";
 
     return new NextResponse(content, {
       headers: {

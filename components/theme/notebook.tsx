@@ -7,7 +7,6 @@ import { Fragment, type HTMLAttributes, type ReactNode } from "react";
 
 import { cn } from "@/lib/theme/cn";
 
-import { MarkdownActionsClient } from "../md-copy/client";
 import { Banner } from "./banner";
 import {
   SidebarLinkItem,
@@ -127,10 +126,7 @@ export function DocsLayout({
             sidebarCollapsible={sidebarCollapsible}
             disableThemeSwitch={props.disableThemeSwitch}
           />
-          <StylesProvider {...pageStyles}>
-            {props.children}
-            <MarkdownActionsClient />
-          </StylesProvider>
+          <StylesProvider {...pageStyles}>{props.children}</StylesProvider>
         </main>
       </NavProvider>
     </TreeContextProvider>

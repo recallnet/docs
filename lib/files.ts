@@ -62,6 +62,12 @@ export async function getDocsContent(docsDir: string): Promise<DocsFile[]> {
   return scanned;
 }
 
+export async function getRawDocContent(file: string): Promise<string> {
+  const fileContent = await fs.readFile(file);
+  const { content } = matter(fileContent.toString());
+  return await processContent(content);
+}
+
 async function processContent(content: string): Promise<string> {
   const file = await remark().use(remarkMdx).use(remarkGfm).use(remarkStringify).process(content);
 

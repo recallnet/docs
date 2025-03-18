@@ -5,7 +5,8 @@ import { I18nLabel } from "fumadocs-ui/provider";
 import { Edit, Text } from "lucide-react";
 import { type AnchorHTMLAttributes, type HTMLAttributes, type ReactNode, forwardRef } from "react";
 
-import { cn } from "../../lib/theme/cn";
+import { MarkdownActions } from "@/components/md-copy/actions";
+import { cn } from "@/lib/theme/cn";
 import {
   Breadcrumb,
   type BreadcrumbProps,
@@ -15,7 +16,8 @@ import {
   PageArticle,
   PageBody,
   TocPopoverHeader,
-} from "../../page.client";
+} from "@/page.client";
+
 import { Card, Cards } from "./card";
 import {
   TOCItems,
@@ -175,6 +177,7 @@ export function DocsPage({
           {props.children}
           <div role="none" className="flex-1" />
           <div className="flex flex-row flex-wrap items-center justify-between gap-4 empty:hidden">
+            {props.editOnGithub?.path && <MarkdownActions currentPath={props.editOnGithub.path} />}
             {props.editOnGithub ? <EditOnGitHub {...props.editOnGithub} /> : null}
             {props.lastUpdate ? <LastUpdate date={new Date(props.lastUpdate)} /> : null}
           </div>

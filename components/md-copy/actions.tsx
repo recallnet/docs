@@ -1,3 +1,5 @@
+"use client";
+
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ClipboardCopy, FileText } from "lucide-react";
 import { useState } from "react";
@@ -14,18 +16,10 @@ export function MarkdownActions({ currentPath }: MarkdownActionsProps) {
   const [error, setError] = useState<string | null>(null);
 
   const getRawPath = () => {
-    // Convert /docs/intro/concepts to /raw/intro/concepts.md
-    // or /docs/intro to /raw/intro/index.md
-    const path = currentPath.replace(/^\/docs\//, "");
-    const segments = path.split("/").filter(Boolean);
-    if (segments.length === 0) return "/raw/index.md";
-
-    // If it's a directory index (e.g., /docs/intro), append index.md
-    if (segments.join("/") === path.replace(/^\/|\/$/g, "")) {
-      return `/raw/${segments.join("/")}/index.md`;
-    }
-    // Otherwise, append .md to the last segment
-    return `/raw/${segments.join("/")}.md`;
+    // Convert paths like docs/intro/concepts.mdx to /raw/intro/concepts.md
+    // This uses the `raw/[...slug]` route to serve the markdown file
+    const path = currentPath.replace(/^docs\//, "").replace(/\.mdx$/, ".md");
+    return `/raw/${path}`;
   };
 
   const handleCopy = async () => {

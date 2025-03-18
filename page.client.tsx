@@ -1,30 +1,21 @@
-'use client';
+"use client";
 
-import {
-  Fragment,
-  type HTMLAttributes,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import Link from 'next/link';
-import { cn } from './lib/theme/cn';
-import { useI18n } from 'fumadocs-ui/provider';
-import { useTreeContext, useTreePath } from 'fumadocs-ui/provider';
-import { useSidebar } from 'fumadocs-ui/provider';
-import type { PageTree } from 'fumadocs-core/server';
-import { usePathname } from 'next/navigation';
-import { useNav } from './components/theme/layout/nav';
-import {
-  type BreadcrumbOptions,
-  getBreadcrumbItemsFromPath,
-} from 'fumadocs-core/breadcrumb';
-import { usePageStyles } from 'fumadocs-ui/provider';
-import { isActive } from './lib/theme/is-active';
-import { TocPopover } from './components/theme/layout/toc';
-import { useEffectEvent } from 'fumadocs-core/utils/use-effect-event';
+import { type BreadcrumbOptions, getBreadcrumbItemsFromPath } from "fumadocs-core/breadcrumb";
+import type { PageTree } from "fumadocs-core/server";
+import { useI18n } from "fumadocs-ui/provider";
+import { useTreeContext, useTreePath } from "fumadocs-ui/provider";
+import { useSidebar } from "fumadocs-ui/provider";
+import { usePageStyles } from "fumadocs-ui/provider";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Fragment, type HTMLAttributes, useEffect, useMemo, useRef, useState } from "react";
+
+import { useNav } from "./components/theme/layout/nav";
+import { TocPopover } from "./components/theme/layout/toc";
+import { cn } from "./lib/theme/cn";
+import { isActive } from "./lib/theme/is-active";
+import { useEffectEvent } from "./lib/theme/use-effect-event";
 
 export function TocPopoverHeader(props: HTMLAttributes<HTMLDivElement>) {
   const ref = useRef<HTMLElement>(null);
@@ -36,23 +27,22 @@ export function TocPopoverHeader(props: HTMLAttributes<HTMLDivElement>) {
   const onClick = useEffectEvent((e: Event) => {
     if (!open) return;
 
-    if (ref.current && !ref.current.contains(e.target as HTMLElement))
-      setOpen(false);
+    if (ref.current && !ref.current.contains(e.target as HTMLElement)) setOpen(false);
   });
 
   useEffect(() => {
-    window.addEventListener('click', onClick);
+    window.addEventListener("click", onClick);
 
     return () => {
-      window.removeEventListener('click', onClick);
+      window.removeEventListener("click", onClick);
     };
   }, [onClick]);
 
   return (
     <div
-      className={cn('sticky overflow-visible z-10', tocNav, props.className)}
+      className={cn("sticky z-10 overflow-visible", tocNav, props.className)}
       style={{
-        top: 'calc(var(--fd-banner-height) + var(--fd-nav-height))',
+        top: "calc(var(--fd-banner-height) + var(--fd-nav-height))",
       }}
     >
       <TocPopover open={open} onOpenChange={setOpen} asChild>
@@ -61,10 +51,10 @@ export function TocPopoverHeader(props: HTMLAttributes<HTMLDivElement>) {
           id="nd-tocnav"
           {...props}
           className={cn(
-            'border-b border-fd-foreground/10 backdrop-blur-md transition-colors',
-            (!isTransparent || open) && 'bg-fd-background/80',
-            open && 'shadow-lg',
-            sidebar.open && 'max-md:hidden',
+            "border-fd-foreground/10 border-b backdrop-blur-md transition-colors",
+            (!isTransparent || open) && "bg-fd-background/80",
+            open && "shadow-lg",
+            sidebar.open && "max-md:hidden"
           )}
         >
           {props.children}
@@ -81,7 +71,7 @@ export function PageBody(props: HTMLAttributes<HTMLDivElement>) {
     <div
       id="nd-page"
       {...props}
-      className={cn('flex w-full min-w-0 flex-col', page, props.className)}
+      className={cn("flex w-full min-w-0 flex-col", page, props.className)}
     >
       {props.children}
     </div>
@@ -95,9 +85,9 @@ export function PageArticle(props: HTMLAttributes<HTMLElement>) {
     <article
       {...props}
       className={cn(
-        'flex w-full flex-1 flex-col gap-6 px-4 pt-8 md:px-6 md:pt-12 xl:px-12 xl:mx-auto',
+        "flex w-full flex-1 flex-col gap-6 px-4 pt-8 md:px-6 md:pt-12 xl:mx-auto xl:px-12",
         article,
-        props.className,
+        props.className
       )}
     >
       {props.children}
@@ -107,7 +97,7 @@ export function PageArticle(props: HTMLAttributes<HTMLElement>) {
 
 export function LastUpdate(props: { date: Date }) {
   const { text } = useI18n();
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState("");
 
   useEffect(() => {
     // to the timezone of client
@@ -115,13 +105,15 @@ export function LastUpdate(props: { date: Date }) {
   }, [props.date]);
 
   return (
-    <p className="text-sm text-fd-muted-foreground">
+    <p className="text-fd-muted-foreground text-sm">
       {text.lastUpdate} {date}
     </p>
   );
 }
 
-type Item = Pick<PageTree.Item, 'name' | 'description' | 'url'>;
+type Item = Pick<PageTree.Item, "name" | "url"> & {
+  description?: string;
+};
 export interface FooterProps {
   /**
    * Items including information for the next and previous page
@@ -136,7 +128,7 @@ function scanNavigationList(tree: PageTree.Node[]) {
   const list: PageTree.Item[] = [];
 
   tree.forEach((node) => {
-    if (node.type === 'folder') {
+    if (node.type === "folder") {
       if (node.index) {
         list.push(node.index);
       }
@@ -145,7 +137,7 @@ function scanNavigationList(tree: PageTree.Node[]) {
       return;
     }
 
-    if (node.type === 'page' && !node.external) {
+    if (node.type === "page" && !node.external) {
       list.push(node);
     }
   });
@@ -177,10 +169,7 @@ export function Footer({ items }: FooterProps) {
 
   return (
     <div
-      className={cn(
-        '@container grid gap-4 pb-6',
-        previous && next ? 'grid-cols-2' : 'grid-cols-1',
-      )}
+      className={cn("@container grid gap-4 pb-6", previous && next ? "grid-cols-2" : "grid-cols-1")}
     >
       {previous ? <FooterItem item={previous} index={0} /> : null}
       {next ? <FooterItem item={next} index={1} /> : null}
@@ -198,27 +187,21 @@ function FooterItem({ item, index }: { item: Item; index: 0 | 1 }) {
     <Link
       href={item.url}
       className={cn(
-        'flex flex-col gap-2 rounded-lg border p-4 text-sm transition-colors hover:bg-fd-accent/80 hover:text-fd-accent-foreground @max-lg:col-span-full',
-        index === 1 && 'text-end',
+        "hover:bg-fd-accent/80 hover:text-fd-accent-foreground flex flex-col gap-2 rounded-lg border p-4 text-sm transition-colors @max-lg:col-span-full",
+        index === 1 && "text-end"
       )}
     >
       <div
         className={cn(
-          'inline-flex items-center gap-1.5',
-          index === 1 && 'flex-row-reverse',
-          title ? 'font-medium' : 'text-fd-muted-foreground',
+          "inline-flex items-center gap-1.5",
+          index === 1 && "flex-row-reverse",
+          title ? "font-medium" : "text-fd-muted-foreground"
         )}
       >
         <Icon className="-mx-1 size-4 shrink-0 rtl:rotate-180" />
         <p>{title ?? text.nextPage}</p>
       </div>
-      <p
-        className={cn(
-          title
-            ? 'text-fd-muted-foreground truncate'
-            : 'font-medium md:text-[15px]',
-        )}
-      >
+      <p className={cn(title ? "text-fd-muted-foreground truncate" : "font-medium md:text-[15px]")}>
         {description}
       </p>
     </Link>
@@ -240,12 +223,9 @@ export function Breadcrumb(options: BreadcrumbProps) {
   if (items.length === 0) return null;
 
   return (
-    <div className="flex flex-row items-center gap-1.5 text-[15px] text-fd-muted-foreground">
+    <div className="text-fd-muted-foreground flex flex-row items-center gap-1.5 text-[15px]">
       {items.map((item, i) => {
-        const className = cn(
-          'truncate',
-          i === items.length - 1 && 'text-fd-primary font-medium',
-        );
+        const className = cn("truncate", i === items.length - 1 && "text-fd-primary font-medium");
 
         return (
           <Fragment key={i}>
@@ -253,7 +233,7 @@ export function Breadcrumb(options: BreadcrumbProps) {
             {item.url ? (
               <Link
                 href={item.url}
-                className={cn(className, 'transition-opacity hover:opacity-80')}
+                className={cn(className, "transition-opacity hover:opacity-80")}
               >
                 {item.name}
               </Link>

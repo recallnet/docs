@@ -4,13 +4,16 @@ import path from "path";
 
 import { source } from "@/lib/source";
 
-export async function GET(request: Request) {
+export async function GET(request: Request, { params }: { params: { slug: string[] } }) {
   try {
-    const { searchParams } = new URL(request.url);
-    const slug = searchParams.get("path")?.split("/").filter(Boolean) || [];
-    const page = source.getPage(slug);
-    console.log("slug", slug);
+    // Remove .md extension if present and handle index.md case
+    console.log("SLUG PASSED IN", await params.slug);
+    const slug = params.slug.map((segment) => segment.replace(/\.md$/, ""));
+    if (slug[slug.length - 1] === "index") {
+      slug.pop(); // Remove 'index' from the end
+    }
 
+    const page = source.getPage(slug);
     if (!page) {
       return new NextResponse("Not Found", { status: 404 });
     }
@@ -19,10 +22,13 @@ export async function GET(request: Request) {
     const filePath = path.join(process.cwd(), "docs", page.file.path);
     const content = await readFile(filePath, "utf-8");
 
+    // Use the same filename format as GitHub
+    const filename = page.file.path.split("/").pop() || "index.mdx";
+
     return new NextResponse(content, {
       headers: {
         "Content-Type": "text/markdown",
-        "Content-Disposition": `filename="${page.file.path}"`,
+        "Content-Disposition": `filename="${filename}"`,
       },
     });
   } catch (error) {

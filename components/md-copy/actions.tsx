@@ -14,9 +14,18 @@ export function MarkdownActions({ currentPath }: MarkdownActionsProps) {
   const [error, setError] = useState<string | null>(null);
 
   const getRawPath = () => {
-    // Remove /docs/ prefix and add as query param
+    // Convert /docs/intro/concepts to /raw/intro/concepts.md
+    // or /docs/intro to /raw/intro/index.md
     const path = currentPath.replace(/^\/docs\//, "");
-    return `/raw?path=${encodeURIComponent(path)}`;
+    const segments = path.split("/").filter(Boolean);
+    if (segments.length === 0) return "/raw/index.md";
+
+    // If it's a directory index (e.g., /docs/intro), append index.md
+    if (segments.join("/") === path.replace(/^\/|\/$/g, "")) {
+      return `/raw/${segments.join("/")}/index.md`;
+    }
+    // Otherwise, append .md to the last segment
+    return `/raw/${segments.join("/")}.md`;
   };
 
   const handleCopy = async () => {

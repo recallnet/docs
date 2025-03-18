@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 
-import { MarkdownActions } from "./index";
+import { MarkdownActions } from "./actions";
 
 export function MarkdownActionsClient() {
   const pathname = usePathname();

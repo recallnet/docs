@@ -1,12 +1,16 @@
+"use client";
+
 import type { PageTree } from "fumadocs-core/server";
 import { TreeContextProvider } from "fumadocs-ui/provider";
 import { type PageStyles, StylesProvider } from "fumadocs-ui/provider";
 import { ChevronDown, ExternalLink, Languages } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Fragment, type HTMLAttributes, type ReactNode } from "react";
 
 import { cn } from "@/lib/theme/cn";
 
+import { MarkdownActions } from "../docs/MarkdownActions";
 import { Banner } from "./banner";
 import {
   SidebarLinkItem,
@@ -71,6 +75,8 @@ export function DocsLayout({
     page: cn("mt-[calc(var(--fd-banner-height,0px)+var(--fd-nav-height))]"),
   };
 
+  const pathname = usePathname();
+
   return (
     <TreeContextProvider tree={props.tree}>
       {props.banner && <Banner {...props.banner} />}
@@ -128,7 +134,10 @@ export function DocsLayout({
             sidebarCollapsible={sidebarCollapsible}
             disableThemeSwitch={props.disableThemeSwitch}
           />
-          <StylesProvider {...pageStyles}>{props.children}</StylesProvider>
+          <StylesProvider {...pageStyles}>
+            {props.children}
+            <MarkdownActions currentPath={pathname} />
+          </StylesProvider>
         </main>
       </NavProvider>
     </TreeContextProvider>

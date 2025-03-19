@@ -37,9 +37,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 export interface DocsLayoutProps extends BaseLayoutProps {
   tree: PageTree.Root;
-
   sidebar?: Omit<Partial<SidebarOptions>, "component" | "enabled">;
-
   containerProps?: HTMLAttributes<HTMLDivElement>;
 }
 

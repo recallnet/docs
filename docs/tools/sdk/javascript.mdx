@@ -56,7 +56,7 @@ Create a wallet client from a private key:
 
 ```ts
 import { testnet } from "@recallnet/chains";
-import { RecallClient } from "@recallnet/sdk";
+import { RecallClient } from "@recallnet/sdk/client";
 import { createWalletClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -69,7 +69,7 @@ const walletClient = createWalletClient({
 });
 
 // Create a client from the wallet client
-const recall = new RecallClient({ walletClient });
+const client = new RecallClient({ walletClient });
 ```
 
 </Step>

@@ -1,0 +1,5 @@
+{
+  "title": "MCP server",
+  "description": "Run an Model Context Protocol server to connect agents to Recall.",
+  "pages": ["custom"]
+}

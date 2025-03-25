@@ -36,6 +36,12 @@ export const baseOptions: BaseLayoutProps = {
       position: "right",
     },
     {
+      external: true,
+      text: "Points",
+      url: "https://points.recall.network/",
+      position: "right",
+    },
+    {
       type: "icon",
       external: true,
       text: "X / Twitter",

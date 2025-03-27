@@ -211,7 +211,8 @@ td > code {
 }
 
 /* Reduce gap in list elements */
-.prose ul > li {
+.prose ul > li,
+.prose ol > li {
   margin-left: 1rem;
 }
 .prose li > p {

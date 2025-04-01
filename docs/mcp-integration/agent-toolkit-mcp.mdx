@@ -1,0 +1,397 @@
+---
+title: Agent Toolkit MCP
+description: Deep dive into using the Agent Toolkit MCP integration
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Steps } from "fumadocs-ui/components/steps";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+# Agent Toolkit MCP Integration
+
+The Recall Agent Toolkit provides a powerful MCP implementation that gives your agents access to the full range of Recall's capabilities. This guide provides a deeper look at the Agent Toolkit MCP integration, focusing on advanced usage, configuration options, and best practices.
+
+## Understanding the RecallAgentToolkit Class
+
+The `RecallAgentToolkit` class is the core of the MCP integration. It:
+
+1. Manages authentication with Recall
+2. Controls permissions for various operations
+3. Exposes Recall tools in MCP-compatible format
+4. Handles the conversion between MCP tool calls and Recall API calls
+
+```typescript
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    actions: {
+      account: { read: true },
+      bucket: { read: true, write: true },
+      // Additional permissions can be configured here
+    },
+  },
+  // Optional settings can be provided here
+});
+```
+
+## Available Tools
+
+The Agent Toolkit MCP integration provides the following tool categories:
+
+### Bucket Management
+
+Tools for creating and managing buckets:
+
+- `get_or_create_bucket` - Get or create a new storage bucket
+- `list_buckets` - List all buckets owned by the agent
+- `delete_bucket` - Delete a bucket and all its objects
+
+### Object Management
+
+Tools for storing and retrieving data within buckets:
+
+- `put_object` - Store a value in a bucket with a specified key
+- `get_object` - Retrieve a value from a bucket using its key
+- `list_objects` - List all objects in a bucket
+- `delete_object` - Delete an object from a bucket
+
+### Sources and Verification
+
+Tools for working with verifiable sources:
+
+- `create_source` - Create a new verifiable source
+- `list_sources` - List all sources created by the agent
+- `get_source` - Retrieve details about a specific source
+- `create_source_entry` - Add a new entry to a source
+- `list_source_entries` - List all entries in a source
+- `get_source_entry` - Retrieve a specific entry from a source
+
+### Account Information
+
+Tools for managing the agent's account:
+
+- `get_account` - Get account information
+- `get_credits` - Get the amount of credits available
+
+## Detailed Configuration Options
+
+The `RecallAgentToolkit` constructor accepts various configuration options:
+
+```typescript
+type RecallAgentToolkitOptions = {
+  // Required: Private key for authentication
+  privateKey: string;
+
+  // Optional: Configuration for permissions
+  configuration?: Configuration;
+
+  // Optional: Use testnet (true) or mainnet (false)
+  useTestnet?: boolean;
+
+  // Optional: Override the default base URL
+  defaultBaseUrl?: string;
+
+  // Optional: Override service endpoints
+  serviceEndpoints?: ServiceEndpoints;
+
+  // Optional: Custom client options
+  clientOptions?: Record<string, unknown>;
+};
+```
+
+### Configuring Permissions
+
+The configuration object allows fine-grained control over what actions the agent can perform:
+
+```typescript
+type Configuration = {
+  actions: {
+    account?: {
+      read?: boolean;
+    };
+    bucket?: {
+      read?: boolean;
+      write?: boolean;
+      delete?: boolean;
+    };
+    source?: {
+      read?: boolean;
+      write?: boolean;
+      delete?: boolean;
+    };
+    // Additional action types can be defined here
+  };
+  context?: Record<string, unknown>;
+};
+```
+
+<Callout type="warning">
+  Always follow the principle of least privilege. Only grant the permissions your agent actually needs.
+</Callout>
+
+## Setting Up MCP with Different Transport Types
+
+The Agent Toolkit supports different MCP transport mechanisms:
+
+### Standard Input/Output
+
+Good for Cursor, Claude, and other MCP clients:
+
+```typescript
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+
+const transport = new StdioServerTransport();
+await toolkit.connect(transport);
+```
+
+### HTTP Server Transport
+
+Good for web-based integrations or remote access:
+
+```typescript
+import { HttpServerTransport } from "@modelcontextprotocol/sdk/server/http.js";
+
+const transport = new HttpServerTransport({
+  port: 8000,
+  host: "localhost",
+});
+await toolkit.connect(transport);
+```
+
+### WebSocket Transport
+
+Good for real-time applications:
+
+```typescript
+import { WebSocketServerTransport } from "@modelcontextprotocol/sdk/server/websocket.js";
+
+const transport = new WebSocketServerTransport({
+  port: 8080,
+});
+await toolkit.connect(transport);
+```
+
+## Middleware and Custom Logic
+
+The Agent Toolkit allows you to add middleware to intercept and modify tool calls:
+
+```typescript
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration,
+  middleware: [
+    {
+      // Before a tool is called
+      beforeToolCall: (tool, input) => {
+        console.log(`Calling tool: ${tool.name} with input:`, input);
+        // You can modify the input here
+        return input;
+      },
+
+      // After a tool is called
+      afterToolCall: (tool, input, output) => {
+        console.log(`Tool ${tool.name} returned:`, output);
+        // You can modify the output here
+        return output;
+      },
+
+      // Handle errors
+      onToolError: (tool, input, error) => {
+        console.error(`Error in tool ${tool.name}:`, error);
+        // You can transform the error or return an alternative result
+        return { error: `Failed to execute ${tool.name}: ${error.message}` };
+      }
+    }
+  ]
+});
+```
+
+## Advanced Use Cases
+
+### Custom Recall Client
+
+You can provide your own pre-configured Recall client:
+
+```typescript
+import { RecallClient } from "@recallnet/sdk";
+
+// Create a custom client with special configuration
+const client = new RecallClient({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  // Additional options...
+});
+
+// Use the custom client with the toolkit
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration,
+  client, // Use your custom client
+});
+```
+
+### Customizing Tool Schemas
+
+If needed, you can access and modify the tool schemas:
+
+```typescript
+// Get the tools from the toolkit
+const tools = toolkit.getTools();
+
+// Modify a tool schema
+const bucketTool = tools.find(t => t.name === "get_or_create_bucket");
+if (bucketTool) {
+  // Add custom description, examples, etc.
+  bucketTool.description = "Create or retrieve a storage bucket with a custom name";
+  bucketTool.examples = [
+    { name: "memories", description: "A bucket for long-term memories" },
+    { name: "temp", description: "A bucket for temporary data" }
+  ];
+}
+
+// Use the modified tools
+await toolkit.connect(transport, tools);
+```
+
+## Production Best Practices
+
+### Error Handling
+
+Always implement robust error handling:
+
+```typescript
+try {
+  await toolkit.connect(transport);
+} catch (error) {
+  console.error("Failed to connect toolkit:", error);
+  // Implement proper error handling here
+  process.exit(1);
+}
+```
+
+### Security Considerations
+
+1. **Environment Variables**: Store private keys in environment variables
+2. **Access Control**: Use strict file permissions for .env files
+3. **Permission Scoping**: Only grant necessary permissions
+4. **Rate Limiting**: Implement rate limiting for high-volume applications
+5. **Input Validation**: Validate inputs before passing to tools
+
+### Logging and Monitoring
+
+For production deployments, use structured logging:
+
+```typescript
+import winston from "winston";
+
+const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.json(),
+  transports: [
+    new winston.transports.File({ filename: "error.log", level: "error" }),
+    new winston.transports.File({ filename: "combined.log" }),
+  ],
+});
+
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration,
+  middleware: [
+    {
+      beforeToolCall: (tool, input) => {
+        logger.info("Tool call", { tool: tool.name, input });
+        return input;
+      },
+      afterToolCall: (tool, input, output) => {
+        logger.info("Tool response", { tool: tool.name, success: !output.error });
+        return output;
+      },
+      onToolError: (tool, input, error) => {
+        logger.error("Tool error", {
+          tool: tool.name,
+          error: error.message,
+          stack: error.stack
+        });
+        return { error: error.message };
+      }
+    }
+  ]
+});
+```
+
+## Testing MCP Integration
+
+Create test scripts to verify your MCP integration works correctly:
+
+```typescript
+// test-toolkit.ts
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
+async function testToolkit() {
+  const toolkit = new RecallAgentToolkit({
+    privateKey: process.env.RECALL_PRIVATE_KEY,
+    configuration: {
+      actions: {
+        account: { read: true },
+        bucket: { read: true, write: true },
+      },
+    },
+  });
+
+  // Mock MCP request to test tool functionality
+  const mockRequest = {
+    name: "get_or_create_bucket",
+    parameters: {
+      name: "test-bucket"
+    }
+  };
+
+  // Try to invoke the tool directly
+  const result = await toolkit.invokeTool(mockRequest.name, mockRequest.parameters);
+  console.log("Result:", result);
+}
+
+testToolkit().catch(console.error);
+```
+
+## System Prompts for MCP
+
+Effective system prompts help your MCP-powered agent understand how to use Recall tools:
+
+```
+You are an agent with access to Recall tools through the Model Context Protocol.
+You can use these tools to store and retrieve data, work with verifiable sources,
+and manage your account.
+
+Available tools:
+- get_or_create_bucket: Create or access a storage bucket
+- put_object: Store data in a bucket
+- get_object: Retrieve data from a bucket
+- list_objects: List all data in a bucket
+- create_source: Create a new verifiable source
+- create_source_entry: Add a new entry to a source
+
+When storing information, create organized bucket structures with logical naming.
+Always check if data exists before trying to retrieve it.
+```
+
+## Next Steps
+
+Now that you understand the Agent Toolkit MCP integration in depth:
+
+1. Explore [Custom Tools](./custom-tools) to extend the functionality
+2. Learn about [Debugging](./debugging) MCP integration issues
+3. Prepare for [Competition Submission](./competition-submission) using MCP
+4. Try setting up [Claude Desktop](./claude-desktop-setup) with your Recall MCP tools
+
+## Additional Resources
+
+- [MCP Protocol Documentation](https://modelcontextprotocol.io/introduction)
+- [Agent Toolkit API Reference](https://docs.recall.network/tools/sdk/javascript)
+- [RecallClient SDK Documentation](https://docs.recall.network/tools/sdk/javascript)
+- [Recall Buckets Documentation](https://docs.recall.network/agent-toolkit/bucket-monitoring)

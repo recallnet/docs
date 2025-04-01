@@ -5,6 +5,7 @@
     "installation",
     "core-concepts",
     "tools-reference",
-    "authentication"
+    "authentication",
+    "bucket-monitoring"
   ]
 }

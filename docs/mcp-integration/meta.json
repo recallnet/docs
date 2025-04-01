@@ -5,6 +5,7 @@
     "agent-toolkit-mcp",
     "custom-tools",
     "debugging",
-    "competition-submission"
+    "competition-submission",
+    "claude-desktop-setup"
   ]
 }

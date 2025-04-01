@@ -13,7 +13,18 @@ import { Tabs, Tab } from "fumadocs-ui/components/tabs";
   The standalone `recall-mcp` package is deprecated. Please use `@recallnet/agent-toolkit/mcp` instead, which provides the official, current MCP implementation.
 </Callout>
 
-The Model Context Protocol (MCP) is a universal standard for AI tools that makes it easy to connect any MCP-compatible client (like Cursor, Claude Desktop, etc.) to the Recall network. Using the Agent Toolkit's MCP implementation, you can quickly build agents that interact with Recall through a consistent, predictable interface.
+The Model Context Protocol (MCP) is a universal standard that allows AI models to discover and invoke tools autonomously. With Recall's Agent Toolkit MCP implementation, you can provide your AI agents with tools to interact with the Recall network through a consistent, discoverable interface.
+
+## How MCP Works with Agents
+
+MCP follows a specific pattern:
+
+1. **Tool Registration**: Tools are registered with the MCP server
+2. **Agent Integration**: The agent connects to the MCP server and discovers available tools
+3. **Autonomous Invocation**: The agent (powered by an LLM) decides when and how to use these tools
+4. **Result Processing**: The agent processes the results from tool invocations
+
+This creates a powerful workflow where the agent can decide when to use Recall for storing or retrieving data based on the conversation context.
 
 ## Why Use the Agent Toolkit for MCP?
 
@@ -62,7 +73,7 @@ The Model Context Protocol (MCP) is a universal standard for AI tools that makes
   ```
 </Steps>
 
-## Basic Usage
+## Basic Usage with Cursor, Claude or other MCP Clients
 
 Here's how to create an MCP server using the Agent Toolkit:
 
@@ -124,6 +135,110 @@ Save this to a file (e.g., `server.ts`) and run it with:
 ts-node server.ts
 ```
 
+## Integration with Agent Frameworks
+
+For programmatic use with agent frameworks, you'll use a different pattern that allows the agent to leverage the MCP tools autonomously:
+
+### Mastra Integration
+
+```typescript
+import { Agent } from "@mastra/core/agent";
+import { openai } from "@ai-sdk/openai";
+import { MCPConfiguration } from "@mastra/mcp";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+
+// Create the Recall toolkit
+const recallToolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    actions: {
+      account: { read: true },
+      bucket: { read: true, write: true },
+    },
+  },
+});
+
+// Configure MCP with the Recall server
+const mcp = new MCPConfiguration({
+  servers: {
+    recall: {
+      name: "recall-storage",
+      server: {
+        command: "ts-node",
+        args: ["path/to/your/recall-server.ts"],
+        env: {
+          RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY,
+        },
+      },
+    }
+  },
+});
+
+// Create an agent that can use Recall tools
+const agent = new Agent({
+  name: "Storage Agent",
+  instructions: "You can store and retrieve data using Recall's storage capabilities.",
+  model: openai("gpt-4o"),
+  tools: await mcp.getTools(), // The agent gets access to the tools
+});
+
+// The agent can now autonomously use Recall tools
+const result = await agent.run("Please store my shopping list and then retrieve it");
+```
+
+### LangChain Integration
+
+```typescript
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+import { langchainMCPAdapter } from "@langchain/mcp-adapters";
+import { ChatOpenAI } from "@langchain/openai";
+import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
+import { PromptTemplate } from "@langchain/core/prompts";
+
+// Set up the Recall MCP server
+const recallServer = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    actions: {
+      account: { read: true },
+      bucket: { read: true, write: true },
+    },
+  },
+});
+
+// Connect to a transport (if running standalone)
+// For integration, you might directly use the tools
+const transport = new StdioServerTransport();
+await recallServer.connect(transport);
+
+// Convert MCP tools to LangChain tools
+const recallTools = await langchainMCPAdapter(recallServer);
+
+// Create LLM
+const llm = new ChatOpenAI({ model: "gpt-4" });
+
+// Create a prompt
+const prompt = PromptTemplate.fromTemplate(
+  "You are an agent with access to Recall storage. {input}"
+);
+
+// Create agent with tools
+const agent = await createOpenAIFunctionsAgent({
+  llm,
+  tools: recallTools,
+  prompt
+});
+
+// Run the agent executor
+const executor = new AgentExecutor({ agent, tools: recallTools });
+const result = await executor.invoke({
+  input: "Store my document titled 'Important Notes' with content 'Remember to check the latest updates'"
+});
+
+console.log(result.output);
+```
+
 ## Migrating from the Old MCP Package
 
 If you were using the standalone `recall-mcp` package, here's how to migrate to the Agent Toolkit:
@@ -170,7 +285,7 @@ If you were using the standalone `recall-mcp` package, here's how to migrate to 
 
 ## Available Tools
 
-The Agent Toolkit MCP implementation provides the following tools:
+The Agent Toolkit MCP implementation provides the following tools that your agent can autonomously discover and use:
 
 | Tool Name | Description | Permission |
 |-----------|-------------|------------|

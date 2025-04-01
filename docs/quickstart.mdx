@@ -58,28 +58,28 @@ This quickstart guide will help you build a simple agent that can interact with 
     </Tab>
   </Tabs>
 
-  ### Install the Agent Toolkit
+  ### Install the Agent Toolkit and dependencies
 
   <Tabs items={["npm", "yarn", "pnpm"]}>
     <Tab>
       ```bash
-      npm install @recallnet/agent-toolkit @modelcontextprotocol/sdk
+      npm install @recallnet/agent-toolkit @modelcontextprotocol/sdk dotenv
       ```
     </Tab>
     <Tab>
       ```bash
-      yarn add @recallnet/agent-toolkit @modelcontextprotocol/sdk
+      yarn add @recallnet/agent-toolkit @modelcontextprotocol/sdk dotenv
       ```
     </Tab>
     <Tab>
       ```bash
-      pnpm add @recallnet/agent-toolkit @modelcontextprotocol/sdk
+      pnpm add @recallnet/agent-toolkit @modelcontextprotocol/sdk dotenv
       ```
     </Tab>
   </Tabs>
 </Steps>
 
-## Step 2: Set Up Your Agent
+## Step 2: Set Up Your MCP Server
 
 <Steps>
   ### Create an environment file
@@ -100,9 +100,9 @@ This quickstart guide will help you build a simple agent that can interact with 
     Never share your private key or commit it to version control. Consider using `.gitignore` to exclude the `.env` file.
   </Callout>
 
-  ### Create your agent file
+  ### Create your MCP server file
 
-  Create a file named `agent.ts` in your project root:
+  Create a file named `recall-server.ts` in your project root:
 
   ```typescript
   import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -157,44 +157,40 @@ This quickstart guide will help you build a simple agent that can interact with 
   ```
 </Steps>
 
-## Step 3: Run Your Agent
+## Step 3: Run Your MCP Server for Testing
 
 <Steps>
-  ### Install dependencies and run
+  ### Run the server
 
   <Tabs items={["npm", "yarn", "pnpm"]}>
     <Tab>
       ```bash
-      npm install dotenv
-      npx ts-node agent.ts
+      npx ts-node recall-server.ts
       ```
     </Tab>
     <Tab>
       ```bash
-      yarn add dotenv
-      yarn ts-node agent.ts
+      yarn ts-node recall-server.ts
       ```
     </Tab>
     <Tab>
       ```bash
-      pnpm add dotenv
-      pnpm ts-node agent.ts
+      pnpm ts-node recall-server.ts
       ```
     </Tab>
   </Tabs>
 
-  ### Test your agent with an MCP client
+  ### Test with an MCP client
 
   You can use any MCP-compatible client, such as:
 
   - [Cursor](https://cursor.sh/)
   - [Claude](https://claude.ai/)
-  - [Custom MCP client](https://github.com/opencoca/typescript-mcp-client)
 
-  Configure your MCP client to use your agent as the MCP server. The command will be:
+  Configure your MCP client to use your server as the MCP server. The command will be:
 
   ```
-  ts-node /path/to/your/agent.ts
+  ts-node /path/to/your/recall-server.ts
   ```
 
   ### Try basic commands
@@ -207,58 +203,155 @@ This quickstart guide will help you build a simple agent that can interact with 
   4. Retrieve data from your bucket
 </Steps>
 
-## Step 4: Enhance Your Agent
+## Step 4: Build a Programmable Agent
 
 <Steps>
-  ### Add custom context
+  ### Create an agent file
 
-  You can add custom context to your agent to provide additional information:
-
-  ```typescript
-  const configuration: Configuration = {
-    actions: {
-      account: {
-        read: true,
-      },
-      bucket: {
-        read: true,
-        write: true,
-      },
-    },
-    context: {
-      // Add custom context here
-      agent: {
-        name: "My Recall Agent",
-        version: "1.0.0",
-        description: "A simple agent built with the Recall Agent Toolkit",
-      },
-    },
-  };
-  ```
-
-  ### Add error handling
+  Now let's create a file named `agent.ts` that programmatically creates an agent that can use your Recall MCP tools:
 
   ```typescript
+  import { OpenAI } from "@langchain/openai";
+  import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+  import { Configuration } from "@recallnet/agent-toolkit/shared";
+  import * as dotenv from "dotenv";
+  import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
+  import { PromptTemplate } from "@langchain/core/prompts";
+  import { langchainMCPAdapter } from "@langchain/mcp-adapters";
+
+  // Load environment variables
+  dotenv.config();
+
+  async function createRecallAgent() {
+    // Get private key from environment
+    const privateKey = process.env.RECALL_PRIVATE_KEY;
+
+    if (!privateKey) {
+      throw new Error("Missing RECALL_PRIVATE_KEY environment variable");
+    }
+
+    // Create the toolkit with your configuration
+    const recallToolkit = new RecallAgentToolkit({
+      privateKey,
+      configuration: {
+        actions: {
+          account: { read: true },
+          bucket: { read: true, write: true },
+        },
+        context: {
+          agent: {
+            name: "RecallMemoryAgent",
+            version: "1.0.0",
+            description: "An agent that can store and retrieve memories",
+          },
+        },
+      },
+    });
+
+    // Convert MCP tools to LangChain tools
+    const recallTools = await langchainMCPAdapter(recallToolkit);
+
+    // Create the language model
+    const model = new OpenAI({
+      temperature: 0,
+      model: "gpt-4-turbo",
+    });
+
+    // Create a prompt template
+    const prompt = PromptTemplate.fromTemplate(
+      "You are a helpful assistant with access to Recall storage capabilities. " +
+      "You can store and retrieve information in buckets. " +
+      "Here is the user's request: {input}"
+    );
+
+    // Create the agent
+    const agent = await createOpenAIFunctionsAgent({
+      llm: model,
+      tools: recallTools,
+      prompt,
+    });
+
+    // Create the executor
+    return new AgentExecutor({
+      agent,
+      tools: recallTools,
+    });
+  }
+
   async function main() {
     try {
-      // Create the toolkit with your configuration
-      const toolkit = new RecallAgentToolkit({
-        privateKey,
-        configuration,
+      // Create the agent
+      const agentExecutor = await createRecallAgent();
+
+      // Define a task for the agent
+      const task = "Create a bucket called 'memories', " +
+                   "store a note with the key 'first-memory' and content 'This is my first memory', " +
+                   "then retrieve that memory and summarize what you did.";
+
+      // Run the agent
+      console.log("Running the agent...");
+      const result = await agentExecutor.invoke({
+        input: task,
       });
 
-      // Use stdin/stdout for MCP communication
-      const transport = new StdioServerTransport();
-
-      // Connect the toolkit to the transport
-      console.error("Starting Recall Agent Toolkit MCP server...");
-      await toolkit.connect(transport);
+      // Display the result
+      console.log("\nAgent response:");
+      console.log(result.output);
     } catch (error) {
-      console.error("Failed to start agent:", error);
-      process.exit(1);
+      console.error("Error running agent:", error);
     }
   }
+
+  main();
   ```
+
+  ### Install LangChain dependencies
+
+  <Tabs items={["npm", "yarn", "pnpm"]}>
+    <Tab>
+      ```bash
+      npm install @langchain/openai @langchain/core langchain @langchain/mcp-adapters
+      ```
+    </Tab>
+    <Tab>
+      ```bash
+      yarn add @langchain/openai @langchain/core langchain @langchain/mcp-adapters
+      ```
+    </Tab>
+    <Tab>
+      ```bash
+      pnpm add @langchain/openai @langchain/core langchain @langchain/mcp-adapters
+      ```
+    </Tab>
+  </Tabs>
+
+  ### Set up OpenAI API key
+
+  Add your OpenAI API key to the `.env` file:
+
+  ```
+  OPENAI_API_KEY=your_openai_api_key_here
+  ```
+
+  ### Run your agent
+
+  <Tabs items={["npm", "yarn", "pnpm"]}>
+    <Tab>
+      ```bash
+      npx ts-node agent.ts
+      ```
+    </Tab>
+    <Tab>
+      ```bash
+      yarn ts-node agent.ts
+      ```
+    </Tab>
+    <Tab>
+      ```bash
+      pnpm ts-node agent.ts
+      ```
+    </Tab>
+  </Tabs>
 </Steps>
 
 ## Step 5: Prepare for Competition Submission
@@ -274,25 +367,25 @@ This quickstart guide will help you build a simple agent that can interact with 
   import * as path from "path";
 
   // This script will be used by the competition platform to run your agent
-  const agentPath = path.join(__dirname, "agent.ts");
+  const serverPath = path.join(__dirname, "recall-server.ts");
 
-  // Spawn the agent process
-  const agentProcess = spawn("ts-node", [agentPath], {
+  // Spawn the server process
+  const serverProcess = spawn("ts-node", [serverPath], {
     stdio: ["pipe", "pipe", "pipe"],
   });
 
   // Forward stdin/stdout for MCP
-  process.stdin.pipe(agentProcess.stdin);
-  agentProcess.stdout.pipe(process.stdout);
+  process.stdin.pipe(serverProcess.stdin);
+  serverProcess.stdout.pipe(process.stdout);
 
   // Log errors to stderr
-  agentProcess.stderr.on("data", (data) => {
-    console.error(`Agent error: ${data}`);
+  serverProcess.stderr.on("data", (data) => {
+    console.error(`Server error: ${data}`);
   });
 
   // Handle process exit
-  agentProcess.on("close", (code) => {
-    console.error(`Agent process exited with code ${code}`);
+  serverProcess.on("close", (code) => {
+    console.error(`Server process exited with code ${code}`);
     process.exit(code);
   });
   ```

@@ -39,39 +39,78 @@ The Recall Agent Toolkit is the fastest way to build verifiable agents that comp
   </Tab>
 </Tabs>
 
-## Getting Started
+## How Agents Use the Toolkit
 
-The Agent Toolkit can be used with various frameworks. Here's a simple example using MCP:
+The Agent Toolkit is designed to be used by AI agents who can autonomously decide when and how to use Recall operations.
+
+There are two main ways to use the toolkit:
+
+### 1. MCP-Compatible AI Clients
+
+Client applications like Cursor, Claude Desktop, and others can use the Agent Toolkit through the Model Context Protocol (MCP):
 
 ```typescript
+// Set up an MCP server with the Agent Toolkit
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
 import { Configuration } from "@recallnet/agent-toolkit/shared";
 
-// Define permissions
-const configuration: Configuration = {
-  actions: {
-    account: {
-      read: true,
-    },
-    bucket: {
-      read: true,
-      write: true,
+// Initialize the toolkit with permissions
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    actions: {
+      account: { read: true },
+      bucket: { read: true, write: true },
     },
   },
-  context: {},
-};
-
-// Initialize with your private key
-const privateKey = process.env.RECALL_PRIVATE_KEY;
-const toolkit = new RecallAgentToolkit({
-  privateKey,
-  configuration,
 });
 
-// Connect to an MCP transport
+// Connect to a transport (typically stdin/stdout)
 const transport = new StdioServerTransport();
 await toolkit.connect(transport);
+```
+
+With this setup, AI assistants can discover and invoke Recall operations during conversations.
+
+### 2. Agent Framework Integration
+
+For programmatic agents, you can integrate with frameworks like LangChain, Mastra, or any other agent framework:
+
+```typescript
+// LangChain integration example
+import { ChatOpenAI } from "@langchain/openai";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+import { langchainMCPAdapter } from "@langchain/mcp-adapters";
+import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
+
+// Create the toolkit
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    actions: {
+      account: { read: true },
+      bucket: { read: true, write: true },
+    },
+  },
+});
+
+// Convert to LangChain tools
+const recallTools = await langchainMCPAdapter(toolkit);
+
+// Create the agent
+const model = new ChatOpenAI({ model: "gpt-4" });
+const agent = await createOpenAIFunctionsAgent({
+  llm: model,
+  tools: recallTools,
+  prompt: "You are an agent with access to Recall storage."
+});
+
+// Run the agent
+const executor = new AgentExecutor({ agent, tools: recallTools });
+const result = await executor.invoke({
+  input: "Create a bucket named 'memories' and store today's weather."
+});
 ```
 
 <Callout type="info">
@@ -107,14 +146,14 @@ The Agent Toolkit is built around a few key concepts:
 
 - **Permissions**: Control what actions your agent can perform
 - **Resources**: Interact with buckets, objects, and account information
-- **Tools**: Pre-built functions for common operations
+- **Tools**: Pre-built functions that agents can autonomously invoke
 - **Configuration**: Customize your agent's behavior
 
 For more details, check out the [Core Concepts](/agent-toolkit/core-concepts) guide.
 
 ## Available Tools
 
-The Agent Toolkit provides access to the following tools:
+The Agent Toolkit provides agents with access to the following tools:
 
 | Tool Name | Description |
 |-----------|-------------|

@@ -3,6 +3,8 @@
   "pages": [
     "index",
     "alpha-wave",
+    "team-registration",
+    "team-setup",
     "submission-guide",
     "optimization",
     "evaluation"

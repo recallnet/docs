@@ -1,0 +1,785 @@
+---
+title: Agent Toolkit Tools Reference
+description: Complete reference guide for all tools available in the Recall Agent Toolkit
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+# Agent Toolkit Tools Reference
+
+This reference guide provides detailed information about all tools available in the Recall Agent Toolkit, including parameters, return values, and usage examples.
+
+## Account Tools
+
+Account tools allow agents to interact with Recall accounts, including viewing account information and managing credits.
+
+### get_account_info
+
+Retrieves information about a Recall account, including token balances, address, and nonce.
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | string | No | The address of the account to get information for. If not provided, uses the connected account. |
+
+#### Returns
+
+```typescript
+{
+  address: string;       // The account's address (0x...)
+  nonce: number;         // The account's transaction nonce
+  recall: string;        // The account's RECALL token balance
+  network: string;       // The current network ("testnet" or "mainnet")
+}
+```
+
+#### Example
+
+<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+  <Tab value="MCP">
+    ```typescript
+    // Claude or other MCP client will automatically discover and use this tool
+    // The agent might use it like this:
+    /*
+    I'll get the account information:
+    <function_calls>
+    <invoke name="get_account_info">
+    </invoke>
+    </function_calls>
+    */
+
+    // Sample response:
+    /*
+    {
+      "address": "0x123abc...",
+      "nonce": 42,
+      "recall": "1000000000000000000",
+      "network": "testnet"
+    }
+    */
+    ```
+  </Tab>
+  <Tab value="LangChain">
+    ```typescript
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ }
+    });
+
+    const tools = toolkit.getTools();
+
+    // Later, when the agent uses the tool:
+    const result = await tools.find(t => t.name === "get_account_info").call({});
+    console.log(result);
+    // { address: "0x123abc...", nonce: 42, recall: "1000000000000000000", network: "testnet" }
+    ```
+  </Tab>
+  <Tab value="OpenAI">
+    ```typescript
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
+    import OpenAI from "openai";
+
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+      client: openai
+    });
+
+    const functions = toolkit.getFunctions();
+
+    // When calling the OpenAI API
+    const messages = [
+      { role: "user", content: "What's my account information?" }
+    ];
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages,
+      functions,
+      function_call: "auto"
+    });
+
+    // OpenAI might call the function
+    // { name: "get_account_info", arguments: "{}" }
+    ```
+  </Tab>
+</Tabs>
+
+### get_credit_info
+
+Gets credit information for the connected account, including available credits and used credits.
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | string | No | The address of the account to get credit information for. If not provided, uses the connected account. |
+
+#### Returns
+
+```typescript
+{
+  credits: string;        // The account's current credit balance
+  used: string;           // The amount of credit the account has used
+  address: string;        // The account's address
+}
+```
+
+#### Example
+
+<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+  <Tab value="MCP">
+    ```typescript
+    // The agent might use it like this:
+    /*
+    Let me check my credit balance:
+    <function_calls>
+    <invoke name="get_credit_info">
+    </invoke>
+    </function_calls>
+    */
+
+    // Sample response:
+    /*
+    {
+      "credits": "5000",
+      "used": "250",
+      "address": "0x123abc..."
+    }
+    */
+    ```
+  </Tab>
+  <Tab value="LangChain">
+    ```typescript
+    // Using the toolkit from the previous example
+    const result = await tools.find(t => t.name === "get_credit_info").call({});
+    console.log(result);
+    // { credits: "5000", used: "250", address: "0x123abc..." }
+    ```
+  </Tab>
+  <Tab value="OpenAI">
+    ```typescript
+    // Using the toolkit from the previous example
+    // OpenAI might call the function
+    // { name: "get_credit_info", arguments: "{}" }
+    ```
+  </Tab>
+</Tabs>
+
+### buy_credit
+
+Buys credit for the connected account, allowing the agent to perform more operations on Recall.
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `amount` | string | Yes | The amount of credit to buy in ETH. |
+| `to` | string | No | The address of the account to buy credit for. If not provided, uses the connected account. |
+
+#### Returns
+
+```typescript
+{
+  txHash: string;        // The transaction hash
+  credits: string;       // The new credit balance after the purchase
+}
+```
+
+#### Example
+
+<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+  <Tab value="MCP">
+    ```typescript
+    // The agent might use it like this:
+    /*
+    I'll buy some more credit:
+    <function_calls>
+    <invoke name="buy_credit">
+    <parameter name="amount">0.01</parameter>
+    </invoke>
+    </function_calls>
+    */
+
+    // Sample response:
+    /*
+    {
+      "txHash": "0xdef789...",
+      "credits": "6000"
+    }
+    */
+    ```
+  </Tab>
+  <Tab value="LangChain">
+    ```typescript
+    // Using the toolkit from the previous example
+    const result = await tools.find(t => t.name === "buy_credit").call({
+      amount: "0.01"
+    });
+    console.log(result);
+    // { txHash: "0xdef789...", credits: "6000" }
+    ```
+  </Tab>
+  <Tab value="OpenAI">
+    ```typescript
+    // Using the toolkit from the previous example
+    // OpenAI might call the function
+    // { name: "buy_credit", arguments: "{ \"amount\": \"0.01\" }" }
+    ```
+  </Tab>
+</Tabs>
+
+## Bucket Tools
+
+Bucket tools allow agents to create, manage, and interact with storage buckets on Recall.
+
+### list_buckets
+
+Lists all buckets owned by an address in Recall.
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | string | No | The address of the account to list buckets for. If not provided, uses the connected account. |
+
+#### Returns
+
+```typescript
+{
+  buckets: Array<{
+    bucket: string;       // The bucket address (0x...)
+    name: string;         // The bucket name/alias
+    metadata?: Record<string, string>; // Optional bucket metadata
+  }>;
+}
+```
+
+#### Example
+
+<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+  <Tab value="MCP">
+    ```typescript
+    // The agent might use it like this:
+    /*
+    Let me list all my buckets:
+    <function_calls>
+    <invoke name="list_buckets">
+    </invoke>
+    </function_calls>
+    */
+
+    // Sample response:
+    /*
+    {
+      "buckets": [
+        {
+          "bucket": "0xbucket1...",
+          "name": "user-memories"
+        },
+        {
+          "bucket": "0xbucket2...",
+          "name": "chat-history",
+          "metadata": {
+            "createdAt": "2023-04-01T12:00:00Z"
+          }
+        }
+      ]
+    }
+    */
+    ```
+  </Tab>
+  <Tab value="LangChain">
+    ```typescript
+    // Using the toolkit from the previous example
+    const result = await tools.find(t => t.name === "list_buckets").call({});
+    console.log(result);
+    // { buckets: [{ bucket: "0xbucket1...", name: "user-memories" }, ...] }
+    ```
+  </Tab>
+  <Tab value="OpenAI">
+    ```typescript
+    // Using the toolkit from the previous example
+    // OpenAI might call the function
+    // { name: "list_buckets", arguments: "{}" }
+    ```
+  </Tab>
+</Tabs>
+
+### create_bucket
+
+Creates a new bucket in Recall with the specified alias.
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bucketAlias` | string | Yes | The alias to assign to the new bucket. |
+| `metadata` | object | No | Optional metadata to store with the bucket. |
+
+#### Returns
+
+```typescript
+{
+  bucket: string;         // The address of the newly created bucket
+  name: string;           // The alias of the bucket
+  metadata?: Record<string, string>; // Any metadata stored with the bucket
+}
+```
+
+#### Example
+
+<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+  <Tab value="MCP">
+    ```typescript
+    // The agent might use it like this:
+    /*
+    I'll create a new bucket for storing user preferences:
+    <function_calls>
+    <invoke name="create_bucket">
+    <parameter name="bucketAlias">user-preferences</parameter>
+    <parameter name="metadata">{"createdBy": "agent", "purpose": "store user preferences"}</parameter>
+    </invoke>
+    </function_calls>
+    */
+
+    // Sample response:
+    /*
+    {
+      "bucket": "0xnewbucket...",
+      "name": "user-preferences",
+      "metadata": {
+        "createdBy": "agent",
+        "purpose": "store user preferences"
+      }
+    }
+    */
+    ```
+  </Tab>
+  <Tab value="LangChain">
+    ```typescript
+    // Using the toolkit from the previous example
+    const result = await tools.find(t => t.name === "create_bucket").call({
+      bucketAlias: "user-preferences",
+      metadata: {
+        createdBy: "agent",
+        purpose: "store user preferences"
+      }
+    });
+    console.log(result);
+    // { bucket: "0xnewbucket...", name: "user-preferences", metadata: {...} }
+    ```
+  </Tab>
+  <Tab value="OpenAI">
+    ```typescript
+    // Using the toolkit from the previous example
+    // OpenAI might call the function
+    // { name: "create_bucket", arguments: "{ \"bucketAlias\": \"user-preferences\", \"metadata\": { \"createdBy\": \"agent\", \"purpose\": \"store user preferences\" } }" }
+    ```
+  </Tab>
+</Tabs>
+
+### get_or_create_bucket
+
+Gets an existing bucket by alias or creates a new one if it doesn't exist. This is often more convenient than separate get/create operations.
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bucketAlias` | string | Yes | The alias of the bucket to retrieve or create. |
+| `metadata` | object | No | Optional metadata to store with the bucket if created. |
+
+#### Returns
+
+```typescript
+{
+  bucket: string;         // The address of the bucket
+  name: string;           // The alias of the bucket
+  metadata?: Record<string, string>; // Any metadata stored with the bucket
+  created: boolean;       // Whether the bucket was newly created
+}
+```
+
+#### Example
+
+<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+  <Tab value="MCP">
+    ```typescript
+    // The agent might use it like this:
+    /*
+    I'll get or create a bucket for storing chat history:
+    <function_calls>
+    <invoke name="get_or_create_bucket">
+    <parameter name="bucketAlias">chat-history</parameter>
+    </invoke>
+    </function_calls>
+    */
+
+    // Sample response:
+    /*
+    {
+      "bucket": "0xbucket3...",
+      "name": "chat-history",
+      "created": true
+    }
+    */
+    ```
+  </Tab>
+  <Tab value="LangChain">
+    ```typescript
+    // Using the toolkit from the previous example
+    const result = await tools.find(t => t.name === "get_or_create_bucket").call({
+      bucketAlias: "chat-history"
+    });
+    console.log(result);
+    // { bucket: "0xbucket3...", name: "chat-history", created: true }
+    ```
+  </Tab>
+  <Tab value="OpenAI">
+    ```typescript
+    // Using the toolkit from the previous example
+    // OpenAI might call the function
+    // { name: "get_or_create_bucket", arguments: "{ \"bucketAlias\": \"chat-history\" }" }
+    ```
+  </Tab>
+</Tabs>
+
+### add_object
+
+Adds an object to a bucket in Recall. This is how agents store data persistently.
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bucket` | string | Yes | The address of the bucket (0x...). |
+| `key` | string | Yes | The key under which to store the object. |
+| `data` | string \| Uint8Array | Yes | The data to store. Most commonly a string or serialized JSON. |
+| `metadata` | object | No | Optional metadata to store with the object. |
+| `overwrite` | boolean | No | Whether to overwrite an existing object with the same key. Default is false. |
+
+#### Returns
+
+```typescript
+{
+  key: string;           // The key of the stored object
+  size: number;          // The size of the stored data in bytes
+  metadata?: Record<string, string>; // Any metadata stored with the object
+}
+```
+
+#### Example
+
+<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+  <Tab value="MCP">
+    ```typescript
+    // The agent might use it like this:
+    /*
+    I'll add the user preference data to the bucket:
+    <function_calls>
+    <invoke name="add_object">
+    <parameter name="bucket">0xnewbucket...</parameter>
+    <parameter name="key">preferences</parameter>
+    <parameter name="data">{"theme":"dark","language":"en"}</parameter>
+    <parameter name="metadata">{"lastUpdated":"2023-04-01T15:30:00Z"}</parameter>
+    </invoke>
+    </function_calls>
+    */
+
+    // Sample response:
+    /*
+    {
+      "key": "preferences",
+      "size": 39,
+      "metadata": {
+        "lastUpdated": "2023-04-01T15:30:00Z"
+      }
+    }
+    */
+    ```
+  </Tab>
+  <Tab value="LangChain">
+    ```typescript
+    // Using the toolkit from the previous example
+    const result = await tools.find(t => t.name === "add_object").call({
+      bucket: "0xnewbucket...",
+      key: "preferences",
+      data: JSON.stringify({theme: "dark", language: "en"}),
+      metadata: {
+        lastUpdated: new Date().toISOString()
+      }
+    });
+    console.log(result);
+    // { key: "preferences", size: 39, metadata: { lastUpdated: "..." } }
+    ```
+  </Tab>
+  <Tab value="OpenAI">
+    ```typescript
+    // Using the toolkit from the previous example
+    // OpenAI might call the function
+    // { name: "add_object", arguments: "{ \"bucket\": \"0xnewbucket...\", \"key\": \"preferences\", \"data\": \"{\\\"theme\\\":\\\"dark\\\",\\\"language\\\":\\\"en\\\"}\", \"metadata\": { \"lastUpdated\": \"2023-04-01T15:30:00Z\" } }" }
+    ```
+  </Tab>
+</Tabs>
+
+### get_object
+
+Retrieves an object from a bucket in Recall. This is how agents retrieve previously stored data.
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bucket` | string | Yes | The address of the bucket (0x...). |
+| `key` | string | Yes | The key under which the object is stored. |
+| `outputType` | string | No | The type of output to return: "string" (default) or "uint8array". |
+
+#### Returns
+
+```typescript
+{
+  value: string | Uint8Array; // The stored data
+  key: string;                // The key of the retrieved object
+  metadata?: Record<string, string>; // Any metadata stored with the object
+}
+```
+
+#### Example
+
+<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+  <Tab value="MCP">
+    ```typescript
+    // The agent might use it like this:
+    /*
+    I'll retrieve the user preferences:
+    <function_calls>
+    <invoke name="get_object">
+    <parameter name="bucket">0xnewbucket...</parameter>
+    <parameter name="key">preferences</parameter>
+    </invoke>
+    </function_calls>
+    */
+
+    // Sample response:
+    /*
+    {
+      "value": "{\"theme\":\"dark\",\"language\":\"en\"}",
+      "key": "preferences",
+      "metadata": {
+        "lastUpdated": "2023-04-01T15:30:00Z"
+      }
+    }
+    */
+    ```
+  </Tab>
+  <Tab value="LangChain">
+    ```typescript
+    // Using the toolkit from the previous example
+    const result = await tools.find(t => t.name === "get_object").call({
+      bucket: "0xnewbucket...",
+      key: "preferences"
+    });
+    console.log(result);
+    // { value: "{\"theme\":\"dark\",\"language\":\"en\"}", key: "preferences", metadata: {...} }
+
+    // Parse the JSON string if needed
+    const preferences = JSON.parse(result.value);
+    console.log(preferences.theme); // "dark"
+    ```
+  </Tab>
+  <Tab value="OpenAI">
+    ```typescript
+    // Using the toolkit from the previous example
+    // OpenAI might call the function
+    // { name: "get_object", arguments: "{ \"bucket\": \"0xnewbucket...\", \"key\": \"preferences\" }" }
+    ```
+  </Tab>
+</Tabs>
+
+### query_objects
+
+Queries objects in a bucket based on prefix, delimiter, and other criteria. Useful for listing objects or finding objects with specific patterns.
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bucket` | string | Yes | The address of the bucket (0x...). |
+| `prefix` | string | No | Filter objects that start with this prefix. |
+| `delimiter` | string | No | Character used to group objects (similar to directories). |
+| `startKey` | string | No | Start listing from this key (for pagination). |
+| `limit` | number | No | Maximum number of results to return. |
+
+#### Returns
+
+```typescript
+{
+  objects: Array<{
+    key: string;           // The key of the object
+    size: number;          // The size of the object in bytes
+    metadata?: Record<string, string>; // Any metadata stored with the object
+  }>;
+  startKey?: string;       // The key to use for pagination if results were limited
+}
+```
+
+#### Example
+
+<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+  <Tab value="MCP">
+    ```typescript
+    // The agent might use it like this:
+    /*
+    I'll list all objects in the chat-history bucket that start with "user-":
+    <function_calls>
+    <invoke name="query_objects">
+    <parameter name="bucket">0xbucket3...</parameter>
+    <parameter name="prefix">user-</parameter>
+    <parameter name="limit">10</parameter>
+    </invoke>
+    </function_calls>
+    */
+
+    // Sample response:
+    /*
+    {
+      "objects": [
+        {
+          "key": "user-123-chat-1",
+          "size": 256,
+          "metadata": {
+            "timestamp": "2023-04-01T10:15:00Z"
+          }
+        },
+        {
+          "key": "user-123-chat-2",
+          "size": 512,
+          "metadata": {
+            "timestamp": "2023-04-01T11:20:00Z"
+          }
+        }
+      ]
+    }
+    */
+    ```
+  </Tab>
+  <Tab value="LangChain">
+    ```typescript
+    // Using the toolkit from the previous example
+    const result = await tools.find(t => t.name === "query_objects").call({
+      bucket: "0xbucket3...",
+      prefix: "user-",
+      limit: 10
+    });
+    console.log(result);
+    // { objects: [{ key: "user-123-chat-1", size: 256, metadata: {...} }, ...] }
+    ```
+  </Tab>
+  <Tab value="OpenAI">
+    ```typescript
+    // Using the toolkit from the previous example
+    // OpenAI might call the function
+    // { name: "query_objects", arguments: "{ \"bucket\": \"0xbucket3...\", \"prefix\": \"user-\", \"limit\": 10 }" }
+    ```
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+### Error Handling
+
+When using the tools, implement proper error handling to make your agent more resilient:
+
+```typescript
+try {
+  const result = await toolkit.run("get_object", {
+    bucket: bucketId,
+    key: "user-data"
+  });
+  // Process the result
+} catch (error) {
+  if (error.message.includes("not found")) {
+    // Handle missing object
+    console.log("Object not found, creating default data");
+  } else {
+    // Handle other errors
+    console.error("Error:", error);
+  }
+}
+```
+
+### Object Storage Patterns
+
+For structured data, serialize to JSON before storing:
+
+```typescript
+const data = {
+  preferences: {
+    theme: "dark",
+    fontSize: "medium"
+  },
+  history: [
+    { timestamp: Date.now(), action: "login" }
+  ]
+};
+
+await toolkit.run("add_object", {
+  bucket: bucketId,
+  key: "user-state",
+  data: JSON.stringify(data),
+  metadata: {
+    contentType: "application/json",
+    lastUpdated: new Date().toISOString()
+  }
+});
+```
+
+When retrieving, parse the JSON:
+
+```typescript
+const { value } = await toolkit.run("get_object", {
+  bucket: bucketId,
+  key: "user-state"
+});
+
+const data = JSON.parse(value);
+console.log(data.preferences.theme); // "dark"
+```
+
+### Naming Conventions
+
+Use consistent key naming patterns to organize data effectively:
+
+- **Hierarchical Keys**: Use slashes to create pseudo-directories: `users/123/profile`
+- **Prefixes**: Use consistent prefixes for related data: `user-123-preferences`, `user-123-history`
+- **Timestamps**: Include timestamps in keys for time-series data: `logs-2023-04-01`
+
+## Performance Considerations
+
+When working with the Agent Toolkit tools, consider these performance tips:
+
+1. **Batch Operations**: When storing multiple related objects, consider storing them as a single JSON object rather than multiple individual objects.
+
+2. **Lazy Loading**: Only retrieve data when needed rather than preemptively loading everything.
+
+3. **Caching**: If repeatedly accessing the same data, cache it in memory rather than fetching it each time.
+
+4. **Pagination**: Use the `limit` and `startKey` parameters with `query_objects` when dealing with large numbers of objects.
+
+<Callout type="info">
+  For more complex scenarios or high-performance requirements, consider implementing a custom middleware that can optimize the API calls or implement caching.
+</Callout>
+
+## Next Steps
+
+Now that you understand the available tools in the Agent Toolkit, you might want to:
+
+- Check out the [Core Concepts](/agent-toolkit/core-concepts) guide for a deeper understanding of the toolkit's architecture
+- Learn about [Bucket Monitoring](/agent-toolkit/bucket-monitoring) to track your agent's storage
+- Explore [MCP Integration](/mcp-integration) for using the toolkit with MCP-compatible models

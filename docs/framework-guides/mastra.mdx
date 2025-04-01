@@ -1,0 +1,795 @@
+---
+title: Mastra Integration
+description: Integrate Recall Agent Toolkit with Mastra for building powerful AI agents
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Steps } from "fumadocs-ui/components/steps";
+
+# Mastra Integration
+
+This guide shows you how to integrate the Recall Agent Toolkit with Mastra to build agents with persistent memory and storage capabilities.
+
+## Overview
+
+[Mastra](https://mastra.ai) is a powerful agent framework designed for building reliable, transparent, and extensible AI agents. By integrating Recall's storage capabilities with Mastra, you can create agents that:
+
+- Store and retrieve information persistently across sessions
+- Manage agent memory for improved contextual awareness
+- Track interactions and maintain long-term context
+- Store and retrieve agent artifacts
+- Access verifiable data sources
+
+Mastra's focus on agent orchestration combined with Recall's persistent storage creates a powerful foundation for building sophisticated AI agents.
+
+## Installation
+
+<Steps>
+  ### Install required packages
+
+  ```bash
+  npm install @recallnet/agent-toolkit @mastra/core @mastra/agents
+  ```
+
+  ### Set up environment variables
+
+  Create a `.env` file in your project root:
+
+  ```
+  RECALL_PRIVATE_KEY=your_recall_private_key
+  ```
+
+  ### Load environment variables in your code
+
+  ```typescript
+  import * as dotenv from "dotenv";
+  dotenv.config();
+  ```
+</Steps>
+
+## Basic Integration
+
+Here's a simple example of integrating Recall with Mastra:
+
+```typescript
+import { Agent, Task } from "@mastra/agents";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mastra";
+
+async function main() {
+  // Initialize the Recall toolkit
+  const recallToolkit = new RecallAgentToolkit({
+    privateKey: process.env.RECALL_PRIVATE_KEY!,
+    configuration: {
+      actions: {
+        account: { read: true },
+        bucket: { read: true, write: true },
+      },
+    },
+  });
+
+  // Get Mastra tools from the toolkit
+  const recallTools = recallToolkit.getTools();
+
+  // Create a Mastra agent with Recall tools
+  const agent = new Agent({
+    name: "RecallAgent",
+    description: "An agent with Recall storage capabilities",
+    tools: recallTools,
+    model: "gpt-4-turbo",
+  });
+
+  // Create a task for the agent
+  const task = new Task({
+    name: "StorageTask",
+    description: "Store and retrieve information using Recall",
+    agent,
+  });
+
+  // Execute the task
+  const result = await task.execute(
+    "Create a bucket called 'notes' and store a note with the text 'Hello from Mastra!'"
+  );
+
+  console.log("Task result:", result);
+}
+
+main().catch(console.error);
+```
+
+This basic example demonstrates how to set up a Mastra agent with Recall tools to create buckets and store data.
+
+## Advanced Integration
+
+For more complex applications, you can integrate Recall storage with Mastra's agent capabilities:
+
+```typescript
+import { Agent, Task, Workflow, Tool } from "@mastra/agents";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mastra";
+import { z } from "zod";
+
+// Define a custom tool that uses Recall for storage
+const createNoteInRecall = new Tool({
+  name: "create_note_in_recall",
+  description: "Creates a new note and stores it in a Recall bucket",
+  parameters: z.object({
+    title: z.string().describe("The title of the note"),
+    content: z.string().describe("The content of the note"),
+    bucketAlias: z.string().describe("The alias of the bucket to store the note in"),
+  }),
+  execute: async ({ title, content, bucketAlias }, { tools }) => {
+    // Get the Recall tools
+    const recallTools = tools.filter(t => t.name.startsWith("recall_"));
+
+    // Find the relevant tools
+    const getBucketTool = recallTools.find(t => t.name === "recall_get_or_create_bucket");
+    const addObjectTool = recallTools.find(t => t.name === "recall_add_object");
+
+    if (!getBucketTool || !addObjectTool) {
+      throw new Error("Required Recall tools not found");
+    }
+
+    // Create or get the bucket
+    const bucketResult = await getBucketTool.execute({ bucketAlias });
+    const bucketId = bucketResult.bucket;
+
+    // Create the note object
+    const note = {
+      title,
+      content,
+      createdAt: new Date().toISOString(),
+    };
+
+    // Store the note in Recall
+    const objectKey = `note-${Date.now()}`;
+    await addObjectTool.execute({
+      bucket: bucketId,
+      key: objectKey,
+      data: JSON.stringify(note),
+      metadata: { type: "note", title },
+    });
+
+    return {
+      success: true,
+      message: `Note '${title}' stored successfully in bucket '${bucketAlias}'`,
+      objectKey,
+      bucketId,
+    };
+  },
+});
+
+async function main() {
+  // Initialize the Recall toolkit
+  const recallToolkit = new RecallAgentToolkit({
+    privateKey: process.env.RECALL_PRIVATE_KEY!,
+    configuration: {
+      actions: {
+        account: { read: true },
+        bucket: { read: true, write: true },
+      },
+    },
+  });
+
+  // Get Mastra tools from the toolkit
+  const recallTools = recallToolkit.getTools();
+
+  // Create a Mastra agent with Recall tools
+  const noteAgent = new Agent({
+    name: "NoteAgent",
+    description: "An agent that manages notes using Recall storage",
+    tools: [...recallTools, createNoteInRecall],
+    model: "gpt-4-turbo",
+  });
+
+  // Create a task for working with notes
+  const createNoteTask = new Task({
+    name: "CreateNote",
+    description: "Create a note and store it in Recall",
+    agent: noteAgent,
+  });
+
+  // Create a workflow that uses the note task
+  const noteWorkflow = new Workflow({
+    name: "NoteManagement",
+    description: "A workflow for managing notes in Recall",
+    tasks: [createNoteTask],
+  });
+
+  // Execute the workflow
+  const result = await noteWorkflow.execute(
+    "Create a detailed note about AI safety and store it in my 'research' bucket"
+  );
+
+  console.log("Workflow result:", result);
+}
+
+main().catch(console.error);
+```
+
+## Memory Management
+
+Mastra excels at orchestrating complex agent workflows. You can use Recall to provide persistent memory across sessions:
+
+```typescript
+import { Agent, Task, Workflow, Memory } from "@mastra/agents";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mastra";
+
+// Custom memory provider using Recall for storage
+class RecallMemory implements Memory {
+  private toolkit: RecallAgentToolkit;
+  private bucketId: string | null = null;
+  private bucketAlias: string;
+
+  constructor(toolkit: RecallAgentToolkit, bucketAlias: string) {
+    this.toolkit = toolkit;
+    this.bucketAlias = bucketAlias;
+  }
+
+  async initialize() {
+    // Create or get the bucket for memory storage
+    const getBucketTool = this.toolkit.getTools().find(t => t.name === "recall_get_or_create_bucket");
+    if (!getBucketTool) {
+      throw new Error("Recall get_or_create_bucket tool not found");
+    }
+
+    const result = await getBucketTool.execute({ bucketAlias: this.bucketAlias });
+    this.bucketId = result.bucket;
+
+    return this;
+  }
+
+  async store(key: string, value: any): Promise<void> {
+    if (!this.bucketId) {
+      throw new Error("Memory not initialized");
+    }
+
+    const addObjectTool = this.toolkit.getTools().find(t => t.name === "recall_add_object");
+    if (!addObjectTool) {
+      throw new Error("Recall add_object tool not found");
+    }
+
+    await addObjectTool.execute({
+      bucket: this.bucketId,
+      key,
+      data: JSON.stringify(value),
+      metadata: { type: "memory", timestamp: new Date().toISOString() },
+      overwrite: true,
+    });
+  }
+
+  async retrieve(key: string): Promise<any> {
+    if (!this.bucketId) {
+      throw new Error("Memory not initialized");
+    }
+
+    const getObjectTool = this.toolkit.getTools().find(t => t.name === "recall_get_object");
+    if (!getObjectTool) {
+      throw new Error("Recall get_object tool not found");
+    }
+
+    try {
+      const result = await getObjectTool.execute({
+        bucket: this.bucketId,
+        key,
+      });
+
+      return JSON.parse(result.value);
+    } catch (error) {
+      // If the object doesn't exist, return null
+      return null;
+    }
+  }
+
+  async delete(key: string): Promise<void> {
+    if (!this.bucketId) {
+      throw new Error("Memory not initialized");
+    }
+
+    const deleteObjectTool = this.toolkit.getTools().find(t => t.name === "recall_delete_object");
+    if (!deleteObjectTool) {
+      throw new Error("Recall delete_object tool not found");
+    }
+
+    await deleteObjectTool.execute({
+      bucket: this.bucketId,
+      key,
+    });
+  }
+
+  async clear(): Promise<void> {
+    if (!this.bucketId) {
+      throw new Error("Memory not initialized");
+    }
+
+    // List all objects
+    const queryObjectsTool = this.toolkit.getTools().find(t => t.name === "recall_query_objects");
+    if (!queryObjectsTool) {
+      throw new Error("Recall query_objects tool not found");
+    }
+
+    const deleteObjectTool = this.toolkit.getTools().find(t => t.name === "recall_delete_object");
+    if (!deleteObjectTool) {
+      throw new Error("Recall delete_object tool not found");
+    }
+
+    const result = await queryObjectsTool.execute({
+      bucket: this.bucketId,
+    });
+
+    // Delete all objects
+    for (const obj of result.objects) {
+      await deleteObjectTool.execute({
+        bucket: this.bucketId,
+        key: obj.key,
+      });
+    }
+  }
+}
+
+async function main() {
+  // Initialize the Recall toolkit
+  const recallToolkit = new RecallAgentToolkit({
+    privateKey: process.env.RECALL_PRIVATE_KEY!,
+    configuration: {
+      actions: {
+        account: { read: true },
+        bucket: { read: true, write: true },
+      },
+    },
+  });
+
+  // Initialize memory provider
+  const memory = await new RecallMemory(recallToolkit, "agent-memory").initialize();
+
+  // Create a Mastra agent with Recall tools and memory
+  const agent = new Agent({
+    name: "MemoryAgent",
+    description: "An agent with persistent memory using Recall",
+    tools: recallToolkit.getTools(),
+    model: "gpt-4-turbo",
+    memory,
+  });
+
+  // Store something in memory
+  await memory.store("preferences", {
+    theme: "dark",
+    language: "English",
+    notifications: true,
+  });
+
+  // Create a task that uses memory
+  const task = new Task({
+    name: "MemoryTask",
+    description: "Use persistent memory to provide personalized responses",
+    agent,
+    context: async () => {
+      // Load preferences from memory
+      const preferences = await memory.retrieve("preferences");
+
+      if (preferences) {
+        return `User preferences: Theme: ${preferences.theme}, Language: ${preferences.language}, Notifications: ${preferences.notifications ? "Enabled" : "Disabled"}`;
+      }
+
+      return "No user preferences found.";
+    },
+  });
+
+  // Execute the task
+  const result = await task.execute(
+    "Show me my current preferences and suggest some improvements"
+  );
+
+  console.log("Task result:", result);
+}
+
+main().catch(console.error);
+```
+
+## Complete Example: Research Assistant
+
+Here's a complete example of a research assistant agent built with Mastra and Recall:
+
+```typescript
+import { Agent, Task, Workflow, Tool } from "@mastra/agents";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mastra";
+import { z } from "zod";
+
+async function createResearchAssistant() {
+  // Initialize the Recall toolkit
+  const recallToolkit = new RecallAgentToolkit({
+    privateKey: process.env.RECALL_PRIVATE_KEY!,
+    configuration: {
+      actions: {
+        account: { read: true },
+        bucket: { read: true, write: true },
+      },
+    },
+  });
+
+  // Get Recall tools
+  const recallTools = recallToolkit.getTools();
+
+  // Create a custom tool for saving research notes
+  const saveResearchNote = new Tool({
+    name: "save_research_note",
+    description: "Saves a research note with a title, content, and tags",
+    parameters: z.object({
+      title: z.string().describe("The title of the research note"),
+      content: z.string().describe("The content of the research note"),
+      tags: z.array(z.string()).describe("Tags for categorizing the note"),
+    }),
+    execute: async ({ title, content, tags }, { tools }) => {
+      // Find the necessary Recall tools
+      const getBucketTool = tools.find(t => t.name === "recall_get_or_create_bucket");
+      const addObjectTool = tools.find(t => t.name === "recall_add_object");
+
+      if (!getBucketTool || !addObjectTool) {
+        throw new Error("Required Recall tools not found");
+      }
+
+      // Get or create the research notes bucket
+      const bucketResult = await getBucketTool.execute({ bucketAlias: "research-notes" });
+
+      // Format the note
+      const note = {
+        title,
+        content,
+        tags,
+        created: new Date().toISOString(),
+      };
+
+      // Generate a key based on the title
+      const key = `note-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
+
+      // Store the note
+      await addObjectTool.execute({
+        bucket: bucketResult.bucket,
+        key,
+        data: JSON.stringify(note),
+        metadata: {
+          type: "research-note",
+          tags: tags.join(","),
+          title,
+        },
+      });
+
+      return {
+        success: true,
+        message: `Research note "${title}" saved successfully`,
+        key,
+      };
+    },
+  });
+
+  // Create a custom tool for searching research notes
+  const searchResearchNotes = new Tool({
+    name: "search_research_notes",
+    description: "Searches for research notes by tags or keywords",
+    parameters: z.object({
+      query: z.string().optional().describe("Keywords to search for in the note content"),
+      tags: z.array(z.string()).optional().describe("Tags to filter notes by"),
+    }),
+    execute: async ({ query, tags }, { tools }) => {
+      // Find the necessary Recall tools
+      const getBucketTool = tools.find(t => t.name === "recall_get_or_create_bucket");
+      const queryObjectsTool = tools.find(t => t.name === "recall_query_objects");
+      const getObjectTool = tools.find(t => t.name === "recall_get_object");
+
+      if (!getBucketTool || !queryObjectsTool || !getObjectTool) {
+        throw new Error("Required Recall tools not found");
+      }
+
+      // Get the research notes bucket
+      const bucketResult = await getBucketTool.execute({ bucketAlias: "research-notes" });
+
+      // Query for objects based on metadata
+      let queryParams: any = {
+        bucket: bucketResult.bucket,
+        prefix: "note-",
+      };
+
+      if (tags && tags.length > 0) {
+        // If tags are provided, filter by metadata
+        queryParams.metadata = { tags: { $contains: tags[0] } };
+      }
+
+      const objectsResult = await queryObjectsTool.execute(queryParams);
+
+      // If no objects found, return empty results
+      if (!objectsResult.objects || objectsResult.objects.length === 0) {
+        return { notes: [] };
+      }
+
+      // Retrieve each note
+      const notes = await Promise.all(
+        objectsResult.objects.map(async (obj: any) => {
+          const result = await getObjectTool.execute({
+            bucket: bucketResult.bucket,
+            key: obj.key,
+          });
+
+          const note = JSON.parse(result.value);
+
+          // If query is provided, check if it's in the content
+          if (query && !note.content.toLowerCase().includes(query.toLowerCase()) &&
+              !note.title.toLowerCase().includes(query.toLowerCase())) {
+            return null;
+          }
+
+          return {
+            key: obj.key,
+            ...note,
+          };
+        })
+      );
+
+      // Filter out null results and return
+      return {
+        notes: notes.filter(Boolean),
+      };
+    },
+  });
+
+  // Create the research assistant agent
+  const researchAssistant = new Agent({
+    name: "ResearchAssistant",
+    description: "An AI research assistant that can store and retrieve research notes",
+    tools: [...recallTools, saveResearchNote, searchResearchNotes],
+    model: "gpt-4-turbo",
+  });
+
+  // Create task for saving new research
+  const saveResearchTask = new Task({
+    name: "SaveResearch",
+    description: "Save research findings as notes",
+    agent: researchAssistant,
+  });
+
+  // Create task for retrieving research
+  const retrieveResearchTask = new Task({
+    name: "RetrieveResearch",
+    description: "Find and retrieve relevant research notes",
+    agent: researchAssistant,
+  });
+
+  // Create a workflow
+  const researchWorkflow = new Workflow({
+    name: "ResearchManagement",
+    description: "A workflow for managing research notes",
+    tasks: [saveResearchTask, retrieveResearchTask],
+  });
+
+  return {
+    agent: researchAssistant,
+    workflow: researchWorkflow,
+  };
+}
+
+async function main() {
+  const { workflow } = await createResearchAssistant();
+
+  // Example: Save a research note
+  console.log("Saving a research note...");
+  const saveResult = await workflow.tasks[0].execute(
+    "Take notes about recent advancements in quantum computing, especially focusing on quantum error correction. Tag it with 'quantum-computing', 'research', and 'error-correction'."
+  );
+  console.log("Save result:", saveResult);
+
+  // Example: Retrieve research notes
+  console.log("\nRetrieving research notes...");
+  const retrieveResult = await workflow.tasks[1].execute(
+    "Find all my research notes about quantum computing and summarize the key points"
+  );
+  console.log("Retrieve result:", retrieveResult);
+}
+
+main().catch(console.error);
+```
+
+## Integration with Mastra's Feature Set
+
+Mastra offers several key features that work well with Recall's storage capabilities:
+
+### 1. Agent Workflows
+
+Mastra's workflow system allows you to create complex, multi-step agent processes with Recall providing the underlying storage:
+
+```typescript
+import { Agent, Task, Workflow } from "@mastra/agents";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mastra";
+
+async function createDataProcessingWorkflow() {
+  // Initialize Recall toolkit
+  const toolkit = new RecallAgentToolkit({
+    privateKey: process.env.RECALL_PRIVATE_KEY!,
+    configuration: {
+      actions: {
+        bucket: { read: true, write: true },
+      },
+    },
+  });
+
+  // Create agents with different specializations
+  const dataCollector = new Agent({
+    name: "DataCollector",
+    description: "Collects and stores data in Recall",
+    tools: toolkit.getTools(),
+    model: "gpt-4-turbo",
+  });
+
+  const dataAnalyst = new Agent({
+    name: "DataAnalyst",
+    description: "Analyzes data stored in Recall",
+    tools: toolkit.getTools(),
+    model: "gpt-4-turbo",
+  });
+
+  const reportGenerator = new Agent({
+    name: "ReportGenerator",
+    description: "Generates reports based on analyzed data",
+    tools: toolkit.getTools(),
+    model: "gpt-4-turbo",
+  });
+
+  // Create tasks
+  const collectTask = new Task({
+    name: "CollectData",
+    description: "Collect data and store in Recall",
+    agent: dataCollector,
+  });
+
+  const analyzeTask = new Task({
+    name: "AnalyzeData",
+    description: "Analyze collected data",
+    agent: dataAnalyst,
+    dependencies: [collectTask.name],
+  });
+
+  const reportTask = new Task({
+    name: "GenerateReport",
+    description: "Generate a report from analysis",
+    agent: reportGenerator,
+    dependencies: [analyzeTask.name],
+  });
+
+  // Create workflow
+  const workflow = new Workflow({
+    name: "DataProcessingWorkflow",
+    description: "End-to-end data processing workflow",
+    tasks: [collectTask, analyzeTask, reportTask],
+  });
+
+  return workflow;
+}
+```
+
+### 2. Multi-Agent Systems
+
+You can create complex multi-agent systems where each agent has its own specialized tools, but they share a common Recall storage layer:
+
+```typescript
+import { Agent, Task, Workflow } from "@mastra/agents";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mastra";
+
+async function createMultiAgentSystem() {
+  // Initialize Recall toolkit
+  const toolkit = new RecallAgentToolkit({
+    privateKey: process.env.RECALL_PRIVATE_KEY!,
+    configuration: {
+      actions: {
+        bucket: { read: true, write: true },
+      },
+    },
+  });
+
+  // Create bucket for shared knowledge
+  const getBucketTool = toolkit.getTools().find(t => t.name === "recall_get_or_create_bucket");
+  const sharedBucket = await getBucketTool.execute({ bucketAlias: "shared-knowledge" });
+
+  // Create specialized agents
+  const researchAgent = new Agent({
+    name: "Researcher",
+    description: "Researches information and stores findings in Recall",
+    tools: toolkit.getTools(),
+    model: "gpt-4-turbo",
+  });
+
+  const writingAgent = new Agent({
+    name: "Writer",
+    description: "Creates content based on research stored in Recall",
+    tools: toolkit.getTools(),
+    model: "gpt-4-turbo",
+  });
+
+  const editingAgent = new Agent({
+    name: "Editor",
+    description: "Edits and refines content created by the Writer",
+    tools: toolkit.getTools(),
+    model: "gpt-4-turbo",
+  });
+
+  // Create system coordinator
+  const coordinator = new Agent({
+    name: "Coordinator",
+    description: "Coordinates the multi-agent system",
+    tools: toolkit.getTools(),
+    model: "gpt-4-turbo",
+  });
+
+  // Create multi-agent system workflow
+  const workflow = new Workflow({
+    name: "ContentCreation",
+    description: "End-to-end content creation workflow",
+    tasks: [
+      new Task({
+        name: "Research",
+        description: "Research the topic and store findings",
+        agent: researchAgent,
+        context: `Use the Recall bucket '${sharedBucket.bucket}' for storing research findings.`,
+      }),
+      new Task({
+        name: "Draft",
+        description: "Create content draft based on research",
+        agent: writingAgent,
+        dependencies: ["Research"],
+        context: `Use the Recall bucket '${sharedBucket.bucket}' to access research findings.`,
+      }),
+      new Task({
+        name: "Edit",
+        description: "Edit and refine the draft",
+        agent: editingAgent,
+        dependencies: ["Draft"],
+        context: `Use the Recall bucket '${sharedBucket.bucket}' to access the draft.`,
+      }),
+      new Task({
+        name: "Finalize",
+        description: "Finalize the content",
+        agent: coordinator,
+        dependencies: ["Edit"],
+        context: `Use the Recall bucket '${sharedBucket.bucket}' to access all content.`,
+      }),
+    ],
+  });
+
+  return workflow;
+}
+```
+
+## Best Practices
+
+When integrating Recall with Mastra, follow these best practices:
+
+1. **Structured Data Storage**: Always store data in a structured format (like JSON) to make retrieval and processing easier
+
+2. **Consistent Bucket Naming**: Use a consistent naming convention for buckets to organize your agent's memory
+
+3. **Metadata for Querying**: Add comprehensive metadata to objects for more efficient querying
+
+4. **Memory Abstraction**: Create a dedicated memory abstraction layer for your agents
+
+5. **Error Handling**: Implement robust error handling, especially for network operations
+
+6. **Bucket Isolation**: Use separate buckets for different agents or different types of data
+
+7. **Object Lifecycle Management**: Implement policies for data retention and cleanup
+
+## Troubleshooting
+
+| Issue | Possible Cause | Solution |
+|-------|----------------|----------|
+| "Authentication failed" | Invalid private key | Verify your RECALL_PRIVATE_KEY is correct |
+| "Bucket not found" | Incorrect bucket alias or ID | Check the bucket alias and ensure it exists |
+| "Permission denied" | Insufficient permissions | Verify your toolkit configuration has the necessary permissions |
+| "Network error" | Connectivity issues | Check your internet connection and Recall API status |
+| "Parse error" | Invalid JSON data | Ensure your data is properly formatted as JSON |
+
+## Next Steps
+
+- Explore the [Agent Toolkit Core Concepts](/agent-toolkit/core-concepts) to better understand Recall's capabilities
+- Check the [Tools Reference](/agent-toolkit/tools-reference) for detailed documentation on available tools
+- Learn about [Bucket Monitoring](/agent-toolkit/bucket-monitoring) to track your agent's storage
+- See the [MCP Integration](/mcp-integration) guide for a different approach to agent development
+
+<Callout type="info">
+  For more information about Mastra, visit the [Mastra documentation](https://mastra.ai/docs).
+</Callout>

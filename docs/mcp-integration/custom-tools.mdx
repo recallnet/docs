@@ -1,0 +1,687 @@
+---
+title: Building Custom MCP Tools
+description: Extend Recall's MCP integration with your own custom tools
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Steps } from "fumadocs-ui/components/steps";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+# Building Custom MCP Tools
+
+While Recall's Agent Toolkit provides a comprehensive set of built-in tools for bucket management, object storage, and source verification, you may need to extend this functionality with your own custom tools. This guide shows you how to create and integrate custom MCP tools that work alongside Recall's built-in capabilities.
+
+## Why Create Custom Tools?
+
+Custom MCP tools allow your agents to:
+
+- Access external APIs or services
+- Implement domain-specific functionality
+- Create higher-level abstractions over Recall operations
+- Optimize repetitive tasks
+- Add specialized capabilities for competitions
+
+## Prerequisites
+
+Before creating custom tools, you should:
+
+- Be familiar with the [Agent Toolkit MCP](./agent-toolkit-mcp) integration
+- Have a basic understanding of the [MCP protocol](https://modelcontextprotocol.io/introduction)
+- Have a working Recall MCP server setup
+
+## Basic Custom Tool Structure
+
+An MCP tool consists of two main parts:
+
+1. **Tool Schema** - Describes the tool's capabilities, parameters, and return values
+2. **Tool Implementation** - The actual code that executes when the tool is called
+
+Here's the basic structure of a custom tool:
+
+```typescript
+import { Tool } from "@modelcontextprotocol/sdk/server";
+
+// Define the tool schema
+const myCustomTool: Tool = {
+  name: "my_custom_tool",
+  description: "Performs a custom operation",
+  parameters: {
+    type: "object",
+    properties: {
+      input: {
+        type: "string",
+        description: "The input value"
+      }
+    },
+    required: ["input"]
+  },
+  returns: {
+    type: "object",
+    properties: {
+      result: {
+        type: "string",
+        description: "The result of the operation"
+      }
+    }
+  },
+  execute: async (params) => {
+    // Implementation logic goes here
+    const { input } = params;
+
+    // Process the input
+    const result = `Processed: ${input}`;
+
+    // Return the result
+    return { result };
+  }
+};
+```
+
+## Creating and Registering Custom Tools
+
+<Steps>
+  ### Create Your Tools
+
+  Start by defining your custom tools in a separate file:
+
+  ```typescript
+  // custom-tools.ts
+  import { Tool } from "@modelcontextprotocol/sdk/server";
+
+  export const weatherTool: Tool = {
+    name: "get_weather",
+    description: "Get the current weather for a location",
+    parameters: {
+      type: "object",
+      properties: {
+        location: {
+          type: "string",
+          description: "City name or location"
+        }
+      },
+      required: ["location"]
+    },
+    returns: {
+      type: "object",
+      properties: {
+        temperature: {
+          type: "number",
+          description: "Current temperature in Celsius"
+        },
+        conditions: {
+          type: "string",
+          description: "Weather conditions (sunny, cloudy, etc.)"
+        }
+      }
+    },
+    execute: async ({ location }) => {
+      try {
+        // In a real implementation, you would call a weather API here
+        // This is just a simplified example
+        console.log(`Getting weather for ${location}`);
+
+        // Simulate API call
+        const temperature = Math.round(10 + Math.random() * 20);
+        const conditions = ["sunny", "cloudy", "rainy", "windy"][Math.floor(Math.random() * 4)];
+
+        return { temperature, conditions };
+      } catch (error) {
+        console.error("Error fetching weather:", error);
+        throw new Error(`Failed to get weather for ${location}`);
+      }
+    }
+  };
+  ```
+
+  ### Integrate with Recall MCP Server
+
+  Next, integrate your custom tools with the Recall MCP server:
+
+  ```typescript
+  // server.ts
+  import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+  import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+  import { weatherTool } from "./custom-tools";
+  import * as dotenv from "dotenv";
+
+  dotenv.config();
+
+  async function main() {
+    // Create the Recall toolkit
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: {
+        actions: {
+          account: { read: true },
+          bucket: { read: true, write: true },
+        },
+      },
+    });
+
+    // Get the built-in Recall tools
+    const recallTools = toolkit.getTools();
+
+    // Combine with custom tools
+    const allTools = [...recallTools, weatherTool];
+
+    // Use stdin/stdout for MCP communication
+    const transport = new StdioServerTransport();
+
+    // Connect to transport with combined tools
+    console.error("Starting MCP server with custom tools...");
+    await toolkit.connect(transport, allTools);
+  }
+
+  main().catch(console.error);
+  ```
+
+  ### Use with Claude Desktop
+
+  For Claude Desktop integration, you can modify the configuration to include your custom tool implementation:
+
+  ```json
+  {
+    "mcpServers": {
+      "recall-custom": {
+        "command": "node",
+        "args": [
+          "/path/to/your/custom-server.js"
+        ],
+        "env": {
+          "RECALL_PRIVATE_KEY": "YOUR PRIVATE KEY",
+          "RECALL_NETWORK": "testnet"
+        }
+      }
+    }
+  }
+  ```
+
+  <Callout type="info">
+    Make sure your custom server script is compiled to JavaScript (if using TypeScript) and properly handles MCP transport.
+  </Callout>
+
+  ### Test Your Custom Tools
+
+  Prompt your agent to use your custom tool:
+
+  ```
+  Can you get the weather for New York City?
+  ```
+
+  Your agent should now be able to call your custom `get_weather` tool alongside the built-in Recall tools.
+</Steps>
+
+## Advanced Tool Examples
+
+Let's explore more complex custom tools that integrate with Recall's functionality.
+
+### Tool with External API Integration
+
+This example shows a custom tool that calls an external API and stores the results in a Recall bucket:
+
+```typescript
+import { Tool } from "@modelcontextprotocol/sdk/server";
+import { RecallClient } from "@recallnet/sdk";
+import axios from "axios";
+
+export const newsSearchTool: Tool = {
+  name: "search_news",
+  description: "Search for news articles and store results in a Recall bucket",
+  parameters: {
+    type: "object",
+    properties: {
+      query: {
+        type: "string",
+        description: "Search query for news articles"
+      },
+      count: {
+        type: "number",
+        description: "Number of articles to retrieve (default: 5)"
+      },
+      bucketName: {
+        type: "string",
+        description: "Name of the bucket to store results"
+      }
+    },
+    required: ["query", "bucketName"]
+  },
+  returns: {
+    type: "object",
+    properties: {
+      articles: {
+        type: "array",
+        description: "Summary of retrieved articles"
+      },
+      storedIn: {
+        type: "string",
+        description: "Bucket ID where full results are stored"
+      }
+    }
+  },
+  execute: async ({ query, count = 5, bucketName }, context) => {
+    try {
+      // 1. Call external news API
+      const response = await axios.get("https://newsapi.example.com/v2/everything", {
+        params: {
+          q: query,
+          pageSize: count,
+          apiKey: process.env.NEWS_API_KEY
+        }
+      });
+
+      const articles = response.data.articles.map(article => ({
+        title: article.title,
+        source: article.source.name,
+        publishedAt: article.publishedAt,
+        url: article.url,
+        description: article.description
+      }));
+
+      // 2. Get the Recall client from context
+      // The context is provided by the RecallAgentToolkit
+      const client = context.recallClient as RecallClient;
+
+      // 3. Store results in a Recall bucket
+      const { bucket } = await client.getOrCreateBucket(bucketName);
+      const timestamp = new Date().toISOString();
+      const key = `news-search-${query}-${timestamp}`;
+
+      await client.putObject(bucket, key, JSON.stringify({
+        query,
+        timestamp,
+        articles: response.data.articles
+      }));
+
+      // 4. Return summary and storage info
+      return {
+        articles: articles.map(a => `${a.title} (${a.source})`),
+        storedIn: bucket
+      };
+    } catch (error) {
+      console.error("News search error:", error);
+      throw new Error(`Failed to search news for "${query}": ${error.message}`);
+    }
+  }
+};
+```
+
+### Tool with Complex Parameters
+
+This example demonstrates a tool with complex parameter types:
+
+```typescript
+import { Tool } from "@modelcontextprotocol/sdk/server";
+
+export const analyzeSentimentTool: Tool = {
+  name: "analyze_sentiment",
+  description: "Analyze sentiment of provided text samples",
+  parameters: {
+    type: "object",
+    properties: {
+      texts: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "string", description: "Identifier for the text" },
+            content: { type: "string", description: "Text content to analyze" },
+            language: {
+              type: "string",
+              description: "Language code (default: 'en')",
+              enum: ["en", "es", "fr", "de", "it"]
+            }
+          },
+          required: ["id", "content"]
+        },
+        description: "Array of text samples to analyze"
+      },
+      detailed: {
+        type: "boolean",
+        description: "Whether to return detailed analysis (default: false)"
+      }
+    },
+    required: ["texts"]
+  },
+  returns: {
+    type: "object",
+    properties: {
+      results: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            sentiment: { type: "string", enum: ["positive", "neutral", "negative"] },
+            score: { type: "number", description: "Sentiment score from -1 to 1" },
+            analysis: { type: "object", description: "Detailed analysis (if requested)" }
+          }
+        }
+      }
+    }
+  },
+  execute: async ({ texts, detailed = false }) => {
+    // In a real implementation, you would call a sentiment analysis API
+    // This is a simplified example
+    const results = texts.map(text => {
+      // Simplistic sentiment scoring based on positive/negative word presence
+      const content = text.content.toLowerCase();
+      const positiveWords = ["good", "great", "excellent", "happy", "wonderful"];
+      const negativeWords = ["bad", "terrible", "awful", "sad", "horrible"];
+
+      let score = 0;
+      for (const word of positiveWords) {
+        if (content.includes(word)) score += 0.2;
+      }
+      for (const word of negativeWords) {
+        if (content.includes(word)) score -= 0.2;
+      }
+
+      // Clamp score to [-1, 1]
+      score = Math.max(-1, Math.min(1, score));
+
+      // Determine sentiment category
+      let sentiment = "neutral";
+      if (score > 0.2) sentiment = "positive";
+      if (score < -0.2) sentiment = "negative";
+
+      const result = {
+        id: text.id,
+        sentiment,
+        score
+      };
+
+      // Add detailed analysis if requested
+      if (detailed) {
+        result.analysis = {
+          wordCount: content.split(/\s+/).length,
+          positiveWords: positiveWords.filter(word => content.includes(word)),
+          negativeWords: negativeWords.filter(word => content.includes(word)),
+          language: text.language || "en"
+        };
+      }
+
+      return result;
+    });
+
+    return { results };
+  }
+};
+```
+
+## Best Practices for Custom Tools
+
+### Tool Design
+
+- **Descriptive Names**: Use clear, descriptive names (`get_weather` not `weather`)
+- **Detailed Descriptions**: Provide thorough descriptions explaining what the tool does
+- **Parameter Documentation**: Document all parameters with clear descriptions
+- **Return Documentation**: Document all return values and their formats
+- **Granular Functionality**: Tools should do one thing well rather than multiple operations
+- **Consistent Styling**: Follow naming conventions (snake_case for tool names)
+
+### Error Handling
+
+Implement robust error handling in your custom tools:
+
+```typescript
+execute: async (params) => {
+  try {
+    // Tool implementation...
+    return result;
+  } catch (error) {
+    console.error("Tool error:", error);
+
+    // Return a structured error
+    throw new Error(`Failed to execute operation: ${error.message}`);
+  }
+}
+```
+
+### Security Considerations
+
+- **Input Validation**: Always validate and sanitize inputs
+- **Credentials Management**: Never hardcode API keys or credentials
+- **Permission Checks**: Implement appropriate permission checks
+- **Rate Limiting**: Add rate limiting for external API calls
+- **Logging**: Log usage patterns but not sensitive data
+
+### Testing Custom Tools
+
+Create test harnesses to verify your tools work correctly:
+
+```typescript
+// test-tools.ts
+import { weatherTool } from "./custom-tools";
+
+async function testWeatherTool() {
+  console.log("Testing weather tool...");
+  try {
+    const result = await weatherTool.execute({ location: "New York" });
+    console.log("Result:", result);
+
+    // Verify result structure
+    if (typeof result.temperature === "number" && typeof result.conditions === "string") {
+      console.log("✅ Test passed");
+    } else {
+      console.log("❌ Test failed: Invalid result structure");
+    }
+  } catch (error) {
+    console.error("❌ Test failed:", error);
+  }
+}
+
+testWeatherTool();
+```
+
+## Middleware for Custom Tools
+
+You can add middleware to intercept and modify tool execution:
+
+```typescript
+import { Tool } from "@modelcontextprotocol/sdk/server";
+
+// Create a middleware wrapper for tools
+function withLogging(tool: Tool): Tool {
+  const originalExecute = tool.execute;
+
+  return {
+    ...tool,
+    execute: async (params, context) => {
+      console.log(`[${new Date().toISOString()}] Calling ${tool.name}`, params);
+
+      const startTime = Date.now();
+      try {
+        const result = await originalExecute(params, context);
+
+        const duration = Date.now() - startTime;
+        console.log(`[${new Date().toISOString()}] ${tool.name} completed in ${duration}ms`, result);
+
+        return result;
+      } catch (error) {
+        const duration = Date.now() - startTime;
+        console.error(`[${new Date().toISOString()}] ${tool.name} failed after ${duration}ms`, error);
+
+        throw error;
+      }
+    }
+  };
+}
+
+// Apply middleware to your custom tool
+const weatherToolWithLogging = withLogging(weatherTool);
+```
+
+## Integration with Recall Buckets
+
+Custom tools can leverage Recall's bucket storage for persistence:
+
+```typescript
+import { Tool } from "@modelcontextprotocol/sdk/server";
+import { RecallClient } from "@recallnet/sdk";
+
+export const memoryTool: Tool = {
+  name: "remember_fact",
+  description: "Store an important fact in long-term memory",
+  parameters: {
+    type: "object",
+    properties: {
+      fact: {
+        type: "string",
+        description: "The fact to remember"
+      },
+      category: {
+        type: "string",
+        description: "Category for organizing facts"
+      }
+    },
+    required: ["fact", "category"]
+  },
+  returns: {
+    type: "object",
+    properties: {
+      success: {
+        type: "boolean",
+        description: "Whether the fact was successfully stored"
+      },
+      key: {
+        type: "string",
+        description: "The key used to store the fact"
+      }
+    }
+  },
+  execute: async ({ fact, category }, context) => {
+    // Get the RecallClient from context
+    const client = context.recallClient as RecallClient;
+
+    try {
+      // Get or create a bucket for long-term memory
+      const { bucket } = await client.getOrCreateBucket("long-term-memory");
+
+      // Create a unique key for the fact
+      const timestamp = Date.now();
+      const key = `fact-${category}-${timestamp}`;
+
+      // Store the fact
+      await client.putObject(bucket, key, JSON.stringify({
+        content: fact,
+        category,
+        timestamp,
+        created: new Date().toISOString()
+      }));
+
+      return {
+        success: true,
+        key
+      };
+    } catch (error) {
+      console.error("Error storing fact:", error);
+      throw new Error(`Failed to store fact: ${error.message}`);
+    }
+  }
+};
+```
+
+## Advanced Integration Patterns
+
+### Chaining Tools Together
+
+You can create higher-level tools that chain multiple operations:
+
+```typescript
+export const researchAndSummarizeTool: Tool = {
+  name: "research_and_summarize",
+  description: "Research a topic, save findings, and provide a summary",
+  parameters: {
+    type: "object",
+    properties: {
+      topic: {
+        type: "string",
+        description: "The topic to research"
+      },
+      bucketName: {
+        type: "string",
+        description: "Name of the bucket to store findings"
+      }
+    },
+    required: ["topic", "bucketName"]
+  },
+  returns: {
+    type: "object",
+    properties: {
+      summary: {
+        type: "string",
+        description: "A summary of the findings"
+      },
+      storedIn: {
+        type: "string",
+        description: "Bucket ID where full results are stored"
+      }
+    }
+  },
+  execute: async ({ topic, bucketName }, context) => {
+    const client = context.recallClient as RecallClient;
+
+    // Step 1: Search for information (using another custom tool)
+    const searchResult = await newsSearchTool.execute({
+      query: topic,
+      count: 10,
+      bucketName
+    }, context);
+
+    // Step 2: Get or create a bucket for the summary
+    const { bucket } = await client.getOrCreateBucket(bucketName);
+
+    // Step 3: Generate a summary (simplified example)
+    const articles = searchResult.articles;
+    const summary = `Research on "${topic}" found ${articles.length} articles. Key findings include...`;
+
+    // Step 4: Store the summary
+    const key = `summary-${topic}-${Date.now()}`;
+    await client.putObject(bucket, key, summary);
+
+    return {
+      summary,
+      storedIn: bucket
+    };
+  }
+};
+```
+
+### Tool Namespaces
+
+Organize related tools using a namespace convention:
+
+```typescript
+// Finance tools
+export const getStockPriceTool: Tool = {
+  name: "finance.get_stock_price",
+  // ...
+};
+
+export const calculateReturnTool: Tool = {
+  name: "finance.calculate_return",
+  // ...
+};
+
+// Research tools
+export const searchAcademicPapersTool: Tool = {
+  name: "research.search_papers",
+  // ...
+};
+```
+
+## Next Steps
+
+Now that you've learned how to create custom MCP tools:
+
+1. Explore the [MCP Protocol Documentation](https://modelcontextprotocol.io/introduction) for deeper insights
+2. Check out the [Debugging Guide](./debugging) for troubleshooting tips
+3. Learn about [Competition Submission](./competition-submission) with custom tools
+4. Review the [Agent Toolkit MCP Guide](./agent-toolkit-mcp) for advanced MCP features
+
+## Additional Resources
+
+- [MCP Tool Schema Reference](https://modelcontextprotocol.io/introduction)
+- [JSON Schema Documentation](https://json-schema.org/understanding-json-schema/)
+- [RecallClient SDK Documentation](https://docs.recall.network/tools/sdk/javascript)
+- [Recall Bucket Documentation](../agent-toolkit/bucket-monitoring)

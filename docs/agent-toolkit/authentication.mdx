@@ -1,0 +1,543 @@
+---
+title: Agent Toolkit Authentication
+description: Learn how to properly authenticate your Recall Agent Toolkit applications
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Steps } from "fumadocs-ui/components/steps";
+
+# Authentication Guide
+
+This guide explains authentication methods for the Recall Agent Toolkit, best practices for securing your credentials, and advanced techniques for managing authentication in different environments.
+
+## Overview
+
+The Recall Agent Toolkit authenticates with the Recall network using a private key. This private key is used to sign transactions and authenticate API requests. Properly securing this key is essential for the security of your application.
+
+## Authentication Methods
+
+### Private Key Authentication
+
+The most common way to authenticate is by providing your private key directly when initializing the toolkit:
+
+```typescript
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+
+const toolkit = new RecallAgentToolkit({
+  privateKey: "YOUR_PRIVATE_KEY", // Not recommended in production code
+  configuration: {
+    // Configuration options
+  }
+});
+```
+
+<Callout type="warning">
+  Never hardcode your private key directly in your source code, especially in public repositories. Use environment variables or secure credential management systems.
+</Callout>
+
+### Environment Variables
+
+The recommended approach for most applications is to use environment variables:
+
+```typescript
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    // Configuration options
+  }
+});
+```
+
+This approach keeps your private key out of your source code and allows for different keys in different environments.
+
+## Obtaining a Private Key
+
+To get started with the Recall Agent Toolkit, you'll need a private key:
+
+<Steps>
+  ### Visit the Recall Portal
+
+  Go to [portal.recall.ai](https://portal.recall.ai) and sign in or create an account.
+
+  ### Create a New Private Key
+
+  Navigate to the "API Keys" section and click "Create New Key".
+
+  ### Set Key Permissions
+
+  Choose the appropriate permissions for your use case. For most agent applications, you'll need read and write permissions for buckets.
+
+  ### Copy and Secure Your Key
+
+  Copy the generated private key and store it securely. This is the only time you will see the full key value.
+
+  ### Set Up Environment Variables
+
+  Add the key to your environment variables:
+
+  ```bash
+  # For development (.env file)
+  RECALL_PRIVATE_KEY=your_private_key
+
+  # For production (depends on your hosting platform)
+  # For example, on Vercel:
+  # vercel env add RECALL_PRIVATE_KEY
+  ```
+</Steps>
+
+## Security Best Practices
+
+### Environment-Specific Keys
+
+Use different private keys for different environments:
+
+```typescript
+// Load different environment variables based on the environment
+const privateKey = process.env.NODE_ENV === 'production'
+  ? process.env.RECALL_PRODUCTION_KEY
+  : process.env.RECALL_DEVELOPMENT_KEY;
+
+const toolkit = new RecallAgentToolkit({
+  privateKey,
+  configuration: {
+    // Configuration options
+  }
+});
+```
+
+### Restricted Permissions
+
+Limit the permissions of your key to only what's necessary:
+
+```typescript
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    actions: {
+      // Only grant the permissions your application needs
+      account: { read: true, write: false },
+      bucket: { read: true, write: true },
+      source: { read: true, write: false },
+    }
+  }
+});
+```
+
+### Key Rotation
+
+Regularly rotate your private keys, especially in production environments:
+
+```typescript
+// Example scheduled task to check key age and notify when rotation is needed
+function checkKeyRotation() {
+  const keyCreationDate = new Date(process.env.KEY_CREATION_DATE || Date.now());
+  const daysSinceCreation = (Date.now() - keyCreationDate.getTime()) / (1000 * 60 * 60 * 24);
+
+  if (daysSinceCreation > 90) {
+    // Log or send notification that key rotation is needed
+    console.warn('Private key rotation recommended: Key is older than 90 days');
+  }
+}
+```
+
+### Secure Storage
+
+Ensure your environment variables are securely stored:
+
+<Tabs items={["Node.js", "Next.js", "Docker"]}>
+  <Tab value="Node.js">
+    ```javascript
+    // Use dotenv to load environment variables from .env file (dev only)
+    if (process.env.NODE_ENV !== 'production') {
+      require('dotenv').config();
+    }
+
+    // In production, use environment variables set on the server
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      // Configuration options
+    });
+    ```
+  </Tab>
+  <Tab value="Next.js">
+    ```javascript
+    // next.config.js
+    module.exports = {
+      serverRuntimeConfig: {
+        // Will only be available on the server side
+        recallPrivateKey: process.env.RECALL_PRIVATE_KEY,
+      },
+      publicRuntimeConfig: {
+        // Available on both server and client
+        recallEnabled: !!process.env.RECALL_PRIVATE_KEY,
+      },
+    };
+
+    // Usage in API route (server-side)
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+    import getConfig from 'next/config';
+
+    export default async function handler(req, res) {
+      const { serverRuntimeConfig } = getConfig();
+
+      const toolkit = new RecallAgentToolkit({
+        privateKey: serverRuntimeConfig.recallPrivateKey,
+        // Configuration options
+      });
+
+      // Use toolkit
+    }
+    ```
+  </Tab>
+  <Tab value="Docker">
+    ```bash
+    # Dockerfile
+    FROM node:18
+
+    WORKDIR /app
+
+    COPY package*.json ./
+    RUN npm install
+
+    COPY . .
+
+    # Don't include the key in the image
+    # pass it as an environment variable at runtime
+
+    CMD ["node", "server.js"]
+
+    # Run with:
+    # docker run -e RECALL_PRIVATE_KEY=your_key your_image
+    ```
+  </Tab>
+</Tabs>
+
+### Never Include Keys in Client-Side Code
+
+Keep all authentication on the server side:
+
+```typescript
+// ❌ WRONG: Exposing key in frontend code
+// client-side.js
+const toolkit = new RecallAgentToolkit({
+  privateKey: "exposed_key", // This is visible to users!
+});
+
+// ✅ RIGHT: Keep authentication on the server
+// server.js (Node.js, API route, etc.)
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+});
+
+// client-side.js
+// Make API calls to your server, which then uses the toolkit
+async function storeData(data) {
+  const response = await fetch('/api/store', {
+    method: 'POST',
+    body: JSON.stringify({ data }),
+  });
+  return response.json();
+}
+```
+
+## Advanced Authentication Patterns
+
+### Credential Provider Pattern
+
+For more complex applications, you can implement a credential provider:
+
+```typescript
+// credentials.ts
+interface CredentialProvider {
+  getPrivateKey(): Promise<string>;
+}
+
+class EnvironmentCredentialProvider implements CredentialProvider {
+  async getPrivateKey(): Promise<string> {
+    const key = process.env.RECALL_PRIVATE_KEY;
+    if (!key) {
+      throw new Error('Private key not found in environment variables');
+    }
+    return key;
+  }
+}
+
+class VaultCredentialProvider implements CredentialProvider {
+  private vaultClient: any; // Your vault client
+
+  constructor(vaultClient: any) {
+    this.vaultClient = vaultClient;
+  }
+
+  async getPrivateKey(): Promise<string> {
+    try {
+      const secret = await this.vaultClient.getSecret('recall-private-key');
+      return secret.value;
+    } catch (error) {
+      throw new Error(`Failed to retrieve key from vault: ${error.message}`);
+    }
+  }
+}
+
+// Usage
+async function createToolkit(provider: CredentialProvider) {
+  const privateKey = await provider.getPrivateKey();
+
+  return new RecallAgentToolkit({
+    privateKey,
+    configuration: {
+      // Configuration options
+    }
+  });
+}
+
+// Example with environment variables
+const envProvider = new EnvironmentCredentialProvider();
+const toolkit = await createToolkit(envProvider);
+```
+
+### Secret Rotation
+
+For automated key rotation:
+
+```typescript
+class RotatingCredentialProvider implements CredentialProvider {
+  private secretManager: any; // Your secret manager client
+  private keyCache: { value: string; expiresAt: number } | null = null;
+
+  constructor(secretManager: any) {
+    this.secretManager = secretManager;
+  }
+
+  async getPrivateKey(): Promise<string> {
+    const now = Date.now();
+
+    // Use cached key if still valid
+    if (this.keyCache && now < this.keyCache.expiresAt) {
+      return this.keyCache.value;
+    }
+
+    // Fetch new key
+    try {
+      const secret = await this.secretManager.getSecret('recall-private-key');
+
+      // Cache key with expiration
+      this.keyCache = {
+        value: secret.value,
+        expiresAt: now + (1000 * 60 * 60), // Cache for 1 hour
+      };
+
+      return secret.value;
+    } catch (error) {
+      throw new Error(`Failed to retrieve key: ${error.message}`);
+    }
+  }
+}
+```
+
+### Middleware for Authentication Monitoring
+
+Use middleware to audit authentication and key usage:
+
+```typescript
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    // Configuration options
+  },
+  middleware: [{
+    beforeToolCall: (tool, input) => {
+      // Log tool usage for auditing
+      console.log(`[AUTH AUDIT] Tool ${tool.name} called with key ${process.env.RECALL_PRIVATE_KEY?.slice(0, 8)}...`);
+      return input;
+    },
+    onToolError: (tool, input, error) => {
+      // Detect authentication errors
+      if (error.message.includes('unauthorized') || error.message.includes('authentication')) {
+        console.error(`[AUTH ERROR] Authentication failed for tool ${tool.name}`);
+        // Could trigger alerts or attempt key rotation
+      }
+      throw error;
+    }
+  }]
+});
+```
+
+## Authentication for Different Frameworks
+
+<Tabs items={["MCP", "LangChain", "OpenAI", "AI SDK"]}>
+  <Tab value="MCP">
+    ```typescript
+    import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+
+    // Load private key securely
+    const privateKey = process.env.RECALL_PRIVATE_KEY;
+
+    if (!privateKey) {
+      console.error('RECALL_PRIVATE_KEY environment variable not set');
+      process.exit(1);
+    }
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey,
+      configuration: {
+        actions: {
+          bucket: { read: true, write: true },
+        },
+      },
+    });
+
+    // Connect to MCP transport
+    const transport = new StdioServerTransport();
+    toolkit.connect(transport);
+    ```
+  </Tab>
+  <Tab value="LangChain">
+    ```typescript
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
+    import { loadEnv } from "./utils/environment"; // Your env loading utility
+
+    async function initializeToolkit() {
+      // Load environment variables
+      const env = await loadEnv();
+
+      if (!env.RECALL_PRIVATE_KEY) {
+        throw new Error('RECALL_PRIVATE_KEY environment variable not set');
+      }
+
+      return new RecallAgentToolkit({
+        privateKey: env.RECALL_PRIVATE_KEY,
+        configuration: {
+          actions: {
+            bucket: { read: true, write: true },
+          },
+        },
+      });
+    }
+
+    // Usage
+    const toolkit = await initializeToolkit();
+    const tools = toolkit.getTools();
+
+    // Use tools with LangChain
+    ```
+  </Tab>
+  <Tab value="OpenAI">
+    ```typescript
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
+    import OpenAI from "openai";
+
+    function initializeToolkit() {
+      if (!process.env.RECALL_PRIVATE_KEY) {
+        throw new Error('RECALL_PRIVATE_KEY environment variable not set');
+      }
+
+      if (!process.env.OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY environment variable not set');
+      }
+
+      const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+
+      return new RecallAgentToolkit({
+        privateKey: process.env.RECALL_PRIVATE_KEY,
+        configuration: {
+          actions: {
+            bucket: { read: true, write: true },
+          },
+        },
+        client: openai,
+      });
+    }
+
+    // Usage
+    const toolkit = initializeToolkit();
+    const functions = toolkit.getFunctions();
+
+    // Use functions with OpenAI
+    ```
+  </Tab>
+  <Tab value="AI SDK">
+    ```typescript
+    // server-side component or API route
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
+    import { OpenAI } from '@ai-sdk/openai';
+
+    // Initialize environment on server side only
+    function initializeToolkit() {
+      const recallKey = process.env.RECALL_PRIVATE_KEY;
+      const openaiKey = process.env.OPENAI_API_KEY;
+
+      if (!recallKey || !openaiKey) {
+        throw new Error('Required environment variables not set');
+      }
+
+      const openai = new OpenAI({ apiKey: openaiKey });
+
+      return new RecallAgentToolkit({
+        privateKey: recallKey,
+        configuration: {
+          actions: {
+            bucket: { read: true, write: true },
+          },
+        },
+      });
+    }
+
+    // In API route handler
+    export async function POST(req) {
+      const toolkit = initializeToolkit();
+      const tools = toolkit.getTools();
+
+      // Use tools with AI SDK
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Troubleshooting Authentication Issues
+
+| Issue | Possible Causes | Solutions |
+|-------|----------------|-----------|
+| "Authentication failed" | Invalid private key | Double-check the key format and value |
+| "Private key not found" | Environment variable not set | Ensure the environment variable is properly set in your environment |
+| "Unauthorized" | Insufficient permissions | Check the permissions associated with your key |
+| "Network error" | Connectivity issues | Verify your network connection and Recall API status |
+| "Invalid signature" | Key format issues | Ensure the key is properly formatted without extra characters |
+
+### Authentication Error Handling
+
+```typescript
+try {
+  const toolkit = new RecallAgentToolkit({
+    privateKey: process.env.RECALL_PRIVATE_KEY,
+    // Configuration
+  });
+
+  // Use toolkit
+} catch (error) {
+  if (error.message.includes('authentication') || error.message.includes('unauthorized')) {
+    console.error('Authentication error:', error.message);
+    // Handle authentication error (e.g., notify admin, fallback to alternative)
+  } else {
+    console.error('Unexpected error:', error);
+    // Handle other errors
+  }
+}
+```
+
+## Next Steps
+
+- Learn about [Bucket Monitoring](/agent-toolkit/bucket-monitoring) to track your agent's storage
+- Explore the [Tools Reference](/agent-toolkit/tools-reference) for detailed documentation on available tools
+- Check out [MCP Integration](/mcp-integration) for using the toolkit with MCP-compatible models
+- See [Framework Integration Guides](/framework-guides) for integrating with different AI frameworks
+
+<Callout>
+  If you have questions or need help with authentication, reach out to the Recall team on [Discord](https://discord.gg/recall) or [GitHub](https://github.com/recallai).
+</Callout>

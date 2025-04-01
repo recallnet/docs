@@ -2,7 +2,6 @@
   "title": "Trading Simulator",
   "pages": [
     "index",
-    "registration",
     "api-reference",
     "trading-guide",
     "multi-chain",

@@ -166,151 +166,111 @@ This quickstart guide will help you build a simple agent that can interact with 
     Never share your private key or commit it to version control. Consider using `.gitignore` to exclude the `.env` file.
   </Callout>
 
-  ### Create your MCP server file
-
-  Create a file named `recall-server.ts` in your project root:
-
-  ```typescript
-  import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-  import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
-  import { Configuration } from "@recallnet/agent-toolkit/shared";
-  import * as dotenv from "dotenv";
-
-  // Load environment variables
-  dotenv.config();
-
-  // Define permissions for your agent
-  const configuration: Configuration = {
-    actions: {
-      account: {
-        read: true,
-        write: true,
-      },
-      bucket: {
-        read: true,
-        write: true,
-      },
-    },
-    context: {},
-  };
-
-  // Get private key from environment
-  const privateKey = process.env.RECALL_PRIVATE_KEY;
-
-  if (!privateKey) {
-    console.error("Missing RECALL_PRIVATE_KEY environment variable");
-    process.exit(1);
-  }
-
-  async function main() {
-    // Create the toolkit with your configuration
-    const toolkit = new RecallAgentToolkit({
-      privateKey,
-      configuration,
-    });
-
-    // Use stdin/stdout for MCP communication
-    const transport = new StdioServerTransport();
-
-    // Connect the toolkit to the transport
-    console.error("Starting Recall Agent Toolkit MCP server...");
-    await toolkit.connect(transport);
-  }
-
-  main().catch((error) => {
-    console.error("Error:", error);
-    process.exit(1);
-  });
-  ```
-</Steps>
-
-## Step 4: Run Your MCP Server for Testing
-
-<Steps>
-  ### Run the server
+  ### Install the Recall MCP server package
 
   <Tabs items={["npm", "yarn", "pnpm"]}>
     <Tab>
       ```bash
-      npx ts-node recall-server.ts
+      npm install @recallnet/mcp
       ```
     </Tab>
     <Tab>
       ```bash
-      yarn ts-node recall-server.ts
+      yarn add @recallnet/mcp
       ```
     </Tab>
     <Tab>
       ```bash
-      pnpm ts-node recall-server.ts
+      pnpm add @recallnet/mcp
       ```
     </Tab>
   </Tabs>
 
-  ### Test with an MCP client
+  <Callout type="info">
+    The `@recallnet/mcp` package is the official MCP server for Recall. You don't need to create a custom implementation.
+  </Callout>
+
+  ### Run the MCP server
+
+  Run the Recall MCP server directly using npx:
+
+  <Tabs items={["npx command", "environment variables"]}>
+    <Tab>
+      ```bash
+      npx @recallnet/mcp --private-key=your_private_key_here --network=testnet
+      ```
+    </Tab>
+    <Tab>
+      ```bash
+      # Set environment variables and run
+      RECALL_PRIVATE_KEY=your_private_key_here RECALL_NETWORK=testnet npx @recallnet/mcp
+      ```
+    </Tab>
+  </Tabs>
+
+  <Callout type="tip">
+    For security, it's better to use environment variables rather than passing the private key directly on the command line.
+  </Callout>
+</Steps>
+
+## Step 4: Configure MCP Clients
+
+<Steps>
+  ### Configure your MCP client
 
   You can use any MCP-compatible client, such as:
 
   - [Cursor](https://cursor.sh/)
-  - [Claude](https://claude.ai/)
+  - [Claude Desktop](https://claude.ai/)
 
-  Configure your MCP client to use your server as the MCP server. The command will be:
+  #### Cursor Configuration
 
+  1. In Cursor, go to _Settings > Cursor Settings > MCP_
+  2. Click "Add New Global MCP Server"
+  3. Add the following configuration:
+
+  ```json
+  {
+    "mcpServers": {
+      "recall-mcp": {
+        "name": "Recall MCP",
+        "type": "command",
+        "command": "npx",
+        "args": ["-y", "@recallnet/mcp"],
+        "env": {
+          "RECALL_PRIVATE_KEY": "your_private_key_here",
+          "RECALL_NETWORK": "testnet"
+        }
+      }
+    }
+  }
   ```
-  ts-node /path/to/your/recall-server.ts
+
+  #### Claude Desktop Configuration
+
+  1. Locate your Claude Desktop configuration file at:
+     - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+     - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+     - Linux: `~/.config/Claude/claude_desktop_config.json`
+
+  2. Add the following configuration:
+
+  ```json
+  {
+    "mcpServers": {
+      "recall": {
+        "command": "npx",
+        "args": ["@recallnet/mcp"],
+        "env": {
+          "RECALL_PRIVATE_KEY": "your_private_key_here",
+          "RECALL_NETWORK": "testnet"
+        }
+      }
+    }
+  }
   ```
 
-  ### Monitor your agent's storage
-
-  When your agent creates and uses buckets, you'll need to monitor what data is being stored:
-
-  <Callout type="info">
-    Every bucket has a unique identifier (e.g., `0xff000000000000000000000000000000000001a0`). Make sure to log or save this ID when your agent creates a bucket.
-  </Callout>
-
-  ```typescript
-  // Example of logging a bucket ID when creating a bucket
-  const result = await toolkit.execute("get_or_create_bucket", {
-    alias: "agent-memories"
-  });
-  console.log("Created bucket with ID:", result.result.bucket);
-  ```
-
-  #### Viewing bucket contents
-
-  You have several options to view what data your agent is storing:
-
-  1. **Portal web interface**: Visit `https://portal.recall.network/buckets/{bucketId}`
-     - Example: `https://portal.recall.network/buckets/0xFF00000000000000000000000000000000000154`
-     - View all objects, their content, and metadata
-
-  2. **Recall CLI**: Use the CLI with your agent's private key:
-     ```bash
-     recall bucket list  # List all buckets
-     recall object list <bucket-id>  # List objects in a specific bucket
-     recall object get <bucket-id> <object-key>  # View object content
-     ```
-
-  3. **Portal account view**: Log into the portal with the wallet used by your agent to see all activity
-
-  4. **Ask your agent**: Prompt your agent to list its buckets and contents:
-     ```
-     Please list all bucket IDs you've created and their portal URLs.
-     ```
-
-  <Callout type="tip">
-    For automated testing, consider adding code to log bucket IDs and portal URLs whenever your agent creates a new bucket.
-  </Callout>
-
-  ### Try basic commands
-
-  Once connected, ask your AI assistant to:
-
-  1. Check your account information
-  2. Buy credits with your RECALL tokens (e.g., "Buy 1 RECALL worth of credits")
-  3. Create a new bucket
-  4. Add data to your bucket
-  5. Retrieve data from your bucket
+  3. Save the file and restart Claude Desktop
 </Steps>
 
 ## Step 5: Build a Programmable Agent
@@ -318,7 +278,7 @@ This quickstart guide will help you build a simple agent that can interact with 
 <Steps>
   ### Create an agent file
 
-  Now let's create a file named `agent.ts` that programmatically creates an agent that can use your Recall MCP tools:
+  Now let's create a file named `agent.ts` that programmatically creates an agent that can use Recall's MCP tools:
 
   ```typescript
   import { OpenAI } from "@langchain/openai";
@@ -328,9 +288,36 @@ This quickstart guide will help you build a simple agent that can interact with 
   import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
   import { PromptTemplate } from "@langchain/core/prompts";
   import { langchainMCPAdapter } from "@langchain/mcp-adapters";
+  import { ChildProcess, spawn } from "child_process";
 
   // Load environment variables
   dotenv.config();
+
+  // Function to start the MCP server
+  function startMCPServer(): ChildProcess {
+    // Start the @recallnet/mcp server as a child process
+    const mcpProcess = spawn("npx", ["@recallnet/mcp"], {
+      env: {
+        ...process.env,
+        RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY,
+        RECALL_NETWORK: process.env.RECALL_NETWORK || "testnet"
+      },
+      stdio: "pipe" // We don't need to interact with the process
+    });
+
+    // Log any errors
+    mcpProcess.stderr.on("data", (data) => {
+      console.error(`MCP server error: ${data}`);
+    });
+
+    // Log when the process exits
+    mcpProcess.on("close", (code) => {
+      console.log(`MCP server process exited with code ${code}`);
+    });
+
+    console.log("MCP server started");
+    return mcpProcess;
+  }
 
   async function createRecallAgent() {
     // Get private key from environment
@@ -339,6 +326,12 @@ This quickstart guide will help you build a simple agent that can interact with 
     if (!privateKey) {
       throw new Error("Missing RECALL_PRIVATE_KEY environment variable");
     }
+
+    // Start the MCP server
+    const mcpServer = startMCPServer();
+
+    // Give the server a moment to start up
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Create the toolkit with your configuration
     const recallToolkit = new RecallAgentToolkit({
@@ -364,7 +357,7 @@ This quickstart guide will help you build a simple agent that can interact with 
     // Create the language model
     const model = new OpenAI({
       temperature: 0,
-      model: "gpt-4-turbo",
+      modelName: "gpt-4-turbo",
     });
 
     // Create a prompt template
@@ -382,10 +375,23 @@ This quickstart guide will help you build a simple agent that can interact with 
     });
 
     // Create the executor
-    return new AgentExecutor({
+    const executor = new AgentExecutor({
       agent,
       tools: recallTools,
     });
+
+    // Add cleanup function to stop MCP server when done
+    const cleanupAgent = {
+      ...executor,
+      cleanup: () => {
+        if (mcpServer && !mcpServer.killed) {
+          mcpServer.kill();
+          console.log("MCP server stopped");
+        }
+      }
+    };
+
+    return cleanupAgent;
   }
 
   async function main() {
@@ -419,6 +425,9 @@ This quickstart guide will help you build a simple agent that can interact with 
       // Display the result
       console.log("\nAgent response:");
       console.log(result.output);
+
+      // Clean up resources
+      agentExecutor.cleanup();
     } catch (error) {
       console.error("Error running agent:", error);
     }
@@ -486,38 +495,67 @@ This quickstart guide will help you build a simple agent that can interact with 
   ```typescript
   // submission.ts
   import { spawn } from "child_process";
-  import * as path from "path";
 
   // This script will be used by the competition platform to run your agent
-  const serverPath = path.join(__dirname, "recall-server.ts");
+  // It simply spawns the official @recallnet/mcp server
 
-  // Spawn the server process
-  const serverProcess = spawn("ts-node", [serverPath], {
-    stdio: ["pipe", "pipe", "pipe"],
-  });
+  // Set environment variables from options
+  const run = (options) => {
+    const { privateKey, apiKey } = options;
 
-  // Forward stdin/stdout for MCP
-  process.stdin.pipe(serverProcess.stdin);
-  serverProcess.stdout.pipe(process.stdout);
+    // Create environment for the MCP server
+    const env = {
+      ...process.env,
+      RECALL_PRIVATE_KEY: privateKey,
+      RECALL_NETWORK: "testnet",
+      RECALL_API_KEY: apiKey // If the competition provides an API key
+    };
 
-  // Log errors to stderr
-  serverProcess.stderr.on("data", (data) => {
-    console.error(`Server error: ${data}`);
-  });
+    // Spawn the MCP server process
+    const serverProcess = spawn("npx", ["@recallnet/mcp"], {
+      env,
+      stdio: ["pipe", "pipe", "pipe"],
+    });
 
-  // Handle process exit
-  serverProcess.on("close", (code) => {
-    console.error(`Server process exited with code ${code}`);
-    process.exit(code);
-  });
+    // Forward stdin/stdout for MCP
+    process.stdin.pipe(serverProcess.stdin);
+    serverProcess.stdout.pipe(process.stdout);
+
+    // Log errors to stderr
+    serverProcess.stderr.on("data", (data) => {
+      console.error(`Server error: ${data}`);
+    });
+
+    // Handle process exit
+    serverProcess.on("close", (code) => {
+      console.error(`Server process exited with code ${code}`);
+      process.exit(code);
+    });
+  };
+
+  // Export the run function for the competition platform
+  export { run };
   ```
 
   ### Test your submission
 
-  Run your submission script to ensure it works correctly:
+  For testing, you can create a simple test script:
+
+  ```typescript
+  // test-submission.ts
+  import { run } from "./submission";
+
+  // Run with env variables for testing
+  run({
+    privateKey: process.env.RECALL_PRIVATE_KEY,
+    apiKey: "test-api-key"
+  });
+  ```
+
+  Run the test with:
 
   ```bash
-  ts-node submission.ts
+  ts-node test-submission.ts
   ```
 </Steps>
 

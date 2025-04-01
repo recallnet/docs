@@ -1,0 +1,766 @@
+---
+title: Debugging MCP Integrations
+description: Troubleshoot and resolve common issues with MCP and Recall integrations
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Steps } from "fumadocs-ui/components/steps";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+# Debugging MCP Integrations
+
+When working with Recall's MCP integration, you might encounter various issues that need troubleshooting. This guide provides a systematic approach to identifying, diagnosing, and resolving common problems with MCP integrations.
+
+## Common Issues Categories
+
+MCP integration issues typically fall into several categories:
+
+1. **Connection Issues** - Problems establishing a connection between the MCP client and server
+2. **Authentication Problems** - Errors related to Recall authentication or authorization
+3. **Tool Execution Errors** - Issues when specific tools fail to execute correctly
+4. **Data Format Problems** - Issues with parameter formats or return values
+5. **Performance Concerns** - Slow responses or timeouts
+
+## Systematic Debugging Approach
+
+<Steps>
+  ### Verify Basic Setup
+
+  Before diving into complex issues, verify that your basic setup is correct:
+
+  - Check that your MCP server is running with the correct configuration
+  - Confirm your private key is valid and properly formatted
+  - Verify you have sufficient credits in your Recall account
+  - Ensure you're using the correct network (testnet vs. mainnet)
+  - Validate that all required environment variables are set
+
+  ### Check Server Logs
+
+  MCP server logs are your primary source of diagnostic information:
+
+  ```typescript
+  // Enable verbose logging in your MCP server
+  import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+  import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+
+  // Enable debug logging
+  process.env.DEBUG = "recall:*,mcp:*";
+
+  const toolkit = new RecallAgentToolkit({
+    privateKey: process.env.RECALL_PRIVATE_KEY,
+    // Setting verbose logging
+    verbose: true,
+  });
+
+  const transport = new StdioServerTransport();
+  await toolkit.connect(transport);
+  ```
+
+  ### Add Diagnostic Middleware
+
+  Implement diagnostic middleware to track all tool calls:
+
+  ```typescript
+  const toolkit = new RecallAgentToolkit({
+    privateKey: process.env.RECALL_PRIVATE_KEY,
+    middleware: [
+      {
+        beforeToolCall: (tool, input) => {
+          console.error(`[DEBUG] Calling tool: ${tool.name}`);
+          console.error(`[DEBUG] Input:`, JSON.stringify(input, null, 2));
+          return input;
+        },
+        afterToolCall: (tool, input, output) => {
+          console.error(`[DEBUG] Tool ${tool.name} response:`,
+            JSON.stringify(output, null, 2));
+          return output;
+        },
+        onToolError: (tool, input, error) => {
+          console.error(`[ERROR] Tool ${tool.name} failed:`, error);
+          console.error(`[ERROR] Input was:`, JSON.stringify(input, null, 2));
+          throw error; // Rethrow to maintain normal error flow
+        }
+      }
+    ]
+  });
+  ```
+
+  ### Isolate the Problem
+
+  Determine if the issue is with:
+
+  - **MCP transport**: Is communication happening between client and server?
+  - **Recall authentication**: Is the Recall client authenticating properly?
+  - **Tool schema**: Are the tool schemas defined correctly?
+  - **Tool execution**: Is the tool logic executing but producing errors?
+  - **Client behavior**: Is the client (e.g., Claude) using the tools properly?
+</Steps>
+
+## Connection Debugging
+
+If you're having issues with the MCP connection:
+
+<Tabs items={["Claude Desktop", "Custom MCP Client", "MCP Server"]}>
+  <Tab value="Claude Desktop">
+    For Claude Desktop integration:
+
+    1. **Check Claude logs**:
+       - macOS: `~/Library/Logs/Claude/mcp*.log`
+       - Windows: `%APPDATA%\Claude\logs\mcp*.log`
+
+    2. **Verify config file**:
+       - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+       - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+    3. **Test server directly**:
+       ```bash
+       # For npx-based server
+       npx @recallnet/mcp
+
+       # For custom server
+       node /path/to/your/custom/server.js
+       ```
+
+    4. **Check environment variables**:
+       Ensure your config includes the correct environment variables:
+       ```json
+       {
+         "mcpServers": {
+           "recall": {
+             "command": "npx",
+             "args": ["@recallnet/mcp"],
+             "env": {
+               "RECALL_PRIVATE_KEY": "YOUR_KEY",
+               "RECALL_NETWORK": "testnet"
+             }
+           }
+         }
+       }
+       ```
+  </Tab>
+
+  <Tab value="Custom MCP Client">
+    For custom MCP clients:
+
+    1. **Validate client configuration**:
+       ```typescript
+       import { ClientTransport } from "@modelcontextprotocol/sdk/client";
+
+       const client = new ClientTransport({
+         url: "http://localhost:8000", // Check the URL is correct
+         timeout: 30000, // Increase timeout for debugging
+       });
+       ```
+
+    2. **Test connection manually**:
+       ```typescript
+       async function testConnection() {
+         try {
+           const tools = await client.getTools();
+           console.log("Connection successful. Tools:", tools);
+         } catch (error) {
+           console.error("Connection failed:", error);
+         }
+       }
+       ```
+
+    3. **Enable verbose logging**:
+       ```typescript
+       process.env.DEBUG = "mcp:*";
+       ```
+
+    4. **Check network connectivity**:
+       - Ensure no firewalls are blocking traffic
+       - Verify ports are accessible
+       - Use appropriate localhost URL (127.0.0.1)
+  </Tab>
+
+  <Tab value="MCP Server">
+    For MCP server issues:
+
+    1. **Verify the server starts correctly**:
+       ```bash
+       # Run with extra verbose logging
+       DEBUG=mcp:*,recall:* node server.js
+       ```
+
+    2. **Check port conflicts**:
+       ```bash
+       # Check if the port is already in use
+       lsof -i :8000
+       # Or on Windows
+       netstat -ano | findstr :8000
+       ```
+
+    3. **Test with simplified configuration**:
+       ```typescript
+       // Create a minimal server for testing
+       import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+
+       const transport = new StdioServerTransport();
+
+       const pingTool = {
+         name: "ping",
+         description: "Simple ping tool for debugging",
+         parameters: {
+           type: "object",
+           properties: {},
+           required: []
+         },
+         returns: {
+           type: "object",
+           properties: {
+             message: { type: "string" }
+           }
+         },
+         execute: async () => ({ message: "pong" })
+       };
+
+       transport.registerTool(pingTool);
+       transport.start();
+       ```
+  </Tab>
+</Tabs>
+
+## Authentication Debugging
+
+If you're experiencing authentication issues with Recall:
+
+<Tabs items={["Private Key Issues", "Network Configuration", "Permission Errors"]}>
+  <Tab value="Private Key Issues">
+    For private key problems:
+
+    1. **Validate key format**:
+       - Ensure the key is a valid private key
+       - Verify there are no extra spaces or newlines
+       - Check that environment variables are properly loaded
+
+    2. **Test key directly with SDK**:
+       ```typescript
+       import { RecallClient } from "@recallnet/sdk";
+
+       async function testKey() {
+         try {
+           const client = new RecallClient({
+             privateKey: process.env.RECALL_PRIVATE_KEY,
+           });
+
+           // Try a simple operation
+           const { account } = await client.getAccount();
+           console.log("Authentication successful:", account);
+         } catch (error) {
+           console.error("Authentication failed:", error);
+         }
+       }
+
+       testKey();
+       ```
+
+    3. **Check for key rotation**:
+       - If you've recently regenerated your key, make sure you're using the new one
+       - Verify key in the Portal
+  </Tab>
+
+  <Tab value="Network Configuration">
+    For network configuration issues:
+
+    1. **Verify network setting**:
+       ```typescript
+       const client = new RecallClient({
+         privateKey: process.env.RECALL_PRIVATE_KEY,
+         // Set explicit network to check
+         useDevnet: true, // or false for mainnet
+       });
+       ```
+
+    2. **Check custom endpoints**:
+       ```typescript
+       const client = new RecallClient({
+         privateKey: process.env.RECALL_PRIVATE_KEY,
+         // Explicitly set the base URL
+         defaultBaseUrl: "https://api.dev.recall.network",
+         // Or override specific endpoints
+         serviceEndpoints: {
+           account: "https://api.dev.recall.network/account",
+           bucket: "https://api.dev.recall.network/bucket",
+           // Other endpoints
+         }
+       });
+       ```
+
+    3. **Test network connectivity**:
+       ```bash
+       # Test connection to the API
+       curl -I https://api.dev.recall.network
+       ```
+  </Tab>
+
+  <Tab value="Permission Errors">
+    For permission-related issues:
+
+    1. **Check toolkit configuration**:
+       ```typescript
+       const toolkit = new RecallAgentToolkit({
+         privateKey: process.env.RECALL_PRIVATE_KEY,
+         // Verify permissions are correct
+         configuration: {
+           actions: {
+             account: { read: true },
+             bucket: {
+               read: true,
+               write: true,
+               delete: true // Make sure needed actions are enabled
+             },
+             source: {
+               read: true,
+               write: true
+             }
+           }
+         }
+       });
+       ```
+
+    2. **Verify accounts have required credits**:
+       ```typescript
+       import { RecallClient } from "@recallnet/sdk";
+
+       async function checkCredits() {
+         const client = new RecallClient({
+           privateKey: process.env.RECALL_PRIVATE_KEY,
+         });
+
+         const response = await client.getCredits();
+         console.log("Available credits:", response.credits);
+
+         // Check if credits are sufficient
+         if (Number(response.credits) < 1000) {
+           console.warn("Low credit balance may cause issues");
+         }
+       }
+       ```
+
+    3. **Test with minimum permissions**:
+       Start with minimal permissions and gradually add more to identify the problematic permission.
+  </Tab>
+</Tabs>
+
+## Tool Execution Debugging
+
+When tools fail during execution:
+
+### Creating a Tool Debugging Harness
+
+The most effective way to debug tool execution is to create a standalone testing harness:
+
+```typescript
+// tool-debug.ts
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
+async function debugTool() {
+  // Create toolkit instance
+  const toolkit = new RecallAgentToolkit({
+    privateKey: process.env.RECALL_PRIVATE_KEY,
+    verbose: true,
+  });
+
+  // Get all tools
+  const tools = toolkit.getTools();
+
+  // Find the tool you want to debug
+  const toolToDebug = tools.find(t => t.name === "get_or_create_bucket");
+
+  if (!toolToDebug) {
+    console.error("Tool not found!");
+    return;
+  }
+
+  console.log("Testing tool:", toolToDebug.name);
+  console.log("Tool schema:", toolToDebug.parameters);
+
+  try {
+    // Execute the tool with test parameters
+    const result = await toolToDebug.execute({
+      name: "test-bucket"
+    }, { recallClient: toolkit.client });
+
+    console.log("Tool execution succeeded:");
+    console.log(JSON.stringify(result, null, 2));
+  } catch (error) {
+    console.error("Tool execution failed:");
+    console.error(error);
+  }
+}
+
+debugTool().catch(console.error);
+```
+
+Run this with:
+
+```bash
+ts-node tool-debug.ts
+```
+
+### Common Tool Execution Errors
+
+| Error | Possible Causes | Solutions |
+|-------|-----------------|-----------|
+| Parameter validation error | Missing required parameters, wrong types | Verify parameters match schema |
+| "Unknown tool" | Tool name is incorrect or not registered | Check tool registration and naming |
+| Timeout | Operation taking too long | Increase timeout, optimize operations |
+| "Bucket not found" | Incorrect bucket ID or name | Verify bucket exists, check permissions |
+| RecallClient errors | API issues, network problems | Check Recall API status |
+
+## Transport-Specific Debugging
+
+Different MCP transports have specific debugging approaches:
+
+<Tabs items={["StdIO Transport", "HTTP Transport", "WebSocket Transport"]}>
+  <Tab value="StdIO Transport">
+    For StdIO transport (used by Claude Desktop):
+
+    1. **Debug request/response cycle**:
+       ```typescript
+       import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+
+       // Custom debug wrapper
+       class DebugStdioTransport extends StdioServerTransport {
+         constructor() {
+           super();
+
+           // Capture original methods
+           const originalReadLine = this._readLine;
+           const originalWriteLine = this._writeLine;
+
+           // Override with debug logging
+           this._readLine = async () => {
+             const line = await originalReadLine.call(this);
+             console.error(`[DEBUG-IN] ${line}`);
+             return line;
+           };
+
+           this._writeLine = async (line) => {
+             console.error(`[DEBUG-OUT] ${line}`);
+             return originalWriteLine.call(this, line);
+           };
+         }
+       }
+
+       const transport = new DebugStdioTransport();
+       ```
+
+    2. **Redirect logs to file**:
+       ```bash
+       # Run server and redirect stderr to a log file
+       node mcp-server.js 2> mcp-debug.log
+       ```
+
+    3. **Check for line ending issues**:
+       StdIO transport is sensitive to line endings. Make sure your code properly handles newlines.
+  </Tab>
+
+  <Tab value="HTTP Transport">
+    For HTTP transport:
+
+    1. **Use HTTP debugging proxy**:
+       Tools like Postman, Charles Proxy, or mitmproxy can intercept and inspect HTTP traffic.
+
+    2. **Enable Express debug logging**:
+       ```typescript
+       import { HttpServerTransport } from "@modelcontextprotocol/sdk/server/http.js";
+       import morgan from "morgan";
+
+       const transport = new HttpServerTransport({
+         port: 8000,
+         middleware: [(req, res, next) => {
+           // Add morgan logging middleware
+           morgan('dev')(req, res, next);
+         }]
+       });
+       ```
+
+    3. **Check CORS settings**:
+       ```typescript
+       const transport = new HttpServerTransport({
+         port: 8000,
+         cors: {
+           origin: '*', // For testing only
+           methods: ['POST', 'OPTIONS'],
+           allowedHeaders: ['Content-Type']
+         }
+       });
+       ```
+  </Tab>
+
+  <Tab value="WebSocket Transport">
+    For WebSocket transport:
+
+    1. **Monitor WebSocket traffic**:
+       ```typescript
+       import { WebSocketServerTransport } from "@modelcontextprotocol/sdk/server/websocket.js";
+
+       const transport = new WebSocketServerTransport({
+         port: 8080,
+         onConnection: (socket) => {
+           console.log("New WebSocket connection");
+
+           socket.on('message', (data) => {
+             console.log("Received:", data.toString());
+           });
+
+           // Capture original send
+           const originalSend = socket.send;
+           socket.send = function(data) {
+             console.log("Sending:", data.toString());
+             return originalSend.call(this, data);
+           };
+         }
+       });
+       ```
+
+    2. **Test with a WebSocket client tool**:
+       Use tools like Postman, websocat, or simple browser WebSocket clients for testing.
+
+    3. **Check for connection issues**:
+       ```typescript
+       const transport = new WebSocketServerTransport({
+         port: 8080,
+         path: "/mcp", // Make sure path matches client
+         // Set explicit host if needed
+         host: "localhost"
+       });
+       ```
+  </Tab>
+</Tabs>
+
+## Debugging Claude Desktop Integration
+
+Claude Desktop has specific debugging approaches:
+
+1. **Check Claude logs**:
+   ```bash
+   # On macOS
+   tail -f ~/Library/Logs/Claude/mcp*.log
+
+   # On Windows - look in:
+   # %APPDATA%\Claude\logs\mcp*.log
+   ```
+
+2. **Verify server launch**:
+   Test the command and args from your Claude Desktop config directly:
+   ```bash
+   npx @recallnet/mcp
+   ```
+
+3. **Check environment variables**:
+   Ensure they're properly set in your config file and not affected by escaping issues.
+
+4. **Test MCP server standalone**:
+   Before integrating with Claude, test your MCP server independently:
+   ```bash
+   # Create a simple JSON request
+   echo '{"jsonrpc":"2.0","id":"1","method":"getTools","params":{}}' | npx @recallnet/mcp
+   ```
+
+## Debugging with Enhanced Logging
+
+A comprehensive logging middleware can help identify issues:
+
+```typescript
+// Enhanced debug logging middleware
+import * as fs from 'fs';
+
+function createDebugMiddleware(logFilePath = 'mcp-debug.log') {
+  // Create or truncate log file
+  fs.writeFileSync(logFilePath, '--- MCP DEBUG LOG ---\n');
+
+  return {
+    beforeToolCall: (tool, input) => {
+      const timestamp = new Date().toISOString();
+      const logEntry = `[${timestamp}] TOOL CALL: ${tool.name}\nINPUT: ${JSON.stringify(input, null, 2)}\n`;
+
+      fs.appendFileSync(logFilePath, logEntry);
+      console.error(`Calling tool: ${tool.name}`);
+
+      return input;
+    },
+
+    afterToolCall: (tool, input, output) => {
+      const timestamp = new Date().toISOString();
+      const logEntry = `[${timestamp}] TOOL RESPONSE: ${tool.name}\nOUTPUT: ${JSON.stringify(output, null, 2)}\n\n`;
+
+      fs.appendFileSync(logFilePath, logEntry);
+      console.error(`Tool ${tool.name} completed`);
+
+      return output;
+    },
+
+    onToolError: (tool, input, error) => {
+      const timestamp = new Date().toISOString();
+      const logEntry = `[${timestamp}] TOOL ERROR: ${tool.name}\nINPUT: ${JSON.stringify(input, null, 2)}\nERROR: ${error.message}\nSTACK: ${error.stack}\n\n`;
+
+      fs.appendFileSync(logFilePath, logEntry);
+      console.error(`Tool ${tool.name} failed: ${error.message}`);
+
+      throw error;
+    }
+  };
+}
+
+// Usage in toolkit
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  middleware: [createDebugMiddleware()]
+});
+```
+
+## Schema Validation Debugging
+
+Tool schema validation issues are common:
+
+1. **Validate schemas manually**:
+   ```typescript
+   import { validateToolSchema } from "@modelcontextprotocol/sdk/server";
+
+   function checkToolSchema(tool) {
+     try {
+       validateToolSchema(tool);
+       console.log(`Tool ${tool.name} schema is valid`);
+       return true;
+     } catch (error) {
+       console.error(`Tool ${tool.name} schema is invalid:`, error.message);
+       return false;
+     }
+   }
+
+   // Check all tools
+   const tools = toolkit.getTools();
+   const invalidTools = tools.filter(tool => !checkToolSchema(tool));
+   ```
+
+2. **Verify parameter types**:
+   Make sure your tool's parameter and return schemas match their actual types:
+
+   ```typescript
+   // WRONG - schema doesn't match implementation
+   const badTool = {
+     name: "my_tool",
+     parameters: {
+       type: "object",
+       properties: {
+         index: { type: "number" }
+       },
+       required: ["index"]
+     },
+     execute: async ({ index }) => {
+       // Type error - schema says 'number' but code treats as string
+       return { result: index.toLowerCase() };
+     }
+   };
+   ```
+
+3. **Check for extra properties**:
+   MCP is strict about unknown properties in objects with defined schemas.
+
+## Common Error Messages and Solutions
+
+| Error Message | Cause | Solution |
+|---------------|-------|----------|
+| "Error: Unable to connect to MCP server" | Server not running or connection issue | Check server status, restart server |
+| "Error in function call params" | Invalid parameters sent to tool | Check parameter types and required fields |
+| "Authentication failed" | Invalid private key | Verify private key, check network setting |
+| "Error: Tool [name] failed: bucket not found" | Bucket doesn't exist or permission issue | Verify bucket name/ID, check permissions |
+| "Error: EADDRINUSE" | Port already in use | Choose a different port or kill existing process |
+| "Error: EACCES" | Permission denied for port (usually `<1024>`) | Use port `>1024` or run with proper permissions |
+| "Error: Connection refused" | Server not running or wrong port | Verify server is running, check port |
+
+## Decision Tree for Issue Identification
+
+Follow this process to systematically identify issues:
+
+1. **Is the server starting correctly?**
+   ↓ Yes → **Can the client connect to the server?**
+   ↓ No → Check server code, verify dependencies, check for port conflicts
+
+2. **Can the client connect to the server?**
+   ↓ Yes → **Can the client list available tools?**
+   ↓ No → Check transport configuration, network settings, firewall issues
+
+3. **Can the client list available tools?**
+   ↓ Yes → **Do tools execute but return errors?**
+   ↓ No → Check tool registration, validate tool schemas
+
+4. **Do tools execute but return errors?**
+   ↓ Yes → **Are the errors from Recall API?**
+   ↓ No → Check client side for parameter validation issues
+
+5. **Are the errors from Recall API?**
+   ↓ Yes → Check authentication, permissions, available credits
+   ↓ No → Debug custom tool implementation
+
+## Testing MCP Server Response
+
+Here's a test script to check if your MCP server responds correctly:
+
+```typescript
+// test-mcp-server.ts
+import { ClientTransport } from "@modelcontextprotocol/sdk/client";
+
+async function testMcpServer(url = "http://localhost:8000") {
+  console.log(`Testing MCP server at ${url}`);
+
+  try {
+    // Create client transport
+    const client = new ClientTransport({ url });
+
+    // Get available tools
+    console.log("Checking available tools...");
+    const tools = await client.getTools();
+    console.log(`✅ Found ${tools.length} tools`);
+
+    // List tool names
+    console.log("Available tools:");
+    tools.forEach((tool, index) => {
+      console.log(`${index + 1}. ${tool.name} - ${tool.description}`);
+    });
+
+    // Test a simple tool if available
+    const bucketTool = tools.find(t => t.name === "get_or_create_bucket");
+    if (bucketTool) {
+      console.log("\nTesting bucket tool...");
+      const result = await client.callTool("get_or_create_bucket", {
+        name: "test-debug-bucket"
+      });
+      console.log("Result:", result);
+      console.log("✅ Tool test succeeded");
+    }
+
+    console.log("\n🟢 MCP server is responding correctly");
+  } catch (error) {
+    console.error("\n🔴 MCP server test failed:");
+    console.error(error);
+  }
+}
+
+// Start the test
+const url = process.argv[2] || "http://localhost:8000";
+testMcpServer(url);
+```
+
+## Next Steps
+
+Now that you know how to debug MCP integrations:
+
+1. Review the [Agent Toolkit MCP Guide](./agent-toolkit-mcp) for best practices
+2. Learn about [Custom Tools](./custom-tools) that you can add to your MCP server
+3. Prepare for [Competition Submission](./competition-submission) using MCP
+4. Check the [Claude Desktop Setup](./claude-desktop-setup) guide for specific Claude integration tips
+
+## Additional Resources
+
+- [MCP Protocol Debugging Tools](https://modelcontextprotocol.io/quickstart/debugging)
+- [Recall API Documentation](https://docs.recall.network/tools/sdk/javascript)
+- [RecallClient SDK Reference](https://docs.recall.network/tools/sdk/typescript)
+- [Node.js Debugging Guide](https://nodejs.org/en/docs/guides/debugging-getting-started/)

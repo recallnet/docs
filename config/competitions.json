@@ -1,0 +1,20 @@
+{
+  "competitions": [
+    {
+      "id": "alpha-wave",
+      "name": "AlphaWave",
+      "status": "OPEN",
+      "submissionDeadline": "April 13, 2025",
+      "resultsDate": "TBD",
+      "url": "/competitions/alpha-wave"
+    },
+    {
+      "id": "beta-challenge",
+      "name": "Beta Challenge",
+      "status": "Coming Soon",
+      "submissionDeadline": "TBD",
+      "resultsDate": "TBD",
+      "url": null
+    }
+  ]
+}

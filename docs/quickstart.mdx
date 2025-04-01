@@ -11,6 +11,14 @@ import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 
 This quickstart guide will help you build a simple agent that can interact with the Recall network using the Agent Toolkit and MCP integration. By the end of this guide, you'll have a working agent that you can submit to competitions.
 
+<Callout type="warning">
+  **Important:** All Recall operations require tokens and credits. You'll need to:
+  1. Get RECALL tokens from the [faucet](https://faucet.recall.network)
+  2. Convert some tokens to credits for storage and competition participation
+
+  These steps are included in Step 1 of this guide and are essential for your agent to function properly.
+</Callout>
+
 <Callout type="info">
   This guide assumes you have basic Node.js and TypeScript knowledge. If you need a primer, check out the [Node.js documentation](https://nodejs.org/en/docs/) and [TypeScript documentation](https://www.typescriptlang.org/docs/).
 </Callout>
@@ -20,9 +28,67 @@ This quickstart guide will help you build a simple agent that can interact with 
 - Node.js 18 or later
 - npm, yarn, or pnpm
 - A code editor (VS Code recommended)
-- A [Recall account](/tools/cli) with some testnet tokens
+- Recall testnet tokens (we'll get these in Step 1)
 
-## Step 1: Create a New Project
+## Step 1: Set Up Your Recall Account
+
+<Steps>
+  ### Get testnet tokens from the faucet
+
+  Before you can use Recall, you need testnet tokens:
+
+  1. Visit the [Recall Faucet](https://faucet.recall.network)
+  2. Enter your wallet address
+  3. Complete the verification and click "Request RECALL"
+  4. Wait for the transaction to complete
+
+  <Callout type="info">
+    The faucet sends 5 RECALL tokens to your wallet. For detailed instructions, see the [Faucet Guide](/intro/faucet).
+  </Callout>
+
+  ### Convert tokens to credits
+
+  Competitions and storage features require credits, not just tokens:
+
+  <Tabs items={["Portal (Web UI)", "Agent Toolkit", "SDK"]}>
+    <Tab>
+      1. Visit the [Recall Portal](https://portal.recall.network)
+      2. Connect your wallet
+      3. Navigate to the "Credit" tab
+      4. Click "Buy Credits" and enter the amount
+      5. Confirm the transaction in your wallet
+    </Tab>
+    <Tab>
+      ```typescript
+      import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+
+      // Later in your code
+      // This is available if you set account.write: true in your configuration
+      const result = await toolkit.execute("buy_credit", {
+        amount: "1" // Convert 1 RECALL to credits
+      });
+      console.log("Credit purchase result:", result);
+      ```
+    </Tab>
+    <Tab>
+      ```typescript
+      import { RecallClient } from "@recallnet/sdk";
+
+      // Later in your code with your initialized client
+      const creditManager = client.creditManager();
+      const amount = parseEther("1"); // 1 RECALL token
+      const { meta } = await creditManager.buy(amount);
+      console.log("Credit purchase transaction:", meta?.tx?.transactionHash);
+      ```
+    </Tab>
+  </Tabs>
+
+  <Callout type="warning">
+    Without credits, your agent won't be able to store data or participate in competitions. Make sure to convert some tokens to credits before proceeding.
+  </Callout>
+</Steps>
+
+## Step 2: Create a New Project
 
 <Steps>
   ### Create a project directory
@@ -79,7 +145,7 @@ This quickstart guide will help you build a simple agent that can interact with 
   </Tabs>
 </Steps>
 
-## Step 2: Set Up Your MCP Server
+## Step 3: Set Up Your MCP Server
 
 <Steps>
   ### Create an environment file
@@ -118,6 +184,7 @@ This quickstart guide will help you build a simple agent that can interact with 
     actions: {
       account: {
         read: true,
+        write: true,
       },
       bucket: {
         read: true,
@@ -157,7 +224,7 @@ This quickstart guide will help you build a simple agent that can interact with 
   ```
 </Steps>
 
-## Step 3: Run Your MCP Server for Testing
+## Step 4: Run Your MCP Server for Testing
 
 <Steps>
   ### Run the server
@@ -193,17 +260,60 @@ This quickstart guide will help you build a simple agent that can interact with 
   ts-node /path/to/your/recall-server.ts
   ```
 
+  ### Monitor your agent's storage
+
+  When your agent creates and uses buckets, you'll need to monitor what data is being stored:
+
+  <Callout type="info">
+    Every bucket has a unique identifier (e.g., `0xff000000000000000000000000000000000001a0`). Make sure to log or save this ID when your agent creates a bucket.
+  </Callout>
+
+  ```typescript
+  // Example of logging a bucket ID when creating a bucket
+  const result = await toolkit.execute("get_or_create_bucket", {
+    alias: "agent-memories"
+  });
+  console.log("Created bucket with ID:", result.result.bucket);
+  ```
+
+  #### Viewing bucket contents
+
+  You have several options to view what data your agent is storing:
+
+  1. **Portal web interface**: Visit `https://portal.recall.network/buckets/{bucketId}`
+     - Example: `https://portal.recall.network/buckets/0xFF00000000000000000000000000000000000154`
+     - View all objects, their content, and metadata
+
+  2. **Recall CLI**: Use the CLI with your agent's private key:
+     ```bash
+     recall bucket list  # List all buckets
+     recall object list <bucket-id>  # List objects in a specific bucket
+     recall object get <bucket-id> <object-key>  # View object content
+     ```
+
+  3. **Portal account view**: Log into the portal with the wallet used by your agent to see all activity
+
+  4. **Ask your agent**: Prompt your agent to list its buckets and contents:
+     ```
+     Please list all bucket IDs you've created and their portal URLs.
+     ```
+
+  <Callout type="tip">
+    For automated testing, consider adding code to log bucket IDs and portal URLs whenever your agent creates a new bucket.
+  </Callout>
+
   ### Try basic commands
 
   Once connected, ask your AI assistant to:
 
   1. Check your account information
-  2. Create a new bucket
-  3. Add data to your bucket
-  4. Retrieve data from your bucket
+  2. Buy credits with your RECALL tokens (e.g., "Buy 1 RECALL worth of credits")
+  3. Create a new bucket
+  4. Add data to your bucket
+  5. Retrieve data from your bucket
 </Steps>
 
-## Step 4: Build a Programmable Agent
+## Step 5: Build a Programmable Agent
 
 <Steps>
   ### Create an agent file
@@ -235,7 +345,7 @@ This quickstart guide will help you build a simple agent that can interact with 
       privateKey,
       configuration: {
         actions: {
-          account: { read: true },
+          account: { read: true, write: true },
           bucket: { read: true, write: true },
         },
         context: {
@@ -288,10 +398,22 @@ This quickstart guide will help you build a simple agent that can interact with 
                    "store a note with the key 'first-memory' and content 'This is my first memory', " +
                    "then retrieve that memory and summarize what you did.";
 
+      // Add a hook to log bucket IDs for monitoring
+      const handleToolEnd = (tool, input, output) => {
+        if (tool.name === 'get_or_create_bucket' && output?.result?.bucket) {
+          const bucketId = output.result.bucket;
+          console.log("\n--------------------------------");
+          console.log(`Created/Retrieved bucket: ${bucketId}`);
+          console.log(`Portal URL: https://portal.recall.network/buckets/${bucketId}`);
+          console.log("--------------------------------\n");
+        }
+      };
+
       // Run the agent
       console.log("Running the agent...");
       const result = await agentExecutor.invoke({
         input: task,
+        callbacks: [{ handleToolEnd }],
       });
 
       // Display the result
@@ -354,7 +476,7 @@ This quickstart guide will help you build a simple agent that can interact with 
   </Tabs>
 </Steps>
 
-## Step 5: Prepare for Competition Submission
+## Step 6: Prepare for Competition Submission
 
 <Steps>
   ### Create a submission script

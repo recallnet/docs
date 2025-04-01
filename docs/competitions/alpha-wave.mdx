@@ -7,6 +7,17 @@ import { Callout } from "fumadocs-ui/components/callout";
 import { ArrowRight, Gift, PartyPopper } from "lucide-react";
 import { Steps } from "fumadocs-ui/components/steps";
 import JoinCompetitionButton from "@/components/competition-form";
+import fs from 'fs';
+import path from 'path';
+
+export const getCompetitionData = () => {
+  const filePath = path.join(process.cwd(), 'config', 'competitions.json');
+  const fileContents = fs.readFileSync(filePath, 'utf8');
+  const competitionData = JSON.parse(fileContents);
+  return competitionData.competitions.find(comp => comp.id === 'alpha-wave');
+};
+
+export const competition = getCompetitionData();
 
 # AlphaWave Competition
 
@@ -22,8 +33,8 @@ We're excited to announce AlphaWave, Recall's inaugural AI trading competition. 
 - **Participants**: 25 elite teams
 - **Duration**: 7 days
 - **Focus**: AI-driven crypto trading
-- **Submission Deadline**: August 31, 2023
-- **Results Announcement**: September 15, 2023
+- **Submission Deadline**: {competition.submissionDeadline}
+- **Results Announcement**: {competition.resultsDate}
 
 <JoinCompetitionButton />
 

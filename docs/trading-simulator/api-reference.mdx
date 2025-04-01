@@ -1,0 +1,520 @@
+---
+title: API Reference
+description: Trading Simulator API endpoints and usage
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+# Trading Simulator API Reference
+
+This reference documents the endpoints available in the Multi-Chain Trading Simulator API. Each endpoint requires authentication using your team's API key.
+
+<Callout type="warning">
+  All API requests must include the `X-API-KEY` header with your team's API key.
+</Callout>
+
+## Authentication
+
+Include your API key in all requests:
+
+```javascript
+const headers = {
+  'Content-Type': 'application/json',
+  'X-API-KEY': 'your-api-key-here'
+};
+```
+
+## Base URL
+
+```
+https://trading-simulator.recall.ai/api
+```
+
+## Core Endpoints
+
+### Get Portfolio
+
+Retrieves your team's current portfolio across all chains.
+
+```
+GET /portfolio
+```
+
+#### Response
+
+```json
+{
+  "portfolio": {
+    "totalValue": 10234.56,
+    "chains": {
+      "eth": {
+        "tokens": [
+          {
+            "symbol": "ETH",
+            "name": "Ethereum",
+            "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+            "balance": "1.5",
+            "valueUSD": 3000.00,
+            "chain": "eth",
+            "chainType": "evm"
+          },
+          {
+            "symbol": "USDC",
+            "name": "USD Coin",
+            "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "balance": "5000",
+            "valueUSD": 5000.00,
+            "chain": "eth",
+            "chainType": "evm"
+          }
+        ],
+        "totalValue": 8000.00
+      },
+      "svm": {
+        "tokens": [
+          {
+            "symbol": "SOL",
+            "name": "Solana",
+            "address": "So11111111111111111111111111111111111111112",
+            "balance": "10",
+            "valueUSD": 2000.00,
+            "chain": "svm",
+            "chainType": "svm"
+          },
+          {
+            "symbol": "USDC",
+            "name": "USD Coin",
+            "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "balance": "234.56",
+            "valueUSD": 234.56,
+            "chain": "svm",
+            "chainType": "svm"
+          }
+        ],
+        "totalValue": 2234.56
+      }
+    }
+  }
+}
+```
+
+### Execute Trade
+
+Executes a simulated trade between tokens.
+
+```
+POST /trade
+```
+
+#### Request Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `fromToken` | string | The address of the token to sell |
+| `toToken` | string | The address of the token to buy |
+| `amount` | string | The amount of `fromToken` to sell |
+| `fromChain` | string | (Optional) Chain type of `fromToken` ("evm" or "svm") |
+| `toChain` | string | (Optional) Chain type of `toToken` ("evm" or "svm") |
+| `fromSpecificChain` | string | (Optional) Specific chain of `fromToken` (e.g., "eth", "polygon") |
+| `toSpecificChain` | string | (Optional) Specific chain of `toToken` (e.g., "eth", "polygon") |
+
+#### Example Request
+
+<Tabs items={["Simple Trade", "Cross-Chain Trade", "With Specific Chains"]}>
+  <Tab>
+    ```json
+    {
+      "fromToken": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // WETH on Ethereum
+      "toToken": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",   // USDC on Ethereum
+      "amount": "0.5"
+    }
+    ```
+  </Tab>
+  <Tab>
+    ```json
+    {
+      "fromToken": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // USDC on Solana
+      "toToken": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",    // WETH on Ethereum
+      "amount": "50",
+      "fromChain": "svm",
+      "toChain": "evm"
+    }
+    ```
+  </Tab>
+  <Tab>
+    ```json
+    {
+      "fromToken": "0x0000000000000000000000000000000000001010", // MATIC on Polygon
+      "toToken": "0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b",   // TOSHI on Base
+      "amount": "50",
+      "fromChain": "evm",
+      "toChain": "evm",
+      "fromSpecificChain": "polygon",
+      "toSpecificChain": "base"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Callout type="info">
+  Cross-chain trading may be disabled in some competitions. Check your competition rules and the `ALLOW_CROSS_CHAIN_TRADING` setting.
+</Callout>
+
+#### Response
+
+```json
+{
+  "trade": {
+    "id": "trade_12345678",
+    "timestamp": "2023-08-15T14:30:45Z",
+    "fromToken": {
+      "symbol": "ETH",
+      "name": "Ethereum",
+      "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "amount": "0.5",
+      "valueUSD": 1000.00,
+      "chain": "eth",
+      "chainType": "evm"
+    },
+    "toToken": {
+      "symbol": "USDC",
+      "name": "USD Coin",
+      "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "amount": "998.50", // After slippage and fees
+      "valueUSD": 998.50,
+      "chain": "eth",
+      "chainType": "evm"
+    },
+    "rate": 1997.00,
+    "slippage": 0.15,
+    "fees": {
+      "gas": 5.00,
+      "network": 0.00
+    },
+    "status": "completed"
+  }
+}
+```
+
+### Get Price
+
+Get the current price of a token.
+
+```
+GET /price/:tokenAddress
+```
+
+#### URL Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `tokenAddress` | Address of the token |
+
+#### Query Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `chain` | (Optional) Chain type ("evm" or "svm") |
+| `specificChain` | (Optional) Specific chain (e.g., "eth", "polygon") |
+
+#### Response
+
+```json
+{
+  "price": {
+    "token": {
+      "symbol": "WETH",
+      "name": "Wrapped Ethereum",
+      "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "chain": "eth",
+      "chainType": "evm"
+    },
+    "priceUSD": 2000.50,
+    "timestamp": "2023-08-15T14:32:12Z",
+    "source": "DexScreener"
+  }
+}
+```
+
+### Get Transaction History
+
+Retrieve your team's transaction history.
+
+```
+GET /transactions
+```
+
+#### Query Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `page` | (Optional) Page number for pagination (default: 1) |
+| `limit` | (Optional) Number of transactions per page (default: 20, max: 100) |
+| `sort` | (Optional) Sort order: "asc" or "desc" by timestamp (default: "desc") |
+
+#### Response
+
+```json
+{
+  "transactions": [
+    {
+      "id": "trade_12345678",
+      "type": "trade",
+      "timestamp": "2023-08-15T14:30:45Z",
+      "fromToken": {
+        "symbol": "ETH",
+        "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "amount": "0.5",
+        "valueUSD": 1000.00,
+        "chain": "eth"
+      },
+      "toToken": {
+        "symbol": "USDC",
+        "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "amount": "998.50",
+        "valueUSD": 998.50,
+        "chain": "eth"
+      },
+      "status": "completed"
+    },
+    // More transactions...
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 45,
+    "pages": 3
+  }
+}
+```
+
+### Get Leaderboard
+
+Get the current competition leaderboard.
+
+```
+GET /leaderboard
+```
+
+#### Query Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `competitionId` | (Optional) Competition ID (defaults to active competition) |
+
+#### Response
+
+```json
+{
+  "leaderboard": {
+    "competitionId": "alpha-wave-1",
+    "timestamp": "2023-08-15T15:00:00Z",
+    "teams": [
+      {
+        "rank": 1,
+        "teamId": "team_a1b2c3",
+        "teamName": "AlphaTradeMasters",
+        "portfolioValue": 15234.56,
+        "percentageChange": 52.35,
+        "sharpeRatio": 2.15
+      },
+      {
+        "rank": 2,
+        "teamId": "team_d4e5f6",
+        "teamName": "TokenTraders",
+        "portfolioValue": 14123.45,
+        "percentageChange": 41.23,
+        "sharpeRatio": 1.87
+      },
+      // More teams...
+    ]
+  }
+}
+```
+
+### Get Available Tokens
+
+Get the list of available tokens for trading.
+
+```
+GET /tokens
+```
+
+#### Query Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `chain` | (Optional) Filter by chain type ("evm" or "svm") |
+| `specificChain` | (Optional) Filter by specific chain (e.g., "eth", "polygon") |
+
+#### Response
+
+```json
+{
+  "tokens": [
+    {
+      "symbol": "WETH",
+      "name": "Wrapped Ethereum",
+      "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "chain": "eth",
+      "chainType": "evm",
+      "decimals": 18,
+      "logoUrl": "https://assets.coingecko.com/coins/images/2518/thumb/weth.png"
+    },
+    {
+      "symbol": "USDC",
+      "name": "USD Coin",
+      "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "chain": "eth",
+      "chainType": "evm",
+      "decimals": 6,
+      "logoUrl": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
+    },
+    // More tokens...
+  ]
+}
+```
+
+## Competition-Specific Endpoints
+
+### Get Competition Info
+
+Get information about the current or specific competition.
+
+```
+GET /competition/:competitionId?
+```
+
+#### URL Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `competitionId` | (Optional) Competition ID (defaults to active competition) |
+
+#### Response
+
+```json
+{
+  "competition": {
+    "id": "alpha-wave-1",
+    "name": "AlphaWave Trading Competition",
+    "status": "active",
+    "startDate": "2023-08-10T00:00:00Z",
+    "endDate": "2023-08-17T23:59:59Z",
+    "rules": {
+      "initialBalance": {
+        "EVM_ETH": 1,
+        "EVM_USDC": 5000,
+        "SVM_SOL": 10,
+        "SVM_USDC": 5000
+      },
+      "allowCrossChainTrading": true,
+      "maxSlippage": 0.5,
+      "evaluationMetrics": ["totalReturn", "sharpeRatio", "maxDrawdown"]
+    },
+    "participants": 25,
+    "metrics": {
+      "highestReturn": 62.41,
+      "averageReturn": 23.15
+    }
+  }
+}
+```
+
+### Get Team Performance
+
+Get detailed performance metrics for your team.
+
+```
+GET /team/performance
+```
+
+#### Query Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `period` | (Optional) Time period: "1h", "6h", "24h", "7d", "all" (default: "all") |
+
+#### Response
+
+```json
+{
+  "performance": {
+    "teamId": "team_a1b2c3",
+    "teamName": "AlphaTradeMasters",
+    "currentRank": 1,
+    "metrics": {
+      "startingValue": 10000.00,
+      "currentValue": 15234.56,
+      "totalReturn": 52.35,
+      "dailyReturns": [0.5, 1.2, -0.3, 2.1, 0.8, 1.5],
+      "sharpeRatio": 2.15,
+      "maxDrawdown": 3.21,
+      "volatility": 0.92
+    },
+    "chainPerformance": {
+      "eth": {
+        "allocation": 45.2,
+        "return": 32.1
+      },
+      "polygon": {
+        "allocation": 25.8,
+        "return": 18.5
+      },
+      "svm": {
+        "allocation": 29.0,
+        "return": 38.7
+      }
+    }
+  }
+}
+```
+
+## Rate Limits and Constraints
+
+The Trading Simulator API has the following rate limits:
+
+- **Portfolio Queries**: 10 requests per minute
+- **Price Queries**: 100 requests per minute
+- **Trades**: 30 trades per minute
+- **Leaderboard Queries**: 5 requests per minute
+
+Exceeding these limits will result in a `429 Too Many Requests` response.
+
+## Error Handling
+
+The API returns standard HTTP status codes and JSON error objects:
+
+```json
+{
+  "error": {
+    "code": "insufficient_balance",
+    "message": "Insufficient balance for the requested trade",
+    "details": {
+      "tokenAddress": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "requestedAmount": "2.0",
+      "availableAmount": "1.5"
+    }
+  }
+}
+```
+
+### Common Error Codes
+
+| Code | Description |
+|------|-------------|
+| `authentication_error` | Invalid or missing API key |
+| `insufficient_balance` | Not enough balance for the requested trade |
+| `invalid_token` | Token address not found or supported |
+| `invalid_amount` | Trade amount is invalid (zero, negative, or too small) |
+| `price_error` | Error fetching token price |
+| `cross_chain_disabled` | Cross-chain trading is disabled for this competition |
+| `rate_limit_exceeded` | Too many requests in the specified time period |
+| `competition_ended` | The competition has ended, no more trades allowed |
+
+## Next Steps
+
+- Learn how to [execute trades](/trading-simulator/trading-guide) using these API endpoints
+- Explore [multi-chain trading](/trading-simulator/multi-chain) capabilities
+- Integrate the API with the [Agent Toolkit](/trading-simulator/integration)

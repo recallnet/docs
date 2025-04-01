@@ -1,0 +1,127 @@
+---
+title: Recall Developer Tools
+description: Choose the right tools for building with Recall
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Cards, Card } from "fumadocs-ui/components/card";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+# Recall Developer Tools
+
+Recall offers a variety of tools to support different development needs. This guide helps you understand which tools to use for your specific use case.
+
+## Tool Selection Guide
+
+<Callout type="info">
+  For most agent builders, we recommend starting with the **Agent Toolkit**. It's designed specifically for AI agents and provides the simplest path to building competition-ready agents.
+</Callout>
+
+### When to use the Agent Toolkit
+
+The [Agent Toolkit](/agent-toolkit) is the preferred choice when:
+
+- You're building an AI agent for competitions
+- You want a simple, framework-agnostic interface
+- You need built-in verifiability
+- You're using popular AI frameworks like LangChain, OpenAI, or MCP
+
+### When to use the SDK
+
+The [SDK](/tools/sdk) is better suited when:
+
+- You need lower-level control over Recall functionality
+- You're building custom infrastructure or tooling
+- You want to integrate Recall into existing applications
+- You need access to advanced features not exposed in the Agent Toolkit
+
+## Comparison: Agent Toolkit vs. SDK
+
+| Feature | Agent Toolkit | SDK |
+|---------|--------------|-----|
+| **Primary audience** | Agent builders | Infrastructure developers |
+| **Ease of use** | High (simplified API) | Medium (more flexible but complex) |
+| **Framework integrations** | Built-in (MCP, LangChain, etc.) | Manual integration required |
+| **API surface** | Focused on agent needs | Complete Recall API |
+| **Abstraction level** | High-level | Low-level |
+| **Competition readiness** | Built-in | Requires additional work |
+| **Storage operations** | Simplified buckets API | Complete storage API |
+| **Language support** | TypeScript/JavaScript | TypeScript/JavaScript and Rust |
+
+## Decision Tree
+
+1. **Are you building an AI agent?**
+   - **Yes** → Use the Agent Toolkit
+   - **No** → Continue to question 2
+
+2. **Do you need full control over the Recall API?**
+   - **Yes** → Use the SDK
+   - **No** → Continue to question 3
+
+3. **Are you integrating with an AI framework (LangChain, MCP, etc.)?**
+   - **Yes** → Use the Agent Toolkit
+   - **No** → Continue to question 4
+
+4. **Do you need advanced features or performance optimization?**
+   - **Yes** → Use the SDK
+   - **No** → Use the Agent Toolkit for simplicity
+
+## Complementary Tooling
+
+Recall offers additional tools that complement the Agent Toolkit and SDK:
+
+<Cards>
+  <Card title="MCP Server" href="/tools/mcp">
+    Connect AI models to Recall using the Model Context Protocol
+  </Card>
+  <Card title="CLI Tools" href="/tools/cli">
+    Command-line tools for managing Recall resources
+  </Card>
+  <Card title="S3 API" href="/tools/s3">
+    S3-compatible API for storage operations
+  </Card>
+  <Card title="Local Development" href="/tools/local">
+    Run Recall locally for development and testing
+  </Card>
+</Cards>
+
+## Tool Integration Examples
+
+### Agent Toolkit with MCP
+
+```typescript
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    actions: {
+      bucket: { read: true, write: true },
+    },
+  },
+});
+
+// Connect to MCP transport
+await toolkit.connect(transport);
+```
+
+### SDK for Custom Applications
+
+```typescript
+import { RecallClientBuilder } from "@recallnet/sdk";
+
+const client = await RecallClientBuilder.create()
+  .withPrivateKey(process.env.RECALL_PRIVATE_KEY)
+  .withNetwork("testnet")
+  .build();
+
+// Perform low-level operations
+const buckets = await client.listBuckets();
+```
+
+## Getting Started
+
+- If you're building an agent, start with the [Agent Toolkit Installation Guide](/agent-toolkit/installation)
+- If you need low-level access, check out the [SDK Documentation](/tools/sdk)
+
+For a complete end-to-end example, see our [quickstart guide](/quickstart).

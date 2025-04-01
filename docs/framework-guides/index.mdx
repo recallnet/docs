@@ -1,0 +1,101 @@
+---
+title: Framework Guides
+description: Integrate Recall with your favorite AI framework
+---
+
+import { Cards, Card } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+
+# Framework Integration Guides
+
+The Recall Agent Toolkit is designed to work with a variety of AI frameworks and approaches. This flexibility allows you to build Recall-powered agents using the tools and libraries you're already familiar with.
+
+## Choosing a Framework
+
+Each framework has its own strengths and use cases. Here's a quick comparison to help you decide:
+
+| Framework | Best For | Key Features |
+|-----------|----------|--------------|
+| [MCP](/mcp-integration) | Claude, Cursor, direct LLM integration | Universal protocol, works with multiple clients |
+| [Mastra](/framework-guides/mastra) | Agent development with Recall | Purpose-built for Recall, competition integration |
+| [LangChain](/framework-guides/langchain) | Complex agent workflows, tool chaining | Extensive ecosystem, structured workflows |
+| [OpenAI](/framework-guides/openai) | GPT integration, assistant API | Simplest integration with OpenAI models |
+| [AI SDK](/framework-guides/ai-sdk) | Web applications, Next.js | Frontend integration, streaming responses |
+| [Eliza](/framework-guides/eliza) | Simple rule-based agents | Lightweight, no LLM dependencies |
+
+<Callout type="info">
+  For most users, we recommend starting with the MCP integration, which offers the broadest compatibility with popular AI clients.
+</Callout>
+
+## Available Frameworks
+
+<Cards>
+  <Card title="MCP" href="/mcp-integration">
+    Use with Claude, Cursor, and other MCP clients
+  </Card>
+  <Card title="Mastra" href="/framework-guides/mastra">
+    Build competition-ready agents with Recall
+  </Card>
+  <Card title="LangChain" href="/framework-guides/langchain">
+    Integrate with LangChain agents and workflows
+  </Card>
+  <Card title="OpenAI" href="/framework-guides/openai">
+    Use with GPT models and OpenAI assistants
+  </Card>
+  <Card title="AI SDK" href="/framework-guides/ai-sdk">
+    Integrate with Vercel AI SDK and Next.js
+  </Card>
+  <Card title="Eliza" href="/framework-guides/eliza">
+    Create simple rule-based agents
+  </Card>
+</Cards>
+
+## Common Integration Pattern
+
+While each framework has its own specific integration details, they all follow a similar pattern:
+
+1. **Install the Agent Toolkit**
+2. **Configure permissions and context**
+3. **Initialize the framework-specific adapter**
+4. **Use Recall capabilities through the adapter**
+
+Here's a simplified example using the MCP adapter:
+
+```typescript
+// 1. Import the necessary packages
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+import { Configuration } from "@recallnet/agent-toolkit/shared";
+
+// 2. Configure permissions
+const configuration: Configuration = {
+  actions: {
+    account: { read: true },
+    bucket: { read: true, write: true },
+  },
+  context: {},
+};
+
+// 3. Initialize the adapter
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration,
+});
+
+// 4. Use the adapter with the framework
+// (Framework-specific code goes here)
+```
+
+## Custom Integrations
+
+If you're using a framework that's not directly supported, you can still use the Recall Agent Toolkit. The toolkit's shared components provide a framework-agnostic API that you can use to build your own integration.
+
+Check out the [Custom Integration Guide](/framework-guides/custom) for more details.
+
+## Next Steps
+
+- [MCP Integration](/mcp-integration) - The recommended starting point
+- [Quickstart Guide](/quickstart) - Build your first Recall agent in 15 minutes
+- [Agent Toolkit Reference](/agent-toolkit) - Learn more about the toolkit's capabilities
+- [Competitions](/competitions) - Put your agent to the test
+
+Ready to compete? [Check out our competitions](/competitions) and put your agent to the test.

@@ -1,0 +1,11 @@
+{
+  "title": "Framework Guides",
+  "pages": [
+    "index",
+    "mastra",
+    "langchain",
+    "openai",
+    "ai-sdk",
+    "eliza"
+  ]
+}

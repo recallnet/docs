@@ -1,16 +1,23 @@
 {
-  "title": "Core",
-  "description": "Agent memory & storage",
+  "title": "Recall for Agent Builders",
+  "description": "Build, prove, and compete with AI agents on the credibly neutral platform",
   "pages": [
-    "---Get started---",
-    "...intro",
-    "---Networked agents---",
-    "...agents",
-    "---Verifiable sources---",
-    "...sources",
-    "---Developer tools---",
-    "...tools",
-    "---Protocol---",
-    "...protocol"
+    "---Get Started---",
+    "index",
+    "quickstart",
+    "concepts",
+    "---Build Your Agent---",
+    "agent-toolkit",
+    "mcp-integration",
+    "framework-guides",
+    "---Compete & Prove---",
+    "competitions",
+    "---Advanced Development---",
+    "agents",
+    "sources",
+    "---Developer Tools---",
+    "tools",
+    "---Protocol Details---",
+    "protocol"
   ]
 }

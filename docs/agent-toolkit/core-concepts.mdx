@@ -72,7 +72,8 @@ const toolkit = new RecallAgentToolkit({
     actions: {
       account: {
         read: true, // Allow reading account info
-        write: true // Allow buying credits and other write operations
+        write: true, // Allow buying credits and other write operations
+        delete: false // Account deletion (reserved for future use)
       }
     }
   }
@@ -100,7 +101,7 @@ const toolkit = new RecallAgentToolkit({
       bucket: {
         read: true,  // Allow reading bucket data
         write: true, // Allow creating buckets and adding objects
-        delete: false // Prevent bucket deletion
+        delete: true, // Can delete buckets
       }
     }
   }
@@ -145,14 +146,15 @@ const toolkit = new RecallAgentToolkit({
       // Account permissions
       account: {
         read: true,   // Can read account info
-        write: false, // Cannot buy credits
+        write: true,  // Can buy credits
+        delete: false, // Account deletion (reserved for future use)
       },
 
       // Bucket permissions
       bucket: {
         read: true,   // Can read bucket data
         write: true,  // Can create buckets and add objects
-        delete: false, // Cannot delete buckets
+        delete: true, // Can delete buckets
       },
 
       // Source permissions (future)
@@ -190,22 +192,6 @@ const toolkit = new RecallAgentToolkit({
       network: "testnet", // Use the Recall testnet (default)
       // Other options: "mainnet", "localnet"
     }
-  }
-});
-```
-
-### Client Options (Advanced)
-
-For advanced use cases, you can configure the underlying Recall client:
-
-```typescript
-const toolkit = new RecallAgentToolkit({
-  privateKey: process.env.RECALL_PRIVATE_KEY,
-  configuration: { /* permissions */ },
-  clientOptions: {
-    timeout: 30000, // 30-second timeout for operations
-    maxRetries: 3,  // Retry failed operations up to 3 times
-    baseUrl: "https://custom-api.recall.network" // Custom API endpoint
   }
 });
 ```
@@ -337,52 +323,74 @@ Each framework adapter has its own specific implementation details:
   </Tab>
 </Tabs>
 
-## Middleware System
+## Key Abstractions
 
-The Agent Toolkit includes a powerful middleware system that enables you to intercept and modify tool calls:
+### Resource and Permission Model
+
+The Agent Toolkit uses a resource-based permission model to control access to different aspects of the Recall network:
+
+```typescript
+type Resource = "account" | "bucket" | "source";
+type Permission = "read" | "write" | "delete";
+
+interface ResourcePermissions {
+  [resource: Resource]: {
+    [permission: Permission]: boolean;
+  };
+}
+```
+
+This type system forms the basis of the permission configuration:
+
+```typescript
+const configuration = {
+  actions: {
+    account: {
+      read: true,    // Can read account info
+      write: true,   // Can buy credits
+      delete: false, // Account deletion (reserved for future use)
+    },
+    bucket: {
+      read: true,    // Can read bucket data
+      write: true,   // Can create buckets and add objects
+      delete: true,  // Can delete buckets
+    },
+  },
+};
+```
+
+### Configuration Interface
+
+The toolkit configuration combines resource permissions with contextual information:
+
+```typescript
+interface Configuration {
+  actions: {
+    account?: { read?: boolean; write?: boolean; delete?: boolean };
+    bucket?: { read?: boolean; write?: boolean; delete?: boolean };
+    source?: { read?: boolean; write?: boolean; delete?: boolean };
+  };
+  context?: Record<string, any>;
+}
+```
+
+This configuration is passed to the `RecallAgentToolkit` constructor:
 
 ```typescript
 const toolkit = new RecallAgentToolkit({
   privateKey: process.env.RECALL_PRIVATE_KEY,
-  configuration: { /* permissions */ },
-  middleware: [
-    {
-      // Called before a tool is executed
-      beforeToolCall: (tool, input) => {
-        console.log(`Calling tool: ${tool.name}`);
-        console.log(`Input:`, input);
-        return input; // Return the original or modified input
-      },
-
-      // Called after a tool completes successfully
-      afterToolCall: (tool, input, output) => {
-        console.log(`Tool ${tool.name} completed`);
-        console.log(`Result:`, output);
-        return output; // Return the original or modified output
-      },
-
-      // Called when a tool throws an error
-      onToolError: (tool, input, error) => {
-        console.error(`Tool ${tool.name} failed:`, error);
-        throw error; // Rethrow the error or handle it
-      }
-    }
-  ]
+  configuration: {
+    actions: {
+      account: { read: true, write: true, delete: false },
+      bucket: { read: true, write: true, delete: true },
+    },
+    context: {
+      network: "testnet",
+      agentName: "MyRecallAgent",
+    },
+  },
 });
 ```
-
-### Middleware Use Cases
-
-- **Logging**: Track all tool operations for debugging
-- **Monitoring**: Send metrics about tool usage
-- **Validation**: Validate inputs and outputs
-- **Transformation**: Transform inputs or outputs
-- **Error handling**: Custom error processing
-- **Rate limiting**: Implement rate limiting for specific tools
-
-<Callout type="info">
-  For more complex scenarios, you can add multiple middleware functions that will be executed in the order they are added.
-</Callout>
 
 ## Agent Lifecycle
 

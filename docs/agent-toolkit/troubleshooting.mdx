@@ -1,0 +1,325 @@
+---
+title: Troubleshooting
+description: Common issues and solutions when working with the Agent Toolkit
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Steps } from "fumadocs-ui/components/steps";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+# Troubleshooting Guide
+
+This guide helps you diagnose and resolve common issues when working with the Recall Agent Toolkit.
+
+## Common Issues
+
+### Authentication Failures
+
+<Steps>
+### 1. Invalid Private Key Format
+
+Ensure your private key is in the correct format. It should be a 64-character hexadecimal string, optionally with a `0x` prefix.
+
+```typescript
+// Correct format
+const privateKey = "0x1234..."; // With 0x prefix
+// or
+const privateKey = "1234...";   // Without 0x prefix (64 characters)
+```
+
+<Callout type="warning">
+  Never hardcode private keys in production code. Use environment variables or secure key management solutions.
+</Callout>
+
+### 2. Network Mismatch
+
+Verify that you're connecting to the correct network. The network in your toolkit configuration should match your intended environment.
+
+```typescript
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    // ... other config
+    context: {
+      network: "testnet", // Make sure this matches your intended network
+    },
+  },
+});
+```
+
+Currently supported networks are:
+- `testnet` - The Recall testnet environment
+- `localnet` - For local development
+
+### 3. Insufficient Funds
+
+If transactions are failing, your account may have insufficient RECALL tokens or credit.
+
+Check your balance using:
+
+```typescript
+const accountInfo = await toolkit.getTools().get_account_info();
+console.log(accountInfo);
+```
+
+You can acquire testnet tokens through the Recall faucet or by purchasing credit through the `buy_credit` tool.
+</Steps>
+
+### Permission Configuration Issues
+
+<Steps>
+### 1. Missing Permissions
+
+If tools are unavailable or operations fail with permission errors, check that you've configured the correct permissions.
+
+```typescript
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    actions: {
+      account: {
+        read: true,   // Required for get_account_info, get_credit_info
+        write: true,  // Required for buy_credit
+      },
+      bucket: {
+        read: true,   // Required for list_buckets, get_object, query_objects
+        write: true,  // Required for get_or_create_bucket, add_object
+      },
+    },
+    // ...
+  },
+});
+```
+
+Ensure the permissions match your use case requirements.
+
+### 2. Debugging Permission Issues
+
+To debug permission issues, you can inspect the available tools:
+
+```typescript
+// Log all available tools
+console.log("Available tools:", Object.keys(toolkit.getTools()));
+
+// Check the required permissions for a specific tool
+import { getToolDefinition } from "@recallnet/agent-toolkit/shared";
+const toolDef = getToolDefinition("add_object");
+console.log("Required permissions:", toolDef.permissions);
+```
+</Steps>
+
+### Bucket and Object Issues
+
+<Steps>
+### 1. Bucket Creation Failures
+
+If bucket creation fails, check the following:
+
+- You have sufficient credit in your account
+- Your bucket name follows the required format (lowercase alphanumeric with optional hyphens)
+- You don't already have a bucket with the same name
+
+Example of proper bucket creation:
+
+```typescript
+try {
+  const bucket = await toolkit.getTools().get_or_create_bucket({
+    name: "my-test-bucket", // Lowercase with hyphens is valid
+  });
+  console.log("Bucket created:", bucket);
+} catch (error) {
+  console.error("Bucket creation failed:", error);
+}
+```
+
+### 2. Object Storage Problems
+
+When storing objects, ensure:
+
+- The object contents are properly formatted (strings, JSON objects, etc.)
+- Object metadata is valid JSON
+- You have sufficient storage space and credit
+
+For troubleshooting object storage, try with minimal metadata first:
+
+```typescript
+try {
+  const result = await toolkit.getTools().add_object({
+    bucket_id: "your-bucket-id",
+    content: "Simple test content",
+    metadata: { type: "text/plain" }, // Minimal metadata
+  });
+  console.log("Object added:", result);
+} catch (error) {
+  console.error("Failed to add object:", error);
+}
+```
+
+### 3. Query Syntax Issues
+
+If your object queries aren't returning expected results, verify your query syntax:
+
+```typescript
+// Simple query for all objects
+const allObjects = await toolkit.getTools().query_objects({
+  bucket_id: "your-bucket-id",
+});
+
+// Query with filtering
+const filteredObjects = await toolkit.getTools().query_objects({
+  bucket_id: "your-bucket-id",
+  query: {
+    type: "text/plain", // Filter by metadata
+  },
+});
+```
+
+<Callout type="info">
+  Queries filter based on object metadata fields, not the content itself.
+</Callout>
+</Steps>
+
+### Framework-Specific Issues
+
+<Tabs items={['OpenAI', 'LangChain', 'MCP', 'AI SDK']}>
+  <Tab>
+    **OpenAI Integration Issues**
+
+    - **Function Definition Errors**: Ensure your OpenAI client is properly configured to use function calling.
+    - **Response Parsing**: If the model isn't properly using the tools, check that your prompt clearly instructs it to use the available tools.
+
+    ```typescript
+    // Properly setting up OpenAI with function calling
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4-turbo",
+      messages: [
+        { role: "system", content: "Use the provided tools when appropriate." },
+        { role: "user", content: "What's my Recall account balance?" }
+      ],
+      tools: toolkit.getToolsForOpenAI(),
+    });
+    ```
+  </Tab>
+
+  <Tab>
+    **LangChain Integration Issues**
+
+    - **Tool Registration**: Verify that tools are properly registered with your LangChain agent.
+    - **Chain Execution Errors**: If your agent chain is failing, try enabling verbose mode to see detailed execution logs.
+
+    ```typescript
+    // Properly setting up LangChain with the toolkit
+    import { ChatOpenAI } from "@langchain/openai";
+    import { createOpenAIFunctionsAgent } from "langchain/agents";
+
+    const tools = toolkit.getToolsForLangChain();
+    const model = new ChatOpenAI({ temperature: 0 });
+
+    // Enable verbose mode for debugging
+    const agent = createOpenAIFunctionsAgent({
+      llm: model,
+      tools,
+      verbose: true, // Helpful for debugging
+    });
+    ```
+  </Tab>
+
+  <Tab>
+    **MCP Integration Issues**
+
+    - **Tool Registration**: Ensure your MCP server properly registers the Recall tools.
+    - **Server Connection**: If your MCP client can't connect to the server, verify port configurations.
+
+    ```typescript
+    // Example MCP server setup
+    import { MCPServer } from "@mcp/server";
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* ... */ },
+    });
+
+    const server = new MCPServer({
+      tools: toolkit.getToolsForMCP(),
+    });
+
+    // Start the server on the default port 8085
+    server.start();
+    ```
+  </Tab>
+
+  <Tab>
+    **AI SDK Integration Issues**
+
+    - **Tool Function Signatures**: Ensure your AI SDK tool definitions match the expected format.
+    - **Stream Processing**: If using streaming responses, verify your stream handling is correct.
+
+    ```typescript
+    // Example AI SDK setup
+    import { createAI } from "ai";
+
+    const ai = createAI({
+      tools: toolkit.getToolsForAISDK(),
+    });
+
+    // Make sure you're handling the tool calls correctly
+    const result = await ai.run("What's my Recall account balance?");
+    ```
+  </Tab>
+</Tabs>
+
+## Version Compatibility
+
+<Callout type="info">
+  The Recall Agent Toolkit is actively developed and regularly updated. Check that you're using compatible versions of all related packages.
+</Callout>
+
+| Agent Toolkit Version | SDK Version  | Compatible Frameworks                                        |
+|-----------------------|--------------|--------------------------------------------------------------|
+| 0.1.x                 | 0.1.x        | OpenAI (>=4.0.0), LangChain (>=0.1.0), MCP (>=0.1.0)        |
+| 0.2.x                 | 0.2.x        | OpenAI (>=4.0.0), LangChain (>=0.2.0), MCP (>=0.1.0), AI SDK (>=3.0.0) |
+| 0.3.x                 | 0.3.x        | OpenAI (>=4.6.0), LangChain (>=0.3.0), MCP (>=0.2.0), AI SDK (>=3.0.0) |
+
+## Debugging Tools
+
+When troubleshooting, these techniques can help identify the root cause:
+
+1. **Enable Verbose Logging**:
+   ```typescript
+   // Set environment variable for debug logging
+   process.env.DEBUG = "recall:*";
+
+   // Or for even more detailed logs
+   process.env.DEBUG = "recall:*,sdk:*";
+   ```
+
+2. **Network Request Inspection**:
+   Use a tool like [Requestly](https://requestly.io/) or browser DevTools to inspect network requests.
+
+3. **Minimal Reproduction**:
+   Create a minimal example that reproduces the issue, which can help isolate the problem.
+
+## Common Error Messages
+
+| Error Message | Likely Cause | Solution |
+|---------------|--------------|----------|
+| "Invalid private key" | Incorrectly formatted private key | Ensure private key is a valid 64-character hex string |
+| "Insufficient funds" | Account lacks RECALL tokens | Use faucet or buy tokens |
+| "Bucket creation failed" | Insufficient credit or invalid name | Check credit balance and bucket naming rules |
+| "Permission denied" | Missing required permissions | Update toolkit configuration with required permissions |
+| "Network error" | Connection issues | Check network settings and server status |
+
+## Getting Help
+
+If you're still experiencing issues:
+
+1. Check the [GitHub repository](https://github.com/recallnet/agent-toolkit) for known issues
+2. Join the [Recall Discord community](https://discord.gg/recall) for real-time help
+3. Open an issue on GitHub with details about your problem and environment
+
+<Callout type="success">
+  For most issues, the Recall Discord community is the fastest way to get help from the development team and other users.
+</Callout>

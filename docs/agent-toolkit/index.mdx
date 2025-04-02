@@ -80,8 +80,7 @@ For programmatic agents, you can integrate with frameworks like LangChain, Mastr
 ```typescript
 // LangChain integration example
 import { ChatOpenAI } from "@langchain/openai";
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
-import { langchainMCPAdapter } from "@langchain/mcp-adapters";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
 import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
 
 // Create the toolkit
@@ -95,8 +94,8 @@ const toolkit = new RecallAgentToolkit({
   },
 });
 
-// Convert to LangChain tools
-const recallTools = await langchainMCPAdapter(toolkit);
+// Get LangChain tools from the toolkit
+const recallTools = toolkit.getTools();
 
 // Create the agent
 const model = new ChatOpenAI({ model: "gpt-4" });

@@ -9,7 +9,7 @@ import { Steps } from "fumadocs-ui/components/steps";
 
 # Mastra Integration
 
-This guide shows you how to integrate the Recall Agent Toolkit with Mastra to build agents with persistent memory and storage capabilities.
+This guide shows you how to integrate Recall with Mastra to build agents with persistent memory and storage capabilities.
 
 ## Overview
 
@@ -29,7 +29,7 @@ Mastra's focus on agent orchestration combined with Recall's persistent storage 
   ### Install required packages
 
   ```bash
-  npm install @recallnet/agent-toolkit @mastra/core @mastra/agents
+  npm install @recallnet/mcp @mastra/core @mastra/agents @mastra/mcp @ai-sdk/anthropic
   ```
 
   ### Set up environment variables
@@ -38,6 +38,8 @@ Mastra's focus on agent orchestration combined with Recall's persistent storage 
 
   ```
   RECALL_PRIVATE_KEY=your_recall_private_key
+  RECALL_NETWORK=testnet
+  ANTHROPIC_API_KEY=your_anthropic_api_key
   ```
 
   ### Load environment variables in your code
@@ -54,29 +56,31 @@ Here's a simple example of integrating Recall with Mastra:
 
 ```typescript
 import { Agent, Task } from "@mastra/agents";
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mastra";
+import { MCPConfiguration } from "@mastra/mcp";
+import { anthropic } from "@ai-sdk/anthropic";
 
 async function main() {
-  // Initialize the Recall toolkit
-  const recallToolkit = new RecallAgentToolkit({
-    privateKey: process.env.RECALL_PRIVATE_KEY!,
-    configuration: {
-      actions: {
-        account: { read: true },
-        bucket: { read: true, write: true },
-      },
-    },
+  // Initialize the MCP configuration for Recall
+  const mcp = new MCPConfiguration({
+    servers: {
+      recall: {
+        command: "npx",
+        args: ["-y", "@recallnet/mcp"],
+        env: {
+          RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY || "",
+          RECALL_NETWORK: process.env.RECALL_NETWORK || "testnet",
+          RECALL_TOOLS: "all"
+        }
+      }
+    }
   });
-
-  // Get Mastra tools from the toolkit
-  const recallTools = recallToolkit.getTools();
 
   // Create a Mastra agent with Recall tools
   const agent = new Agent({
     name: "RecallAgent",
     description: "An agent with Recall storage capabilities",
-    tools: recallTools,
-    model: "gpt-4-turbo",
+    tools: await mcp.getTools(),
+    model: anthropic("claude-3-7-sonnet-20250219"),
   });
 
   // Create a task for the agent
@@ -87,11 +91,19 @@ async function main() {
   });
 
   // Execute the task
-  const result = await task.execute(
-    "Create a bucket called 'notes' and store a note with the text 'Hello from Mastra!'"
+  const result = await task.stream(
+    "Create a bucket called 'notes' and store a note with the text 'Hello from Mastra!'",
+    {
+      toolsets: await mcp.getToolsets(),
+      temperature: 0
+    }
   );
 
-  console.log("Task result:", result);
+  for await (const chunk of result) {
+    if (chunk.type === "message") {
+      console.log(chunk.content);
+    }
+  }
 }
 
 main().catch(console.error);
@@ -105,7 +117,8 @@ For more complex applications, you can integrate Recall storage with Mastra's ag
 
 ```typescript
 import { Agent, Task, Workflow, Tool } from "@mastra/agents";
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mastra";
+import { MCPConfiguration } from "@mastra/mcp";
+import { anthropic } from "@ai-sdk/anthropic";
 import { z } from "zod";
 
 // Define a custom tool that uses Recall for storage
@@ -159,26 +172,30 @@ const createNoteInRecall = new Tool({
 });
 
 async function main() {
-  // Initialize the Recall toolkit
-  const recallToolkit = new RecallAgentToolkit({
-    privateKey: process.env.RECALL_PRIVATE_KEY!,
-    configuration: {
-      actions: {
-        account: { read: true },
-        bucket: { read: true, write: true },
-      },
-    },
+  // Initialize the MCP configuration for Recall
+  const mcp = new MCPConfiguration({
+    servers: {
+      recall: {
+        command: "npx",
+        args: ["-y", "@recallnet/mcp"],
+        env: {
+          RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY || "",
+          RECALL_NETWORK: process.env.RECALL_NETWORK || "testnet",
+          RECALL_TOOLS: "all"
+        }
+      }
+    }
   });
 
-  // Get Mastra tools from the toolkit
-  const recallTools = recallToolkit.getTools();
+  // Get MCP tools
+  const recallTools = await mcp.getTools();
 
   // Create a Mastra agent with Recall tools
   const noteAgent = new Agent({
     name: "NoteAgent",
     description: "An agent that manages notes using Recall storage",
     tools: [...recallTools, createNoteInRecall],
-    model: "gpt-4-turbo",
+    model: anthropic("claude-3-7-sonnet-20250219"),
   });
 
   // Create a task for working with notes
@@ -196,11 +213,19 @@ async function main() {
   });
 
   // Execute the workflow
-  const result = await noteWorkflow.execute(
-    "Create a detailed note about AI safety and store it in my 'research' bucket"
+  const streamResult = await noteWorkflow.stream(
+    "Create a detailed note about AI safety and store it in my 'research' bucket",
+    {
+      toolsets: await mcp.getToolsets(),
+      temperature: 0
+    }
   );
 
-  console.log("Workflow result:", result);
+  for await (const chunk of streamResult) {
+    if (chunk.type === "message") {
+      console.log(chunk.content);
+    }
+  }
 }
 
 main().catch(console.error);
@@ -212,22 +237,25 @@ Mastra excels at orchestrating complex agent workflows. You can use Recall to pr
 
 ```typescript
 import { Agent, Task, Workflow, Memory } from "@mastra/agents";
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mastra";
+import { MCPConfiguration } from "@mastra/mcp";
+import { anthropic } from "@ai-sdk/anthropic";
 
 // Custom memory provider using Recall for storage
 class RecallMemory implements Memory {
-  private toolkit: RecallAgentToolkit;
+  private mcpTools: any[] = [];
   private bucketId: string | null = null;
   private bucketAlias: string;
 
-  constructor(toolkit: RecallAgentToolkit, bucketAlias: string) {
-    this.toolkit = toolkit;
+  constructor(bucketAlias: string) {
     this.bucketAlias = bucketAlias;
   }
 
-  async initialize() {
+  async initialize(tools: any[]) {
+    // Store the MCP tools for later use
+    this.mcpTools = tools.filter(t => t.name.startsWith("recall_"));
+
     // Create or get the bucket for memory storage
-    const getBucketTool = this.toolkit.getTools().find(t => t.name === "recall_get_or_create_bucket");
+    const getBucketTool = this.mcpTools.find(t => t.name === "recall_get_or_create_bucket");
     if (!getBucketTool) {
       throw new Error("Recall get_or_create_bucket tool not found");
     }
@@ -243,7 +271,7 @@ class RecallMemory implements Memory {
       throw new Error("Memory not initialized");
     }
 
-    const addObjectTool = this.toolkit.getTools().find(t => t.name === "recall_add_object");
+    const addObjectTool = this.mcpTools.find(t => t.name === "recall_add_object");
     if (!addObjectTool) {
       throw new Error("Recall add_object tool not found");
     }
@@ -262,7 +290,7 @@ class RecallMemory implements Memory {
       throw new Error("Memory not initialized");
     }
 
-    const getObjectTool = this.toolkit.getTools().find(t => t.name === "recall_get_object");
+    const getObjectTool = this.mcpTools.find(t => t.name === "recall_get_object");
     if (!getObjectTool) {
       throw new Error("Recall get_object tool not found");
     }
@@ -285,7 +313,7 @@ class RecallMemory implements Memory {
       throw new Error("Memory not initialized");
     }
 
-    const deleteObjectTool = this.toolkit.getTools().find(t => t.name === "recall_delete_object");
+    const deleteObjectTool = this.mcpTools.find(t => t.name === "recall_delete_object");
     if (!deleteObjectTool) {
       throw new Error("Recall delete_object tool not found");
     }
@@ -302,12 +330,12 @@ class RecallMemory implements Memory {
     }
 
     // List all objects
-    const queryObjectsTool = this.toolkit.getTools().find(t => t.name === "recall_query_objects");
+    const queryObjectsTool = this.mcpTools.find(t => t.name === "recall_query_objects");
     if (!queryObjectsTool) {
       throw new Error("Recall query_objects tool not found");
     }
 
-    const deleteObjectTool = this.toolkit.getTools().find(t => t.name === "recall_delete_object");
+    const deleteObjectTool = this.mcpTools.find(t => t.name === "recall_delete_object");
     if (!deleteObjectTool) {
       throw new Error("Recall delete_object tool not found");
     }
@@ -327,34 +355,41 @@ class RecallMemory implements Memory {
 }
 
 async function main() {
-  // Initialize the Recall toolkit
-  const recallToolkit = new RecallAgentToolkit({
-    privateKey: process.env.RECALL_PRIVATE_KEY!,
-    configuration: {
-      actions: {
-        account: { read: true },
-        bucket: { read: true, write: true },
-      },
-    },
+  // Initialize the MCP configuration for Recall
+  const mcp = new MCPConfiguration({
+    servers: {
+      recall: {
+        command: "npx",
+        args: ["-y", "@recallnet/mcp"],
+        env: {
+          RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY || "",
+          RECALL_NETWORK: process.env.RECALL_NETWORK || "testnet",
+          RECALL_TOOLS: "all"
+        }
+      }
+    }
   });
+
+  // Get MCP tools
+  const recallTools = await mcp.getTools();
 
   // Initialize memory provider
-  const memory = await new RecallMemory(recallToolkit, "agent-memory").initialize();
-
-  // Create a Mastra agent with Recall tools and memory
-  const agent = new Agent({
-    name: "MemoryAgent",
-    description: "An agent with persistent memory using Recall",
-    tools: recallToolkit.getTools(),
-    model: "gpt-4-turbo",
-    memory,
-  });
+  const memory = new RecallMemory("agent-memory");
+  await memory.initialize(recallTools);
 
   // Store something in memory
   await memory.store("preferences", {
     theme: "dark",
     language: "English",
     notifications: true,
+  });
+
+  // Create a Mastra agent with Recall tools
+  const agent = new Agent({
+    name: "MemoryAgent",
+    description: "An agent with persistent memory using Recall",
+    tools: recallTools,
+    model: anthropic("claude-3-7-sonnet-20250219"),
   });
 
   // Create a task that uses memory
@@ -375,11 +410,19 @@ async function main() {
   });
 
   // Execute the task
-  const result = await task.execute(
-    "Show me my current preferences and suggest some improvements"
+  const result = await task.stream(
+    "Show me my current preferences and suggest some improvements",
+    {
+      toolsets: await mcp.getToolsets(),
+      temperature: 0
+    }
   );
 
-  console.log("Task result:", result);
+  for await (const chunk of result) {
+    if (chunk.type === "message") {
+      console.log(chunk.content);
+    }
+  }
 }
 
 main().catch(console.error);
@@ -391,23 +434,28 @@ Here's a complete example of a research assistant agent built with Mastra and Re
 
 ```typescript
 import { Agent, Task, Workflow, Tool } from "@mastra/agents";
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mastra";
+import { MCPConfiguration } from "@mastra/mcp";
+import { anthropic } from "@ai-sdk/anthropic";
 import { z } from "zod";
 
 async function createResearchAssistant() {
-  // Initialize the Recall toolkit
-  const recallToolkit = new RecallAgentToolkit({
-    privateKey: process.env.RECALL_PRIVATE_KEY!,
-    configuration: {
-      actions: {
-        account: { read: true },
-        bucket: { read: true, write: true },
-      },
-    },
+  // Initialize the MCP configuration for Recall
+  const mcp = new MCPConfiguration({
+    servers: {
+      recall: {
+        command: "npx",
+        args: ["-y", "@recallnet/mcp"],
+        env: {
+          RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY || "",
+          RECALL_NETWORK: process.env.RECALL_NETWORK || "testnet",
+          RECALL_TOOLS: "all"
+        }
+      }
+    }
   });
 
-  // Get Recall tools
-  const recallTools = recallToolkit.getTools();
+  // Get MCP tools
+  const recallTools = await mcp.getTools();
 
   // Create a custom tool for saving research notes
   const saveResearchNote = new Tool({
@@ -535,7 +583,7 @@ async function createResearchAssistant() {
     name: "ResearchAssistant",
     description: "An AI research assistant that can store and retrieve research notes",
     tools: [...recallTools, saveResearchNote, searchResearchNotes],
-    model: "gpt-4-turbo",
+    model: anthropic("claude-3-7-sonnet-20250219"),
   });
 
   // Create task for saving new research
@@ -596,39 +644,45 @@ Mastra's workflow system allows you to create complex, multi-step agent processe
 
 ```typescript
 import { Agent, Task, Workflow } from "@mastra/agents";
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mastra";
+import { MCPConfiguration } from "@mastra/mcp";
+import { anthropic } from "@ai-sdk/anthropic";
 
 async function createDataProcessingWorkflow() {
   // Initialize Recall toolkit
-  const toolkit = new RecallAgentToolkit({
-    privateKey: process.env.RECALL_PRIVATE_KEY!,
-    configuration: {
-      actions: {
-        bucket: { read: true, write: true },
-      },
-    },
+  const toolkit = new MCPConfiguration({
+    servers: {
+      recall: {
+        command: "npx",
+        args: ["-y", "@recallnet/mcp"],
+        env: {
+          RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY || "",
+          RECALL_NETWORK: process.env.RECALL_NETWORK || "testnet",
+          RECALL_TOOLS: "all"
+        }
+      }
+    }
   });
 
   // Create agents with different specializations
   const dataCollector = new Agent({
     name: "DataCollector",
     description: "Collects and stores data in Recall",
-    tools: toolkit.getTools(),
-    model: "gpt-4-turbo",
+    tools: await toolkit.getTools(),
+    model: anthropic("claude-3-7-sonnet-20250219"),
   });
 
   const dataAnalyst = new Agent({
     name: "DataAnalyst",
     description: "Analyzes data stored in Recall",
-    tools: toolkit.getTools(),
-    model: "gpt-4-turbo",
+    tools: await toolkit.getTools(),
+    model: anthropic("claude-3-7-sonnet-20250219"),
   });
 
   const reportGenerator = new Agent({
     name: "ReportGenerator",
     description: "Generates reports based on analyzed data",
-    tools: toolkit.getTools(),
-    model: "gpt-4-turbo",
+    tools: await toolkit.getTools(),
+    model: anthropic("claude-3-7-sonnet-20250219"),
   });
 
   // Create tasks
@@ -669,51 +723,57 @@ You can create complex multi-agent systems where each agent has its own speciali
 
 ```typescript
 import { Agent, Task, Workflow } from "@mastra/agents";
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mastra";
+import { MCPConfiguration } from "@mastra/mcp";
+import { anthropic } from "@ai-sdk/anthropic";
 
 async function createMultiAgentSystem() {
   // Initialize Recall toolkit
-  const toolkit = new RecallAgentToolkit({
-    privateKey: process.env.RECALL_PRIVATE_KEY!,
-    configuration: {
-      actions: {
-        bucket: { read: true, write: true },
-      },
-    },
+  const toolkit = new MCPConfiguration({
+    servers: {
+      recall: {
+        command: "npx",
+        args: ["-y", "@recallnet/mcp"],
+        env: {
+          RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY || "",
+          RECALL_NETWORK: process.env.RECALL_NETWORK || "testnet",
+          RECALL_TOOLS: "all"
+        }
+      }
+    }
   });
 
   // Create bucket for shared knowledge
-  const getBucketTool = toolkit.getTools().find(t => t.name === "recall_get_or_create_bucket");
+  const getBucketTool = await toolkit.getTools().find(t => t.name === "recall_get_or_create_bucket");
   const sharedBucket = await getBucketTool.execute({ bucketAlias: "shared-knowledge" });
 
   // Create specialized agents
   const researchAgent = new Agent({
     name: "Researcher",
     description: "Researches information and stores findings in Recall",
-    tools: toolkit.getTools(),
-    model: "gpt-4-turbo",
+    tools: await toolkit.getTools(),
+    model: anthropic("claude-3-7-sonnet-20250219"),
   });
 
   const writingAgent = new Agent({
     name: "Writer",
     description: "Creates content based on research stored in Recall",
-    tools: toolkit.getTools(),
-    model: "gpt-4-turbo",
+    tools: await toolkit.getTools(),
+    model: anthropic("claude-3-7-sonnet-20250219"),
   });
 
   const editingAgent = new Agent({
     name: "Editor",
     description: "Edits and refines content created by the Writer",
-    tools: toolkit.getTools(),
-    model: "gpt-4-turbo",
+    tools: await toolkit.getTools(),
+    model: anthropic("claude-3-7-sonnet-20250219"),
   });
 
   // Create system coordinator
   const coordinator = new Agent({
     name: "Coordinator",
     description: "Coordinates the multi-agent system",
-    tools: toolkit.getTools(),
-    model: "gpt-4-turbo",
+    tools: await toolkit.getTools(),
+    model: anthropic("claude-3-7-sonnet-20250219"),
   });
 
   // Create multi-agent system workflow

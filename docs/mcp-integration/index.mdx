@@ -39,6 +39,34 @@ This creates a powerful workflow where the agent can decide when to use Recall f
 <Steps>
   ### Install dependencies
 
+  #### For MCP Server Usage (with Cursor, Claude Desktop or similar)
+
+  If you want to use the Recall MCP server with MCP-compatible clients like Cursor or Claude Desktop,
+  install the MCP package:
+
+  <Tabs items={["npm", "yarn", "pnpm"]}>
+    <Tab>
+      ```bash
+      npm install @recallnet/mcp
+      ```
+    </Tab>
+    <Tab>
+      ```bash
+      yarn add @recallnet/mcp
+      ```
+    </Tab>
+    <Tab>
+      ```bash
+      pnpm add @recallnet/mcp
+      ```
+    </Tab>
+  </Tabs>
+
+  #### For Programmatic Usage
+
+  If you want to use the Recall Agent Toolkit programmatically with frameworks like LangChain or create
+  a custom MCP server implementation, install these packages:
+
   <Tabs items={["npm", "yarn", "pnpm"]}>
     <Tab>
       ```bash
@@ -62,7 +90,7 @@ This creates a powerful workflow where the agent can decide when to use Recall f
   Create a `.env` file to store your private key:
 
   ```bash
-  RECALL_PRIVATE_KEY=your_private_key_here
+  RECALL_PRIVATE_KEY=0xyour_private_key_here
   RECALL_NETWORK=testnet  # Optional: defaults to testnet
   ```
 
@@ -75,7 +103,66 @@ This creates a powerful workflow where the agent can decide when to use Recall f
 
 ## Basic Usage with Cursor, Claude or other MCP Clients
 
-Here's how to create an MCP server using the Agent Toolkit:
+The simplest way to use Recall with MCP-compatible clients is to use the official `@recallnet/mcp` package:
+
+<Callout type="info">
+  MCP clients like Cursor and Claude Desktop will automatically start the Recall MCP server using the configuration you provide. You don't need to run the server separately.
+</Callout>
+
+### Cursor Configuration
+
+1. In Cursor, go to _Settings > Cursor Settings > MCP_
+2. Click "Add New Global MCP Server"
+3. Add the following configuration:
+
+```json
+{
+  "mcpServers": {
+    "recall-mcp": {
+      "name": "Recall MCP",
+      "type": "command",
+      "command": "npx",
+      "args": ["-y", "@recallnet/mcp"],
+      "env": {
+        "RECALL_PRIVATE_KEY": "0xyour_private_key_here",
+        "RECALL_NETWORK": "testnet"
+      }
+    }
+  }
+}
+```
+
+### Claude Desktop Configuration
+
+1. Locate your Claude Desktop configuration file at:
+   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+   - Linux: `~/.config/Claude/claude_desktop_config.json`
+
+2. Add the following configuration:
+
+```json
+{
+  "mcpServers": {
+    "recall": {
+      "command": "npx",
+      "args": ["@recallnet/mcp"],
+      "env": {
+        "RECALL_PRIVATE_KEY": "0xyour_private_key_here",
+        "RECALL_NETWORK": "testnet"
+      }
+    }
+  }
+}
+```
+
+3. Save the file and restart Claude Desktop
+
+For more detailed Claude Desktop setup instructions, see the [Claude Desktop Setup Guide](./claude-desktop-setup).
+
+## Programmatic MCP Server Setup
+
+For advanced use cases or custom implementations, you can also create a programmatic MCP server using the Agent Toolkit:
 
 ```typescript
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -135,6 +222,10 @@ Save this to a file (e.g., `server.ts`) and run it with:
 ts-node server.ts
 ```
 
+<Callout type="info">
+  The programmatic approach gives you more control over configuration but requires more setup. For most users, the simpler npx approach above is recommended.
+</Callout>
+
 ## Integration with Agent Frameworks
 
 For programmatic use with agent frameworks, you'll use a different pattern that allows the agent to leverage the MCP tools autonomously:
@@ -145,18 +236,6 @@ For programmatic use with agent frameworks, you'll use a different pattern that 
 import { Agent } from "@mastra/core/agent";
 import { openai } from "@ai-sdk/openai";
 import { MCPConfiguration } from "@mastra/mcp";
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
-
-// Create the Recall toolkit
-const recallToolkit = new RecallAgentToolkit({
-  privateKey: process.env.RECALL_PRIVATE_KEY,
-  configuration: {
-    actions: {
-      account: { read: true },
-      bucket: { read: true, write: true },
-    },
-  },
-});
 
 // Configure MCP with the Recall server
 const mcp = new MCPConfiguration({
@@ -164,10 +243,11 @@ const mcp = new MCPConfiguration({
     recall: {
       name: "recall-storage",
       server: {
-        command: "ts-node",
-        args: ["path/to/your/recall-server.ts"],
+        command: "npx",
+        args: ["@recallnet/mcp"],
         env: {
           RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY,
+          RECALL_NETWORK: "testnet",
         },
       },
     }
@@ -190,14 +270,13 @@ const result = await agent.run("Please store my shopping list and then retrieve 
 
 ```typescript
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
-import { langchainMCPAdapter } from "@langchain/mcp-adapters";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
 import { ChatOpenAI } from "@langchain/openai";
 import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
 import { PromptTemplate } from "@langchain/core/prompts";
 
-// Set up the Recall MCP server
-const recallServer = new RecallAgentToolkit({
+// Set up the Recall toolkit
+const recallToolkit = new RecallAgentToolkit({
   privateKey: process.env.RECALL_PRIVATE_KEY,
   configuration: {
     actions: {
@@ -207,13 +286,8 @@ const recallServer = new RecallAgentToolkit({
   },
 });
 
-// Connect to a transport (if running standalone)
-// For integration, you might directly use the tools
-const transport = new StdioServerTransport();
-await recallServer.connect(transport);
-
-// Convert MCP tools to LangChain tools
-const recallTools = await langchainMCPAdapter(recallServer);
+// Get LangChain tools from the toolkit
+const recallTools = recallToolkit.getTools();
 
 // Create LLM
 const llm = new ChatOpenAI({ model: "gpt-4" });
@@ -239,50 +313,6 @@ const result = await executor.invoke({
 console.log(result.output);
 ```
 
-## Migrating from the Old MCP Package
-
-If you were using the standalone `recall-mcp` package, here's how to migrate to the Agent Toolkit:
-
-<Tabs items={["Before", "After"]}>
-  <Tab>
-    ```typescript
-    // Old approach with recall-mcp
-    import { RecallMCPServer } from "recall-mcp";
-
-    const server = new RecallMCPServer({
-      privateKey: process.env.RECALL_PRIVATE_KEY,
-      network: "testnet",
-    });
-
-    server.start();
-    ```
-  </Tab>
-  <Tab>
-    ```typescript
-    // New approach with agent-toolkit
-    import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
-    import { Configuration } from "@recallnet/agent-toolkit/shared";
-
-    const configuration: Configuration = {
-      actions: {
-        account: { read: true, write: true },
-        bucket: { read: true, write: true },
-      },
-      context: {},
-    };
-
-    const toolkit = new RecallAgentToolkit({
-      privateKey: process.env.RECALL_PRIVATE_KEY,
-      configuration,
-    });
-
-    const transport = new StdioServerTransport();
-    await toolkit.connect(transport);
-    ```
-  </Tab>
-</Tabs>
-
 ## Available Tools
 
 The Agent Toolkit MCP implementation provides the following tools that your agent can autonomously discover and use:
@@ -298,57 +328,6 @@ The Agent Toolkit MCP implementation provides the following tools that your agen
 | `get_object` | Retrieve an object from a bucket | `bucket.read` |
 | `add_object` | Add an object to a bucket | `bucket.write` |
 | `query_objects` | Search for objects in a bucket | `bucket.read` |
-
-## Using with MCP Clients
-
-### Cursor
-
-1. **Build your TypeScript file**:
-   ```bash
-   tsc server.ts
-   ```
-
-2. **Configure in Cursor**:
-   - **Name**: `Recall Agent` (or any label you prefer)
-   - **Type**: `command`
-   - **Command**: `node`
-   - **Arguments**: `/path/to/your/server.js`
-   - **Working Directory**: The directory containing your built JS file
-   - **Environment Variables**:
-     ```
-     RECALL_PRIVATE_KEY=your_private_key
-     RECALL_NETWORK=testnet
-     ```
-
-### Claude Desktop
-
-1. **Build your TypeScript file**:
-   ```bash
-   tsc server.ts
-   ```
-
-2. **Locate the Claude configuration**:
-   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
-   - Linux: `~/.config/Claude/claude_desktop_config.json`
-
-3. **Add an MCP server entry**:
-   ```json
-   {
-     "mcpServers": {
-       "recall-agent": {
-         "name": "Recall Agent",
-         "type": "command",
-         "command": "node",
-         "args": ["/path/to/your/server.js"],
-         "env": {
-           "RECALL_PRIVATE_KEY": "your-private-key-here",
-           "RECALL_NETWORK": "testnet"
-         }
-       }
-     }
-   }
-   ```
 
 ## Security Considerations
 
@@ -413,8 +392,6 @@ const configuration: Configuration = {
 ## Next Steps
 
 - [Custom MCP Tools](/mcp-integration/custom-tools) - Learn how to create custom MCP tools
-- [Debugging MCP](/mcp-integration/debugging) - Tips for debugging MCP integrations
-- [Competition Submission](/mcp-integration/competition-submission) - Submit your MCP agent to competitions
 - [Agent Toolkit Reference](/agent-toolkit) - Learn more about the Agent Toolkit
 
 <Callout type="info">

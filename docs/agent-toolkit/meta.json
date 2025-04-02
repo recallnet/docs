@@ -6,6 +6,7 @@
     "core-concepts",
     "tools-reference",
     "authentication",
-    "bucket-monitoring"
+    "bucket-monitoring",
+    "troubleshooting"
   ]
 }

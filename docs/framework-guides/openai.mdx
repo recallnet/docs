@@ -320,7 +320,7 @@ async function main() {
   });
 
   // Get OpenAI function specifications
-  const recallFunctions = toolkit.getAssistantTools();
+  const recallFunctions = toolkit.getFunctions();
 
   // Create an assistant with Recall tools
   const assistant = await openai.beta.assistants.create({
@@ -827,24 +827,7 @@ When integrating Recall with OpenAI, follow these best practices:
 
 6. **Secure Credentials**: Never expose your private keys or API keys in client-side code
 
-7. **Middleware for Logging**: Use middleware to track API usage and debug issues:
-
-   ```typescript
-   const toolkit = new RecallAgentToolkit({
-     privateKey: process.env.RECALL_PRIVATE_KEY!,
-     configuration: { /* permissions */ },
-     middleware: [{
-       beforeToolCall: (tool, input) => {
-         console.log(`Calling tool: ${tool.name} with input:`, input);
-         return input;
-       },
-       afterToolCall: (tool, input, output) => {
-         console.log(`Tool ${tool.name} returned:`, output);
-         return output;
-       }
-     }]
-   });
-   ```
+7. **Logging**: Implement proper logging for API calls and tool usage to debug issues and track performance
 
 ## Troubleshooting
 

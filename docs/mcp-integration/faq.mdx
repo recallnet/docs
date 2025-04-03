@@ -1,20 +1,20 @@
 ---
-title: Frequently Asked Questions
-description: Common questions and answers about integrating with Recall using the Model Context Protocol (MCP)
+title: Frequently asked questions
+description:
+  Common questions and answers about integrating with Recall using the Model Context Protocol (MCP)
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
-import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+This page covers frequently asked questions about integrating with Recall using the Model Context
+Protocol (MCP).
 
-# MCP Integration FAQs
-
-This page covers frequently asked questions about integrating with Recall using the Model Context Protocol (MCP).
-
-## General Questions
+## General questions
 
 ### What is MCP?
 
-The Model Context Protocol (MCP) is a standardized interface for AI models to access external tools, data, and services. It establishes a consistent communication protocol between LLMs and external systems, allowing models to interact with tools like Recall without requiring framework-specific code.
+The Model Context Protocol (MCP) is a standardized interface for AI models to access external tools,
+data, and services. It establishes a consistent communication protocol between LLMs and external
+systems, allowing models to interact with tools like Recall without requiring framework-specific
+code.
 
 ### Why use MCP with Recall?
 
@@ -35,22 +35,21 @@ MCP is supported by a growing number of AI platforms, including:
 - Custom MCP clients and servers
 
 <Callout type="info">
-  The MCP ecosystem is rapidly evolving. Check the [official MCP documentation](https://modelcontextprotocol.io/) for the latest information on supported platforms.
+
+The MCP ecosystem is rapidly evolving. Check the
+[official MCP documentation](https://modelcontextprotocol.io/) for the latest information on
+supported platforms.
+
 </Callout>
 
-## Setup and Configuration
+## Setup and configuration
 
 ### How do I install the Recall MCP server?
 
-The easiest way to install the Recall MCP server is using npm or npx:
+The easiest way to install the Recall MCP server is using `npx`, which runs it without installing:
 
 ```bash
-# Using npx (runs without installing)
 npx @recallnet/mcp --private-key=YOUR_PRIVATE_KEY --network=testnet
-
-# Or install globally and then run
-npm install -g @recallnet/mcp
-recall-mcp --private-key=YOUR_PRIVATE_KEY --network=testnet
 ```
 
 You can also set up the server with environment variables:
@@ -65,50 +64,81 @@ npx @recallnet/mcp
 
 The Recall MCP server accepts the following options:
 
-| Option | Environment Variable | Description |
-|--------|---------------------|-------------|
-| `--private-key` | `RECALL_PRIVATE_KEY` | Your Recall private key |
-| `--network` | `RECALL_NETWORK` | Network to connect to (`testnet` or `localnet`) |
-| `--port` | `MCP_PORT` | Port to run the MCP server on (default: 8085) |
-| `--host` | `MCP_HOST` | Host to bind the server to (default: localhost) |
-| `--tools` | `MCP_TOOLS` | Comma-separated list of tools to enable (default: all) |
+| Option          | Environment Variable | Description                                            |
+| --------------- | -------------------- | ------------------------------------------------------ |
+| `--private-key` | `RECALL_PRIVATE_KEY` | Your Recall private key                                |
+| `--network`     | `RECALL_NETWORK`     | Network to connect to (`testnet` or `localnet`)        |
+| `--port`        | `MCP_PORT`           | Port to run the MCP server on (default: 8085)          |
+| `--host`        | `MCP_HOST`           | Host to bind the server to (default: localhost)        |
+| `--tools`       | `MCP_TOOLS`          | Comma-separated list of tools to enable (default: all) |
 
-### Can I use MCP with Claude Desktop?
+### How do I use MCP with Claude Desktop?
 
-Yes! Claude Desktop has built-in MCP support. To configure it:
+To add this MCP server to Claude Desktop:
 
-1. Open Claude Desktop
-2. Click on your profile picture > Settings > Advanced > MCP Servers
-3. Add a new server with the following configuration:
+1. Locate your Claude Desktop configuration file at:
+
+   - On macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - On Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+   - On Linux: `~/.config/Claude/claude_desktop_config.json`
+
+2. Create or edit the `claude_desktop_config.json` file with the following content:
 
 ```json
 {
   "mcpServers": {
-    "recall": {
+    "recall-mcp-server": {
+      "name": "Recall MCP",
+      "type": "command",
       "command": "npx",
-      "args": [
-        "@recallnet/mcp",
-        "--private-key=YOUR_PRIVATE_KEY_HERE",
-        "--network=testnet"
-      ],
-      "env": {}
+      "args": ["-y", "@recallnet/mcp"],
+      "env": {
+        "RECALL_PRIVATE_KEY": "0xyour_private_key",
+        "RECALL_NETWORK": "testnet",
+        "RECALL_TOOLS": "all"
+      }
     }
   }
 }
 ```
 
+3. Save the configuration file and restart Claude Desktop.
+
+If you encounter issues with Claude Desktop, check the logs at:
+
+- On macOS: `~/Library/Logs/Claude/`
+- On Windows: `%USERPROFILE%\AppData\Local\Claude\Logs\`
+- On Linux: `~/.local/share/Claude/logs/`
+
 For more detailed instructions, see the [Claude Desktop Setup](./claude-desktop-setup) guide.
 
 ### How do I use MCP with Cursor?
 
-Cursor has excellent MCP support. To use it:
+1. In Cursor, go to Settings > Cursor Settings > MCP.
+2. Click "Add New Global MCP Server" to open the server JSON configuration in the editor (i.e., the
+   ~/.cursor/mcp.json file in your home directory).
+3. Add the following configuration:
 
-1. Start your MCP server in a terminal:
-   ```bash
-   npx @recallnet/mcp --private-key=YOUR_PRIVATE_KEY --network=testnet
-   ```
+```json
+{
+  "mcpServers": {
+    "recall-mcp": {
+      "name": "Recall MCP",
+      "type": "command",
+      "command": "npx",
+      "args": ["-y", "@recallnet/mcp"],
+      "env": {
+        "RECALL_PRIVATE_KEY": "0xyour_private_key",
+        "RECALL_NETWORK": "testnet",
+        "RECALL_TOOLS": "all"
+      }
+    }
+  }
+}
+```
 
-2. In Cursor, when talking to Claude, it will automatically detect and use the MCP server.
+4. Save the configuration file and, if needed, refresh the MCP server in _Settings > Cursor
+   Settings > MCP_ (it's in the top right corner of each MCP server), or restart Cursor.
 
 ## Troubleshooting
 
@@ -116,31 +146,27 @@ Cursor has excellent MCP support. To use it:
 
 If your MCP server fails to start, check:
 
-1. **Invalid Private Key**: Ensure your private key is in the correct format (64 character hex string).
-2. **Port Already in Use**: Make sure port 8085 (or your configured port) isn't being used by another application.
-3. **Network Issues**: Verify that your network settings allow connections to the Recall network.
-
-Try running with verbose logging to see more details:
-
-```bash
-DEBUG=recall:*,mcp:* npx @recallnet/mcp --private-key=YOUR_PRIVATE_KEY
-```
+1. **Invalid private key**: Ensure your private key is in the correct format (64 character hex
+   string).
+2. **Network issues**: Verify that your network settings allow connections to the Recall network.
 
 ### The AI model isn't recognizing the Recall tools
 
 If your AI model isn't using the Recall tools:
 
-1. **Check Server Connection**: Make sure your MCP server is running and accessible.
-2. **Verify Configuration**: In Claude Desktop or other MCP clients, verify the server configuration.
-3. **Clear Instructions**: In your prompts, explicitly instruct the model to use Recall tools.
-4. **Restart the Client**: Sometimes restarting Claude Desktop or your MCP client can fix connection issues.
+1. **Check server connection**: Make sure your MCP server is running and accessible.
+2. **Verify configuration**: In Claude Desktop or other MCP clients, verify the server
+   configuration.
+3. **Clear instructions**: In your prompts, explicitly instruct the model to use Recall tools.
+4. **Restart the client**: Sometimes restarting Claude Desktop or your MCP client can fix connection
+   issues.
 
 ### I'm getting "Permission Denied" errors
 
 Permission denied errors usually indicate:
 
-1. **Missing Tool Permissions**: Your MCP server might not have the necessary permissions enabled.
-2. **Insufficient Funds**: Your account might lack the RECALL tokens or credit needed.
+1. **Missing tool permissions**: Your MCP server might not have the necessary permissions enabled.
+2. **Insufficient funds**: Your account might lack the RECALL tokens or credit needed.
 
 Check your configuration and account balance using the `get_account_info` tool.
 
@@ -161,7 +187,7 @@ const toolkit = new RecallAgentToolkit({
 });
 
 // Get Recall tools
-const recallTools = toolkit.getToolsForMCP();
+const recallTools = toolkit.getTools();
 
 // Define your custom tools
 const customTools = [
@@ -195,6 +221,7 @@ For more details, see the [Custom Tools](./custom-tools) guide.
 You can monitor MCP tool usage by:
 
 1. **Enabling verbose logging**:
+
    ```bash
    DEBUG=recall:*,mcp:* npx @recallnet/mcp
    ```
@@ -216,10 +243,7 @@ Yes, you can restrict which tools are available using the `--tools` flag:
 
 ```bash
 # Only enable account tools
-npx @recallnet/mcp --tools=get_account_info,get_credit_info
-
-# Or exclude specific tools using negative patterns
-npx @recallnet/mcp --tools=!buy_credit
+npx @recallnet/mcp --tools=account.read,account.write
 ```
 
 You can also control tool availability through the configuration object:
@@ -250,15 +274,16 @@ For competition submissions using MCP:
 2. Ensure your agent effectively uses the provided tools
 3. Format your submission according to the competition guidelines
 
-Specific steps vary by competition. See the [Competition Submission](./competition-submission) guide for detailed instructions.
+Specific steps vary by competition. See the
+[competition submission](/competitions/team-registration) guide for detailed instructions.
 
 ### Can I deploy an MCP server to production?
 
 Yes, you can deploy an MCP server to production environments. Best practices include:
 
-1. **Secure Key Management**: Use environment variables or a secure key management system.
+1. **Secure key management**: Use environment variables or a secure key management system.
 2. **HTTPS**: Consider running behind a reverse proxy with HTTPS.
-3. **Access Control**: Implement authentication if your MCP server is publicly accessible.
+3. **Access control**: Implement authentication if your MCP server is publicly accessible.
 4. **Monitoring**: Add logging and monitoring for production reliability.
 
 Example production setup with environment variables:
@@ -273,36 +298,24 @@ export MCP_PORT=8085
 pm2 start "npx @recallnet/mcp" --name "recall-mcp"
 ```
 
-## Version Information
+## Version information
 
 ### What version of the MCP server should I use?
 
-We recommend using the latest version of the `@recallnet/mcp` package. Version compatibility:
+We recommend using the latest version of the `@recallnet/mcp` package. The network is rapidly
+evolving, so the latest version is always recommended.
 
-| @recallnet/mcp | Agent Toolkit | SDK | Compatible With |
-|----------------|---------------|-----|-----------------|
-| 0.1.x          | 0.1.x - 0.2.x | 0.1.x - 0.2.x | Basic MCP clients |
-| 0.2.x          | 0.2.x - 0.3.x | 0.2.x - 0.3.x | Claude Desktop, Cursor |
-| 0.3.x          | 0.3.x+        | 0.3.x+        | Latest MCP specification |
-
-<Callout type="warning">
-  Always check the specific requirements for competitions, as they may mandate particular versions for consistency.
-</Callout>
-
-### How do I keep up with MCP changes?
-
-1. **Subscribe to the Recall newsletter** for updates on new features and changes
-2. **Join the [Recall Discord community](https://discord.gg/recall)** for real-time updates and discussions
-3. **Watch the [GitHub repositories](https://github.com/recallnet)** for technical changes
-
-## Getting Help
+## Getting help
 
 If your question isn't answered here:
 
 1. Check the detailed guides in the MCP Integration section
-2. Join the [Recall Discord community](https://discord.gg/recall) for support
+2. Join the [Recall Discord community](https://discord.recall.network) for support
 3. Search for or open issues in the [GitHub repository](https://github.com/recallnet/agent-toolkit)
 
 <Callout type="success">
-  The Recall team and community are actively developing and improving the MCP integration. Your feedback helps make it better!
+
+The Recall team and community are actively developing and improving the MCP integration. Your
+feedback helps make it better!
+
 </Callout>

@@ -1,10 +1,4 @@
 {
-  "title": "Trading Simulator",
-  "pages": [
-    "index",
-    "api-reference",
-    "trading-guide",
-    "multi-chain",
-    "faq"
-  ]
+  "title": "Trading simulator",
+  "pages": ["index", "api-reference", "trading-guide", "multi-chain", "faq"]
 }

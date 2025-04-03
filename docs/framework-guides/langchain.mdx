@@ -1,19 +1,16 @@
 ---
-title: LangChain Integration
-description: Integrate Recall Agent Toolkit with LangChain to build powerful agents with persistent memory
+title: LangChain integration
+description:
+  Integrate Recall Agent Toolkit with LangChain to build powerful agents with persistent memory
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
-import { Tabs, Tab } from "fumadocs-ui/components/tabs";
-import { Steps } from "fumadocs-ui/components/steps";
-
-# LangChain Integration
-
-This guide shows you how to integrate the Recall Agent Toolkit with LangChain to build agents with persistent memory and storage capabilities.
+This guide shows you how to integrate the Recall Agent Toolkit with LangChain to build agents with
+persistent memory and storage capabilities.
 
 ## Overview
 
-LangChain is a popular framework for building applications with language models. By integrating Recall's storage capabilities with LangChain, you can create agents that:
+LangChain is a popular framework for building applications with language models. By integrating
+Recall's storage capabilities with LangChain, you can create agents that:
 
 - Store and retrieve information persistently
 - Build long-term memory across sessions
@@ -24,36 +21,50 @@ LangChain is a popular framework for building applications with language models.
 ## Installation
 
 <Steps>
-  ### Install required packages
 
-  ```bash
-  npm install @recallnet/agent-toolkit @langchain/core langchain @langchain/openai
-  ```
+<Step>
 
-  ### Set up environment variables
+### Install required packages
 
-  Create a `.env` file in your project root:
+```package-install
+npm install @recallnet/agent-toolkit @langchain/core langchain @langchain/openai
+```
 
-  ```
-  RECALL_PRIVATE_KEY=your_recall_private_key
-  OPENAI_API_KEY=your_openai_api_key
-  ```
+</Step>
 
-  ### Load environment variables in your code
+<Step>
 
-  ```typescript
-  import "dotenv/config";
-  ```
+### Set up environment variables
+
+Create a `.env` file in your project root:
+
+```env
+RECALL_PRIVATE_KEY=your_recall_private_key
+OPENAI_API_KEY=your_openai_api_key
+```
+
+</Step>
+
+<Step>
+
+### Load environment variables in your code
+
+```typescript
+import "dotenv/config";
+```
+
+</Step>
+
 </Steps>
 
-## Basic Integration
+## Basic integration
 
 The simplest way to integrate Recall with LangChain is using the `RecallAgentToolkit` class:
 
 ```typescript
-import { OpenAI } from "langchain/llms/openai";
-import { initializeAgentExecutorWithOptions } from "langchain/agents";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
+import { initializeAgentExecutorWithOptions } from "langchain/agents";
+import { OpenAI } from "langchain/llms/openai";
 
 async function main() {
   // Create the Recall toolkit
@@ -72,22 +83,18 @@ async function main() {
 
   // Create LangChain agent
   const model = new OpenAI({
-    temperature: 0,
-    modelName: "gpt-4",
+    temperature: 0.7,
+    modelName: "gpt-4o",
   });
 
-  const executor = await initializeAgentExecutorWithOptions(
-    tools,
-    model,
-    {
-      agentType: "zero-shot-react-description",
-      verbose: true,
-    }
-  );
+  const executor = await initializeAgentExecutorWithOptions(tools, model, {
+    agentType: "zero-shot-react-description",
+    verbose: true,
+  });
 
   // Run the agent
   const result = await executor.invoke({
-    input: "Store a note about LangChain integration and then retrieve it"
+    input: "Store a note about LangChain integration and then retrieve it",
   });
 
   console.log(result.output);
@@ -96,21 +103,23 @@ async function main() {
 main().catch(console.error);
 ```
 
-This basic example creates a LangChain agent with access to Recall's storage capabilities, allowing it to store and retrieve data autonomously.
+This basic example creates a LangChain agent with access to Recall's storage capabilities, allowing
+it to store and retrieve data autonomously.
 
-## Advanced Integration
+## Advanced integration
 
-For more complex agents, you can use the OpenAI functions agent format which works especially well with tool-using models like GPT-4:
+For more complex agents, you can use the OpenAI functions agent format which works especially well
+with tool-using models like GPT-4:
 
 ```typescript
-import { ChatOpenAI } from "@langchain/openai";
-import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
 import {
   ChatPromptTemplate,
+  HumanMessagePromptTemplate,
   MessagesPlaceholder,
-  HumanMessagePromptTemplate
 } from "@langchain/core/prompts";
+import { ChatOpenAI } from "@langchain/openai";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
+import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
 
 async function main() {
   // Create the toolkit
@@ -130,9 +139,9 @@ async function main() {
   const prompt = ChatPromptTemplate.fromMessages([
     HumanMessagePromptTemplate.fromTemplate(
       "You are a helpful assistant with access to Recall storage. " +
-      "Use this to remember important information and retrieve it when needed. " +
-      "Always use structured storage formats when saving data.\n\n" +
-      "User's request: {input}"
+        "Use this to remember important information and retrieve it when needed. " +
+        "Always use structured storage formats when saving data.\n\n" +
+        "User's request: {input}"
     ),
     new MessagesPlaceholder("agent_scratchpad"),
   ]);
@@ -169,9 +178,10 @@ async function main() {
 main().catch(console.error);
 ```
 
-## Working with Agent Memory
+## Working with agent memory
 
-You can combine Recall's persistent storage with LangChain's memory systems for more sophisticated agent capabilities:
+You can combine Recall's persistent storage with LangChain's memory systems for more sophisticated
+agent capabilities:
 
 ```typescript
 import { ChatOpenAI } from "@langchain/openai";
@@ -294,14 +304,14 @@ async function main() {
 main().catch(console.error);
 ```
 
-## Using Recall for Agent Tool State
+## Using Recall for agent tool state
 
 LangChain agents can use Recall to maintain state between tool calls:
 
 ```typescript
-import { ToolKit } from "langchain/agents";
 import { DynamicTool } from "@langchain/core/tools";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
+import { ToolKit } from "langchain/agents";
 
 class RecallEnhancedToolkit implements ToolKit {
   tools: DynamicTool[];
@@ -370,12 +380,14 @@ class RecallEnhancedToolkit implements ToolKit {
 }
 ```
 
-## Complete Examples
+## Complete examples
 
-Here are complete examples that show how to build different types of agents with Recall and LangChain:
+Here are complete examples that show how to build different types of agents with Recall and
+LangChain:
 
-<Tabs items={["Task Agent", "Memory-Enhanced Agent", "RAG Agent"]}>
+<Tabs items={["Task agent", "Memory-enhanced agent", "RAG agent"]}>
   <Tab value="Task Agent">
+
     ```typescript
     import { ChatOpenAI } from "@langchain/openai";
     import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
@@ -444,8 +456,10 @@ Here are complete examples that show how to build different types of agents with
 
     main().catch(console.error);
     ```
+
   </Tab>
   <Tab value="Memory-Enhanced Agent">
+
     ```typescript
     import { ChatOpenAI } from "@langchain/openai";
     import { BufferWindowMemory } from "langchain/memory";
@@ -538,8 +552,10 @@ Here are complete examples that show how to build different types of agents with
 
     main().catch(console.error);
     ```
+
   </Tab>
   <Tab value="RAG Agent">
+
     ```typescript
     import { ChatOpenAI } from "@langchain/openai";
     import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
@@ -710,51 +726,57 @@ Here are complete examples that show how to build different types of agents with
 
     main().catch(console.error);
     ```
+
   </Tab>
 </Tabs>
 
-## Best Practices
+## Best practices
 
 When integrating Recall with LangChain, follow these best practices:
 
-1. **Structured Data Storage**: Always store data in a structured format (like JSON) to make retrieval and processing easier
-
-2. **Consistent Bucket Naming**: Use a consistent naming convention for buckets to organize your agent's memory
-
-3. **Metadata Tagging**: Add metadata to objects for easier querying and filtering
-
-4. **Error Handling**: Implement robust error handling, especially for network operations
-
-5. **Middleware for Monitoring**: Use middleware to track API usage and debug issues:
+1. **Structured data storage**: Always store data in a structured format (like JSON) to make
+   retrieval and processing easier
+2. **Consistent bucket naming**: Use a consistent naming convention for buckets to organize your
+   agent's memory
+3. **Metadata tagging**: Add metadata to objects for easier querying and filtering
+4. **Error handling**: Implement robust error handling, especially for network operations
+5. **Middleware for monitoring**: Use middleware to track API usage and debug issues:
 
    ```typescript
    const toolkit = new RecallAgentToolkit({
      privateKey: process.env.RECALL_PRIVATE_KEY!,
-     configuration: { /* permissions */ },
-     middleware: [{
-       beforeToolCall: (tool, input) => {
-         console.log(`Calling tool: ${tool.name} with input:`, input);
-         return input;
+     configuration: {
+       /* permissions */
+     },
+     middleware: [
+       {
+         beforeToolCall: (tool, input) => {
+           console.log(`Calling tool: ${tool.name} with input:`, input);
+           return input;
+         },
+         afterToolCall: (tool, input, output) => {
+           console.log(`Tool ${tool.name} returned:`, output);
+           return output;
+         },
+         onToolError: (tool, input, error) => {
+           console.error(`Tool ${tool.name} failed:`, error);
+           throw error;
+         },
        },
-       afterToolCall: (tool, input, output) => {
-         console.log(`Tool ${tool.name} returned:`, output);
-         return output;
-       },
-       onToolError: (tool, input, error) => {
-         console.error(`Tool ${tool.name} failed:`, error);
-         throw error;
-       }
-     }]
+     ],
    });
    ```
 
-6. **Separate Buckets by Function**: Use different buckets for different types of data (e.g., conversation history, user preferences, documents)
+6. **Separate buckets by function**: Use different buckets for different types of data (e.g.,
+   conversation history, user preferences, documents)
+7. **Cache frequently used data**: For performance-critical applications, consider caching
+   frequently accessed data
 
-7. **Cache Frequently Used Data**: For performance-critical applications, consider caching frequently accessed data
+## Next steps
 
-## Next Steps
-
-- Explore the [Agent Toolkit Core Concepts](/agent-toolkit/core-concepts) to better understand Recall's capabilities
-- Check the [Tools Reference](/agent-toolkit/tools-reference) for detailed documentation on available tools
-- Learn about [Bucket Monitoring](/agent-toolkit/bucket-monitoring) to track your agent's activity
-- See the [MCP Integration](/mcp-integration) guide for a different approach to agent development
+- Explore the [Agent Toolkit core concepts](/agent-toolkit/core-concepts) to better understand
+  Recall's capabilities
+- Check the [Tools reference](/agent-toolkit/tools-reference) for detailed documentation on
+  available tools
+- Learn about [Bucket monitoring](/agent-toolkit/bucket-monitoring) to track your agent's activity
+- See the [MCP integration](/mcp-integration) guide for a different approach to agent development

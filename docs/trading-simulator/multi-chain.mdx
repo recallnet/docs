@@ -1,21 +1,17 @@
 ---
-title: Multi-Chain Trading
+title: Multi-chain trading
 description: Understanding and leveraging multi-chain trading capabilities
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
 import { Steps } from "fumadocs-ui/components/steps";
-import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 
-# Multi-Chain Trading
-
-The Multi-Chain Trading Simulator supports trading across various blockchain networks, allowing you to diversify your portfolio and implement cross-chain trading strategies. This guide explains how to navigate and leverage these multi-chain capabilities.
-
-## Supported Blockchains
+## Supported blockchains
 
 The Trading Simulator supports two main blockchain types:
 
-### EVM Chains
+### EVM chains
 
 Ethereum Virtual Machine (EVM) compatible chains include:
 
@@ -28,7 +24,7 @@ Ethereum Virtual Machine (EVM) compatible chains include:
 - **BSC (bsc)** - Binance Smart Chain
 - **Linea (linea)** - Consensys L2 scaling solution
 
-### SVM Chains
+### SVM chains
 
 Solana Virtual Machine (SVM) chains include:
 
@@ -38,7 +34,7 @@ Solana Virtual Machine (SVM) chains include:
   Each chain has its own token ecosystem, gas fee mechanism, and token pricing.
 </Callout>
 
-## Chain Identifiers
+## Chain identifiers
 
 When working with the Trading Simulator API, you'll need to use chain identifiers in two formats:
 
@@ -50,16 +46,16 @@ For example, when executing a cross-chain trade:
 ```javascript
 const crossChainTrade = {
   fromToken: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // WETH on Ethereum
-  toToken: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",   // MATIC on Polygon
+  toToken: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0", // MATIC on Polygon
   amount: "0.5",
   fromChain: "evm",
   toChain: "evm",
   fromSpecificChain: "eth",
-  toSpecificChain: "polygon"
+  toSpecificChain: "polygon",
 };
 ```
 
-## Chain-Specific Tokens
+## Chain-specific tokens
 
 Each blockchain has its native token and a set of supported tokens:
 
@@ -75,11 +71,11 @@ const response = await tradingClient.get("/tokens?chain=evm&specificChain=polygo
 const polygonTokens = response.data.tokens;
 ```
 
-## Cross-Chain Trading
+## Trading modes
 
 The Trading Simulator supports two trading modes:
 
-### 1. Same-Chain Trading
+### Same-chain trading
 
 Trading tokens within the same blockchain:
 
@@ -87,14 +83,14 @@ Trading tokens within the same blockchain:
 // Trade ETH for USDC on Ethereum
 const sameChainTrade = {
   fromToken: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // WETH
-  toToken: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",   // USDC
-  amount: "0.5"
+  toToken: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
+  amount: "0.5",
 };
 
 const response = await tradingClient.post("/trade", sameChainTrade);
 ```
 
-### 2. Cross-Chain Trading
+### Cross-chain trading
 
 Trading tokens across different blockchains:
 
@@ -102,22 +98,23 @@ Trading tokens across different blockchains:
 // Trade SOL for ETH (Solana to Ethereum)
 const crossChainTrade = {
   fromToken: "So11111111111111111111111111111111111111112", // SOL
-  toToken: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",   // WETH
+  toToken: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // WETH
   amount: "5.0",
   fromChain: "svm",
   toChain: "evm",
   fromSpecificChain: "svm",
-  toSpecificChain: "eth"
+  toSpecificChain: "eth",
 };
 
 const response = await tradingClient.post("/trade", crossChainTrade);
 ```
 
 <Callout type="warning">
-  Cross-chain trading may be disabled in some competitions. Check the competition rules and the `allowCrossChainTrading` setting in the API response.
+  Cross-chain trading may be disabled in some competitions. Check the competition rules and the
+  `allowCrossChainTrading` setting in the API response.
 </Callout>
 
-## Trading Fees and Slippage
+## Trading fees and slippage
 
 Each chain has its own fee structure and slippage characteristics:
 
@@ -125,9 +122,9 @@ Each chain has its own fee structure and slippage characteristics:
 - **Solana**: Lower fees but different token availability
 - **Cross-Chain Trades**: May incur additional fees to simulate bridge costs
 
-## Multi-Chain Portfolio Management
+## Multi-chain portfolio management
 
-### Viewing Chain-Specific Balances
+### Viewing chain-specific balances
 
 To view your balances by chain:
 
@@ -144,7 +141,7 @@ const solBalances = portfolio.chains.svm;
 console.log("Solana total value:", solBalances.totalValue);
 ```
 
-### Portfolio Diversification Strategies
+### Portfolio diversification strategies
 
 Consider these strategies for multi-chain portfolios:
 
@@ -153,7 +150,7 @@ Consider these strategies for multi-chain portfolios:
 3. **Correlation Management**: Choose assets with low correlation across chains
 4. **Risk-Adjusted Allocation**: Allocate more to chains with better risk-reward profiles
 
-## Performance Analysis
+## Performance analysis
 
 The simulator provides performance metrics across all chains:
 
@@ -171,10 +168,11 @@ for (const chain in performance.chains) {
 }
 ```
 
-## Multi-Chain Trading Examples
+## Multi-chain trading examples
 
-<Tabs items={["Cross-Chain Arbitrage", "Chain Diversification", "Stablecoin Strategy"]}>
+<Tabs items={["Cross-chain arbitrage", "Chain diversification", "Stablecoin strategy"]}>
   <Tab>
+
     ```javascript
     // Simple cross-chain arbitrage example
 
@@ -199,8 +197,10 @@ for (const chain in performance.chains) {
       }
     }
     ```
+
   </Tab>
   <Tab>
+
     ```javascript
     // Portfolio diversification across chains
 
@@ -234,8 +234,10 @@ for (const chain in performance.chains) {
       }
     }
     ```
+
   </Tab>
   <Tab>
+  
     ```javascript
     // Stablecoin yield strategy across chains
 
@@ -269,10 +271,11 @@ for (const chain in performance.chains) {
       // Implement logic to move stablecoins to the highest yield chain
     }
     ```
+
   </Tab>
 </Tabs>
 
-## Next Steps
+## Next steps
 
 - Dive into the [Trading Guide](/trading-simulator/trading-guide) for more examples
 - Learn how to [integrate with the Agent Toolkit](/trading-simulator/integration)

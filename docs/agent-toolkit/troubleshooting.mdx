@@ -1,24 +1,21 @@
 ---
 title: Troubleshooting
-description: Common issues and solutions when working with the Agent Toolkit
+description: Common issues and solutions for the Agent Toolkit
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
-import { Steps } from "fumadocs-ui/components/steps";
-import { Tabs, Tab } from "fumadocs-ui/components/tabs";
-
-# Troubleshooting Guide
+## Overview
 
 This guide helps you diagnose and resolve common issues when working with the Recall Agent Toolkit.
 
-## Common Issues
+## Common issues
 
-### Authentication Failures
+### Authentication errors
 
 <Steps>
 ### 1. Invalid Private Key Format
 
-Ensure your private key is in the correct format. It should be a 64-character hexadecimal string, optionally with a `0x` prefix.
+Ensure your private key is in the correct format. It should be a 64-character hexadecimal string,
+optionally with a `0x` prefix.
 
 ```typescript
 // Correct format
@@ -28,12 +25,14 @@ const privateKey = "1234...";   // Without 0x prefix (64 characters)
 ```
 
 <Callout type="warning">
-  Never hardcode private keys in production code. Use environment variables or secure key management solutions.
+  Never hardcode private keys in production code. Use environment variables or secure key management
+  solutions.
 </Callout>
 
 ### 2. Network Mismatch
 
-Verify that you're connecting to the correct network. The network in your toolkit configuration should match your intended environment.
+Verify that you're connecting to the correct network. The network in your toolkit configuration
+should match your intended environment.
 
 ```typescript
 const toolkit = new RecallAgentToolkit({
@@ -48,6 +47,7 @@ const toolkit = new RecallAgentToolkit({
 ```
 
 Currently supported networks are:
+
 - `testnet` - The Recall testnet environment
 - `localnet` - For local development
 
@@ -62,15 +62,18 @@ const accountInfo = await toolkit.getTools().get_account_info();
 console.log(accountInfo);
 ```
 
-You can acquire testnet tokens through the Recall faucet or by purchasing credit through the `buy_credit` tool.
+You can acquire testnet tokens through the Recall faucet or by purchasing credit through the
+`buy_credit` tool.
+
 </Steps>
 
-### Permission Configuration Issues
+### Permission errors
 
 <Steps>
 ### 1. Missing Permissions
 
-If tools are unavailable or operations fail with permission errors, check that you've configured the correct permissions.
+If tools are unavailable or operations fail with permission errors, check that you've configured the
+correct permissions.
 
 ```typescript
 const toolkit = new RecallAgentToolkit({
@@ -78,12 +81,12 @@ const toolkit = new RecallAgentToolkit({
   configuration: {
     actions: {
       account: {
-        read: true,   // Required for get_account_info, get_credit_info
-        write: true,  // Required for buy_credit
+        read: true, // Required for get_account_info, get_credit_info
+        write: true, // Required for buy_credit
       },
       bucket: {
-        read: true,   // Required for list_buckets, get_object, query_objects
-        write: true,  // Required for get_or_create_bucket, add_object
+        read: true, // Required for list_buckets, get_object, query_objects
+        write: true, // Required for get_or_create_bucket, add_object
       },
     },
     // ...
@@ -98,17 +101,19 @@ Ensure the permissions match your use case requirements.
 To debug permission issues, you can inspect the available tools:
 
 ```typescript
+// Check the required permissions for a specific tool
+import { getToolDefinition } from "@recallnet/agent-toolkit/shared";
+
 // Log all available tools
 console.log("Available tools:", Object.keys(toolkit.getTools()));
 
-// Check the required permissions for a specific tool
-import { getToolDefinition } from "@recallnet/agent-toolkit/shared";
 const toolDef = getToolDefinition("add_object");
 console.log("Required permissions:", toolDef.permissions);
 ```
+
 </Steps>
 
-### Bucket and Object Issues
+### Bucket and Object issues
 
 <Steps>
 ### 1. Bucket Creation Failures
@@ -179,7 +184,7 @@ const filteredObjects = await toolkit.getTools().query_objects({
 </Callout>
 </Steps>
 
-### Framework-Specific Issues
+### Framework-specific issues
 
 <Tabs items={['OpenAI', 'LangChain', 'MCP', 'AI SDK']}>
   <Tab>
@@ -201,6 +206,7 @@ const filteredObjects = await toolkit.getTools().query_objects({
       tools: toolkit.getToolsForOpenAI(),
     });
     ```
+
   </Tab>
 
   <Tab>
@@ -224,6 +230,7 @@ const filteredObjects = await toolkit.getTools().query_objects({
       verbose: true, // Helpful for debugging
     });
     ```
+
   </Tab>
 
   <Tab>
@@ -249,6 +256,7 @@ const filteredObjects = await toolkit.getTools().query_objects({
     // Start the server on the default port 8085
     server.start();
     ```
+
   </Tab>
 
   <Tab>
@@ -268,26 +276,16 @@ const filteredObjects = await toolkit.getTools().query_objects({
     // Make sure you're handling the tool calls correctly
     const result = await ai.run("What's my Recall account balance?");
     ```
+
   </Tab>
 </Tabs>
 
-## Version Compatibility
-
-<Callout type="info">
-  The Recall Agent Toolkit is actively developed and regularly updated. Check that you're using compatible versions of all related packages.
-</Callout>
-
-| Agent Toolkit Version | SDK Version  | Compatible Frameworks                                        |
-|-----------------------|--------------|--------------------------------------------------------------|
-| 0.1.x                 | 0.1.x        | OpenAI (>=4.0.0), LangChain (>=0.1.0), MCP (>=0.1.0)        |
-| 0.2.x                 | 0.2.x        | OpenAI (>=4.0.0), LangChain (>=0.2.0), MCP (>=0.1.0), AI SDK (>=3.0.0) |
-| 0.3.x                 | 0.3.x        | OpenAI (>=4.6.0), LangChain (>=0.3.0), MCP (>=0.2.0), AI SDK (>=3.0.0) |
-
-## Debugging Tools
+## Debugging tools
 
 When troubleshooting, these techniques can help identify the root cause:
 
-1. **Enable Verbose Logging**:
+1. **Enable verbose logging**:
+
    ```typescript
    // Set environment variable for debug logging
    process.env.DEBUG = "recall:*";
@@ -296,23 +294,23 @@ When troubleshooting, these techniques can help identify the root cause:
    process.env.DEBUG = "recall:*,sdk:*";
    ```
 
-2. **Network Request Inspection**:
-   Use a tool like [Requestly](https://requestly.io/) or browser DevTools to inspect network requests.
+2. **Network request inspection**: Use a tool like [Requestly](https://requestly.io/) or browser
+   DevTools to inspect network requests.
 
-3. **Minimal Reproduction**:
-   Create a minimal example that reproduces the issue, which can help isolate the problem.
+3. **Minimal reproduction**: Create a minimal example that reproduces the issue, which can help
+   isolate the problem.
 
-## Common Error Messages
+## Common error messages
 
-| Error Message | Likely Cause | Solution |
-|---------------|--------------|----------|
-| "Invalid private key" | Incorrectly formatted private key | Ensure private key is a valid 64-character hex string |
-| "Insufficient funds" | Account lacks RECALL tokens | Use faucet or buy tokens |
-| "Bucket creation failed" | Insufficient credit or invalid name | Check credit balance and bucket naming rules |
-| "Permission denied" | Missing required permissions | Update toolkit configuration with required permissions |
-| "Network error" | Connection issues | Check network settings and server status |
+| Error Message            | Likely Cause                        | Solution                                               |
+| ------------------------ | ----------------------------------- | ------------------------------------------------------ |
+| "Invalid private key"    | Incorrectly formatted private key   | Ensure private key is a valid 64-character hex string  |
+| "Insufficient funds"     | Account lacks RECALL tokens         | Use faucet or buy tokens                               |
+| "Bucket creation failed" | Insufficient credit or invalid name | Check credit balance and bucket naming rules           |
+| "Permission denied"      | Missing required permissions        | Update toolkit configuration with required permissions |
+| "Network error"          | Connection issues                   | Check network settings and server status               |
 
-## Getting Help
+## Getting help
 
 If you're still experiencing issues:
 
@@ -321,5 +319,6 @@ If you're still experiencing issues:
 3. Open an issue on GitHub with details about your problem and environment
 
 <Callout type="success">
-  For most issues, the Recall Discord community is the fastest way to get help from the development team and other users.
+  For most issues, the Recall Discord community is the fastest way to get help from the development
+  team and other users.
 </Callout>

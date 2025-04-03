@@ -1,19 +1,16 @@
 ---
-title: AI SDK Integration
-description: Integrate Recall Agent Toolkit with Vercel's AI SDK for building web applications
+title: AI SDK integration
+description: Using Recall with the AI SDK framework
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
-import { Tabs, Tab } from "fumadocs-ui/components/tabs";
-import { Steps } from "fumadocs-ui/components/steps";
-
-# AI SDK Integration
-
-This guide shows you how to integrate the Recall Agent Toolkit with Vercel's AI SDK to build web applications with Recall-powered agents.
+This guide shows you how to integrate the Recall Agent Toolkit with Vercel's AI SDK to build web
+applications with Recall-powered agents.
 
 ## Overview
 
-[Vercel's AI SDK](https://sdk.vercel.ai/docs) is a powerful toolkit for building AI-powered applications, especially in Next.js applications. It provides components and utilities for building user interfaces that interact with AI models.
+[Vercel's AI SDK](https://sdk.vercel.ai/docs) is a powerful toolkit for building AI-powered
+applications, especially in Next.js applications. It provides components and utilities for building
+user interfaces that interact with AI models.
 
 By integrating Recall Agent Toolkit with the AI SDK, you can:
 
@@ -28,48 +25,49 @@ By integrating Recall Agent Toolkit with the AI SDK, you can:
 <Steps>
   ### Install required packages
 
-  ```bash
-  npm install @recallnet/agent-toolkit ai @ai-sdk/openai react
-  ```
+```package-install
+npm install @recallnet/agent-toolkit ai @ai-sdk/openai react
+```
 
-  If you're using Next.js:
+If you're using Next.js:
 
-  ```bash
-  npm install next
-  ```
+```package-install
+npm install next
+```
 
-  ### Set up environment variables
+### Set up environment variables
 
-  Create a `.env.local` file in your project root:
+Create a `.env.local` file in your project root:
 
-  ```
-  RECALL_PRIVATE_KEY=your_recall_private_key
-  OPENAI_API_KEY=your_openai_api_key
-  ```
+```
+RECALL_PRIVATE_KEY=your_recall_private_key
+OPENAI_API_KEY=your_openai_api_key
+```
 
-  ### Configure Next.js environment variables
+### Configure Next.js environment variables
 
-  In `next.config.js`, add:
+In `next.config.js`, add:
 
-  ```js
-  module.exports = {
-    env: {
-      RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY,
-      OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-    },
-  };
-  ```
+```js
+module.exports = {
+  env: {
+    RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+  },
+};
+```
+
 </Steps>
 
-## Basic Integration
+## Basic integration
 
 Here's how to integrate Recall with the AI SDK in a Next.js application:
 
 ```typescript
 // app/api/chat/route.ts
-import { OpenAI } from '@ai-sdk/openai';
-import { StreamingTextResponse, Message } from 'ai';
-import { RecallAgentToolkit } from '@recallnet/agent-toolkit/ai-sdk';
+import { OpenAI } from "@ai-sdk/openai";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
+import { Message, StreamingTextResponse } from "ai";
 
 // Create the OpenAI client
 const openai = new OpenAI({
@@ -93,16 +91,17 @@ export async function POST(req: Request) {
   const { messages } = await req.json();
 
   // Add system message if not present
-  if (!messages.find((m: Message) => m.role === 'system')) {
+  if (!messages.find((m: Message) => m.role === "system")) {
     messages.unshift({
-      role: 'system',
-      content: 'You are a helpful assistant with access to Recall storage. Use this to remember important information for the user.',
+      role: "system",
+      content:
+        "You are a helpful assistant with access to Recall storage. Use this to remember important information for the user.",
     });
   }
 
   // Generate a response with the AI SDK
   const response = await openai.chat({
-    model: 'gpt-4',
+    model: "gpt-4o",
     messages,
     tools,
   });
@@ -114,44 +113,42 @@ export async function POST(req: Request) {
 
 And the client-side React component:
 
-```tsx
-// app/page.tsx
-'use client';
+```tsx title="app/page.tsx"
+"use client";
 
-import { useState } from 'react';
-import { useChat } from 'ai/react';
+import { useChat } from "ai/react";
 
 export default function ChatPage() {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
 
   return (
-    <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
-      <h1 className="text-2xl font-bold mb-4">Recall-Powered Chat</h1>
+    <div className="stretch mx-auto flex w-full max-w-md flex-col py-24">
+      <h1 className="mb-4 text-2xl font-bold">Recall-Powered Chat</h1>
 
-      {messages.length > 0
-        ? messages.map(m => (
-            <div key={m.id} className={`whitespace-pre-wrap mb-4 ${
-              m.role === 'user' ? 'bg-blue-100 p-2 rounded' : 'bg-gray-100 p-2 rounded'
-            }`}>
-              <b>{m.role === 'user' ? 'You: ' : 'AI: '}</b>
-              {m.content}
-            </div>
-          ))
-        : <div className="text-gray-500">Send a message to get started</div>
-      }
+      {messages.length > 0 ? (
+        messages.map((m) => (
+          <div
+            key={m.id}
+            className={`mb-4 whitespace-pre-wrap ${
+              m.role === "user" ? "rounded bg-blue-100 p-2" : "rounded bg-gray-100 p-2"
+            }`}
+          >
+            <b>{m.role === "user" ? "You: " : "AI: "}</b>
+            {m.content}
+          </div>
+        ))
+      ) : (
+        <div className="text-gray-500">Send a message to get started</div>
+      )}
 
       <form onSubmit={handleSubmit} className="mt-4 flex gap-2">
         <input
-          className="flex-1 border border-gray-300 rounded p-2"
+          className="flex-1 rounded border border-gray-300 p-2"
           value={input}
           placeholder="Say something..."
           onChange={handleInputChange}
         />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white p-2 rounded"
-          disabled={isLoading}
-        >
+        <button type="submit" className="rounded bg-blue-500 p-2 text-white" disabled={isLoading}>
           Send
         </button>
       </form>
@@ -162,15 +159,15 @@ export default function ChatPage() {
 
 This basic example sets up a chat interface that can use Recall for storage via tools.
 
-## Function Calling Implementation
+## Function calling
 
-For more advanced implementations, you'll need to handle function calls properly. Here's how to do that:
+For more advanced implementations, you'll need to handle function calls properly. Here's how to do
+that:
 
-```typescript
-// app/api/chat/route.ts
-import { OpenAI } from '@ai-sdk/openai';
-import { Message, StreamingTextResponse } from 'ai';
-import { RecallAgentToolkit } from '@recallnet/agent-toolkit/ai-sdk';
+```typescript title="app/api/chat/route.ts"
+import { OpenAI } from "@ai-sdk/openai";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
+import { Message, StreamingTextResponse } from "ai";
 
 // Create the OpenAI client
 const openai = new OpenAI({
@@ -199,19 +196,19 @@ export async function POST(req: Request) {
   // Create a bucket for this conversation if it doesn't exist
   if (!conversationBuckets.has(conversationId)) {
     try {
-      const result = await toolkit.run('get_or_create_bucket', {
+      const result = await toolkit.run("get_or_create_bucket", {
         bucketAlias: `conversation-${conversationId}`,
       });
       conversationBuckets.set(conversationId, result.bucket);
     } catch (error) {
-      console.error('Failed to create bucket:', error);
+      console.error("Failed to create bucket:", error);
     }
   }
 
   // Add system message if not present
-  if (!messages.find((m: Message) => m.role === 'system')) {
+  if (!messages.find((m: Message) => m.role === "system")) {
     messages.unshift({
-      role: 'system',
+      role: "system",
       content: `You are a helpful assistant with access to Recall storage.
       Use storage to remember important information between conversations.
       The user has an assigned conversation bucket that you can use for storage.
@@ -221,10 +218,10 @@ export async function POST(req: Request) {
 
   // Generate a response with OpenAI
   const response = await openai.chat({
-    model: 'gpt-4-turbo',
+    model: "gpt-4o",
     messages,
     tools,
-    tool_choice: 'auto',
+    tool_choice: "auto",
   });
 
   // Check if the response includes tool calls
@@ -261,11 +258,11 @@ export async function POST(req: Request) {
     const updatedMessages = [
       ...messages,
       {
-        role: 'assistant',
+        role: "assistant",
         content: null,
         tool_calls: toolCalls.map((tc) => ({
           id: tc.id,
-          type: 'function',
+          type: "function",
           function: {
             name: tc.name,
             arguments: JSON.stringify(tc.args),
@@ -273,7 +270,7 @@ export async function POST(req: Request) {
         })),
       },
       ...results.map((result) => ({
-        role: 'tool',
+        role: "tool",
         tool_call_id: result.tool_call_id,
         content: result.error ? `Error: ${result.error}` : JSON.stringify(result.result),
       })),
@@ -281,7 +278,7 @@ export async function POST(req: Request) {
 
     // Get final assistant response
     const finalResponse = await openai.chat({
-      model: 'gpt-4-turbo',
+      model: "gpt-4o",
       messages: updatedMessages,
     });
 
@@ -294,15 +291,15 @@ export async function POST(req: Request) {
 }
 ```
 
-## Memory Management
+## Memory management
 
 For maintaining conversation context across sessions:
 
 ```typescript
 // app/api/chat/route.ts
-import { OpenAI } from '@ai-sdk/openai';
-import { Message, StreamingTextResponse } from 'ai';
-import { RecallAgentToolkit } from '@recallnet/agent-toolkit/ai-sdk';
+import { OpenAI } from "@ai-sdk/openai";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
+import { Message, StreamingTextResponse } from "ai";
 
 // Create the client and toolkit
 const openai = new OpenAI({
@@ -324,15 +321,15 @@ const tools = toolkit.getTools();
 async function loadConversationMemory(conversationId: string, recentMessages: Message[]) {
   try {
     // Create or get bucket for this conversation
-    const bucketResult = await toolkit.run('get_or_create_bucket', {
+    const bucketResult = await toolkit.run("get_or_create_bucket", {
       bucketAlias: `memory-${conversationId}`,
     });
 
     // Try to load past memory
     try {
-      const memoryResult = await toolkit.run('get_object', {
+      const memoryResult = await toolkit.run("get_object", {
         bucket: bucketResult.bucket,
-        key: 'conversation-summary',
+        key: "conversation-summary",
       });
 
       const memoryData = JSON.parse(memoryResult.value);
@@ -346,14 +343,14 @@ async function loadConversationMemory(conversationId: string, recentMessages: Me
       // No memory exists yet, which is fine
       return {
         memory: "No previous conversation found.",
-        bucketId: bucketResult.bucket
+        bucketId: bucketResult.bucket,
       };
     }
   } catch (error) {
-    console.error('Error loading memory:', error);
+    console.error("Error loading memory:", error);
     return {
       memory: "Failed to load previous conversation.",
-      bucketId: null
+      bucketId: null,
     };
   }
 }
@@ -364,20 +361,21 @@ async function saveConversationMemory(bucketId: string, messages: Message[]) {
   try {
     // Create a summary of the conversation
     const summaryResponse = await openai.chat({
-      model: 'gpt-3.5-turbo',
+      model: "gpt-4o",
       messages: [
         {
-          role: 'system',
-          content: 'Summarize the following conversation in a concise paragraph that captures the key points, important information, and any decisions or actions taken.',
+          role: "system",
+          content:
+            "Summarize the following conversation in a concise paragraph that captures the key points, important information, and any decisions or actions taken.",
         },
-        ...messages
+        ...messages,
       ],
     });
 
     // Save the summary and the last few messages
-    await toolkit.run('add_object', {
+    await toolkit.run("add_object", {
       bucket: bucketId,
-      key: 'conversation-summary',
+      key: "conversation-summary",
       data: JSON.stringify({
         summary: summaryResponse.content,
         lastUpdated: new Date().toISOString(),
@@ -386,12 +384,12 @@ async function saveConversationMemory(bucketId: string, messages: Message[]) {
       overwrite: true,
     });
   } catch (error) {
-    console.error('Error saving memory:', error);
+    console.error("Error saving memory:", error);
   }
 }
 
 export async function POST(req: Request) {
-  const { messages, id: conversationId = 'default' } = await req.json();
+  const { messages, id: conversationId = "default" } = await req.json();
 
   // Load conversation memory
   const { memory, bucketId } = await loadConversationMemory(conversationId, messages);
@@ -399,7 +397,7 @@ export async function POST(req: Request) {
   // Construct messages with memory context
   const messagesWithMemory = [
     {
-      role: 'system',
+      role: "system",
       content: `You are a helpful assistant with access to Recall storage and memory of past conversations.
 
 Memory from previous conversations:
@@ -414,7 +412,7 @@ You can also use Recall storage tools to save and retrieve information as needed
 
   // Generate response
   const response = await openai.chat({
-    model: 'gpt-4',
+    model: "gpt-4o",
     messages: messagesWithMemory,
     tools,
   });
@@ -424,7 +422,7 @@ You can also use Recall storage tools to save and retrieve information as needed
     // We save it in the background to not block the response
     saveConversationMemory(bucketId, [
       ...messages,
-      { role: 'assistant', content: response.content },
+      { role: "assistant", content: response.content },
     ]).catch(console.error);
   }
 
@@ -432,12 +430,13 @@ You can also use Recall storage tools to save and retrieve information as needed
 }
 ```
 
-## Next.js App Router Integration
+## Next.js App Router integration
 
 For a more complete Next.js application with the App Router:
 
 <Tabs items={["Full App Structure", "Route Handler", "UI Component"]}>
   <Tab value="Full App Structure">
+
     ```
     my-recall-app/
     ├── app/
@@ -459,8 +458,10 @@ For a more complete Next.js application with the App Router:
     ├── package.json           # Dependencies
     └── tsconfig.json          # TypeScript configuration
     ```
+
   </Tab>
   <Tab value="Route Handler">
+
     ```typescript
     // app/api/chat/route.ts
     import { OpenAI } from '@ai-sdk/openai';
@@ -563,8 +564,10 @@ For a more complete Next.js application with the App Router:
       }
     }
     ```
+
   </Tab>
   <Tab value="UI Component">
+
     ```tsx
     // components/chat-interface.tsx
     'use client';
@@ -665,16 +668,16 @@ For a more complete Next.js application with the App Router:
       );
     }
     ```
+
   </Tab>
 </Tabs>
 
-## Recall Toolkit Setup
+## Recall Agent Toolkit setup
 
 A common pattern is to centralize your Recall toolkit setup:
 
-```typescript
-// lib/recall.ts
-import { RecallAgentToolkit } from '@recallnet/agent-toolkit/ai-sdk';
+```typescript title="lib/recall.ts"
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
 
 let toolkit: RecallAgentToolkit | null = null;
 
@@ -688,20 +691,22 @@ export function getRecallToolkit() {
           bucket: { read: true, write: true },
         },
       },
-      middleware: [{
-        beforeToolCall: (tool, input) => {
-          console.log(`Calling ${tool.name} with:`, input);
-          return input;
+      middleware: [
+        {
+          beforeToolCall: (tool, input) => {
+            console.log(`Calling ${tool.name} with:`, input);
+            return input;
+          },
+          afterToolCall: (tool, input, output) => {
+            console.log(`${tool.name} result:`, output);
+            return output;
+          },
+          onToolError: (tool, input, error) => {
+            console.error(`${tool.name} error:`, error);
+            throw error;
+          },
         },
-        afterToolCall: (tool, input, output) => {
-          console.log(`${tool.name} result:`, output);
-          return output;
-        },
-        onToolError: (tool, input, error) => {
-          console.error(`${tool.name} error:`, error);
-          throw error;
-        }
-      }]
+      ],
     });
   }
 
@@ -709,48 +714,49 @@ export function getRecallToolkit() {
 }
 ```
 
-## Best Practices
+## Best practices
 
 When integrating Recall with the AI SDK, follow these best practices:
 
-1. **Server-Side Execution**: Always run Recall tools on the server side to protect your private key
-
-2. **Error Handling**: Implement robust error handling for tool calls and API requests
-
-3. **Loading States**: Show appropriate loading states during tool execution for better UX
-
-4. **Streaming Responses**: Use streaming for better user experience
-
-5. **Environment Variables**: Keep sensitive keys in environment variables
-
-6. **Middleware for Debugging**: Use middleware to log tool calls during development:
+1. **Server-side execution**: Always run Recall tools on the server side to protect your private key
+2. **Error handling**: Implement robust error handling for tool calls and API requests
+3. **Loading states**: Show appropriate loading states during tool execution for better UX
+4. **Streaming responses**: Use streaming for better user experience
+5. **Environment variables**: Keep sensitive keys in environment variables
+6. **Middleware for debugging**: Use middleware to log tool calls during development:
 
    ```typescript
-   middleware: [{
-     beforeToolCall: (tool, input) => {
-       console.log(`Tool call: ${tool.name}`, input);
-       return input;
+   middleware: [
+     {
+       beforeToolCall: (tool, input) => {
+         console.log(`Calling ${tool.name} with:`, input);
+         return input;
+       },
+       afterToolCall: (tool, input, output) => {
+         console.log(`${tool.name} result:`, output);
+         return output;
+       },
+       onToolError: (tool, input, error) => {
+         console.error(`${tool.name} error:`, error);
+         throw error;
+       },
      },
-     afterToolCall: (tool, input, output) => {
-       console.log(`Tool result: ${tool.name}`, output);
-       return output;
-     }
-   }]
+   ];
    ```
 
-7. **Route Protection**: Add authentication to protect your API routes if needed
+7. **Route protection**: Add authentication to protect your API routes if needed
 
 ## Troubleshooting
 
-| Issue | Possible Cause | Solution |
-|-------|---------------|----------|
-| "Private key not found" | Missing environment variable | Ensure RECALL_PRIVATE_KEY is set in .env.local |
-| "Cannot read properties of undefined" | Incorrect tool usage | Verify tool parameters match expected schema |
-| "Error: ECONNREFUSED" | Network issue or API service down | Check internet connection and API status |
-| Slow responses | Complex tool operations | Implement proper loading states in UI |
-| "Function not found" | Incorrect tool name | Ensure tool names match exactly |
+| Issue                                 | Possible cause                    | Solution                                       |
+| ------------------------------------- | --------------------------------- | ---------------------------------------------- |
+| "Private key not found"               | Missing environment variable      | Ensure RECALL_PRIVATE_KEY is set in .env.local |
+| "Cannot read properties of undefined" | Incorrect tool usage              | Verify tool parameters match expected schema   |
+| "Error: ECONNREFUSED"                 | Network issue or API service down | Check internet connection and API status       |
+| Slow responses                        | Complex tool operations           | Implement proper loading states in UI          |
+| "Function not found"                  | Incorrect tool name               | Ensure tool names match exactly                |
 
-## AI SDK Helper Components
+## AI SDK helper components
 
 The AI SDK provides several useful React components and hooks:
 
@@ -762,16 +768,16 @@ The AI SDK provides several useful React components and hooks:
 Here's how to use them effectively:
 
 ```tsx
-'use client';
+"use client";
 
-import { useChat, useCompletion } from 'ai/react';
+import { useChat, useCompletion } from "ai/react";
 
 // For chat interfaces
 export function ChatComponent() {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
-    api: '/api/chat',
+    api: "/api/chat",
     initialMessages: [
-      { id: '1', role: 'system', content: 'You are a helpful assistant with Recall storage.' }
+      { id: "1", role: "system", content: "You are a helpful assistant with Recall storage." },
     ],
   });
 
@@ -781,39 +787,39 @@ export function ChatComponent() {
 // For single-turn completions
 export function CompletionComponent() {
   const { completion, input, handleInputChange, handleSubmit } = useCompletion({
-    api: '/api/completion',
+    api: "/api/completion",
   });
 
   // Your completion UI
 }
 ```
 
-## Advanced Vercel AI SDK Features
+## Advanced Vercel AI SDK features
 
 Vercel's AI SDK offers advanced features for production applications:
 
-1. **Rate Limiting**: Add rate limiting to prevent abuse
+1. **Rate limiting**: Add rate limiting to prevent abuse
 
    ```typescript
-   import { Ratelimit } from '@upstash/ratelimit';
-   import { Redis } from '@upstash/redis';
+   import { Ratelimit } from "@upstash/ratelimit";
+   import { Redis } from "@upstash/redis";
 
    const ratelimit = new Ratelimit({
      redis: Redis.fromEnv(),
-     limiter: Ratelimit.slidingWindow(5, '60 s'),
+     limiter: Ratelimit.slidingWindow(5, "60 s"),
    });
 
    export async function POST(req: Request) {
-     const ip = req.headers.get('x-forwarded-for') || 'anonymous';
+     const ip = req.headers.get("x-forwarded-for") || "anonymous";
      const { success, limit, reset } = await ratelimit.limit(ip);
 
      if (!success) {
-       return new Response('Too many requests', {
+       return new Response("Too many requests", {
          status: 429,
          headers: {
-           'X-RateLimit-Limit': limit.toString(),
-           'X-RateLimit-Remaining': '0',
-           'X-RateLimit-Reset': reset.toString(),
+           "X-RateLimit-Limit": limit.toString(),
+           "X-RateLimit-Remaining": "0",
+           "X-RateLimit-Reset": reset.toString(),
          },
        });
      }
@@ -830,7 +836,7 @@ Vercel's AI SDK offers advanced features for production applications:
      const cacheKey = JSON.stringify(messages);
 
      // Check cache
-     const cache = await caches.open('ai-responses');
+     const cache = await caches.open("ai-responses");
      const cachedResponse = await cache.match(cacheKey);
 
      if (cachedResponse) {
@@ -839,7 +845,7 @@ Vercel's AI SDK offers advanced features for production applications:
 
      // Generate response
      const response = await openai.chat({
-       model: 'gpt-4',
+       model: "gpt-4o",
        messages,
        tools,
      });
@@ -853,27 +859,27 @@ Vercel's AI SDK offers advanced features for production applications:
    }
    ```
 
-3. **Feedback Collection**: Add feedback mechanisms to improve your model
+3. **Feedback collection**: Add feedback mechanisms to improve your model
 
    ```tsx
    function FeedbackButtons({ messageId }: { messageId: string }) {
-     const submitFeedback = async (type: 'positive' | 'negative') => {
-       await fetch('/api/feedback', {
-         method: 'POST',
+     const submitFeedback = async (type: "positive" | "negative") => {
+       await fetch("/api/feedback", {
+         method: "POST",
          body: JSON.stringify({ messageId, type }),
        });
      };
 
      return (
-       <div className="flex space-x-2 mt-1">
+       <div className="mt-1 flex space-x-2">
          <button
-           onClick={() => submitFeedback('positive')}
+           onClick={() => submitFeedback("positive")}
            className="text-sm text-gray-500 hover:text-green-600"
          >
            👍 Helpful
          </button>
          <button
-           onClick={() => submitFeedback('negative')}
+           onClick={() => submitFeedback("negative")}
            className="text-sm text-gray-500 hover:text-red-600"
          >
            👎 Not helpful
@@ -883,13 +889,18 @@ Vercel's AI SDK offers advanced features for production applications:
    }
    ```
 
-## Next Steps
+## Next steps
 
-- Explore the [Agent Toolkit Core Concepts](/agent-toolkit/core-concepts) to better understand the Recall capabilities
+- Explore the [Agent Toolkit Core Concepts](/agent-toolkit/core-concepts) to better understand the
+  Recall capabilities
 - Learn about [Bucket Monitoring](/agent-toolkit/bucket-monitoring) to track agent activity
 - Check out the [MCP Integration](/mcp-integration) guide for a different approach
-- See the [Tools Reference](/agent-toolkit/tools-reference) for detailed documentation of available tools
+- See the [Tools Reference](/agent-toolkit/tools-reference) for detailed documentation of available
+  tools
 
 <Callout type="info">
-  The Vercel AI SDK is regularly updated with new features. Check the [official documentation](https://sdk.vercel.ai/docs) for the latest updates.
+
+The Vercel AI SDK is regularly updated with new features. Check the
+[official documentation](https://sdk.vercel.ai/docs) for the latest updates.
+
 </Callout>

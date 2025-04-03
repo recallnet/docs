@@ -1,112 +1,85 @@
 ---
-title: MCP Integration
+title: MCP integration
 description: Integrate the Model Context Protocol with Recall using the Agent Toolkit
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
-import { Steps } from "fumadocs-ui/components/steps";
-import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+<Callout type="warning" title="Important update">
 
-# MCP Integration with Recall
+The standalone `recall-mcp` package is deprecated. Please use `@recallnet/mcp` or
+`@recallnet/agent-toolkit/mcp` instead, which provides the official, current MCP implementation.
 
-<Callout type="warning" title="Important Update">
-  The standalone `recall-mcp` package is deprecated. Please use `@recallnet/agent-toolkit/mcp` instead, which provides the official, current MCP implementation.
 </Callout>
 
-The Model Context Protocol (MCP) is a universal standard that allows AI models to discover and invoke tools autonomously. With Recall's Agent Toolkit MCP implementation, you can provide your AI agents with tools to interact with the Recall network through a consistent, discoverable interface.
+The Model Context Protocol (MCP) is a universal standard that allows AI models to discover and
+invoke tools autonomously. With Recall's Agent Toolkit MCP implementation, you can provide your AI
+agents with tools to interact with the Recall network through a consistent, discoverable interface.
 
-## How MCP Works with Agents
+## How MCP works with agents
 
 MCP follows a specific pattern:
 
-1. **Tool Registration**: Tools are registered with the MCP server
-2. **Agent Integration**: The agent connects to the MCP server and discovers available tools
-3. **Autonomous Invocation**: The agent (powered by an LLM) decides when and how to use these tools
-4. **Result Processing**: The agent processes the results from tool invocations
+1. **Tool registration**: Tools are registered with the MCP server
+2. **Agent integration**: The agent connects to the MCP server and discovers available tools
+3. **Autonomous invocation**: The agent (powered by an LLM) decides when and how to use these tools
+4. **Result processing**: The agent processes the results from tool invocations
 
-This creates a powerful workflow where the agent can decide when to use Recall for storing or retrieving data based on the conversation context.
+This creates a powerful workflow where the agent can decide when to use Recall for storing or
+retrieving data based on the conversation context.
 
-## Why Use the Agent Toolkit for MCP?
+## Why use the Agent Toolkit for MCP?
 
-- **Current Implementation**: The Agent Toolkit contains the latest MCP implementation
-- **Simplified Setup**: Fewer dependencies and easier configuration
-- **Permissions Management**: Fine-grained control over agent actions
+- **Current implementation**: The Agent Toolkit contains the latest MCP implementation
+- **Simplified setup**: Fewer dependencies and easier configuration
+- **Permissions management**: Fine-grained control over agent actions
 - **Unified API**: Consistent with other framework integrations
-- **Competition Ready**: Designed for submitting to Recall competitions
+- **Competition ready**: Designed for submitting to Recall competitions
 
 ## Installation
 
-<Steps>
-  ### Install dependencies
+#### For MCP server usage (Cursor, Claude Desktop, etc.)
 
-  #### For MCP Server Usage (with Cursor, Claude Desktop or similar)
+If you want to use the Recall MCP server with MCP-compatible clients like Cursor or Claude Desktop,
+you'll set up the prepackaged MCP server binary. This is explained in more detail below and walks
+through configuration, but you can also run it with:
 
-  If you want to use the Recall MCP server with MCP-compatible clients like Cursor or Claude Desktop,
-  install the MCP package:
+```package-install
+npx @recallnet/mcp --private-key=0xyour_private_key_here --network=testnet
+```
 
-  <Tabs items={["npm", "yarn", "pnpm"]}>
-    <Tab>
-      ```bash
-      npm install @recallnet/mcp
-      ```
-    </Tab>
-    <Tab>
-      ```bash
-      yarn add @recallnet/mcp
-      ```
-    </Tab>
-    <Tab>
-      ```bash
-      pnpm add @recallnet/mcp
-      ```
-    </Tab>
-  </Tabs>
+#### For programmatic usage
 
-  #### For Programmatic Usage
+If you want to use the Recall Agent Toolkit programmatically with frameworks like LangChain or
+create a custom MCP server implementation, install these packages:
 
-  If you want to use the Recall Agent Toolkit programmatically with frameworks like LangChain or create
-  a custom MCP server implementation, install these packages:
+```package-install
+npm install @recallnet/agent-toolkit @modelcontextprotocol/sdk
+```
 
-  <Tabs items={["npm", "yarn", "pnpm"]}>
-    <Tab>
-      ```bash
-      npm install @recallnet/agent-toolkit @modelcontextprotocol/sdk
-      ```
-    </Tab>
-    <Tab>
-      ```bash
-      yarn add @recallnet/agent-toolkit @modelcontextprotocol/sdk
-      ```
-    </Tab>
-    <Tab>
-      ```bash
-      pnpm add @recallnet/agent-toolkit @modelcontextprotocol/sdk
-      ```
-    </Tab>
-  </Tabs>
+### Configure environment
 
-  ### Configure environment
+Create a `.env` file to store your private key:
 
-  Create a `.env` file to store your private key:
+```bash
+RECALL_PRIVATE_KEY=0xyour_private_key_here
+RECALL_NETWORK=testnet  # Optional: defaults to testnet
+```
 
-  ```bash
-  RECALL_PRIVATE_KEY=0xyour_private_key_here
-  RECALL_NETWORK=testnet  # Optional: defaults to testnet
-  ```
+Ensure you restrict permissions to keep your key secure:
 
-  Ensure you restrict permissions to keep your key secure:
+```bash
+chmod 600 .env
+```
 
-  ```bash
-  chmod 600 .env
-  ```
-</Steps>
+## Basic usage with Cursor, Claude or other MCP clients
 
-## Basic Usage with Cursor, Claude or other MCP Clients
-
-The simplest way to use Recall with MCP-compatible clients is to use the official `@recallnet/mcp` package:
+The simplest way to use Recall with MCP-compatible clients is to use the official `@recallnet/mcp`
+package:
 
 <Callout type="info">
-  MCP clients like Cursor and Claude Desktop will automatically start the Recall MCP server using the configuration you provide. You don't need to run the server separately.
+
+MCP clients like Cursor and Claude Desktop will automatically start the Recall MCP server using the
+configuration you provide. You don't need to run the server separately.
+
 </Callout>
 
 ### Cursor Configuration
@@ -132,9 +105,10 @@ The simplest way to use Recall with MCP-compatible clients is to use the officia
 }
 ```
 
-### Claude Desktop Configuration
+### Claude Desktop configuration
 
 1. Locate your Claude Desktop configuration file at:
+
    - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
    - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
    - Linux: `~/.config/Claude/claude_desktop_config.json`
@@ -158,11 +132,13 @@ The simplest way to use Recall with MCP-compatible clients is to use the officia
 
 3. Save the file and restart Claude Desktop
 
-For more detailed Claude Desktop setup instructions, see the [Claude Desktop Setup Guide](./claude-desktop-setup).
+For more detailed Claude Desktop setup instructions, see the
+[Claude Desktop Setup Guide](./claude-desktop-setup).
 
-## Programmatic MCP Server Setup
+## Programmatic MCP server setup
 
-For advanced use cases or custom implementations, you can also create a programmatic MCP server using the Agent Toolkit:
+For advanced use cases or custom implementations, you can also create a programmatic MCP server
+using the Agent Toolkit:
 
 ```typescript
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -223,18 +199,22 @@ ts-node server.ts
 ```
 
 <Callout type="info">
-  The programmatic approach gives you more control over configuration but requires more setup. For most users, the simpler npx approach above is recommended.
+
+The programmatic approach gives you more control over configuration but requires more setup. For
+most users, the simpler npx approach above is recommended.
+
 </Callout>
 
-## Integration with Agent Frameworks
+## Integration with agent frameworks
 
-For programmatic use with agent frameworks, you'll use a different pattern that allows the agent to leverage the MCP tools autonomously:
+For programmatic use with agent frameworks, you'll use a different pattern that allows the agent to
+leverage the MCP tools autonomously:
 
-### Mastra Integration
+### Mastra integration
 
 ```typescript
-import { Agent } from "@mastra/core/agent";
 import { openai } from "@ai-sdk/openai";
+import { Agent } from "@mastra/core/agent";
 import { MCPConfiguration } from "@mastra/mcp";
 
 // Configure MCP with the Recall server
@@ -250,7 +230,7 @@ const mcp = new MCPConfiguration({
           RECALL_NETWORK: "testnet",
         },
       },
-    }
+    },
   },
 });
 
@@ -266,14 +246,14 @@ const agent = new Agent({
 const result = await agent.run("Please store my shopping list and then retrieve it");
 ```
 
-### LangChain Integration
+### LangChain integration
 
 ```typescript
+import { PromptTemplate } from "@langchain/core/prompts";
+import { ChatOpenAI } from "@langchain/openai";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
-import { ChatOpenAI } from "@langchain/openai";
 import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
-import { PromptTemplate } from "@langchain/core/prompts";
 
 // Set up the Recall toolkit
 const recallToolkit = new RecallAgentToolkit({
@@ -301,50 +281,55 @@ const prompt = PromptTemplate.fromTemplate(
 const agent = await createOpenAIFunctionsAgent({
   llm,
   tools: recallTools,
-  prompt
+  prompt,
 });
 
 // Run the agent executor
 const executor = new AgentExecutor({ agent, tools: recallTools });
 const result = await executor.invoke({
-  input: "Store my document titled 'Important Notes' with content 'Remember to check the latest updates'"
+  input:
+    "Store my document titled 'Important Notes' with content 'Remember to check the latest updates'",
 });
 
 console.log(result.output);
 ```
 
-## Available Tools
+## Available tools
 
-The Agent Toolkit MCP implementation provides the following tools that your agent can autonomously discover and use:
+The Agent Toolkit MCP implementation provides the following tools that your agent can autonomously
+discover and use:
 
-| Tool Name | Description | Permission |
-|-----------|-------------|------------|
-| `get_account_info` | Get Recall account information | `account.read` |
-| `get_credit_info` | Get Recall account balance information | `account.read` |
-| `buy_credit` | Buy credits for your Recall account | `account.write` |
-| `list_buckets` | List all buckets in Recall | `bucket.read` |
-| `create_bucket` | Create a new bucket | `bucket.write` |
+| Tool Name              | Description                                   | Permission                     |
+| ---------------------- | --------------------------------------------- | ------------------------------ |
+| `get_account_info`     | Get Recall account information                | `account.read`                 |
+| `get_credit_info`      | Get Recall account balance information        | `account.read`                 |
+| `buy_credit`           | Buy credits for your Recall account           | `account.write`                |
+| `list_buckets`         | List all buckets in Recall                    | `bucket.read`                  |
+| `create_bucket`        | Create a new bucket                           | `bucket.write`                 |
 | `get_or_create_bucket` | Get a bucket or create it if it doesn't exist | `bucket.read` + `bucket.write` |
-| `get_object` | Retrieve an object from a bucket | `bucket.read` |
-| `add_object` | Add an object to a bucket | `bucket.write` |
-| `query_objects` | Search for objects in a bucket | `bucket.read` |
+| `get_object`           | Retrieve an object from a bucket              | `bucket.read`                  |
+| `add_object`           | Add an object to a bucket                     | `bucket.write`                 |
+| `query_objects`        | Search for objects in a bucket                | `bucket.read`                  |
 
-## Security Considerations
+## Security considerations
 
 <Callout type="warning">
-  Protect your private key! Never share it or include it in public repositories.
+
+Protect your private key! Never share it or include it in public repositories.
+
 </Callout>
 
-The Agent Toolkit takes care of securely handling your private key, but you should follow these best practices:
+The Agent Toolkit takes care of securely handling your private key, but you should follow these best
+practices:
 
 - Store private keys in environment variables or secure secret management
 - Restrict `.env` file permissions (`chmod 600 .env`)
 - Never log your private key
 - Use different keys for development and production
 
-## Advanced Configuration
+## Advanced configuration
 
-### Custom Context
+### Custom context
 
 You can add custom context to your agent's configuration:
 
@@ -369,7 +354,7 @@ const configuration: Configuration = {
 };
 ```
 
-### Selective Permission Granting
+### Selective permission granting
 
 For security, you can limit which operations your agent can perform:
 
@@ -377,23 +362,25 @@ For security, you can limit which operations your agent can perform:
 const configuration: Configuration = {
   actions: {
     account: {
-      read: true,     // Can read account info
-      write: false,   // Cannot buy credits
+      read: true, // Can read account info
+      write: false, // Cannot buy credits
     },
     bucket: {
-      read: true,    // Can read buckets and objects
-      write: false,  // Cannot create buckets or add objects
+      read: true, // Can read buckets and objects
+      write: false, // Cannot create buckets or add objects
     },
   },
   context: {},
 };
 ```
 
-## Next Steps
+## Next steps
 
-- [Custom MCP Tools](/mcp-integration/custom-tools) - Learn how to create custom MCP tools
-- [Agent Toolkit Reference](/agent-toolkit) - Learn more about the Agent Toolkit
+- [Custom MCP tools](/mcp-integration/custom-tools) - Learn how to create custom MCP tools
+- [Agent Toolkit reference](/agent-toolkit) - Learn more about the Agent Toolkit
 
 <Callout type="info">
-  For a complete end-to-end example, check out our [quickstart guide](/quickstart).
+
+For a complete end-to-end example, check out our [quickstart guide](/quickstart).
+
 </Callout>

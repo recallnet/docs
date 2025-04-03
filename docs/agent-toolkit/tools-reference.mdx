@@ -1,18 +1,17 @@
 ---
-title: Agent Toolkit Tools Reference
-description: Complete reference guide for all tools available in the Recall Agent Toolkit
+title: Tools reference
+description: Complete reference for all Agent Toolkit tools
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
-import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+## Overview
 
-# Agent Toolkit Tools Reference
+This reference guide provides detailed information about all tools available in the Recall Agent
+Toolkit, including parameters, return values, and usage examples.
 
-This reference guide provides detailed information about all tools available in the Recall Agent Toolkit, including parameters, return values, and usage examples.
+## Account tools
 
-## Account Tools
-
-Account tools allow agents to interact with Recall accounts, including viewing account information and managing credits.
+Account tools allow agents to interact with Recall accounts, including viewing account information
+and managing credits.
 
 ### get_account_info
 
@@ -20,18 +19,18 @@ Retrieves information about a Recall account, including token balances, address,
 
 #### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `address` | string | No | The address of the account to get information for. If not provided, uses the connected account. |
+| Parameter | Type   | Required | Description                                                                                     |
+| --------- | ------ | -------- | ----------------------------------------------------------------------------------------------- |
+| `address` | string | No       | The address of the account to get information for. If not provided, uses the connected account. |
 
 #### Returns
 
 ```typescript
 {
-  address: string;       // The account's address (0x...)
-  nonce: number;         // The account's transaction nonce
-  recall: string;        // The account's RECALL token balance
-  network: string;       // The current network ("testnet" or "mainnet")
+  address: string; // The account's address (0x...)
+  nonce: number; // The account's transaction nonce
+  recall: string; // The account's RECALL token balance
+  network: string; // The current network ("testnet" or "mainnet")
 }
 ```
 
@@ -60,6 +59,7 @@ Retrieves information about a Recall account, including token balances, address,
     }
     */
     ```
+
   </Tab>
   <Tab value="LangChain">
     ```typescript
@@ -77,8 +77,10 @@ Retrieves information about a Recall account, including token balances, address,
     console.log(result);
     // { address: "0x123abc...", nonce: 42, recall: "1000000000000000000", network: "testnet" }
     ```
+
   </Tab>
   <Tab value="OpenAI">
+
     ```typescript
     import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
     import OpenAI from "openai";
@@ -107,6 +109,7 @@ Retrieves information about a Recall account, including token balances, address,
     // OpenAI might call the function
     // { name: "get_account_info", arguments: "{}" }
     ```
+
   </Tab>
 </Tabs>
 
@@ -116,17 +119,17 @@ Gets credit information for the connected account, including available credits a
 
 #### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `address` | string | No | The address of the account to get credit information for. If not provided, uses the connected account. |
+| Parameter | Type   | Required | Description                                                                                            |
+| --------- | ------ | -------- | ------------------------------------------------------------------------------------------------------ |
+| `address` | string | No       | The address of the account to get credit information for. If not provided, uses the connected account. |
 
 #### Returns
 
 ```typescript
 {
-  credits: string;        // The account's current credit balance
-  used: string;           // The amount of credit the account has used
-  address: string;        // The account's address
+  credits: string; // The account's current credit balance
+  used: string; // The amount of credit the account has used
+  address: string; // The account's address
 }
 ```
 
@@ -134,6 +137,7 @@ Gets credit information for the connected account, including available credits a
 
 <Tabs items={["MCP", "LangChain", "OpenAI"]}>
   <Tab value="MCP">
+  
     ```typescript
     // The agent might use it like this:
     /*
@@ -153,21 +157,26 @@ Gets credit information for the connected account, including available credits a
     }
     */
     ```
+
   </Tab>
   <Tab value="LangChain">
+
     ```typescript
     // Using the toolkit from the previous example
     const result = await tools.find(t => t.name === "get_credit_info").call({});
     console.log(result);
     // { credits: "5000", used: "250", address: "0x123abc..." }
     ```
+
   </Tab>
   <Tab value="OpenAI">
+
     ```typescript
     // Using the toolkit from the previous example
     // OpenAI might call the function
     // { name: "get_credit_info", arguments: "{}" }
     ```
+
   </Tab>
 </Tabs>
 
@@ -177,17 +186,17 @@ Buys credit for the connected account, allowing the agent to perform more operat
 
 #### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `amount` | string | Yes | The amount of credit to buy in ETH. |
-| `to` | string | No | The address of the account to buy credit for. If not provided, uses the connected account. |
+| Parameter | Type   | Required | Description                                                                                |
+| --------- | ------ | -------- | ------------------------------------------------------------------------------------------ |
+| `amount`  | string | Yes      | The amount of credit to buy in ETH.                                                        |
+| `to`      | string | No       | The address of the account to buy credit for. If not provided, uses the connected account. |
 
 #### Returns
 
 ```typescript
 {
-  txHash: string;        // The transaction hash
-  credits: string;       // The new credit balance after the purchase
+  txHash: string; // The transaction hash
+  credits: string; // The new credit balance after the purchase
 }
 ```
 
@@ -195,6 +204,7 @@ Buys credit for the connected account, allowing the agent to perform more operat
 
 <Tabs items={["MCP", "LangChain", "OpenAI"]}>
   <Tab value="MCP">
+
     ```typescript
     // The agent might use it like this:
     /*
@@ -214,8 +224,10 @@ Buys credit for the connected account, allowing the agent to perform more operat
     }
     */
     ```
+
   </Tab>
   <Tab value="LangChain">
+
     ```typescript
     // Using the toolkit from the previous example
     const result = await tools.find(t => t.name === "buy_credit").call({
@@ -224,17 +236,20 @@ Buys credit for the connected account, allowing the agent to perform more operat
     console.log(result);
     // { txHash: "0xdef789...", credits: "6000" }
     ```
+
   </Tab>
   <Tab value="OpenAI">
+
     ```typescript
     // Using the toolkit from the previous example
     // OpenAI might call the function
     // { name: "buy_credit", arguments: "{ \"amount\": \"0.01\" }" }
     ```
+
   </Tab>
 </Tabs>
 
-## Bucket Tools
+## Bucket tools
 
 Bucket tools allow agents to create, manage, and interact with storage buckets on Recall.
 
@@ -244,17 +259,17 @@ Lists all buckets owned by an address in Recall.
 
 #### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `address` | string | No | The address of the account to list buckets for. If not provided, uses the connected account. |
+| Parameter | Type   | Required | Description                                                                                  |
+| --------- | ------ | -------- | -------------------------------------------------------------------------------------------- |
+| `address` | string | No       | The address of the account to list buckets for. If not provided, uses the connected account. |
 
 #### Returns
 
 ```typescript
 {
   buckets: Array<{
-    bucket: string;       // The bucket address (0x...)
-    name: string;         // The bucket name/alias
+    bucket: string; // The bucket address (0x...)
+    name: string; // The bucket name/alias
     metadata?: Record<string, string>; // Optional bucket metadata
   }>;
 }
@@ -264,6 +279,7 @@ Lists all buckets owned by an address in Recall.
 
 <Tabs items={["MCP", "LangChain", "OpenAI"]}>
   <Tab value="MCP">
+
     ```typescript
     // The agent might use it like this:
     /*
@@ -293,21 +309,26 @@ Lists all buckets owned by an address in Recall.
     }
     */
     ```
+
   </Tab>
   <Tab value="LangChain">
+
     ```typescript
     // Using the toolkit from the previous example
     const result = await tools.find(t => t.name === "list_buckets").call({});
     console.log(result);
     // { buckets: [{ bucket: "0xbucket1...", name: "user-memories" }, ...] }
     ```
+
   </Tab>
   <Tab value="OpenAI">
+
     ```typescript
     // Using the toolkit from the previous example
     // OpenAI might call the function
     // { name: "list_buckets", arguments: "{}" }
     ```
+
   </Tab>
 </Tabs>
 
@@ -317,10 +338,10 @@ Creates a new bucket in Recall with the specified alias.
 
 #### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `bucketAlias` | string | Yes | The alias to assign to the new bucket. |
-| `metadata` | object | No | Optional metadata to store with the bucket. |
+| Parameter     | Type   | Required | Description                                 |
+| ------------- | ------ | -------- | ------------------------------------------- |
+| `bucketAlias` | string | Yes      | The alias to assign to the new bucket.      |
+| `metadata`    | object | No       | Optional metadata to store with the bucket. |
 
 #### Returns
 
@@ -336,6 +357,7 @@ Creates a new bucket in Recall with the specified alias.
 
 <Tabs items={["MCP", "LangChain", "OpenAI"]}>
   <Tab value="MCP">
+
     ```typescript
     // The agent might use it like this:
     /*
@@ -360,8 +382,10 @@ Creates a new bucket in Recall with the specified alias.
     }
     */
     ```
+
   </Tab>
   <Tab value="LangChain">
+
     ```typescript
     // Using the toolkit from the previous example
     const result = await tools.find(t => t.name === "create_bucket").call({
@@ -374,26 +398,30 @@ Creates a new bucket in Recall with the specified alias.
     console.log(result);
     // { bucket: "0xnewbucket...", name: "user-preferences", metadata: {...} }
     ```
+
   </Tab>
   <Tab value="OpenAI">
+
     ```typescript
     // Using the toolkit from the previous example
     // OpenAI might call the function
     // { name: "create_bucket", arguments: "{ \"bucketAlias\": \"user-preferences\", \"metadata\": { \"createdBy\": \"agent\", \"purpose\": \"store user preferences\" } }" }
     ```
+
   </Tab>
 </Tabs>
 
 ### get_or_create_bucket
 
-Gets an existing bucket by alias or creates a new one if it doesn't exist. This is often more convenient than separate get/create operations.
+Gets an existing bucket by alias or creates a new one if it doesn't exist. This is often more
+convenient than separate get/create operations.
 
 #### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `bucketAlias` | string | Yes | The alias of the bucket to retrieve or create. |
-| `metadata` | object | No | Optional metadata to store with the bucket if created. |
+| Parameter     | Type   | Required | Description                                            |
+| ------------- | ------ | -------- | ------------------------------------------------------ |
+| `bucketAlias` | string | Yes      | The alias of the bucket to retrieve or create.         |
+| `metadata`    | object | No       | Optional metadata to store with the bucket if created. |
 
 #### Returns
 
@@ -410,6 +438,7 @@ Gets an existing bucket by alias or creates a new one if it doesn't exist. This 
 
 <Tabs items={["MCP", "LangChain", "OpenAI"]}>
   <Tab value="MCP">
+
     ```typescript
     // The agent might use it like this:
     /*
@@ -430,8 +459,10 @@ Gets an existing bucket by alias or creates a new one if it doesn't exist. This 
     }
     */
     ```
+
   </Tab>
   <Tab value="LangChain">
+
     ```typescript
     // Using the toolkit from the previous example
     const result = await tools.find(t => t.name === "get_or_create_bucket").call({
@@ -440,13 +471,16 @@ Gets an existing bucket by alias or creates a new one if it doesn't exist. This 
     console.log(result);
     // { bucket: "0xbucket3...", name: "chat-history", created: true }
     ```
+
   </Tab>
   <Tab value="OpenAI">
+
     ```typescript
     // Using the toolkit from the previous example
     // OpenAI might call the function
     // { name: "get_or_create_bucket", arguments: "{ \"bucketAlias\": \"chat-history\" }" }
     ```
+
   </Tab>
 </Tabs>
 
@@ -456,13 +490,13 @@ Adds an object to a bucket in Recall. This is how agents store data persistently
 
 #### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `bucket` | string | Yes | The address of the bucket (0x...). |
-| `key` | string | Yes | The key under which to store the object. |
-| `data` | string \| Uint8Array | Yes | The data to store. Most commonly a string or serialized JSON. |
-| `metadata` | object | No | Optional metadata to store with the object. |
-| `overwrite` | boolean | No | Whether to overwrite an existing object with the same key. Default is false. |
+| Parameter   | Type                 | Required | Description                                                                  |
+| ----------- | -------------------- | -------- | ---------------------------------------------------------------------------- |
+| `bucket`    | string               | Yes      | The address of the bucket (0x...).                                           |
+| `key`       | string               | Yes      | The key under which to store the object.                                     |
+| `data`      | string \| Uint8Array | Yes      | The data to store. Most commonly a string or serialized JSON.                |
+| `metadata`  | object               | No       | Optional metadata to store with the object.                                  |
+| `overwrite` | boolean              | No       | Whether to overwrite an existing object with the same key. Default is false. |
 
 #### Returns
 
@@ -478,6 +512,7 @@ Adds an object to a bucket in Recall. This is how agents store data persistently
 
 <Tabs items={["MCP", "LangChain", "OpenAI"]}>
   <Tab value="MCP">
+
     ```typescript
     // The agent might use it like this:
     /*
@@ -503,8 +538,10 @@ Adds an object to a bucket in Recall. This is how agents store data persistently
     }
     */
     ```
+
   </Tab>
   <Tab value="LangChain">
+
     ```typescript
     // Using the toolkit from the previous example
     const result = await tools.find(t => t.name === "add_object").call({
@@ -518,13 +555,16 @@ Adds an object to a bucket in Recall. This is how agents store data persistently
     console.log(result);
     // { key: "preferences", size: 39, metadata: { lastUpdated: "..." } }
     ```
+
   </Tab>
   <Tab value="OpenAI">
+
     ```typescript
     // Using the toolkit from the previous example
     // OpenAI might call the function
     // { name: "add_object", arguments: "{ \"bucket\": \"0xnewbucket...\", \"key\": \"preferences\", \"data\": \"{\\\"theme\\\":\\\"dark\\\",\\\"language\\\":\\\"en\\\"}\", \"metadata\": { \"lastUpdated\": \"2023-04-01T15:30:00Z\" } }" }
     ```
+
   </Tab>
 </Tabs>
 
@@ -534,11 +574,11 @@ Retrieves an object from a bucket in Recall. This is how agents retrieve previou
 
 #### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `bucket` | string | Yes | The address of the bucket (0x...). |
-| `key` | string | Yes | The key under which the object is stored. |
-| `outputType` | string | No | The type of output to return: "string" (default) or "uint8array". |
+| Parameter    | Type   | Required | Description                                                       |
+| ------------ | ------ | -------- | ----------------------------------------------------------------- |
+| `bucket`     | string | Yes      | The address of the bucket (0x...).                                |
+| `key`        | string | Yes      | The key under which the object is stored.                         |
+| `outputType` | string | No       | The type of output to return: "string" (default) or "uint8array". |
 
 #### Returns
 
@@ -554,6 +594,7 @@ Retrieves an object from a bucket in Recall. This is how agents retrieve previou
 
 <Tabs items={["MCP", "LangChain", "OpenAI"]}>
   <Tab value="MCP">
+
     ```typescript
     // The agent might use it like this:
     /*
@@ -577,8 +618,10 @@ Retrieves an object from a bucket in Recall. This is how agents retrieve previou
     }
     */
     ```
+
   </Tab>
   <Tab value="LangChain">
+
     ```typescript
     // Using the toolkit from the previous example
     const result = await tools.find(t => t.name === "get_object").call({
@@ -592,29 +635,33 @@ Retrieves an object from a bucket in Recall. This is how agents retrieve previou
     const preferences = JSON.parse(result.value);
     console.log(preferences.theme); // "dark"
     ```
+
   </Tab>
   <Tab value="OpenAI">
+
     ```typescript
     // Using the toolkit from the previous example
     // OpenAI might call the function
     // { name: "get_object", arguments: "{ \"bucket\": \"0xnewbucket...\", \"key\": \"preferences\" }" }
     ```
+
   </Tab>
 </Tabs>
 
 ### query_objects
 
-Queries objects in a bucket based on prefix, delimiter, and other criteria. Useful for listing objects or finding objects with specific patterns.
+Queries objects in a bucket based on prefix, delimiter, and other criteria. Useful for listing
+objects or finding objects with specific patterns.
 
 #### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `bucket` | string | Yes | The address of the bucket (0x...). |
-| `prefix` | string | No | Filter objects that start with this prefix. |
-| `delimiter` | string | No | Character used to group objects (similar to directories). |
-| `startKey` | string | No | Start listing from this key (for pagination). |
-| `limit` | number | No | Maximum number of results to return. |
+| Parameter   | Type   | Required | Description                                               |
+| ----------- | ------ | -------- | --------------------------------------------------------- |
+| `bucket`    | string | Yes      | The address of the bucket (0x...).                        |
+| `prefix`    | string | No       | Filter objects that start with this prefix.               |
+| `delimiter` | string | No       | Character used to group objects (similar to directories). |
+| `startKey`  | string | No       | Start listing from this key (for pagination).             |
+| `limit`     | number | No       | Maximum number of results to return.                      |
 
 #### Returns
 
@@ -633,6 +680,7 @@ Queries objects in a bucket based on prefix, delimiter, and other criteria. Usef
 
 <Tabs items={["MCP", "LangChain", "OpenAI"]}>
   <Tab value="MCP">
+
     ```typescript
     // The agent might use it like this:
     /*
@@ -668,8 +716,10 @@ Queries objects in a bucket based on prefix, delimiter, and other criteria. Usef
     }
     */
     ```
+
   </Tab>
   <Tab value="LangChain">
+
     ```typescript
     // Using the toolkit from the previous example
     const result = await tools.find(t => t.name === "query_objects").call({
@@ -680,19 +730,22 @@ Queries objects in a bucket based on prefix, delimiter, and other criteria. Usef
     console.log(result);
     // { objects: [{ key: "user-123-chat-1", size: 256, metadata: {...} }, ...] }
     ```
+
   </Tab>
   <Tab value="OpenAI">
+
     ```typescript
     // Using the toolkit from the previous example
     // OpenAI might call the function
     // { name: "query_objects", arguments: "{ \"bucket\": \"0xbucket3...\", \"prefix\": \"user-\", \"limit\": 10 }" }
     ```
+
   </Tab>
 </Tabs>
 
-## Best Practices
+## Best practices
 
-### Error Handling
+### Error handling
 
 When using the tools, implement proper error handling to make your agent more resilient:
 
@@ -700,7 +753,7 @@ When using the tools, implement proper error handling to make your agent more re
 try {
   const result = await toolkit.run("get_object", {
     bucket: bucketId,
-    key: "user-data"
+    key: "user-data",
   });
   // Process the result
 } catch (error) {
@@ -714,7 +767,7 @@ try {
 }
 ```
 
-### Object Storage Patterns
+### Object storage patterns
 
 For structured data, serialize to JSON before storing:
 
@@ -722,11 +775,9 @@ For structured data, serialize to JSON before storing:
 const data = {
   preferences: {
     theme: "dark",
-    fontSize: "medium"
+    fontSize: "medium",
   },
-  history: [
-    { timestamp: Date.now(), action: "login" }
-  ]
+  history: [{ timestamp: Date.now(), action: "login" }],
 };
 
 await toolkit.run("add_object", {
@@ -735,8 +786,8 @@ await toolkit.run("add_object", {
   data: JSON.stringify(data),
   metadata: {
     contentType: "application/json",
-    lastUpdated: new Date().toISOString()
-  }
+    lastUpdated: new Date().toISOString(),
+  },
 });
 ```
 
@@ -745,41 +796,46 @@ When retrieving, parse the JSON:
 ```typescript
 const { value } = await toolkit.run("get_object", {
   bucket: bucketId,
-  key: "user-state"
+  key: "user-state",
 });
 
 const data = JSON.parse(value);
 console.log(data.preferences.theme); // "dark"
 ```
 
-### Naming Conventions
+### Naming conventions
 
 Use consistent key naming patterns to organize data effectively:
 
-- **Hierarchical Keys**: Use slashes to create pseudo-directories: `users/123/profile`
+- **Hierarchical keys**: Use slashes to create pseudo-directories: `users/123/profile`
 - **Prefixes**: Use consistent prefixes for related data: `user-123-preferences`, `user-123-history`
 - **Timestamps**: Include timestamps in keys for time-series data: `logs-2023-04-01`
 
-## Performance Considerations
+## Performance considerations
 
 When working with the Agent Toolkit tools, consider these performance tips:
 
-1. **Batch Operations**: When storing multiple related objects, consider storing them as a single JSON object rather than multiple individual objects.
+1. **Batch operations**: When storing multiple related objects, consider storing them as a single
+   JSON object rather than multiple individual objects.
 
-2. **Lazy Loading**: Only retrieve data when needed rather than preemptively loading everything.
+2. **Lazy loading**: Only retrieve data when needed rather than preemptively loading everything.
 
-3. **Caching**: If repeatedly accessing the same data, cache it in memory rather than fetching it each time.
+3. **Caching**: If repeatedly accessing the same data, cache it in memory rather than fetching it
+   each time.
 
-4. **Pagination**: Use the `limit` and `startKey` parameters when dealing with large numbers of objects.
+4. **Pagination**: Use the `limit` and `startKey` parameters when dealing with large numbers of
+   objects.
 
 <Callout type="info">
-  For more complex scenarios or high-performance requirements, consider implementing a custom middleware that can optimize the API calls or implement caching.
+  For more complex scenarios or high-performance requirements, consider implementing a custom
+  middleware that can optimize the API calls or implement caching.
 </Callout>
 
-## Next Steps
+## Next steps
 
 Now that you understand the available tools in the Agent Toolkit, you might want to:
 
-- Check out the [Core Concepts](/agent-toolkit/core-concepts) guide for a deeper understanding of the toolkit's architecture
+- Check out the [Core Concepts](/agent-toolkit/core-concepts) guide for a deeper understanding of
+  the toolkit's architecture
 - Learn about [Bucket Monitoring](/agent-toolkit/bucket-monitoring) to track your agent's storage
 - Explore [MCP Integration](/mcp-integration) for using the toolkit with MCP-compatible models

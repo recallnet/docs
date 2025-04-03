@@ -1,101 +1,60 @@
 ---
 title: Installation
-description: Install and set up the Recall Agent Toolkit
+description: Install and set up the Agent Toolkit
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
-import { Steps } from "fumadocs-ui/components/steps";
-import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+## Overview
 
-# Installing the Agent Toolkit
-
-This guide covers the installation and initial setup of the Recall Agent Toolkit, which is the primary interface for building agents that interact with the Recall network.
+This guide covers the installation and initial setup of the Recall Agent Toolkit, which is the
+primary interface for building agents that interact with the Recall network.
 
 ## Prerequisites
 
 Before installing the Agent Toolkit, ensure you have:
 
-- **Node.js**: Version 18 or later
+- **Node.js**: Version 20 or later
 - **NPM, Yarn, or PNPM**: For package management
 - **TypeScript**: For type checking (recommended)
 - **A Recall Account**: With some testnet tokens
 
 <Callout type="info">
-  Don't have tokens yet? Visit the [Recall Faucet](/intro/faucet) to get some testnet tokens.
+
+Don't have tokens yet? Visit the [Recall Faucet](/intro/faucet) to get some testnet tokens.
+
 </Callout>
 
-## Installation Options
+## Installation steps
 
-<Tabs items={["npm", "yarn", "pnpm"]}>
-  <Tab>
-    ```bash
-    npm install @recallnet/agent-toolkit
-    ```
+```package-install
+npm install @recallnet/agent-toolkit
+```
 
-    If you're using MCP, also install:
-
-    ```bash
-    npm install @modelcontextprotocol/sdk
-    ```
-  </Tab>
-  <Tab>
-    ```bash
-    yarn add @recallnet/agent-toolkit
-    ```
-
-    If you're using MCP, also install:
-
-    ```bash
-    yarn add @modelcontextprotocol/sdk
-    ```
-  </Tab>
-  <Tab>
-    ```bash
-    pnpm add @recallnet/agent-toolkit
-    ```
-
-    If you're using MCP, also install:
-
-    ```bash
-    pnpm add @modelcontextprotocol/sdk
-    ```
-  </Tab>
-</Tabs>
-
-## Framework-Specific Dependencies
+### Framework-specific dependencies
 
 Depending on which framework you plan to use, you may need additional dependencies:
 
-| Framework | Additional Dependencies |
-|-----------|-------------------------|
-| MCP | `@modelcontextprotocol/sdk` |
-| LangChain | `langchain` |
-| OpenAI | `openai` |
-| AI SDK | `ai` |
-| Mastra | (included in agent-toolkit) |
-| Eliza | (included in agent-toolkit) |
+| Framework | Additional dependencies     |
+| --------- | --------------------------- |
+| MCP       | `@modelcontextprotocol/sdk` |
+| LangChain | `langchain`                 |
+| OpenAI    | `openai`                    |
+| AI SDK    | `ai`                        |
+| Mastra    | (included in agent-toolkit) |
+| Eliza     | (included in agent-toolkit) |
 
 For example, to use the Agent Toolkit with LangChain:
 
-<Tabs items={["npm", "yarn", "pnpm"]}>
-  <Tab>
-    ```bash
-    npm install @recallnet/agent-toolkit langchain
-    ```
-  </Tab>
-  <Tab>
-    ```bash
-    yarn add @recallnet/agent-toolkit langchain
-    ```
-  </Tab>
-  <Tab>
-    ```bash
-    pnpm add @recallnet/agent-toolkit langchain
-    ```
-  </Tab>
-</Tabs>
+```package-install
+npm install @recallnet/agent-toolkit langchain
+```
 
-## TypeScript Configuration
+Or, if you're using MCP, also install:
+
+```package-install
+npm install @modelcontextprotocol/sdk
+```
+
+## Configuration
 
 For TypeScript projects, ensure your `tsconfig.json` includes these settings:
 
@@ -133,12 +92,11 @@ Add the following to `.gitignore` to prevent committing sensitive information:
 .env
 ```
 
-## Basic Setup
+## Basic setup
 
 Here's a basic setup for a Recall agent using the Agent Toolkit with MCP:
 
-```typescript
-// agent.ts
+```typescript title="agent.ts"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
 import { Configuration } from "@recallnet/agent-toolkit/shared";
@@ -195,82 +153,73 @@ main().catch((error) => {
 To verify your installation is working correctly:
 
 <Steps>
-  ### Install dependencies
 
-  If you haven't already, install dotenv:
+<Step>
 
-  <Tabs items={["npm", "yarn", "pnpm"]}>
-    <Tab>
-      ```bash
-      npm install dotenv
-      ```
-    </Tab>
-    <Tab>
-      ```bash
-      yarn add dotenv
-      ```
-    </Tab>
-    <Tab>
-      ```bash
-      pnpm add dotenv
-      ```
-    </Tab>
-  </Tabs>
+### Install dependencies
 
-  ### Run your agent
+If you haven't already, install dotenv:
 
-  <Tabs items={["npm", "yarn", "pnpm"]}>
-    <Tab>
-      ```bash
-      npx ts-node agent.ts
-      ```
-    </Tab>
-    <Tab>
-      ```bash
-      yarn ts-node agent.ts
-      ```
-    </Tab>
-    <Tab>
-      ```bash
-      pnpm ts-node agent.ts
-      ```
-    </Tab>
-  </Tabs>
+```package-install
+npm install dotenv
+```
 
-  ### Test with an MCP client
+</Step>
 
-  Configure an MCP client (like Cursor or Claude) to use your agent and try a simple command like:
+<Step>
 
-  ```
-  Can you check my account information on Recall?
-  ```
+### Run your agent
 
-  You should see a response with your account details.
+```package-install
+npm ts-node agent.ts
+```
+
+</Step>
+
+<Step>
+
+### Test with an MCP client
+
+Configure an MCP client (like Cursor or Claude) to use your agent and try a simple command like:
+
+```
+Can you check my account information on Recall?
+```
+
+You should see a response with your account details.
+
+</Step>
+
 </Steps>
 
 ## Troubleshooting
 
-### Common Issues
+### Common issues
 
 - **"Module not found" errors**: Ensure you've installed all required dependencies
-- **"Private key not found"**: Check that your `.env` file is in the correct location and has the correct format
-- **Connection errors**: Verify your network settings and that you're using the correct network (testnet/mainnet)
+- **"Private key not found"**: Check that your `.env` file is in the correct location and has the
+  correct format
+- **Connection errors**: Verify your network settings and that you're using the correct network
+  (testnet/mainnet)
 
-### Getting Help
+### Getting help
 
 If you encounter issues, you can:
 
-- Join our [Discord community](https://discord.gg/recall) for real-time support
+- Join our [Discord community](https://discord.recall.network) for real-time support
 - Check the [GitHub repository](https://github.com/recallnet/recall) for known issues
 - Review the [debugging guide](/mcp-integration/debugging) for common solutions
 
-## Next Steps
+## Next steps
 
-- [Core Concepts](/agent-toolkit/core-concepts) - Learn about permissions, resources, and configuration
-- [Tools Reference](/agent-toolkit/tools-reference) - Explore the available tools
-- [Quickstart Guide](/quickstart) - Build your first agent
-- [Framework Guides](/framework-guides) - Integration guides for specific frameworks
+- [Core concepts](/agent-toolkit/core-concepts) - Learn about permissions, resources, and
+  configuration
+- [Tools reference](/agent-toolkit/tools-reference) - Explore the available tools
+- [Quickstart guide](/quickstart) - Build your first agent
+- [Framework guides](/framework-guides) - Integration guides for specific frameworks
 
 <Callout type="info">
-  For a complete end-to-end example, check out the [quickstart guide](/quickstart).
+
+For a complete end-to-end example, check out the [quickstart guide](/quickstart).
+
 </Callout>

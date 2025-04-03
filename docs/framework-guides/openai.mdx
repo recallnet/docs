@@ -1,15 +1,10 @@
 ---
-title: OpenAI Integration
-description: Integrate Recall Agent Toolkit with OpenAI APIs for building agents with persistent memory
+title: OpenAI integration
+description: Using Recall with OpenAI's API and tools
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
-import { Tabs, Tab } from "fumadocs-ui/components/tabs";
-import { Steps } from "fumadocs-ui/components/steps";
-
-# OpenAI Integration
-
-This guide shows you how to integrate the Recall Agent Toolkit with OpenAI's APIs to build agents with persistent memory and storage capabilities.
+This guide shows you how to integrate the Recall Agent Toolkit with OpenAI's APIs to build agents
+with persistent memory and storage capabilities.
 
 ## Overview
 
@@ -24,40 +19,54 @@ The OpenAI integration for Recall Agent Toolkit allows you to:
 ## Installation
 
 <Steps>
-  ### Install required packages
 
-  ```bash
-  npm install @recallnet/agent-toolkit openai
-  ```
+<Step>
 
-  ### Set up environment variables
+### Install required packages
 
-  Create a `.env` file in your project root:
+```package-install
+npm install @recallnet/agent-toolkit openai
+```
 
-  ```
-  RECALL_PRIVATE_KEY=your_recall_private_key
-  OPENAI_API_KEY=your_openai_api_key
-  ```
+</Step>
 
-  ### Load environment variables in your code
+<Step>
 
-  ```typescript
-  import "dotenv/config";
-  ```
+### Set up environment variables
+
+Create a `.env` file in your project root:
+
+```dotenv
+RECALL_PRIVATE_KEY=your_recall_private_key
+OPENAI_API_KEY=your_openai_api_key
+```
+
+</Step>
+
+<Step>
+
+### Load environment variables in your code
+
+```typescript
+import "dotenv/config";
+```
+
+</Step>
+
 </Steps>
 
-## Basic Integration
+## Basic integration
 
 The simplest way to integrate Recall with OpenAI is using the `RecallAgentToolkit` for OpenAI:
 
 ```typescript
-import OpenAI from "openai";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
+import OpenAI from "openai";
 
 async function main() {
   // Initialize OpenAI client
   const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
+    apiKey: process.env.OPENAI_API_KEY,
   });
 
   // Create the Recall toolkit with OpenAI integration
@@ -69,7 +78,7 @@ async function main() {
         bucket: { read: true, write: true },
       },
     },
-    client: openai // Pass the OpenAI client
+    client: openai, // Pass the OpenAI client
   });
 
   // Get OpenAI functions from the toolkit
@@ -77,13 +86,20 @@ async function main() {
 
   // Create a conversation with OpenAI
   const messages = [
-    { role: "system", content: "You are a helpful assistant with access to Recall storage. Use this to remember important information." },
-    { role: "user", content: "Create a bucket called 'notes' and store a note about OpenAI integration" }
+    {
+      role: "system",
+      content:
+        "You are a helpful assistant with access to Recall storage. Use this to remember important information.",
+    },
+    {
+      role: "user",
+      content: "Create a bucket called 'notes' and store a note about OpenAI integration",
+    },
   ];
 
   // Call OpenAI with function calling enabled
   const completion = await openai.chat.completions.create({
-    model: "gpt-4",
+    model: "gpt-4o",
     messages,
     functions,
     function_call: "auto",
@@ -111,7 +127,7 @@ async function main() {
 
     // Get final response
     const finalResponse = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o",
       messages,
     });
 
@@ -122,15 +138,16 @@ async function main() {
 main().catch(console.error);
 ```
 
-This basic example demonstrates how to set up the OpenAI integration and enable function calling for Recall operations.
+This basic example demonstrates how to set up the OpenAI integration and enable function calling for
+Recall operations.
 
-## Conversation Management
+## Conversation management
 
 For multi-turn conversations with memory, you'll need to maintain the conversation state:
 
 ```typescript
-import OpenAI from "openai";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
+import OpenAI from "openai";
 
 class RecallOpenAIAgent {
   private openai: OpenAI;
@@ -142,7 +159,7 @@ class RecallOpenAIAgent {
   constructor(openaiApiKey: string, recallPrivateKey: string) {
     // Initialize OpenAI client
     this.openai = new OpenAI({
-      apiKey: openaiApiKey
+      apiKey: openaiApiKey,
     });
 
     // Create the Recall toolkit
@@ -154,7 +171,7 @@ class RecallOpenAIAgent {
           bucket: { read: true, write: true },
         },
       },
-      client: this.openai
+      client: this.openai,
     });
 
     // Get functions
@@ -164,17 +181,18 @@ class RecallOpenAIAgent {
     this.messages = [
       {
         role: "system",
-        content: "You are a helpful assistant with access to Recall storage. " +
-                 "Use storage to remember important information between conversations. " +
-                 "Always use structured formats when storing data for easy retrieval."
-      }
+        content:
+          "You are a helpful assistant with access to Recall storage. " +
+          "Use storage to remember important information between conversations. " +
+          "Always use structured formats when storing data for easy retrieval.",
+      },
     ];
   }
 
   async initialize() {
     // Create or get a conversation history bucket
     const bucketResult = await this.toolkit.run("get_or_create_bucket", {
-      bucketAlias: "conversation-history"
+      bucketAlias: "conversation-history",
     });
 
     this.bucketId = bucketResult.bucket;
@@ -183,7 +201,7 @@ class RecallOpenAIAgent {
     try {
       const historyResult = await this.toolkit.run("get_object", {
         bucket: this.bucketId,
-        key: "messages"
+        key: "messages",
       });
 
       // Parse and add previous messages
@@ -204,7 +222,7 @@ class RecallOpenAIAgent {
 
     // Call OpenAI API with function calling
     const completion = await this.openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o",
       messages: this.messages,
       functions: this.functions,
       function_call: "auto",
@@ -260,9 +278,9 @@ class RecallOpenAIAgent {
       key: "messages",
       data: JSON.stringify(messagesToSave),
       metadata: {
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
       },
-      overwrite: true
+      overwrite: true,
     });
   }
 }
@@ -285,7 +303,7 @@ async function main() {
   // Third interaction - store something more complex
   const response3 = await agent.chat(
     "Please create a bucket called 'user-preferences' and store my preferences: " +
-    "dark mode: yes, notifications: disabled, language: English"
+      "dark mode: yes, notifications: disabled, language: English"
   );
   console.log("Response 3:", response3);
 }
@@ -293,18 +311,18 @@ async function main() {
 main().catch(console.error);
 ```
 
-## OpenAI Assistants API Integration
+## OpenAI assistants API integration
 
 You can also integrate Recall with OpenAI's Assistants API:
 
 ```typescript
-import OpenAI from "openai";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
+import OpenAI from "openai";
 
 async function main() {
   // Initialize OpenAI client
   const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
+    apiKey: process.env.OPENAI_API_KEY,
   });
 
   // Create the Recall toolkit
@@ -316,7 +334,7 @@ async function main() {
         bucket: { read: true, write: true },
       },
     },
-    client: openai
+    client: openai,
   });
 
   // Get OpenAI function specifications
@@ -331,7 +349,7 @@ async function main() {
       "You are a helpful assistant with access to Recall storage. " +
       "Use Recall to store important information that needs to be remembered long-term. " +
       "Use structured formats when storing data and maintain consistent bucket organization.",
-    tools: recallFunctions
+    tools: recallFunctions,
   });
 
   console.log(`Created assistant: ${assistant.id}`);
@@ -349,7 +367,7 @@ async function main() {
   // Run the assistant on the thread
   const run = await openai.beta.threads.runs.create(thread.id, {
     assistant_id: assistant.id,
-    instructions: "Please help the user with storing information in Recall"
+    instructions: "Please help the user with storing information in Recall",
   });
 
   console.log(`Created run: ${run.id}`);
@@ -358,7 +376,7 @@ async function main() {
   let completedRun = await waitForRunCompletion(openai, thread.id, run.id);
 
   // Handle tool outputs if needed
-  if (completedRun.status === 'requires_action') {
+  if (completedRun.status === "requires_action") {
     console.log("Run requires action. Processing tool calls...");
 
     const toolCalls = completedRun.required_action?.submit_tool_outputs.tool_calls || [];
@@ -381,11 +399,9 @@ async function main() {
 
     // Submit tool outputs
     if (toolOutputs.length > 0) {
-      await openai.beta.threads.runs.submitToolOutputs(
-        thread.id,
-        run.id,
-        { tool_outputs: toolOutputs }
-      );
+      await openai.beta.threads.runs.submitToolOutputs(thread.id, run.id, {
+        tool_outputs: toolOutputs,
+      });
 
       // Wait for final completion
       completedRun = await waitForRunCompletion(openai, thread.id, run.id);
@@ -397,7 +413,7 @@ async function main() {
 
   // Display the assistant's response
   for (const message of messages.data) {
-    if (message.role === 'assistant') {
+    if (message.role === "assistant") {
       console.log("Assistant:", message.content[0].text.value);
     }
   }
@@ -407,34 +423,32 @@ async function waitForRunCompletion(openai: OpenAI, threadId: string, runId: str
   while (true) {
     const run = await openai.beta.threads.runs.retrieve(threadId, runId);
 
-    if (run.status === 'completed' ||
-        run.status === 'failed' ||
-        run.status === 'requires_action') {
+    if (run.status === "completed" || run.status === "failed" || run.status === "requires_action") {
       return run;
     }
 
     console.log(`Run is ${run.status}. Waiting...`);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 }
 
 main().catch(console.error);
 ```
 
-## Advanced Techniques
+## Advanced usage
 
-### Streaming Responses
+### Streaming responses
 
 You can use streaming responses with Recall for more responsive applications:
 
 ```typescript
-import OpenAI from "openai";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
+import OpenAI from "openai";
 
 async function main() {
   // Initialize OpenAI client
   const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
+    apiKey: process.env.OPENAI_API_KEY,
   });
 
   // Create the Recall toolkit
@@ -445,7 +459,7 @@ async function main() {
         bucket: { read: true, write: true },
       },
     },
-    client: openai
+    client: openai,
   });
 
   // Get functions
@@ -453,7 +467,10 @@ async function main() {
 
   const messages = [
     { role: "system", content: "You are a helpful assistant with Recall storage" },
-    { role: "user", content: "What's the weather like today and could you store that in my preferences?" }
+    {
+      role: "user",
+      content: "What's the weather like today and could you store that in my preferences?",
+    },
   ];
 
   // Create a streaming completion
@@ -477,7 +494,7 @@ async function main() {
       if (!functionCall) {
         functionCall = {
           name: deltaFunctionCall.name || "",
-          arguments: deltaFunctionCall.arguments || ""
+          arguments: deltaFunctionCall.arguments || "",
         };
       } else {
         functionCall.name += deltaFunctionCall.name || "";
@@ -529,12 +546,13 @@ async function main() {
 main().catch(console.error);
 ```
 
-### Function Calling Patterns
+### Function calling patterns
 
 Here are some effective patterns for controlling function calling behavior:
 
-<Tabs items={["Explicit Control", "Sequential Execution", "Parallel Execution"]}>
+<Tabs items={["Explicit control", "Sequential execution", "Parallel execution"]}>
   <Tab value="Explicit Control">
+
     ```typescript
     // To force a specific function call:
     const completion = await openai.chat.completions.create({
@@ -560,8 +578,10 @@ Here are some effective patterns for controlling function calling behavior:
       function_call: "auto",
     });
     ```
+
   </Tab>
   <Tab value="Sequential Execution">
+
     ```typescript
     // For sequential operations (e.g., create bucket then add object):
 
@@ -601,8 +621,10 @@ Here are some effective patterns for controlling function calling behavior:
       return currentMessages[currentMessages.length - 1].content;
     }
     ```
+
   </Tab>
   <Tab value="Parallel Execution">
+
     ```typescript
     // For independent operations, use threads to execute in parallel:
 
@@ -670,28 +692,28 @@ Here are some effective patterns for controlling function calling behavior:
       }
     }
     ```
+
   </Tab>
 </Tabs>
 
-## Integration with Express
+### Integration with Express
 
 Here's how to build a simple API with Express that uses Recall and OpenAI:
 
 ```typescript
-import express from "express";
-import bodyParser from "body-parser";
-import OpenAI from "openai";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
-
+import bodyParser from "body-parser";
 // Load environment variables
 import "dotenv/config";
+import express from "express";
+import OpenAI from "openai";
 
 const app = express();
 app.use(bodyParser.json());
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 // Create the Recall toolkit
@@ -702,7 +724,7 @@ const toolkit = new RecallAgentToolkit({
       bucket: { read: true, write: true },
     },
   },
-  client: openai
+  client: openai,
 });
 
 // Get functions
@@ -724,13 +746,13 @@ app.post("/chat", async (req, res) => {
       conversations.set(conversationId, [
         {
           role: "system",
-          content: "You are a helpful assistant with access to Recall storage."
-        }
+          content: "You are a helpful assistant with access to Recall storage.",
+        },
       ]);
 
       // Create a bucket for this conversation
       const bucketResult = await toolkit.run("get_or_create_bucket", {
-        bucketAlias: `conversation-${conversationId}`
+        bucketAlias: `conversation-${conversationId}`,
       });
 
       console.log(`Created bucket for conversation ${conversationId}: ${bucketResult.bucket}`);
@@ -743,7 +765,7 @@ app.post("/chat", async (req, res) => {
 
     // Call OpenAI API
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o",
       messages,
       functions,
       function_call: "auto",
@@ -781,26 +803,26 @@ app.post("/chat", async (req, res) => {
 
         return res.json({
           response: finalMessage.content,
-          conversationId
+          conversationId,
         });
       } catch (error) {
         console.error("Function execution error:", error);
         return res.status(500).json({
           error: "Function execution failed",
-          details: error.message
+          details: error.message,
         });
       }
     } else {
       return res.json({
         response: responseMessage.content,
-        conversationId
+        conversationId,
       });
     }
   } catch (error) {
     console.error("API error:", error);
     return res.status(500).json({
       error: "Something went wrong",
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -811,39 +833,38 @@ app.listen(port, () => {
 });
 ```
 
-## Best Practices
+## Best practices
 
 When integrating Recall with OpenAI, follow these best practices:
 
-1. **Structured Data Storage**: Always store data in a structured format (like JSON) to make retrieval and processing easier
-
-2. **Optimized Prompting**: Be specific in your system instructions about when and how to use Recall
-
-3. **Error Handling**: Implement robust error handling for both API calls and function execution
-
-4. **Conversation Management**: Keep track of messages and function calls in a way that maintains context
-
-5. **Token Optimization**: Be mindful of token usage, especially with longer conversations
-
-6. **Secure Credentials**: Never expose your private keys or API keys in client-side code
-
-7. **Logging**: Implement proper logging for API calls and tool usage to debug issues and track performance
+1. **Structured data storage**: Always store data in a structured format (like JSON) to make
+   retrieval and processing easier
+2. **Optimized prompting**: Be specific in your system instructions about when and how to use Recall
+3. **Error handling**: Implement robust error handling for both API calls and function execution
+4. **Conversation management**: Keep track of messages and function calls in a way that maintains
+   context
+5. **Token optimization**: Be mindful of token usage, especially with longer conversations
+6. **Secure credentials**: Never expose your private keys or API keys in client-side code
+7. **Logging**: Implement proper logging for API calls and tool usage to debug issues and track
+   performance
 
 ## Troubleshooting
 
 Here are some common issues and their solutions:
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| "Function execution failed" | Invalid parameters or permissions | Check function parameters and toolkit configuration |
-| Timeout errors | Network issues or slow operations | Implement retries or longer timeouts |
-| "Unknown function" errors | Function not properly registered | Ensure toolkit is initialized correctly |
-| "Unable to parse arguments" | Malformed JSON in function arguments | Validate function arguments format |
-| Empty responses | Token limit exceeded | Reduce conversation history or use a more concise format |
+| Issue                       | Cause                                | Solution                                                 |
+| --------------------------- | ------------------------------------ | -------------------------------------------------------- |
+| "Function execution failed" | Invalid parameters or permissions    | Check function parameters and toolkit configuration      |
+| Timeout errors              | Network issues or slow operations    | Implement retries or longer timeouts                     |
+| "Unknown function" errors   | Function not properly registered     | Ensure toolkit is initialized correctly                  |
+| "Unable to parse arguments" | Malformed JSON in function arguments | Validate function arguments format                       |
+| Empty responses             | Token limit exceeded                 | Reduce conversation history or use a more concise format |
 
-## Next Steps
+## Next steps
 
-- Explore the [Agent Toolkit Core Concepts](/agent-toolkit/core-concepts) to better understand Recall's capabilities
-- Check the [Tools Reference](/agent-toolkit/tools-reference) for detailed documentation on available tools
+- Explore the [Agent Toolkit Core Concepts](/agent-toolkit/core-concepts) to better understand
+  Recall's capabilities
+- Check the [Tools Reference](/agent-toolkit/tools-reference) for detailed documentation on
+  available tools
 - Learn about [Bucket Monitoring](/agent-toolkit/bucket-monitoring) to track your agent's activity
 - See the [MCP Integration](/mcp-integration) guide for a different approach to agent development

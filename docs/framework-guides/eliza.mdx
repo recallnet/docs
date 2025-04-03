@@ -1,19 +1,15 @@
 ---
-title: Eliza Integration
-description: Integrate Recall with Eliza using the Recall Agent Starter Kit
+title: Eliza integration
+description: Using Recall with the Eliza framework
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
-import { Tabs, Tab } from "fumadocs-ui/components/tabs";
-import { Steps } from "fumadocs-ui/components/steps";
-
-# Eliza Integration with Recall
-
-This guide shows you how to integrate Recall's storage capabilities with Eliza-based agents using the [Recall Agent Starter Kit](https://github.com/recallnet/recall-agent-starter).
+This guide shows you how to integrate Recall's storage capabilities with Eliza-based agents using
+the [Recall Agent Starter Kit](https://github.com/recallnet/recall-agent-starter).
 
 ## Overview
 
-The Recall Agent Starter Kit provides a pre-built Eliza plugin that packages Recall functionality into your agents, enabling:
+The Recall Agent Starter Kit provides a pre-built Eliza plugin that packages Recall functionality
+into your agents, enabling:
 
 - ✅ Creation of Recall buckets
 - ✅ Writing objects to buckets
@@ -23,93 +19,121 @@ The Recall Agent Starter Kit provides a pre-built Eliza plugin that packages Rec
 - ✅ Syncing chain-of-thought log files to Recall buckets
 - ✅ Using chain-of-thought historical logs in agent context to improve inference
 
-This integration is ideal for developers who want to build AI agents with persistent memory using the lightweight Eliza framework.
+This integration is ideal for developers who want to build AI agents with persistent memory using
+the lightweight Eliza framework.
 
-## How It Works
+## How it works
 
 The Recall Agent Starter Kit implements the following components:
 
-1. **RecallService**: Manages interaction with the Recall API, including bucket management, object storage and retrieval
-2. **Chain-of-Thought Logging**: Logs reasoning steps into a local database and periodically syncs to Recall buckets
-3. **Recall Provider**: A provider that injects chain-of-thought logs into the agent's context before each inference
-4. **Action Definitions**: Pre-defined actions for creating buckets, adding objects, etc.
+1. **Recall service**: Manages interaction with the Recall API, including bucket management, object
+   storage and retrieval
+2. **Chain-of-thought logging**: Logs reasoning steps into a local database and periodically syncs
+   to Recall buckets
+3. **Recall Provider**: A provider that injects chain-of-thought logs into the agent's context
+   before each inference
+4. **Action definitions**: Pre-defined actions for creating buckets, adding objects, etc.
 
-### Flow of Operations
+### Flow of operations
 
-1. User requests an action (e.g., "Create a bucket named 'logs'"), or simply sends a query to the agent
-2. The RecallService processes the request and interacts with the Recall API if an action has been invoked
+1. User requests an action (e.g., "Create a bucket named 'logs'"), or simply sends a query to the
+   agent
+2. The `RecallService` processes the request and interacts with the Recall API if an action has been
+   invoked
 3. Chain-of-thought logs are stored and periodically synced using the database structure
 4. The Recall Provider fetches chain-of-thought logs before each agent loop
 
 ## Installation
 
 <Steps>
-  ### Clone the Starter Kit
 
-  ```bash
-  git clone https://github.com/recallnet/recall-agent-starter.git
-  cd recall-agent-starter
-  ```
+<Step>
 
-  ### Install Dependencies
+### Clone the Starter Kit
 
-  ```bash
-  pnpm install
-  ```
+```bash
+git clone https://github.com/recallnet/recall-agent-starter.git
+cd recall-agent-starter
+```
 
-  ### Set Up Environment Variables
+</Step>
 
-  Create a `.env` file in the project root and configure your Recall credentials:
+<Step>
 
-  ```
-  RECALL_PRIVATE_KEY="your-private-key"
-  RECALL_BUCKET_ALIAS="your-default-bucket"
-  RECALL_COT_LOG_PREFIX="cot/"
+### Install dependencies
 
-  # Provider configuration, defined in the `characters/eliza.character.json` file
-  OPENAI_API_KEY="your-api-key"
-  ```
+```package-install
+npm install
+```
 
-  ### Start the Server
+</Step>
 
-  ```bash
-  pnpm start --characters="characters/eliza.character.json"
-  ```
+<Step>
+
+### Set up environment variables
+
+Create a `.env` file in the project root and configure your Recall credentials:
+
+```
+RECALL_PRIVATE_KEY="your-private-key"
+RECALL_BUCKET_ALIAS="your-default-bucket"
+RECALL_COT_LOG_PREFIX="cot/"
+
+# Provider configuration, defined in the `characters/eliza.character.json` file
+OPENAI_API_KEY="your-api-key"
+```
+
+</Step>
+
+<Step>
+
+### Start the server
+
+```bash
+pnpm start --characters="characters/eliza.character.json"
+```
+
+</Step>
+
 </Steps>
 
 <Callout type="info">
-  For smooth operations, ensure you're using:
-  - pnpm version 9.15.4 or compatible
-  - Node.js version 22.11.0 or compatible
+
+For smooth operations, ensure you're using: - pnpm version 9.15.4 or compatible - Node.js version
+22.11.0 or compatible
+
 </Callout>
 
 <Callout type="warning">
-  The Recall private key you use must have a corresponding registered account with a positive parent balance. To register, use:
 
-  ```bash
-  curl -X POST -H "Content-Type: application/json" \
-    -d '{"address": "<your-evm-public-address>"}' \
-    https://faucet.node-0.testnet.recall.network/register
-  ```
+The Recall private key you use must have a corresponding registered account with a positive parent
+balance. To register, use:
 
-  Use the same public address when requesting tokens from the Recall Faucet.
+```bash
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"address": "<your-evm-public-address>"}' \
+  https://faucet.node-0.testnet.recall.network/register
+```
+
+Use the same public address when requesting tokens from the Recall Faucet.
+
 </Callout>
 
 ## Actions
 
 The Recall Agent Starter Kit provides the following pre-defined actions:
 
-| **Action**        | **Trigger Format**                                                                               | **Description**                                                                                       |
-| ----------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| **Create Bucket** | "Create a bucket for me named \\"bucket-alias\\"" OR "Create a bucket called \\"bucket-alias\\"" | Creates a new Recall bucket (or retrieves an existing one)                                            |
-| **List Buckets**  | "Get a list of my buckets" OR "Show my Recall buckets"                                           | Retrieves a list of all available Recall buckets                                                      |
-| **Add Object**    | "Add object \\"file.txt\\" to bucket \\"bucket-alias\\""                                         | Uploads an object to a specified bucket. **Object must come first in quotes, followed by bucket name** |
-| **Get Object**    | "Get object \\"file.txt\\" from bucket \\"bucket-alias\\""                                       | Downloads an object and stores it in the /downloads directory                                         |
-| **Get Account**   | "Get my account details" OR "Retrieve my Recall account"                                         | Fetches the agent's Recall account information                                                        |
-| **Get Balance**   | "Check my Recall credit balance" OR "How many credits do I have?"                                | Retrieves the agent's available Recall credits                                                        |
-| **Buy Credit**    | "Buy 3 credits" OR "Purchase 0.5 Recall credits"                                                 | Purchases additional credits for storage & usage. **Requires a numerical amount**                     |
+| **Action**        | **Trigger Format**                                                                               | **Description**                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| **Create bucket** | "Create a bucket for me named \\"bucket-alias\\"" OR "Create a bucket called \\"bucket-alias\\"" | Creates a new Recall bucket (or retrieves an existing one)                                             |
+| **List buckets**  | "Get a list of my buckets" OR "Show my Recall buckets"                                           | Retrieves a list of all available Recall buckets                                                       |
+| **Add object**    | "Add object \\"file.txt\\" to bucket \\"bucket-alias\\""                                         | Uploads an object to a specified bucket. **Object must come first in quotes, followed by bucket name** |
+| **Get object**    | "Get object \\"file.txt\\" from bucket \\"bucket-alias\\""                                       | Downloads an object and stores it in the /downloads directory                                          |
+| **Get account**   | "Get my account details" OR "Retrieve my Recall account"                                         | Fetches the agent's Recall account information                                                         |
+| **Get balance**   | "Check my Recall credit balance" OR "How many credits do I have?"                                | Retrieves the agent's available Recall credits                                                         |
+| **Buy credits**   | "Buy 3 credits" OR "Purchase 0.5 Recall credits"                                                 | Purchases additional credits for storage & usage. **Requires a numerical amount**                      |
 
-### Example Action Triggers
+### Example action triggers
 
 ```
 "Create a bucket for me named 'project-logs'"
@@ -120,14 +144,17 @@ The Recall Agent Starter Kit provides the following pre-defined actions:
 ```
 
 <Callout type="warning">
-  **Important Usage Notes:**
 
-  - For Add/Get Object actions, the object key must always be first, followed by the bucket alias
-  - Buy Credit action requires a specific numerical amount
-  - Bucket creation auto-validates - if a bucket with the alias already exists, it returns the existing address
+**Important usage notes:**
+
+- For Add/Get Object actions, the object key must always be first, followed by the bucket alias
+- Buy Credit action requires a specific numerical amount
+- Bucket creation auto-validates - if a bucket with the alias already exists, it returns the
+  existing address
+
 </Callout>
 
-## Provider Implementation
+## Provider implementation
 
 The Recall Provider is a key component that fetches chain-of-thought logs before each agent loop:
 
@@ -136,49 +163,50 @@ export const recallCotProvider: Provider = {
   get: async (
     _runtime: IAgentRuntime,
     message: Memory,
-    _state?: State,
+    _state?: State
   ): Promise<Error | string> => {
     if (!process.env.RECALL_BUCKET_ALIAS) {
-      elizaLogger.error('RECALL_BUCKET_ALIAS is not set');
+      elizaLogger.error("RECALL_BUCKET_ALIAS is not set");
     }
     try {
-      const recallService = _runtime.services.get('recall' as ServiceType) as RecallService;
+      const recallService = _runtime.services.get("recall" as ServiceType) as RecallService;
       const res = await recallService.retrieveOrderedChainOfThoughtLogs(
-        process.env.RECALL_BUCKET_ALIAS,
+        process.env.RECALL_BUCKET_ALIAS
       );
       return JSON.stringify(res, null, 2);
     } catch (error) {
-      return error instanceof Error ? error.message : 'Unable to get storage provider';
+      return error instanceof Error ? error.message : "Unable to get storage provider";
     }
   },
 };
 ```
 
 This provider:
+
 1. Is called before each agent inference cycle
 2. Retrieves past chain-of-thought logs from Recall
 3. Returns the logs as a formatted string that gets injected into the agent's context
 
-## RecallService Implementation
+## Recall service implementation
 
-The RecallService manages all interaction with the Recall API:
+The `RecallService` manages all interaction with the Recall API:
 
 ```typescript
 class RecallService implements IService {
   private wallet: Wallet;
   private sdk: SDK;
   private client: Client;
-  private chainLiteral: ChainLiteral = 'testnet';
+  private chainLiteral: ChainLiteral = "testnet";
   private syncInterval: NodeJS.Timeout | null = null;
   private batchSize = 4; // In KB
 
   constructor() {
     // Initialize with environment variables
-    this.chainLiteral = (process.env.RECALL_NETWORK as ChainLiteral) || 'testnet';
+    this.chainLiteral = (process.env.RECALL_NETWORK as ChainLiteral) || "testnet";
     this.batchSize = Number(process.env.RECALL_BATCH_SIZE) || 4;
 
     // Set up SDK and client
-    this.wallet = new Wallet(process.env.RECALL_PRIVATE_KEY || '');
+    this.wallet = new Wallet(process.env.RECALL_PRIVATE_KEY || "");
     this.sdk = new SDK();
     this.client = this.sdk.createClient({
       chain: this.chainLiteral,
@@ -241,25 +269,27 @@ class RecallService implements IService {
     }
 
     this.syncInterval = setInterval(() => {
-      this.syncLogsToRecall(bucketAlias).catch(error => {
-        elizaLogger.error('Failed to sync logs to Recall:', error);
+      this.syncLogsToRecall(bucketAlias).catch((error) => {
+        elizaLogger.error("Failed to sync logs to Recall:", error);
       });
     }, intervalMs);
   }
 }
 ```
 
-## Chain-of-Thought Logging Integration
+## Chain-of-Thought logging integration
 
-One of the most powerful features of the Recall Agent Starter Kit is the automatic chain-of-thought logging:
+One of the most powerful features of the Recall Agent Starter Kit is the automatic chain-of-thought
+logging:
 
-1. **Local Storage**: The agent logs reasoning steps into a local database
-2. **Periodic Syncing**: Logs are periodically uploaded to Recall buckets
-3. **Context Injection**: Before each inference cycle, historical logs are retrieved and injected
+1. **Local storage**: The agent logs reasoning steps into a local database
+2. **Periodic syncing**: Logs are periodically uploaded to Recall buckets
+3. **Context injection**: Before each inference cycle, historical logs are retrieved and injected
 
-This creates a powerful memory system for your agent, allowing it to retain context and reasoning across sessions.
+This creates a powerful memory system for your agent, allowing it to retain context and reasoning
+across sessions.
 
-### Configuration Options
+### Configuration options
 
 You can customize the chain-of-thought logging behavior with these environment variables:
 
@@ -269,12 +299,11 @@ RECALL_BATCH_SIZE="4"          # Batch size in kilobytes (default: 4KB)
 RECALL_COT_LOG_PREFIX="cot/"   # Prefix for chain-of-thought logs
 ```
 
-## Complete Example
+## Complete example
 
 Here's a complete example showing how to create a custom Eliza character with Recall integration:
 
-```json
-// custom-agent.character.json
+```json title="custom-agent.character.json"
 {
   "id": "recall-agent",
   "name": "Recall Agent",
@@ -313,11 +342,11 @@ Launch your custom agent:
 pnpm start --characters="path/to/custom-agent.character.json"
 ```
 
-## Advanced Customization
+## Advanced customization
 
-### Custom Action Triggers
+### Custom action triggers
 
-You can customize the action triggers in the RecallService by modifying the action patterns:
+You can customize the action triggers in the `RecallService` by modifying the action patterns:
 
 ```typescript
 // Modify this object to customize action triggers
@@ -334,19 +363,20 @@ const ACTION_PATTERNS = {
 };
 ```
 
-### Custom Chain-of-Thought Processing
+### Custom Chain-of-Thought processing
 
-You can customize how chain-of-thought logs are processed and formatted before being injected into the agent's context:
+You can customize how chain-of-thought logs are processed and formatted before being injected into
+the agent's context:
 
 ```typescript
-async retrieveOrderedChainOfThoughtLogs(bucketAlias: string): Promise<any[]> {
+async function retrieveOrderedChainOfThoughtLogs(bucketAlias: string): Promise<any[]> {
   try {
     // Get or create bucket
     const { bucket } = await this.getOrCreateBucket(bucketAlias);
 
     // Query objects with the CoT prefix
     const objects = await this.client.queryObjects(bucket, {
-      prefix: process.env.RECALL_COT_LOG_PREFIX || 'cot/',
+      prefix: process.env.RECALL_COT_LOG_PREFIX || "cot/",
     });
 
     if (!objects || objects.objects.length === 0) {
@@ -364,7 +394,7 @@ async retrieveOrderedChainOfThoughtLogs(bucketAlias: string): Promise<any[]> {
     // Sort by timestamp and return
     return logs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
   } catch (error) {
-    elizaLogger.error('Failed to retrieve chain-of-thought logs:', error);
+    elizaLogger.error("Failed to retrieve chain-of-thought logs:", error);
     return [];
   }
 }
@@ -374,37 +404,36 @@ async retrieveOrderedChainOfThoughtLogs(bucketAlias: string): Promise<any[]> {
 
 When working with the Recall Agent Starter Kit, follow these best practices:
 
-1. **Environment Variables**: Always use environment variables for sensitive credentials
-
-2. **Bucket Organization**: Use consistent bucket naming conventions and prefixes
-
-3. **Error Handling**: Implement robust error handling for network operations and Recall API calls
-
-4. **Memory Management**: Configure appropriate sync intervals based on your agent's usage patterns
-
-5. **Provider Setup**: Ensure your character definition correctly includes the Recall provider
-
-6. **Action Triggers**: Use consistent phrasing when triggering Recall actions
-
-7. **Backup Strategy**: Implement backup strategies for critical data
+1. **Environment variables**: Always use environment variables for sensitive credentials
+2. **Bucket organization**: Use consistent bucket naming conventions and prefixes
+3. **Error handling**: Implement robust error handling for network operations and Recall API calls
+4. **Memory management**: Configure appropriate sync intervals based on your agent's usage patterns
+5. **Provider setup**: Ensure your character definition correctly includes the Recall provider
+6. **Action triggers**: Use consistent phrasing when triggering Recall actions
+7. **Backup strategy**: Implement backup strategies for critical data
 
 ## Troubleshooting
 
-| Issue | Possible Cause | Solution |
-|-------|---------------|-----------|
-| "RECALL_PRIVATE_KEY is not set" | Missing environment variable | Check your .env file and ensure the variable is set |
-| "RECALL_BUCKET_ALIAS is not set" | Missing bucket alias configuration | Set the RECALL_BUCKET_ALIAS environment variable |
-| "Failed to sync logs to Recall" | Network issues or permission problems | Check your internet connection and key permissions |
-| "Failed to create bucket" | Invalid private key or insufficient credits | Verify your private key and check your credit balance |
-| "Invalid action format" | Incorrect action trigger format | Review the action trigger format documentation |
+| Issue                            | Possible cause                              | Solution                                              |
+| -------------------------------- | ------------------------------------------- | ----------------------------------------------------- |
+| "RECALL_PRIVATE_KEY is not set"  | Missing environment variable                | Check your .env file and ensure the variable is set   |
+| "RECALL_BUCKET_ALIAS is not set" | Missing bucket alias configuration          | Set the RECALL_BUCKET_ALIAS environment variable      |
+| "Failed to sync logs to Recall"  | Network issues or permission problems       | Check your internet connection and key permissions    |
+| "Failed to create bucket"        | Invalid private key or insufficient credits | Verify your private key and check your credit balance |
+| "Invalid action format"          | Incorrect action trigger format             | Review the action trigger format documentation        |
 
-## Next Steps
+## Next steps
 
-- Explore the [Agent Toolkit Core Concepts](/agent-toolkit/core-concepts) for a deeper understanding of Recall's capabilities
+- Explore the [Agent Toolkit Core Concepts](/agent-toolkit/core-concepts) for a deeper understanding
+  of Recall's capabilities
 - Learn about [Bucket Monitoring](/agent-toolkit/bucket-monitoring) to track your agent's storage
 - Check the [MCP Integration](/mcp-integration) guide for alternative integration approaches
-- Read the [GitHub repository](https://github.com/recallnet/recall-agent-starter) for the latest updates and examples
+- Read the [GitHub repository](https://github.com/recallnet/recall-agent-starter) for the latest
+  updates and examples
 
 <Callout>
-  The Recall Agent Starter Kit is designed to be a starting point for your Eliza-based agents. Feel free to modify and extend it to suit your specific needs!
+
+The Recall Agent Starter Kit is designed to be a starting point for your Eliza-based agents. Feel
+free to modify and extend it to suit your specific needs!
+
 </Callout>

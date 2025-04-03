@@ -1,19 +1,16 @@
 ---
-title: Agent Toolkit Core Concepts
-description: Learn about the core concepts of the Recall Agent Toolkit, including resources, permissions, and architecture
+title: Core concepts
+description: Learn the fundamental concepts of the Agent Toolkit
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
-import { Steps } from "fumadocs-ui/components/steps";
-import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+The Recall Agent Toolkit is built around several core concepts that form the foundation of building
+effective agents. This guide explains these concepts in detail and provides examples of how they
+work together.
 
-# Agent Toolkit Core Concepts
+## Overview
 
-The Recall Agent Toolkit is built around several core concepts that form the foundation of building effective agents. This guide explains these concepts in detail and provides examples of how they work together.
-
-## Architecture Overview
-
-The Agent Toolkit follows a modular architecture that allows for integration with multiple AI frameworks while maintaining a consistent API:
+The Agent Toolkit follows a modular architecture that allows for integration with multiple AI
+frameworks while maintaining a consistent API:
 
 ```
 ┌────────────────────────────────────────┐
@@ -42,18 +39,20 @@ The Agent Toolkit follows a modular architecture that allows for integration wit
 └────────────────────────────────────────┘
 ```
 
-### Key Components
+### Key components
 
-1. **Framework Adapters**: Framework-specific implementations that adapt Recall functionality to popular AI frameworks
-2. **Shared Core**: Common tools, resources, and configuration shared across all adapters
+1. **Framework adapters**: Framework-specific implementations that adapt Recall functionality to
+   popular AI frameworks
+2. **Shared core**: Common tools, resources, and configuration shared across all adapters
 3. **RecallAPI**: Internal abstraction layer for interacting with the Recall network
-4. **Recall Network**: The underlying decentralized storage network
+4. **Recall network**: The underlying decentralized storage network
 
-## Resources
+## Storage and memory
 
-Resources are the primary objects your agent interacts with on the Recall network. Understanding these resources is essential for effective agent design:
+Resources are the primary objects your agent interacts with on the Recall network. Understanding
+these resources is essential for effective agent design:
 
-### Account Resource
+### Account resource
 
 The Account resource represents your Recall account and provides access to:
 
@@ -62,7 +61,8 @@ The Account resource represents your Recall account and provides access to:
 - Credit information
 - Transaction history
 
-Account operations typically involve reading account information or performing transactions like buying credits.
+Account operations typically involve reading account information or performing transactions like
+buying credits.
 
 ```typescript
 // Example: Accessing account information
@@ -73,16 +73,17 @@ const toolkit = new RecallAgentToolkit({
       account: {
         read: true, // Allow reading account info
         write: true, // Allow buying credits and other write operations
-        delete: false // Account deletion (reserved for future use)
-      }
-    }
-  }
+        /* delete: false, // Account deletion (reserved for future use) */
+      },
+    },
+  },
 });
 ```
 
-### Bucket Resource
+### Bucket resource
 
-The Bucket resource is Recall's primary storage abstraction, similar to cloud storage buckets. Buckets:
+The Bucket resource is Recall's primary storage abstraction, similar to cloud storage buckets.
+Buckets:
 
 - Contain key-value objects
 - Can be created, listed, and managed
@@ -90,7 +91,8 @@ The Bucket resource is Recall's primary storage abstraction, similar to cloud st
 - Are associated with your account
 - Support efficient querying
 
-Bucket operations enable your agent to store and retrieve information, creating a persistent memory system.
+Bucket operations enable your agent to store and retrieve information, creating a persistent memory
+system.
 
 ```typescript
 // Example: Configuring bucket permissions
@@ -99,18 +101,19 @@ const toolkit = new RecallAgentToolkit({
   configuration: {
     actions: {
       bucket: {
-        read: true,  // Allow reading bucket data
+        read: true, // Allow reading bucket data
         write: true, // Allow creating buckets and adding objects
-        delete: true, // Can delete buckets
-      }
-    }
-  }
+        /* delete: true, // Can delete buckets */
+      },
+    },
+  },
 });
 ```
 
-### Source Resource (Coming Soon)
+### Source resource (coming soon)
 
-The Source resource represents verified data sources that can be registered on the Recall network. This feature is still in development but will allow:
+The _source_ resource represents verified data sources that can be registered on the Recall network.
+This feature is still in development but will allow:
 
 - Registration of verified data sources
 - Attribution of information to specific sources
@@ -120,11 +123,12 @@ The Source resource represents verified data sources that can be registered on t
   Source resource functionality is under active development and will be expanded in future releases.
 </Callout>
 
-## Permissions System
+## Permissions system
 
-The Agent Toolkit implements a fine-grained permission system that gives you control over what operations your agent can perform:
+The Agent Toolkit implements a fine-grained permission system that gives you control over what
+operations your agent can perform:
 
-### Permission Types
+### Permission types
 
 For each resource, you can specify the following permission types:
 
@@ -132,7 +136,7 @@ For each resource, you can specify the following permission types:
 - **write**: Operations that modify state or create new resources
 - **delete**: Operations that remove resources (where applicable)
 
-### Permission Configuration
+### Permission configuration
 
 Permissions are defined when initializing the toolkit:
 
@@ -145,41 +149,45 @@ const toolkit = new RecallAgentToolkit({
     actions: {
       // Account permissions
       account: {
-        read: true,   // Can read account info
-        write: true,  // Can buy credits
-        delete: false, // Account deletion (reserved for future use)
+        read: true, // Can read account info
+        write: true, // Can buy credits
+        /* delete: false, // Account deletion (reserved for future use) */
       },
 
       // Bucket permissions
       bucket: {
-        read: true,   // Can read bucket data
-        write: true,  // Can create buckets and add objects
-        delete: true, // Can delete buckets
+        read: true, // Can read bucket data
+        write: true, // Can create buckets and add objects
+        /* delete: true, // Can delete buckets */
       },
 
       // Source permissions (future)
       source: {
-        read: true,   // Can read sources
-        write: false,  // Cannot create sources
+        read: true, // Can read sources
+        write: false, // Cannot create sources
       },
     },
   },
 });
 ```
 
-### Permission Enforcement
+### Permission enforcement
 
-When tools are registered with the framework adapter, they are filtered based on the permissions you've specified. If a permission is not granted, the corresponding tools will not be available to the agent.
+When tools are registered with the framework adapter, they are filtered based on the permissions
+you've specified. If a permission is not granted, the corresponding tools will not be available to
+the agent.
 
 <Callout type="warning">
-  Permissions are enforced at the toolkit level, not at the network level. This means that if you have the private key, you can always perform operations directly with the SDK. The toolkit's permissions are a way to limit what tools are exposed to the agent.
+  Permissions are enforced at the toolkit level, not at the network level. This means that if you
+  have the private key, you can always perform operations directly with the SDK. The toolkit's
+  permissions are a way to limit what tools are exposed to the agent.
 </Callout>
 
-## Configuration Options
+## Configuration options
 
 Beyond permissions, the toolkit supports additional configuration options:
 
-### Network Settings
+### Network settings
 
 The Recall network can be configured to use different environments:
 
@@ -187,21 +195,24 @@ The Recall network can be configured to use different environments:
 const toolkit = new RecallAgentToolkit({
   privateKey: process.env.RECALL_PRIVATE_KEY,
   configuration: {
-    actions: { /* permissions */ },
+    actions: {
+      /* permissions */
+    },
     context: {
       network: "testnet", // Use the Recall testnet (default)
       // Other options: "mainnet", "localnet"
-    }
-  }
+    },
+  },
 });
 ```
 
-## Framework-Specific Concepts
+## Framework-specific concepts
 
 Each framework adapter has its own specific implementation details:
 
 <Tabs items={["MCP", "LangChain", "OpenAI", "AI SDK"]}>
   <Tab value="MCP">
+
     The MCP adapter implements the Model Context Protocol, providing tools that can be used by MCP-compatible agents:
 
     ```typescript
@@ -223,9 +234,11 @@ Each framework adapter has its own specific implementation details:
     - `StdioServerTransport`: For command-line tools and Claude Desktop
     - `HttpServerTransport`: For web applications
     - `WebSocketServerTransport`: For real-time applications
+
   </Tab>
 
   <Tab value="LangChain">
+
     The LangChain adapter exposes Recall tools as LangChain tools:
 
     ```typescript
@@ -243,7 +256,7 @@ Each framework adapter has its own specific implementation details:
     const tools = toolkit.getTools();
 
     // Create the agent
-    const model = new ChatOpenAI({ model: "gpt-4" });
+    const model = new ChatOpenAI({ model: "gpt-4o" });
     const agent = await createOpenAIFunctionsAgent({
       llm: model,
       tools,
@@ -254,9 +267,11 @@ Each framework adapter has its own specific implementation details:
     ```
 
     The LangChain adapter is compatible with various LangChain agent types and can be used with any LLM supported by LangChain.
+
   </Tab>
 
   <Tab value="OpenAI">
+
     The OpenAI adapter integrates with OpenAI's function calling:
 
     ```typescript
@@ -288,9 +303,11 @@ Each framework adapter has its own specific implementation details:
     ```
 
     The OpenAI adapter converts Recall tools into OpenAI function specifications and handles the function calling process.
+
   </Tab>
 
   <Tab value="AI SDK">
+
     The AI SDK adapter works with Vercel's AI SDK:
 
     ```typescript
@@ -320,14 +337,16 @@ Each framework adapter has its own specific implementation details:
     ```
 
     The AI SDK adapter is particularly useful for building AI features in Next.js applications with React Server Components.
+
   </Tab>
 </Tabs>
 
-## Key Abstractions
+## Key abstractions
 
-### Resource and Permission Model
+### Resource and permission model
 
-The Agent Toolkit uses a resource-based permission model to control access to different aspects of the Recall network:
+The Agent Toolkit uses a resource-based permission model to control access to different aspects of
+the Recall network:
 
 ```typescript
 type Resource = "account" | "bucket" | "source";
@@ -346,20 +365,20 @@ This type system forms the basis of the permission configuration:
 const configuration = {
   actions: {
     account: {
-      read: true,    // Can read account info
-      write: true,   // Can buy credits
-      delete: false, // Account deletion (reserved for future use)
+      read: true, // Can read account info
+      write: true, // Can buy credits
+      /* delete: false, // Account deletion (reserved for future use) */
     },
     bucket: {
-      read: true,    // Can read bucket data
-      write: true,   // Can create buckets and add objects
-      delete: true,  // Can delete buckets
+      read: true, // Can read bucket data
+      write: true, // Can create buckets and add objects
+      /* delete: true, // Can delete buckets */
     },
   },
 };
 ```
 
-### Configuration Interface
+### Configuration interface
 
 The toolkit configuration combines resource permissions with contextual information:
 
@@ -381,8 +400,8 @@ const toolkit = new RecallAgentToolkit({
   privateKey: process.env.RECALL_PRIVATE_KEY,
   configuration: {
     actions: {
-      account: { read: true, write: true, delete: false },
-      bucket: { read: true, write: true, delete: true },
+      account: { read: true, write: true /* , delete: false */ },
+      bucket: { read: true, write: true /* , delete: true */ },
     },
     context: {
       network: "testnet",
@@ -392,81 +411,84 @@ const toolkit = new RecallAgentToolkit({
 });
 ```
 
-## Agent Lifecycle
+## Agent lifecycle
 
-Understanding the typical lifecycle of an agent using the toolkit can help you build more effective solutions:
+Understanding the typical lifecycle of an agent using the toolkit can help you build more effective
+solutions:
 
 <Steps>
   ### Initialization
 
-  The agent is initialized with the RecallAgentToolkit and appropriate permissions:
+The agent is initialized with the RecallAgentToolkit and appropriate permissions:
 
-  ```typescript
-  const toolkit = new RecallAgentToolkit({
-    privateKey: process.env.RECALL_PRIVATE_KEY,
-    configuration: {
-      actions: {
-        account: { read: true },
-        bucket: { read: true, write: true },
-      }
-    }
-  });
-  ```
+```typescript
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    actions: {
+      account: { read: true },
+      bucket: { read: true, write: true },
+    },
+  },
+});
+```
 
-  ### Tool Discovery
+### Tool discovery
 
-  The agent discovers available tools through the framework-specific mechanism:
-  - MCP agents receive tool schemas through MCP protocol
-  - LangChain agents receive tool definitions
-  - OpenAI function calling receives function definitions
+The agent discovers available tools through the framework-specific mechanism:
 
-  ### Tool Selection
+- MCP agents receive tool schemas through MCP protocol
+- LangChain agents receive tool definitions
+- OpenAI function calling receives function definitions
 
-  The agent autonomously decides which tools to use based on the task:
+### Tool selection
 
-  ```
-  // Example agent reasoning:
-  "I need to store this information. I'll use the get_or_create_bucket tool
-  to get a bucket, then use add_object to store the data."
-  ```
+The agent autonomously decides which tools to use based on the task:
 
-  ### Tool Execution
+```
+// Example agent reasoning:
+"I need to store this information. I'll use the get_or_create_bucket tool
+to get a bucket, then use add_object to store the data."
+```
 
-  The agent calls the chosen tool with appropriate parameters:
+### Tool execution
 
-  ```
-  // Example tool call:
-  get_or_create_bucket({ name: "memories" })
-  ```
+The agent calls the chosen tool with appropriate parameters:
 
-  ### Response Processing
+```
+// Example tool call:
+get_or_create_bucket({ name: "memories" })
+```
 
-  The agent receives the tool response and uses it for further reasoning:
+### Response processing
 
-  ```
-  // Example response:
-  { bucket: "bucket-1234-abcd-5678" }
+The agent receives the tool response and uses it for further reasoning:
 
-  // Agent reasoning:
-  "Now I have the bucket ID, I can store the object..."
-  ```
+```
+// Example response:
+{ bucket: "bucket-1234-abcd-5678" }
 
-  ### Session Persistence
+// Agent reasoning:
+"Now I have the bucket ID, I can store the object..."
+```
 
-  For multi-turn interactions, the agent maintains context about previous actions:
+### Session persistence
 
-  ```
-  // In a later interaction:
-  "I previously stored that information in the 'memories' bucket.
-  I'll retrieve it now with get_object..."
-  ```
+For multi-turn interactions, the agent maintains context about previous actions:
+
+```
+// In a later interaction:
+"I previously stored that information in the 'memories' bucket.
+I'll retrieve it now with get_object..."
+```
+
 </Steps>
 
-## Common Design Patterns
+## Common design patterns
 
 Here are some common design patterns that can help you build more effective agents:
 
-### Bucket Naming Conventions
+### Bucket naming conventions
 
 Establish a consistent naming convention for buckets to make them easier to manage:
 
@@ -482,7 +504,7 @@ const { bucket } = await agent.invoke("get_or_create_bucket", {
 });
 ```
 
-### Structured Object Storage
+### Structured object storage
 
 Store data in a structured format to make it easier to query and manage:
 
@@ -495,12 +517,12 @@ await agent.invoke("add_object", {
     theme: "dark",
     language: "en",
     notifications: true,
-    lastUpdated: new Date().toISOString()
-  })
+    lastUpdated: new Date().toISOString(),
+  }),
 });
 ```
 
-### Session Management
+### Session management
 
 Implement session management to maintain context across interactions:
 
@@ -508,7 +530,7 @@ Implement session management to maintain context across interactions:
 // Store session information
 async function startSession(userId) {
   const { bucket } = await agent.invoke("get_or_create_bucket", {
-    name: `session-${userId}`
+    name: `session-${userId}`,
   });
 
   await agent.invoke("add_object", {
@@ -517,8 +539,8 @@ async function startSession(userId) {
     value: JSON.stringify({
       startTime: Date.now(),
       userId,
-      active: true
-    })
+      active: true,
+    }),
   });
 
   return bucket;
@@ -527,17 +549,17 @@ async function startSession(userId) {
 // Retrieve session on subsequent interactions
 async function resumeSession(userId) {
   const { buckets } = await agent.invoke("list_buckets");
-  const sessionBucket = buckets.find(b => b.name === `session-${userId}`);
+  const sessionBucket = buckets.find((b) => b.name === `session-${userId}`);
 
   if (sessionBucket) {
     const { value } = await agent.invoke("get_object", {
       bucket: sessionBucket.bucket,
-      key: "session-info"
+      key: "session-info",
     });
 
     return {
       bucket: sessionBucket.bucket,
-      session: JSON.parse(value)
+      session: JSON.parse(value),
     };
   }
 
@@ -546,7 +568,7 @@ async function resumeSession(userId) {
 }
 ```
 
-### Error Handling
+### Error handling
 
 Implement robust error handling to make your agent more resilient:
 
@@ -554,7 +576,7 @@ Implement robust error handling to make your agent more resilient:
 try {
   const result = await agent.invoke("get_object", {
     bucket: bucketId,
-    key: "user-data"
+    key: "user-data",
   });
 
   // Process the result
@@ -565,7 +587,7 @@ try {
     await agent.invoke("add_object", {
       bucket: bucketId,
       key: "user-data",
-      value: JSON.stringify({ default: true })
+      value: JSON.stringify({ default: true }),
     });
   } else {
     // Handle other errors
@@ -574,7 +596,7 @@ try {
 }
 ```
 
-## Next Steps
+## Next steps
 
 Now that you understand the core concepts of the Agent Toolkit, you can:
 
@@ -584,5 +606,8 @@ Now that you understand the core concepts of the Agent Toolkit, you can:
 - Check out [MCP Integration](/mcp-integration) for using the toolkit with MCP-compatible models
 
 <Callout>
-  If you have questions or need help, reach out to the Recall team on [Discord](https://discord.gg/recall) or [Twitter](https://twitter.com/recallnet).
+
+If you have questions or need help, reach out to the Recall team on
+[Discord](https://discord.recall.network) or [GitHub](https://github.com/recallnet).
+
 </Callout>

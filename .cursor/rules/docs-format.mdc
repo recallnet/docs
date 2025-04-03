@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- All docs pages are written in MDX and locates in the `/docs` folder.
+- Docs pages use frontmatter and must have a `title` and `description`; optionally, include `keywords` as a comma separated list.
+- Docs pages must never have an h1 header via a single `#`; pages should only use h2s `##`, h3s `###`, or h4s `####`.
+- Docs pages use sentence case for page titles and headers. This includes the frontmatter `title` and `description`, in-page headers (`##`, `###`, `####`, etc.), and the optional `title` field in any `meta.json` file.
+- If you create new docs pages, you should look for a `meta.json` folder in the current directory and add the name of the mdx file (without the extension) to the `pages` array. For example, if the existing `meta.json` file is in a filder that contains the file `existing.mdx`, and you want to add `new-page.mdx`, the result would look like: `{"pages": ["exiting", "new-page"]}`

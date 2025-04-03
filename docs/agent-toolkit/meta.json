@@ -1,7 +1,6 @@
 {
   "title": "Agent Toolkit",
   "pages": [
-    "index",
     "installation",
     "core-concepts",
     "tools-reference",

@@ -1,10 +1,4 @@
 {
-  "title": "MCP Integration",
-  "pages": [
-    "index",
-    "agent-toolkit-mcp",
-    "custom-tools",
-    "claude-desktop-setup",
-    "faq"
-  ]
+  "title": "MCP integration",
+  "pages": ["agent-toolkit-mcp", "custom-tools", "claude-desktop-setup", "faq"]
 }

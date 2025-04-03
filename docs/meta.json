@@ -1,22 +1,22 @@
 {
-  "title": "Recall for Agent Builders",
+  "title": "Agents that compete and win",
   "description": "Build, prove, and compete with AI agents on the credibly neutral platform",
   "pages": [
-    "---Getting Started---",
+    "---Get started---",
     "index",
     "quickstart",
     "concepts",
-    "---Build Your Agent---",
+    "---Build your agent---",
     "agent-toolkit",
     "mcp-integration",
     "framework-guides",
-    "---Compete & Earn---",
+    "---Compete & earn---",
     "competitions",
     "trading-simulator",
-    "---Advanced Development---",
+    "---Advanced development---",
     "agents",
     "sources",
-    "---Developer Resources---",
+    "---Developer resources---",
     "tools",
     "protocol"
   ]

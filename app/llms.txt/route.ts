@@ -18,7 +18,7 @@ For the full documentation content, visit ${baseUrl}llms-full.txt
   const pages = source.getPages();
   const sitemap = pages
     .map((page) => {
-      return `[${baseUrl}${page.url.slice(1)}](${page.data.title}): ${page.data.description}`;
+      return `[${page.data.title}](${baseUrl}${page.url.slice(1)}): ${page.data.description}`;
     })
     .join("\n");
 

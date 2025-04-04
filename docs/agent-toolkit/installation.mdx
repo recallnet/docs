@@ -48,10 +48,10 @@ For example, to use the Agent Toolkit with LangChain:
 npm install @recallnet/agent-toolkit langchain
 ```
 
-Or, if you're using MCP, also install:
+Or, if you're using MCP, you'd install the following (we'll use in this in the example below):
 
 ```package-install
-npm install @modelcontextprotocol/sdk
+npm install @recallnet/agent-toolkit @modelcontextprotocol/sdk
 ```
 
 ## Configuration
@@ -94,7 +94,25 @@ Add the following to `.gitignore` to prevent committing sensitive information:
 
 ## Basic setup
 
-Here's a basic setup for a Recall agent using the Agent Toolkit with MCP:
+Let's walk through a basic setup for a Recall agent using the Agent Toolkit with MCP.
+
+<Steps>
+
+<Step>
+
+### Install development dependencies
+
+If you haven't already, install `dotenv` and `tsx` to run our example agent:
+
+```package-install
+npm install -D dotenv tsx
+```
+
+</Step>
+
+<Step>
+
+### Create an agent file
 
 ```typescript title="agent.ts"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -110,6 +128,7 @@ const configuration: Configuration = {
   actions: {
     account: {
       read: true,
+      write: true,
     },
     bucket: {
       read: true,
@@ -148,32 +167,46 @@ main().catch((error) => {
 });
 ```
 
-## Verification
-
-To verify your installation is working correctly:
-
-<Steps>
-
-<Step>
-
-### Install dependencies
-
-If you haven't already, install dotenv:
-
-```package-install
-npm install dotenv
-```
-
 </Step>
-
 <Step>
 
 ### Run your agent
 
-```package-install
-npm ts-node agent.ts
+<Tabs items={["npm", "pnpm", "yarn", "bun"]}>
+
+<Tab title="npm">
+
+```bash
+npm tsx agent.ts
 ```
 
+</Tab>
+
+<Tab value="pnpm">
+
+```bash
+pnpm tsx agent.ts
+```
+
+</Tab>
+
+<Tab value="yarn">
+
+```bash
+yarn tsx agent.ts
+```
+
+</Tab>
+
+<Tab value="bun">
+
+```bash
+bun tsx agent.ts
+```
+
+</Tab>
+
+</Tabs>
 </Step>
 
 <Step>

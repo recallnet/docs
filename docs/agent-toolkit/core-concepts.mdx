@@ -12,31 +12,34 @@ work together.
 The Agent Toolkit follows a modular architecture that allows for integration with multiple AI
 frameworks while maintaining a consistent API:
 
-```
-┌────────────────────────────────────────┐
-│           Your Agent Application       │
-└───────────────┬────────────────────────┘
-                │
-┌───────────────▼────────────────────────┐
-│          RecallAgentToolkit            │
-│  ┌─────────────────────────────────┐   │
-│  │     Framework Adapter Layer     │   │
-│  │  MCP │ LangChain │ OpenAI etc.  │   │
-│  └─────────────┬───────────────────┘   │
-│                │                       │
-│  ┌─────────────▼───────────────────┐   │
-│  │         Shared Core             │   │
-│  │    Tools, Resources, Config     │   │
-│  └─────────────┬───────────────────┘   │
-│                │                       │
-│  ┌─────────────▼───────────────────┐   │
-│  │         RecallAPI               │   │
-│  └─────────────┬───────────────────┘   │
-└────────────────┼───────────────────────┘
-                 │
-┌────────────────▼────────────────────────┐
-│            Recall Network               │
-└────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Agent ["Agent application"]
+    end
+
+    subgraph Toolkit ["RecallAgentToolkit"]
+        subgraph Adapters ["Framework adapter layer"]
+            MCP["MCP"] <--> LC["LangChain"] <--> OpenAI["OpenAI"]
+        end
+
+        subgraph Core ["Shared core"]
+            Tools["Tools, Resources, Config"]
+        end
+
+        subgraph API ["RecallAPI"]
+        end
+
+        Adapters --> Core
+        Core --> API
+    end
+
+    subgraph Network ["Recall Network"]
+    end
+
+    Agent --> Adapters
+    Adapters --> Core
+    Core --> API
+    API --> Network
 ```
 
 ### Key components
@@ -73,7 +76,9 @@ const toolkit = new RecallAgentToolkit({
       account: {
         read: true, // Allow reading account info
         write: true, // Allow buying credits and other write operations
-        /* delete: false, // Account deletion (reserved for future use) */
+      },
+      context: {
+        network: "testnet", // Use the Recall testnet (default)
       },
     },
   },
@@ -103,25 +108,12 @@ const toolkit = new RecallAgentToolkit({
       bucket: {
         read: true, // Allow reading bucket data
         write: true, // Allow creating buckets and adding objects
-        /* delete: true, // Can delete buckets */
       },
+      context: {},
     },
   },
 });
 ```
-
-### Source resource (coming soon)
-
-The _source_ resource represents verified data sources that can be registered on the Recall network.
-This feature is still in development but will allow:
-
-- Registration of verified data sources
-- Attribution of information to specific sources
-- Citation and reference capabilities
-
-<Callout type="info">
-  Source resource functionality is under active development and will be expanded in future releases.
-</Callout>
 
 ## Permissions system
 
@@ -134,7 +126,6 @@ For each resource, you can specify the following permission types:
 
 - **read**: Read-only operations that don't modify state
 - **write**: Operations that modify state or create new resources
-- **delete**: Operations that remove resources (where applicable)
 
 ### Permission configuration
 
@@ -151,20 +142,11 @@ const toolkit = new RecallAgentToolkit({
       account: {
         read: true, // Can read account info
         write: true, // Can buy credits
-        /* delete: false, // Account deletion (reserved for future use) */
       },
-
       // Bucket permissions
       bucket: {
         read: true, // Can read bucket data
         write: true, // Can create buckets and add objects
-        /* delete: true, // Can delete buckets */
-      },
-
-      // Source permissions (future)
-      source: {
-        read: true, // Can read sources
-        write: false, // Cannot create sources
       },
     },
   },
@@ -291,14 +273,14 @@ Each framework adapter has its own specific implementation details:
     });
 
     // Get the tools as OpenAI functions
-    const functions = toolkit.getFunctions();
+    const tools = toolkit.getTools();
 
     // Use in chat completions
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o",
       messages: [{ role: "user", content: "Store my current task list" }],
-      functions,
-      function_call: "auto",
+      tools,
+      tool_choice: "auto",
     });
     ```
 
@@ -312,7 +294,8 @@ Each framework adapter has its own specific implementation details:
 
     ```typescript
     import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
-    import { OpenAI } from "@ai-sdk/openai";
+    import { openai } from "@ai-sdk/openai";
+    import { generateText } from "ai";
 
     // Create the AI SDK provider
     const openai = new OpenAI({
@@ -329,14 +312,89 @@ Each framework adapter has its own specific implementation details:
     const tools = toolkit.getTools();
 
     // Use with AI SDK
-    const { messages } = await openai.chat({
-      messages: [{ role: "user", content: "Create a bucket for my memories" }],
-      model: "gpt-4",
+    const result = await generateText({
+      model: openai("gpt-4o"),
       tools,
+      maxSteps: 5,
+      prompt: `
+          Create a bucket called 'agent-toolkit-test' and tell me its resulting bucket address, and
+          then get the account info for the account that created it.
+        `,
     });
+
     ```
 
     The AI SDK adapter is particularly useful for building AI features in Next.js applications with React Server Components.
+
+  </Tab>
+</Tabs>
+
+### Directly accessing tools
+
+Although not recommended, you can directly access tools from the toolkit by using the `getTools`
+method and then calling them directly. The actual pattern depends on the framework you're using.
+
+<Tabs items={["LangChain", "OpenAI", "AI SDK"]}>
+
+  <Tab value="LangChain">
+
+    The LangChain adapter exposes Recall tools as LangChain tools:
+
+    ```typescript
+    const tools = toolkit.getTools();
+    const result = await tools
+      .find((t) => t.name === "query_objects")!
+      .invoke({
+        bucket: "0xff0000000000000000000000000000000000008f",
+        prefix: "cot/",
+        limit: 10,
+      });
+    ```
+
+  </Tab>
+
+  <Tab value="OpenAI">
+
+    The OpenAI adapter integrates with OpenAI's function calling:
+
+    ```typescript
+    const tools = toolkit.getTools();
+    const queryObjectsTool = tools.find((t) => t.function.name === "query_objects");
+    const call = await toolkit.handleToolCall({
+      id: "1",
+      function: {
+        name: queryObjectsTool!.function.name,
+        arguments: JSON.stringify({
+          bucket: "0xff0000000000000000000000000000000000008f",
+          prefix: "cot/",
+          limit: 10,
+        }),
+      },
+      type: "function",
+    });
+    ```
+
+  </Tab>
+
+  <Tab value="AI SDK">
+
+    The AI SDK adapter works with Vercel's AI SDK:
+
+    ```typescript
+    const tools = toolkit.getTools();
+    const queryObjectsTool = tools.query_objects;
+    const result = await queryObjectsTool.execute(
+      {
+        bucket: "0xff0000000000000000000000000000000000008f",
+        prefix: "cot/",
+        limit: 10,
+      },
+      {
+        toolCallId: "1",
+        messages: [],
+      }
+    );
+    ```
 
   </Tab>
 </Tabs>
@@ -349,14 +407,20 @@ The Agent Toolkit uses a resource-based permission model to control access to di
 the Recall network:
 
 ```typescript
-type Resource = "account" | "bucket" | "source";
-type Permission = "read" | "write" | "delete";
+type Resource = "account" | "bucket";
+type Permission = "read" | "write";
 
-interface ResourcePermissions {
-  [resource: Resource]: {
-    [permission: Permission]: boolean;
+type Actions = {
+  [K in Resource]?: {
+    [K in Permission]?: boolean;
   };
-}
+};
+
+// This is equivalent to:
+// type Actions = {
+//   account?: { read?: boolean; write?: boolean };
+//   bucket?: { read?: boolean; write?: boolean };
+// };
 ```
 
 This type system forms the basis of the permission configuration:
@@ -367,12 +431,10 @@ const configuration = {
     account: {
       read: true, // Can read account info
       write: true, // Can buy credits
-      /* delete: false, // Account deletion (reserved for future use) */
     },
     bucket: {
       read: true, // Can read bucket data
       write: true, // Can create buckets and add objects
-      /* delete: true, // Can delete buckets */
     },
   },
 };
@@ -383,14 +445,16 @@ const configuration = {
 The toolkit configuration combines resource permissions with contextual information:
 
 ```typescript
-interface Configuration {
+type Configuration = {
   actions: {
-    account?: { read?: boolean; write?: boolean; delete?: boolean };
-    bucket?: { read?: boolean; write?: boolean; delete?: boolean };
-    source?: { read?: boolean; write?: boolean; delete?: boolean };
+    account?: { read?: boolean; write?: boolean };
+    bucket?: { read?: boolean; write?: boolean };
   };
-  context?: Record<string, any>;
-}
+  context?: {
+    network: "testnet" | "localnet";
+    [key: string]: unknown;
+  };
+};
 ```
 
 This configuration is passed to the `RecallAgentToolkit` constructor:
@@ -400,8 +464,8 @@ const toolkit = new RecallAgentToolkit({
   privateKey: process.env.RECALL_PRIVATE_KEY,
   configuration: {
     actions: {
-      account: { read: true, write: true /* , delete: false */ },
-      bucket: { read: true, write: true /* , delete: true */ },
+      account: { read: true, write: true },
+      bucket: { read: true, write: true },
     },
     context: {
       network: "testnet",
@@ -417,7 +481,10 @@ Understanding the typical lifecycle of an agent using the toolkit can help you b
 solutions:
 
 <Steps>
-  ### Initialization
+
+<Step>
+
+### Initialization
 
 The agent is initialized with the RecallAgentToolkit and appropriate permissions:
 
@@ -429,17 +496,27 @@ const toolkit = new RecallAgentToolkit({
       account: { read: true },
       bucket: { read: true, write: true },
     },
+    context: {
+      network: "testnet",
+    },
   },
 });
 ```
+
+</Step>
+
+<Step>
 
 ### Tool discovery
 
 The agent discovers available tools through the framework-specific mechanism:
 
 - MCP agents receive tool schemas through MCP protocol
-- LangChain agents receive tool definitions
-- OpenAI function calling receives function definitions
+- LangChain, OpenAI, and AI SDK agents receive tool definitions
+
+</Step>
+
+<Step>
 
 ### Tool selection
 
@@ -451,6 +528,10 @@ The agent autonomously decides which tools to use based on the task:
 to get a bucket, then use add_object to store the data."
 ```
 
+</Step>
+
+<Step>
+
 ### Tool execution
 
 The agent calls the chosen tool with appropriate parameters:
@@ -460,17 +541,31 @@ The agent calls the chosen tool with appropriate parameters:
 get_or_create_bucket({ name: "memories" })
 ```
 
+</Step>
+
+<Step>
+
 ### Response processing
 
 The agent receives the tool response and uses it for further reasoning:
 
 ```
 // Example response:
-{ bucket: "bucket-1234-abcd-5678" }
+{
+  "success": true,
+  "result": {
+    "bucket": "0xff0000000000000000000000000000000000008f",
+    "txHash": "0xf7078e5016416ee5033682f0543115d1ade0294de5e73a8c249a79f590c31635"
+  }
+}
 
 // Agent reasoning:
 "Now I have the bucket ID, I can store the object..."
 ```
+
+</Step>
+
+<Step>
 
 ### Session persistence
 
@@ -482,118 +577,28 @@ For multi-turn interactions, the agent maintains context about previous actions:
 I'll retrieve it now with get_object..."
 ```
 
+</Step>
+
 </Steps>
 
-## Common design patterns
+## Bucket naming conventions
 
-Here are some common design patterns that can help you build more effective agents:
-
-### Bucket naming conventions
-
-Establish a consistent naming convention for buckets to make them easier to manage:
+It's useful to establish a consistent naming convention for buckets to make them easier to manage.
+For example, you might have a predictable name format or define it with some context (like a user
+ID, date, or session ID):
 
 ```typescript
-// Specific naming pattern
-const { bucket } = await agent.invoke("get_or_create_bucket", {
-  name: "user123-memories-personal"
-});
+// Specific naming pattern with a user ID
+const bucketName = "user123-memories-personal";
 
 // Or with timestamps
-const { bucket } = await agent.invoke("get_or_create_bucket", {
-  name: `session-${Date.now()}`
-});
-```
+const bucketName = `session-${Date.now()}`;
 
-### Structured object storage
+// Or better yet, with a session ID
+const uuid = crypto.randomUUID();
+const bucketName = `session-${uuid}`;
 
-Store data in a structured format to make it easier to query and manage:
-
-```typescript
-// Store structured data
-await agent.invoke("add_object", {
-  bucket: bucketId,
-  key: "user-preferences",
-  value: JSON.stringify({
-    theme: "dark",
-    language: "en",
-    notifications: true,
-    lastUpdated: new Date().toISOString(),
-  }),
-});
-```
-
-### Session management
-
-Implement session management to maintain context across interactions:
-
-```typescript
-// Store session information
-async function startSession(userId) {
-  const { bucket } = await agent.invoke("get_or_create_bucket", {
-    name: `session-${userId}`,
-  });
-
-  await agent.invoke("add_object", {
-    bucket,
-    key: "session-info",
-    value: JSON.stringify({
-      startTime: Date.now(),
-      userId,
-      active: true,
-    }),
-  });
-
-  return bucket;
-}
-
-// Retrieve session on subsequent interactions
-async function resumeSession(userId) {
-  const { buckets } = await agent.invoke("list_buckets");
-  const sessionBucket = buckets.find((b) => b.name === `session-${userId}`);
-
-  if (sessionBucket) {
-    const { value } = await agent.invoke("get_object", {
-      bucket: sessionBucket.bucket,
-      key: "session-info",
-    });
-
-    return {
-      bucket: sessionBucket.bucket,
-      session: JSON.parse(value),
-    };
-  }
-
-  // No session found, start a new one
-  return { bucket: await startSession(userId), isNew: true };
-}
-```
-
-### Error handling
-
-Implement robust error handling to make your agent more resilient:
-
-```typescript
-try {
-  const result = await agent.invoke("get_object", {
-    bucket: bucketId,
-    key: "user-data",
-  });
-
-  // Process the result
-} catch (error) {
-  if (error.message.includes("object not found")) {
-    // Handle missing object
-    console.log("Object not found, creating default data");
-    await agent.invoke("add_object", {
-      bucket: bucketId,
-      key: "user-data",
-      value: JSON.stringify({ default: true }),
-    });
-  } else {
-    // Handle other errors
-    console.error("Error accessing Recall:", error);
-  }
-}
+// Create a bucket with the name ...
 ```
 
 ## Next steps

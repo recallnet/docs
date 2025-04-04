@@ -1,5 +1,5 @@
 ---
-title: Agent toolkit
+title: Agent Toolkit
 description: Build and deploy AI agents with the Agent Toolkit
 ---
 
@@ -49,6 +49,7 @@ const toolkit = new RecallAgentToolkit({
       account: { read: true },
       bucket: { read: true, write: true },
     },
+    context: {},
   },
 });
 
@@ -66,6 +67,12 @@ agent framework:
 
 ```typescript
 // LangChain integration example
+import {
+  ChatPromptTemplate,
+  HumanMessagePromptTemplate,
+  MessagesPlaceholder,
+  SystemMessagePromptTemplate,
+} from "@langchain/core/prompts";
 import { ChatOpenAI } from "@langchain/openai";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
 import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
@@ -78,18 +85,31 @@ const toolkit = new RecallAgentToolkit({
       account: { read: true },
       bucket: { read: true, write: true },
     },
+    context: {},
   },
 });
 
 // Get LangChain tools from the toolkit
 const recallTools = toolkit.getTools();
 
+// Create a prompt template for the agent
+const prompt = ChatPromptTemplate.fromMessages([
+  SystemMessagePromptTemplate.fromTemplate(
+    "You are a helpful assistant with access to Recall storage capabilities. " +
+      "1. You can create and manage storage buckets\n" +
+      "2. You can store and retrieve information in buckets\n" +
+      "3. You can handle both text and binary data\n"
+  ),
+  new MessagesPlaceholder("agent_scratchpad"),
+  HumanMessagePromptTemplate.fromTemplate("{input}"),
+]);
+
 // Create the agent
-const model = new ChatOpenAI({ model: "gpt-4" });
+const model = new ChatOpenAI({ model: "gpt-4o" });
 const agent = await createOpenAIFunctionsAgent({
   llm: model,
   tools: recallTools,
-  prompt: "You are an agent with access to Recall storage.",
+  prompt: prompt,
 });
 
 // Run the agent

@@ -29,15 +29,16 @@ Retrieves information about a Recall account, including token balances, address,
 {
   address: string; // The account's address (0x...)
   nonce: number; // The account's transaction nonce
-  recall: string; // The account's RECALL token balance
-  network: string; // The current network ("testnet" or "mainnet")
+  balance: string; // The account's RECALL token balance
+  parentBalance: string; // The account's token balance on the parent chain
 }
 ```
 
 #### Example
 
-<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+<Tabs items={["MCP", "LangChain", "OpenAI", "AI SDK"]}>
   <Tab value="MCP">
+
     ```typescript
     // Claude or other MCP client will automatically discover and use this tool
     // The agent might use it like this:
@@ -54,14 +55,15 @@ Retrieves information about a Recall account, including token balances, address,
     {
       "address": "0x123abc...",
       "nonce": 42,
-      "recall": "1000000000000000000",
-      "network": "testnet"
+      "balance": "1000000000000000000",
+      "parentBalance": "0"
     }
     */
     ```
 
   </Tab>
   <Tab value="LangChain">
+  
     ```typescript
     import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
 
@@ -73,7 +75,7 @@ Retrieves information about a Recall account, including token balances, address,
     const tools = toolkit.getTools();
 
     // Later, when the agent uses the tool:
-    const result = await tools.find(t => t.name === "get_account_info").call({});
+    const result = await tools.find((t) => t.name === "get_account_info").invoke({});
     console.log(result);
     // { address: "0x123abc...", nonce: 42, recall: "1000000000000000000", network: "testnet" }
     ```
@@ -83,31 +85,46 @@ Retrieves information about a Recall account, including token balances, address,
 
     ```typescript
     import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
-    import OpenAI from "openai";
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const toolkit = new RecallAgentToolkit({
       privateKey: process.env.RECALL_PRIVATE_KEY,
       configuration: { /* permissions */ },
-      client: openai
     });
 
-    const functions = toolkit.getFunctions();
+    const tools = toolkit.getTools();
 
     // When calling the OpenAI API
-    const messages = [
-      { role: "user", content: "What's my account information?" }
-    ];
+    const getAccountInfoTool = tools.find((t) => t.function.name === "get_account_info");
+    const call = await toolkit.handleToolCall({
+      id: "1",
+      function: {
+        name: getAccountInfoTool.function.name,
+        arguments: JSON.stringify({}),
+      },
+      type: "function",
+    });
+    ```
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages,
-      functions,
-      function_call: "auto"
+  </Tab>
+  <Tab value="AI SDK">
+
+    ```typescript
+    // Using the toolkit from the previous example
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
     });
 
-    // OpenAI might call the function
-    // { name: "get_account_info", arguments: "{}" }
+    const tools = toolkit.getTools();
+    const result = await tools.get_account_info.execute(
+      {},
+      {
+        toolCallId: "1",
+        messages: [],
+      }
+    );
     ```
 
   </Tab>
@@ -135,10 +152,11 @@ Gets credit information for the connected account, including available credits a
 
 #### Example
 
-<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+<Tabs items={["MCP", "LangChain", "OpenAI", "AI SDK"]}>
   <Tab value="MCP">
   
     ```typescript
+    // Claude or other MCP client will automatically discover and use this tool
     // The agent might use it like this:
     /*
     Let me check my credit balance:
@@ -162,8 +180,17 @@ Gets credit information for the connected account, including available credits a
   <Tab value="LangChain">
 
     ```typescript
-    // Using the toolkit from the previous example
-    const result = await tools.find(t => t.name === "get_credit_info").call({});
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ }
+    });
+
+    const tools = toolkit.getTools();
+
+    // Later, when the agent uses the tool:
+    const result = await tools.find((t) => t.name === "get_credit_info").invoke({});
     console.log(result);
     // { credits: "5000", used: "250", address: "0x123abc..." }
     ```
@@ -172,9 +199,46 @@ Gets credit information for the connected account, including available credits a
   <Tab value="OpenAI">
 
     ```typescript
-    // Using the toolkit from the previous example
-    // OpenAI might call the function
-    // { name: "get_credit_info", arguments: "{}" }
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+
+    // When calling the OpenAI API
+    const getCreditInfoTool = tools.find((t) => t.function.name === "get_credit_info");
+    const call = await toolkit.handleToolCall({
+      id: "1",
+      function: {
+        name: getCreditInfoTool.function.name,
+        arguments: JSON.stringify({}),
+      },
+      type: "function",
+    });
+    ```
+
+  </Tab>
+  <Tab value="AI SDK">
+
+    ```typescript
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+    const result = await tools.get_credit_info.execute(
+      {},
+      {
+        toolCallId: "1",
+        messages: [],
+      }
+    );
     ```
 
   </Tab>
@@ -202,10 +266,11 @@ Buys credit for the connected account, allowing the agent to perform more operat
 
 #### Example
 
-<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+<Tabs items={["MCP", "LangChain", "OpenAI", "AI SDK"]}>
   <Tab value="MCP">
 
     ```typescript
+    // Claude or other MCP client will automatically discover and use this tool
     // The agent might use it like this:
     /*
     I'll buy some more credit:
@@ -229,8 +294,17 @@ Buys credit for the connected account, allowing the agent to perform more operat
   <Tab value="LangChain">
 
     ```typescript
-    // Using the toolkit from the previous example
-    const result = await tools.find(t => t.name === "buy_credit").call({
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ }
+    });
+
+    const tools = toolkit.getTools();
+
+    // Later, when the agent uses the tool:
+    const result = await tools.find((t) => t.name === "buy_credit").invoke({
       amount: "0.01"
     });
     console.log(result);
@@ -241,9 +315,46 @@ Buys credit for the connected account, allowing the agent to perform more operat
   <Tab value="OpenAI">
 
     ```typescript
-    // Using the toolkit from the previous example
-    // OpenAI might call the function
-    // { name: "buy_credit", arguments: "{ \"amount\": \"0.01\" }" }
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+
+    // When calling the OpenAI API
+    const buyCreditTool = tools.find((t) => t.function.name === "buy_credit");
+    const call = await toolkit.handleToolCall({
+      id: "1",
+      function: {
+        name: buyCreditTool.function.name,
+        arguments: JSON.stringify({ amount: "1" }),
+      },
+      type: "function",
+    });
+    ```
+
+  </Tab>
+  <Tab value="AI SDK">
+
+    ```typescript
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+    const result = await tools.buy_credit.execute(
+      { amount: "1" },
+      {
+        toolCallId: "1",
+        messages: [],
+      }
+    );
     ```
 
   </Tab>
@@ -355,10 +466,11 @@ Creates a new bucket in Recall with the specified alias.
 
 #### Example
 
-<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+<Tabs items={["MCP", "LangChain", "OpenAI", "AI SDK"]}>
   <Tab value="MCP">
 
     ```typescript
+    // Claude or other MCP client will automatically discover and use this tool
     // The agent might use it like this:
     /*
     I'll create a new bucket for storing user preferences:
@@ -373,7 +485,7 @@ Creates a new bucket in Recall with the specified alias.
     // Sample response:
     /*
     {
-      "bucket": "0xnewbucket...",
+      "bucket": "",
       "name": "user-preferences",
       "metadata": {
         "createdBy": "agent",
@@ -387,8 +499,17 @@ Creates a new bucket in Recall with the specified alias.
   <Tab value="LangChain">
 
     ```typescript
-    // Using the toolkit from the previous example
-    const result = await tools.find(t => t.name === "create_bucket").call({
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ }
+    });
+
+    const tools = toolkit.getTools();
+
+    // Later, when the agent uses the tool:
+    const result = await tools.find((t) => t.name === "create_bucket").invoke({
       bucketAlias: "user-preferences",
       metadata: {
         createdBy: "agent",
@@ -396,16 +517,65 @@ Creates a new bucket in Recall with the specified alias.
       }
     });
     console.log(result);
-    // { bucket: "0xnewbucket...", name: "user-preferences", metadata: {...} }
+    // { bucket: "", name: "user-preferences", metadata: {...} }
     ```
 
   </Tab>
   <Tab value="OpenAI">
 
     ```typescript
-    // Using the toolkit from the previous example
-    // OpenAI might call the function
-    // { name: "create_bucket", arguments: "{ \"bucketAlias\": \"user-preferences\", \"metadata\": { \"createdBy\": \"agent\", \"purpose\": \"store user preferences\" } }" }
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+
+    // When calling the OpenAI API
+    const createBucketTool = tools.find((t) => t.function.name === "create_bucket");
+    const call = await toolkit.handleToolCall({
+      id: "1",
+      function: {
+        name: createBucketTool.function.name,
+        arguments: JSON.stringify({
+          bucketAlias: "user-preferences",
+          metadata: {
+            createdBy: "agent",
+            purpose: "store user preferences"
+          }
+        }),
+      },
+      type: "function",
+    });
+    ```
+
+  </Tab>
+  <Tab value="AI SDK">
+
+    ```typescript
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+    const result = await tools.create_bucket.execute(
+      {
+        bucketAlias: "user-preferences",
+        metadata: {
+          createdBy: "agent",
+          purpose: "store user preferences"
+        }
+      },
+      {
+        toolCallId: "1",
+        messages: [],
+      }
+    );
     ```
 
   </Tab>
@@ -436,16 +606,18 @@ convenient than separate get/create operations.
 
 #### Example
 
-<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+<Tabs items={["MCP", "LangChain", "OpenAI", "AI SDK"]}>
   <Tab value="MCP">
 
     ```typescript
+    // Claude or other MCP client will automatically discover and use this tool
     // The agent might use it like this:
     /*
     I'll get or create a bucket for storing chat history:
     <function_calls>
     <invoke name="get_or_create_bucket">
     <parameter name="bucketAlias">chat-history</parameter>
+    <parameter name="metadata">{"type": "conversation", "version": "1.0"}</parameter>
     </invoke>
     </function_calls>
     */
@@ -455,6 +627,10 @@ convenient than separate get/create operations.
     {
       "bucket": "0xbucket3...",
       "name": "chat-history",
+      "metadata": {
+        "type": "conversation",
+        "version": "1.0"
+      },
       "created": true
     }
     */
@@ -464,21 +640,83 @@ convenient than separate get/create operations.
   <Tab value="LangChain">
 
     ```typescript
-    // Using the toolkit from the previous example
-    const result = await tools.find(t => t.name === "get_or_create_bucket").call({
-      bucketAlias: "chat-history"
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ }
+    });
+
+    const tools = toolkit.getTools();
+
+    // Later, when the agent uses the tool:
+    const result = await tools.find((t) => t.name === "get_or_create_bucket").invoke({
+      bucketAlias: "chat-history",
+      metadata: {
+        type: "conversation",
+        version: "1.0"
+      }
     });
     console.log(result);
-    // { bucket: "0xbucket3...", name: "chat-history", created: true }
+    // { bucket: "0xbucket3...", name: "chat-history", created: true, metadata: {...} }
     ```
 
   </Tab>
   <Tab value="OpenAI">
 
     ```typescript
-    // Using the toolkit from the previous example
-    // OpenAI might call the function
-    // { name: "get_or_create_bucket", arguments: "{ \"bucketAlias\": \"chat-history\" }" }
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+
+    // When calling the OpenAI API
+    const getOrCreateBucketTool = tools.find((t) => t.function.name === "get_or_create_bucket");
+    const call = await toolkit.handleToolCall({
+      id: "1",
+      function: {
+        name: getOrCreateBucketTool.function.name,
+        arguments: JSON.stringify({
+          bucketAlias: "chat-history",
+          metadata: {
+            type: "conversation",
+            version: "1.0"
+          }
+        }),
+      },
+      type: "function",
+    });
+    ```
+
+  </Tab>
+  <Tab value="AI SDK">
+
+    ```typescript
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+    const result = await tools.get_or_create_bucket.execute(
+      {
+        bucketAlias: "chat-history",
+        metadata: {
+          type: "conversation",
+          version: "1.0"
+        }
+      },
+      {
+        toolCallId: "1",
+        messages: [],
+      }
+    );
     ```
 
   </Tab>
@@ -510,19 +748,20 @@ Adds an object to a bucket in Recall. This is how agents store data persistently
 
 #### Example
 
-<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+<Tabs items={["MCP", "LangChain", "OpenAI", "AI SDK"]}>
   <Tab value="MCP">
 
     ```typescript
+    // Claude or other MCP client will automatically discover and use this tool
     // The agent might use it like this:
     /*
     I'll add the user preference data to the bucket:
     <function_calls>
     <invoke name="add_object">
-    <parameter name="bucket">0xnewbucket...</parameter>
+    <parameter name="bucket"></parameter>
     <parameter name="key">preferences</parameter>
     <parameter name="data">{"theme":"dark","language":"en"}</parameter>
-    <parameter name="metadata">{"lastUpdated":"2023-04-01T15:30:00Z"}</parameter>
+    <parameter name="metadata">{"lastUpdated":"2024-02-20T15:30:00Z"}</parameter>
     </invoke>
     </function_calls>
     */
@@ -533,7 +772,7 @@ Adds an object to a bucket in Recall. This is how agents store data persistently
       "key": "preferences",
       "size": 39,
       "metadata": {
-        "lastUpdated": "2023-04-01T15:30:00Z"
+        "lastUpdated": "2024-02-20T15:30:00Z"
       }
     }
     */
@@ -543,26 +782,86 @@ Adds an object to a bucket in Recall. This is how agents store data persistently
   <Tab value="LangChain">
 
     ```typescript
-    // Using the toolkit from the previous example
-    const result = await tools.find(t => t.name === "add_object").call({
-      bucket: "0xnewbucket...",
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ }
+    });
+
+    const tools = toolkit.getTools();
+
+    // Later, when the agent uses the tool:
+    const result = await tools.find((t) => t.name === "add_object").invoke({
+      bucket: "0xff0000000000000000000000000000000000008f",
       key: "preferences",
-      data: JSON.stringify({theme: "dark", language: "en"}),
+      data: JSON.stringify({ theme: "dark", language: "en" }),
       metadata: {
         lastUpdated: new Date().toISOString()
       }
     });
     console.log(result);
-    // { key: "preferences", size: 39, metadata: { lastUpdated: "..." } }
+    // { key: "preferences", size: 39, metadata: { lastUpdated: "2024-02-20T15:30:00Z" } }
     ```
 
   </Tab>
   <Tab value="OpenAI">
 
     ```typescript
-    // Using the toolkit from the previous example
-    // OpenAI might call the function
-    // { name: "add_object", arguments: "{ \"bucket\": \"0xnewbucket...\", \"key\": \"preferences\", \"data\": \"{\\\"theme\\\":\\\"dark\\\",\\\"language\\\":\\\"en\\\"}\", \"metadata\": { \"lastUpdated\": \"2023-04-01T15:30:00Z\" } }" }
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+
+    // When calling the OpenAI API
+    const addObjectTool = tools.find((t) => t.function.name === "add_object");
+    const call = await toolkit.handleToolCall({
+      id: "1",
+      function: {
+        name: addObjectTool.function.name,
+        arguments: JSON.stringify({
+          bucket: "0xff0000000000000000000000000000000000008f",
+          key: "preferences",
+          data: JSON.stringify({ theme: "dark", language: "en" }),
+          metadata: {
+            lastUpdated: new Date().toISOString()
+          }
+        }),
+      },
+      type: "function",
+    });
+    ```
+
+  </Tab>
+  <Tab value="AI SDK">
+
+    ```typescript
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+    const result = await tools.add_object.execute(
+      {
+        bucket: "0xff0000000000000000000000000000000000008f",
+        key: "preferences",
+        data: JSON.stringify({ theme: "dark", language: "en" }),
+        metadata: {
+          lastUpdated: new Date().toISOString()
+        }
+      },
+      {
+        toolCallId: "1",
+        messages: [],
+      }
+    );
     ```
 
   </Tab>
@@ -592,16 +891,17 @@ Retrieves an object from a bucket in Recall. This is how agents retrieve previou
 
 #### Example
 
-<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+<Tabs items={["MCP", "LangChain", "OpenAI", "AI SDK"]}>
   <Tab value="MCP">
 
     ```typescript
+    // Claude or other MCP client will automatically discover and use this tool
     // The agent might use it like this:
     /*
     I'll retrieve the user preferences:
     <function_calls>
     <invoke name="get_object">
-    <parameter name="bucket">0xnewbucket...</parameter>
+    <parameter name="bucket"></parameter>
     <parameter name="key">preferences</parameter>
     </invoke>
     </function_calls>
@@ -613,7 +913,7 @@ Retrieves an object from a bucket in Recall. This is how agents retrieve previou
       "value": "{\"theme\":\"dark\",\"language\":\"en\"}",
       "key": "preferences",
       "metadata": {
-        "lastUpdated": "2023-04-01T15:30:00Z"
+        "lastUpdated": "2024-02-20T15:30:00Z"
       }
     }
     */
@@ -623,9 +923,18 @@ Retrieves an object from a bucket in Recall. This is how agents retrieve previou
   <Tab value="LangChain">
 
     ```typescript
-    // Using the toolkit from the previous example
-    const result = await tools.find(t => t.name === "get_object").call({
-      bucket: "0xnewbucket...",
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ }
+    });
+
+    const tools = toolkit.getTools();
+
+    // Later, when the agent uses the tool:
+    const result = await tools.find((t) => t.name === "get_object").invoke({
+      bucket: "0xff0000000000000000000000000000000000008f",
       key: "preferences"
     });
     console.log(result);
@@ -640,9 +949,56 @@ Retrieves an object from a bucket in Recall. This is how agents retrieve previou
   <Tab value="OpenAI">
 
     ```typescript
-    // Using the toolkit from the previous example
-    // OpenAI might call the function
-    // { name: "get_object", arguments: "{ \"bucket\": \"0xnewbucket...\", \"key\": \"preferences\" }" }
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+
+    // When calling the OpenAI API
+    const getObjectTool = tools.find((t) => t.function.name === "get_object");
+    const call = await toolkit.handleToolCall({
+      id: "1",
+      function: {
+        name: getObjectTool.function.name,
+        arguments: JSON.stringify({
+          bucket: "0xff0000000000000000000000000000000000008f",
+          key: "preferences"
+        }),
+      },
+      type: "function",
+    });
+    ```
+
+  </Tab>
+  <Tab value="AI SDK">
+
+    ```typescript
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+    const result = await tools.get_object.execute(
+      {
+        bucket: "0xff0000000000000000000000000000000000008f",
+        key: "preferences"
+      },
+      {
+        toolCallId: "1",
+        messages: [],
+      }
+    );
+
+    // Parse the JSON string if needed
+    const preferences = JSON.parse(result.value);
+    console.log(preferences.theme); // "dark"
     ```
 
   </Tab>
@@ -678,10 +1034,11 @@ objects or finding objects with specific patterns.
 
 #### Example
 
-<Tabs items={["MCP", "LangChain", "OpenAI"]}>
+<Tabs items={["MCP", "LangChain", "OpenAI", "AI SDK"]}>
   <Tab value="MCP">
 
     ```typescript
+    // Claude or other MCP client will automatically discover and use this tool
     // The agent might use it like this:
     /*
     I'll list all objects in the chat-history bucket that start with "user-":
@@ -702,14 +1059,14 @@ objects or finding objects with specific patterns.
           "key": "user-123-chat-1",
           "size": 256,
           "metadata": {
-            "timestamp": "2023-04-01T10:15:00Z"
+            "timestamp": "2024-02-20T10:15:00Z"
           }
         },
         {
           "key": "user-123-chat-2",
           "size": 512,
           "metadata": {
-            "timestamp": "2023-04-01T11:20:00Z"
+            "timestamp": "2024-02-20T11:20:00Z"
           }
         }
       ]
@@ -721,8 +1078,17 @@ objects or finding objects with specific patterns.
   <Tab value="LangChain">
 
     ```typescript
-    // Using the toolkit from the previous example
-    const result = await tools.find(t => t.name === "query_objects").call({
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ }
+    });
+
+    const tools = toolkit.getTools();
+
+    // Later, when the agent uses the tool:
+    const result = await tools.find((t) => t.name === "query_objects").invoke({
       bucket: "0xbucket3...",
       prefix: "user-",
       limit: 10
@@ -735,9 +1101,54 @@ objects or finding objects with specific patterns.
   <Tab value="OpenAI">
 
     ```typescript
-    // Using the toolkit from the previous example
-    // OpenAI might call the function
-    // { name: "query_objects", arguments: "{ \"bucket\": \"0xbucket3...\", \"prefix\": \"user-\", \"limit\": 10 }" }
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/openai";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+
+    // When calling the OpenAI API
+    const queryObjectsTool = tools.find((t) => t.function.name === "query_objects");
+    const call = await toolkit.handleToolCall({
+      id: "1",
+      function: {
+        name: queryObjectsTool.function.name,
+        arguments: JSON.stringify({
+          bucket: "0xbucket3...",
+          prefix: "user-",
+          limit: 10
+        }),
+      },
+      type: "function",
+    });
+    ```
+
+  </Tab>
+  <Tab value="AI SDK">
+
+    ```typescript
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
+
+    const toolkit = new RecallAgentToolkit({
+      privateKey: process.env.RECALL_PRIVATE_KEY,
+      configuration: { /* permissions */ },
+    });
+
+    const tools = toolkit.getTools();
+    const result = await tools.query_objects.execute(
+      {
+        bucket: "0xbucket3...",
+        prefix: "user-",
+        limit: 10
+      },
+      {
+        toolCallId: "1",
+        messages: [],
+      }
+    );
     ```
 
   </Tab>
@@ -780,24 +1191,13 @@ const data = {
   history: [{ timestamp: Date.now(), action: "login" }],
 };
 
-await toolkit.run("add_object", {
-  bucket: bucketId,
-  key: "user-state",
-  data: JSON.stringify(data),
-  metadata: {
-    contentType: "application/json",
-    lastUpdated: new Date().toISOString(),
-  },
-});
+// Call the add_object tool...
 ```
 
 When retrieving, parse the JSON:
 
 ```typescript
-const { value } = await toolkit.run("get_object", {
-  bucket: bucketId,
-  key: "user-state",
-});
+// Call the get_object tool...
 
 const data = JSON.parse(value);
 console.log(data.preferences.theme); // "dark"

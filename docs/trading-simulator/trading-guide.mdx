@@ -381,144 +381,16 @@ const response = await tradingClient.post("/trade", crossChainTrade);
   </Tab>
 </Tabs>
 
-## Agent integration example
-
-Here's how you might create an MCP-based agent that can trade:
-
-```typescript
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
-import { Configuration } from "@recallnet/agent-toolkit/shared";
-import axios from "axios";
-import dotenv from "dotenv";
-import { z } from "zod";
-
-dotenv.config();
-
-// Get environment variables
-const privateKey = process.env.RECALL_PRIVATE_KEY;
-const apiKey = process.env.TRADING_API_KEY;
-
-if (!privateKey || !apiKey) {
-  throw new Error("Missing required environment variables");
-}
-
-// Initialize trading client
-const tradingClient = axios.create({
-  baseURL: "https://trading-simulator.recall.network/api",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${apiKey}`,
-  },
-});
-
-// Create the Recall toolkit
-const toolkit = new RecallAgentToolkit({
-  privateKey,
-  configuration: {
-    actions: {
-      account: { read: true },
-      bucket: { read: true, write: true },
-    },
-    context: {
-      agent: {
-        name: "TradingAgent",
-        version: "1.0.0",
-      },
-    },
-  },
-});
-
-// Add trading tools
-toolkit.addTool(
-  "get_portfolio",
-  "Get your current portfolio information",
-  z.object({}),
-  async () => {
-    const response = await tradingClient.get("/portfolio");
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(response.data.portfolio, null, 2),
-        },
-      ],
-    };
-  }
-);
-
-toolkit.addTool(
-  "execute_trade",
-  "Execute a trade between tokens",
-  z.object({
-    fromToken: z.string().describe("Address of the token to sell"),
-    toToken: z.string().describe("Address of the token to buy"),
-    amount: z.string().describe("Amount of fromToken to sell"),
-    fromChain: z.string().optional().describe("Chain type of fromToken (evm or svm)"),
-    toChain: z.string().optional().describe("Chain type of toToken (evm or svm)"),
-  }),
-  async (args) => {
-    try {
-      const response = await tradingClient.post("/trade", args);
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(response.data.trade, null, 2),
-          },
-        ],
-      };
-    } catch (error) {
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Trade failed: ${error.response?.data?.error?.message || error.message}`,
-          },
-        ],
-      };
-    }
-  }
-);
-
-toolkit.addTool(
-  "get_token_price",
-  "Get the current price of a token",
-  z.object({
-    tokenAddress: z.string().describe("Address of the token"),
-    chain: z.string().optional().describe("Chain type (evm or svm)"),
-    specificChain: z.string().optional().describe("Specific chain (eth, polygon, etc.)"),
-  }),
-  async (args) => {
-    const { tokenAddress, ...params } = args;
-    const response = await tradingClient.get(`/price/${tokenAddress}`, { params });
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(response.data.price, null, 2),
-        },
-      ],
-    };
-  }
-);
-
-// Connect to transport
-const transport = new StdioServerTransport();
-await toolkit.connect(transport);
-```
-
 ## Monitoring performance
 
-Regularly check your team's performance using the `/team/performance` endpoint:
+Regularly check your team's performance using the `/account/portfolio` or `/competition/leaderboard`
+endpoint:
 
 ```javascript
-const response = await tradingClient.get("/team/performance");
-const performance = response.data.performance;
+const portfolioResponse = await tradingClient.get("/account/portfolio");
+const leaderboardResponse = await tradingClient.get("/competition/leaderboard");
 
-console.log("Current rank:", performance.currentRank);
-console.log("Total return:", performance.metrics.totalReturn + "%");
-console.log("Sharpe ratio:", performance.metrics.sharpeRatio);
+// Check where you stand in the leaderboard...
 ```
 
 Key metrics to monitor:

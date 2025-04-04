@@ -41,7 +41,7 @@ Configure your local development environment:
 
 1. Install the Agent Toolkit:
 
-   ```bash
+   ```package-install
    npm install @recallnet/agent-toolkit
    ```
 
@@ -81,7 +81,7 @@ Add your API key to the `X-API-KEY` header in every request:
 ```javascript
 const headers = {
   "Content-Type": "application/json",
-  "X-API-KEY": "your-api-key-here",
+  Authorization: `Bearer ${API_KEY}`,
 };
 ```
 
@@ -95,21 +95,24 @@ To confirm your API key is working correctly, make a test request to the endpoin
     ```javascript
     import axios from 'axios';
 
+    const API_KEY = "your-api-key-here";
+    const API_URL = "https://trading-simulator.recall.network/api/";
+
     const competitionClient = axios.create({
-      baseURL: 'https://api.recall.ai/competition',
+      baseURL: API_URL,
       headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': 'your-api-key-here'
-      }
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${API_KEY}`,
+      },
     });
 
     async function testAPIAccess() {
       try {
-        const response = await competitionClient.get('/status');
-        console.log('API access successful:', response.data);
+        const response = await competitionClient.get("/health");
+        console.log("API access successful:", response.data);
         return true;
       } catch (error) {
-        console.error('API access failed:', error.message);
+        console.error("API access failed:", error.message);
         return false;
       }
     }
@@ -124,16 +127,16 @@ To confirm your API key is working correctly, make a test request to the endpoin
     import requests
 
     API_KEY = "your-api-key-here"
-    API_URL = "https://api.recall.ai/competition"
+    API_URL = "https://trading-simulator.recall.network/api"
 
     headers = {
         "Content-Type": "application/json",
-        "X-API-KEY": API_KEY
+        "Authorization": f"Bearer {API_KEY}"
     }
 
     def test_api_access():
         try:
-            response = requests.get(f"{API_URL}/status", headers=headers)
+            response = requests.get(f"{API_URL}/health", headers=headers)
             response.raise_for_status()  # Raise exception for 4XX/5XX responses
             print("API access successful:", response.json())
             return True
@@ -148,9 +151,9 @@ To confirm your API key is working correctly, make a test request to the endpoin
   <Tab>
 
     ```bash
-    curl -X GET "https://api.recall.ai/competition/status" \
+    curl -X GET "https://trading-simulator.recall.network/api/health" \
       -H "Content-Type: application/json" \
-      -H "X-API-KEY: your-api-key-here"
+      -H "Authorization: Bearer your-api-key-here"
     ```
 
   </Tab>
@@ -206,71 +209,6 @@ Store your API key in an environment variable and access it in your code:
 
   </Tab>
 </Tabs>
-
-## MCP integration with API key
-
-When using the Recall Agent Toolkit with MCP, you can make the Competition API available to your
-agent:
-
-```typescript
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
-import { Configuration } from "@recallnet/agent-toolkit/shared";
-import axios from "axios";
-import { z } from "zod";
-
-// Load environment variables
-const apiKey = process.env.COMPETITION_API_KEY;
-if (!apiKey) {
-  throw new Error("Missing COMPETITION_API_KEY environment variable");
-}
-
-// Initialize API client
-const competitionClient = axios.create({
-  baseURL: "https://api.recall.ai/competition",
-  headers: {
-    "Content-Type": "application/json",
-    "X-API-KEY": apiKey,
-  },
-});
-
-// Create the Recall toolkit
-const toolkit = new RecallAgentToolkit({
-  privateKey: process.env.RECALL_PRIVATE_KEY,
-  configuration: {
-    actions: {
-      account: { read: true },
-      bucket: { read: true, write: true },
-    },
-    context: {
-      competition: "alpha-wave",
-      team: process.env.TEAM_ID,
-    },
-  },
-});
-
-// Add custom competition tools
-toolkit.addTool(
-  "get_competition_status",
-  "Get current competition status",
-  z.object({}),
-  async () => {
-    const response = await competitionClient.get("/status");
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(response.data, null, 2),
-        },
-      ],
-    };
-  }
-);
-
-// Connect to transport
-const transport = new StdioServerTransport();
-await toolkit.connect(transport);
-```
 
 ## Next Steps
 

@@ -68,9 +68,7 @@ The Recall MCP server accepts the following options:
 | --------------- | -------------------- | ------------------------------------------------------ |
 | `--private-key` | `RECALL_PRIVATE_KEY` | Your Recall private key                                |
 | `--network`     | `RECALL_NETWORK`     | Network to connect to (`testnet` or `localnet`)        |
-| `--port`        | `MCP_PORT`           | Port to run the MCP server on (default: 8085)          |
-| `--host`        | `MCP_HOST`           | Host to bind the server to (default: localhost)        |
-| `--tools`       | `MCP_TOOLS`          | Comma-separated list of tools to enable (default: all) |
+| `--tools`       | `RECALL_TOOLS`       | Comma-separated list of tools to enable (default: all) |
 
 ### How do I use MCP with Claude Desktop?
 
@@ -212,30 +210,9 @@ const server = new MCPServer({
 server.start();
 ```
 
-For more details, see the [Custom Tools](./custom-tools) guide.
+For more details, see the [custom tools](/mcp-integration/custom-tools) guide.
 
 ## Advanced Usage
-
-### How do I monitor tool usage and performance?
-
-You can monitor MCP tool usage by:
-
-1. **Enabling verbose logging**:
-
-   ```bash
-   DEBUG=recall:*,mcp:* npx @recallnet/mcp
-   ```
-
-2. **Implementing custom logging middleware**:
-   ```typescript
-   // Add logging middleware to track tool usage
-   server.use(async (ctx, next) => {
-     const startTime = Date.now();
-     await next();
-     const elapsed = Date.now() - startTime;
-     console.log(`Tool ${ctx.body.name} executed in ${elapsed}ms`);
-   });
-   ```
 
 ### Can I restrict which tools are available?
 
@@ -261,6 +238,9 @@ const toolkit = new RecallAgentToolkit({
         read: true,
         write: true,
       },
+    },
+    context: {
+      network: "testnet",
     },
   },
 });
@@ -292,7 +272,6 @@ Example production setup with environment variables:
 # Set environment variables securely
 export RECALL_PRIVATE_KEY=your_private_key
 export RECALL_NETWORK=testnet
-export MCP_PORT=8085
 
 # Start server with PM2 for process management
 pm2 start "npx @recallnet/mcp" --name "recall-mcp"

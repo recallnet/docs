@@ -1,12 +1,7 @@
 ---
-description: 
+description: Docs site structure and development standards
 globs: 
 alwaysApply: false
----
----
-description: Next.js docs site structure and development standards
-globs: ["{app,components,lib,styles,public,scripts}/**/*.{ts,tsx,js,jsx}"]
-alwaysApply: true
 ---
 # Repository Structure and Standards
 

@@ -3,23 +3,21 @@ description:
 globs: 
 alwaysApply: true
 ---
----
-description: Documentation formatting and structure rules
-globs: ["docs/**/*.mdx"]
-alwaysApply: true
----
 # Documentation Standards and Structure
 
 ## Project
+
 - This is a Next.js website for documentation.
 - It uses MDX for docs located in the `docs` folder, `components` for custom website features, `lib` for helpers, and `app` to run the main website.
 
 ## File Organization
+
 - All documentation pages must be written in MDX format
 - All documentation files must be located in the `/docs` folder
 - Documentation structure should be organized logically with clear hierarchy
 
 ## Frontmatter Requirements
+
 - Every MDX file must include frontmatter
 - Required frontmatter fields:
   - `title`: Page title in sentence case
@@ -28,17 +26,20 @@ alwaysApply: true
   - `keywords`: Comma-separated list of relevant terms
 
 ## Header Guidelines
+
 - Never use H1 headers (single `#`) in content
 - Use only H2 (`##`), H3 (`###`), or H4 (`####`) headers
 - All headers must use sentence case formatting
 - Headers should be descriptive and follow a logical hierarchy
 
 ## Links and References
+
 - Internal documentation links must use absolute routes
 - Omit the `docs` prefix in internal links
 - Example: Use `/intro/portal` instead of `docs/intro/portal.mdx`
 
 ## Directory Structure
+
 - Each directory should contain a `meta.json` file if it has multiple pages
 - `meta.json` must include a `pages` array listing MDX files without extensions
 - `index.mdx` files are automatically rendered as directory landing pages

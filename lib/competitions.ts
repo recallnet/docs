@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-interface Competition {
+export interface Competition {
   id: string;
   name: string;
   status: string;
@@ -10,7 +10,7 @@ interface Competition {
   url: string | null;
 }
 
-interface CompetitionData {
+export interface CompetitionData {
   competitions: Competition[];
 }
 

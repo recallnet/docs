@@ -1,0 +1,125 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: Next.js docs site structure and development standards
+globs: ["{app,components,lib,styles,public,scripts}/**/*.{ts,tsx,js,jsx}"]
+alwaysApply: true
+---
+# Repository Structure and Standards
+
+## Project Overview
+
+- This is a Next.js website for documentation
+- We use `pnpm` for package maangement
+- Uses MDX for docs in the `docs` folder
+- Uses `components` for custom website features
+- Uses `lib` for helpers and utilities
+- Uses `app` directory for the main website (App Router)
+
+## Directory Structure
+
+- `/app`: Next.js App Router pages and layouts
+- `/components`: Reusable React components
+- `/lib`: Utility functions and shared logic
+- `/public`: Static assets (images, fonts, etc.)
+- `/styles`: Global styles and Tailwind configuration
+- `/scripts`: Build and maintenance scripts
+- `/docs`: Documentation content (MDX files)
+- `/config`: Configuration files and constants
+
+## Code Organization
+
+### App Directory (`/app`)
+- Use page.tsx for route pages
+- Use layout.tsx for shared layouts
+- Use loading.tsx for loading states
+- Use error.tsx for error boundaries
+- Group related routes in folders
+- Keep route handlers in `api` directory
+
+### Components (`/components`)
+- One component per file
+- Use PascalCase for component names
+- Group related components in subdirectories
+- Maintain UI components separate from logic components
+- Include component documentation using JSDoc
+
+### Library (`/lib`)
+- Organize by feature or domain
+- Keep utility functions pure and testable
+- Use TypeScript for type safety
+- Document exports with JSDoc comments
+
+## Development Standards
+
+### TypeScript
+- Use strict TypeScript configuration
+- Define interfaces and types in separate files
+- Use proper type imports/exports
+- Avoid `any` type unless absolutely necessary
+
+### Styling
+- Use Tailwind CSS for styling
+- Follow utility-first CSS principles
+- Keep custom CSS minimal
+- Use CSS modules when needed
+
+### Dependencies
+
+- Use React 19 features appropriately
+- Leverage Next.js built-in optimizations
+- Keep dependencies up to date
+- Use specific version numbers
+
+### Scripts
+
+- `pnpm build`: Runs embeddings generation and Next.js build
+  - `build:embeddings`: Generates embeddings using tsx
+  - `prebuild`: Automatically runs embeddings before build
+- `pnpm dev`: Starts development server
+- `pnpm start`: Starts production server
+- `pnpm postinstall`: Runs fumadocs-mdx setup
+- `pnpm eject`: Ejects fumadocs configuration
+- `pnpm lint`: Runs ESLint with zero warnings allowed
+- `pnpm format:check`: Checks formatting for TS, TSX, MD, and MDX files
+- `pnpm format`: Formats files using Prettier
+- `pnpm clean`: Removes .next, .source, and node_modules directories
+- Competition management:
+  - `pnpm competition:add`: Adds new competition
+  - `pnpm competition:update`: Updates competition data
+  - `pnpm competition:list`: Lists competitions from config
+
+### Code Quality
+
+- Follow ESLint configuration
+- Maintain Prettier formatting
+- Use consistent import ordering
+- Keep files under 300 lines
+- Write meaningful commit messages
+
+## Performance Guidelines
+
+- Use Image component for images
+- Implement proper loading states
+- Optimize client-side bundle size
+- Use proper caching strategies
+- Implement proper error boundaries
+
+## Security Practices
+
+- Validate all inputs
+- Sanitize user data
+- Use proper environment variables
+- Implement proper authentication checks
+- Follow CORS policies
+
+## Documentation
+
+- Document complex logic
+- Include component props documentation
+- Maintain README files
+- Use consistent commenting style
+- Keep documentation up to date

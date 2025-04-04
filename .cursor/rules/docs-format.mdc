@@ -3,15 +3,68 @@ description:
 globs: 
 alwaysApply: true
 ---
-- All docs pages are written in MDX and locates in the `/docs` folder.
-- Docs pages use frontmatter and must have a `title` and `description`; optionally, include `keywords` as a comma separated list.
-- Docs pages must never have an h1 header via a single `#`; pages should only use h2s `##`, h3s `###`, or h4s `####`.
-- Docs pages use sentence case for page titles and headers. This includes the frontmatter `title` and `description`, in-page headers (`##`, `###`, `####`, etc.), and the optional `title` field in any `meta.json` file. Docs pages with inline links should also use sentence case.
-- Any time you reference a relative link to another docs page, you should use the absolute route, omitting the `docs` path prefix. For example, a page that exists at `docs/intro/portal.mdx` should be referenced as `/intro/portal` when referenced for a docs page.
-- If you create new docs pages, you should look for a `meta.json` folder in the current directory and add the name of the mdx file (without the extension) to the `pages` array. For example, if the existing `meta.json` file is in a filder that contains the file `existing.mdx`, and you want to add `new-page.mdx`, the result would look like: `{"pages": ["exiting", "new-page"]}`. If an `index.mdx` file exists in a folder, the `meta.json` need not include the `index` file in the array since it's automatically rendered as the folder's page.
-- Built-in MDX components include the following: `Accordion`, `Accordions`, `File`, `Folder`, `Files` `Step`, `Steps`, `Tab`, `Tabs`, `TypeTable`, `Card`, `Cards`, `Callout`. These are used to render content with specific components, and they come by default, so there's no need to import them. If you use an MDX component in a docs page, make sure you properly space the content with a new line after the opening tag, and a new before the closing tag.
-- Plural MDX components like `Steps` encloses subcomponent `Step`. Each `Step` expects a header `##`. For example:
-  ```md
+---
+description: Documentation formatting and structure rules
+globs: ["docs/**/*.mdx"]
+alwaysApply: true
+---
+# Documentation Standards and Structure
+
+## Project
+- This is a Next.js website for documentation.
+- It uses MDX for docs located in the `docs` folder, `components` for custom website features, `lib` for helpers, and `app` to run the main website.
+
+## File Organization
+- All documentation pages must be written in MDX format
+- All documentation files must be located in the `/docs` folder
+- Documentation structure should be organized logically with clear hierarchy
+
+## Frontmatter Requirements
+- Every MDX file must include frontmatter
+- Required frontmatter fields:
+  - `title`: Page title in sentence case
+  - `description`: Brief description in sentence case
+- Optional frontmatter fields:
+  - `keywords`: Comma-separated list of relevant terms
+
+## Header Guidelines
+- Never use H1 headers (single `#`) in content
+- Use only H2 (`##`), H3 (`###`), or H4 (`####`) headers
+- All headers must use sentence case formatting
+- Headers should be descriptive and follow a logical hierarchy
+
+## Links and References
+- Internal documentation links must use absolute routes
+- Omit the `docs` prefix in internal links
+- Example: Use `/intro/portal` instead of `docs/intro/portal.mdx`
+
+## Directory Structure
+- Each directory should contain a `meta.json` file if it has multiple pages
+- `meta.json` must include a `pages` array listing MDX files without extensions
+- `index.mdx` files are automatically rendered as directory landing pages
+- `index.mdx` files should not be included in `meta.json` pages array
+
+## MDX Components
+
+### Built-in Components
+
+The following components are available without imports:
+- `Accordion`, `Accordions`
+- `File`, `Folder`, `Files`
+- `Step`, `Steps`
+- `Tab`, `Tabs`
+- `TypeTable`
+- `Card`, `Cards`
+- `Callout`
+
+### Component Usage Rules
+
+- Leave a blank line after opening component tags
+- Leave a blank line before closing component tags
+- Nested components (like `Steps` > `Step`) must follow proper hierarchy
+- Each `Step` component must include an H2 header
+- Example:
+  ```
   <Steps>
 
   <Step>
@@ -28,15 +81,21 @@ alwaysApply: true
 
   </Steps>
   ```
-- Docs that describe package installation for JavaScript packages can use the `package-install` language tag on code block backticks. For example, the following will render installation steps for `npm`, `pnpm`, `bun`, and `yarn`:
-  ````
-  ```package-install
-  npm install @recallnet/sdk
-  ```
-  ````
-- If you want to attach a filename to a snippet, annotate snippet backticks with the `title` key. For example
-  ````
-  ```typescript title="app/index.tsx"
-  // ...
-  ```
-  ````
+
+## Code Blocks
+
+- Use language-specific syntax highlighting
+- For JavaScript package installation blocks, use `package-install` language tag to automatically render installation steps for `npm`, `pnpm`, `yarn`, and `bun`
+- To specify filenames, use the `title` key in code block metadata
+- Example filename annotation: 
+````
+```typescript title="app/index.tsx"
+```
+````
+
+## Documentation Quality
+
+- Maintain consistent formatting throughout
+- Use clear, concise language
+- Include relevant examples where appropriate
+- Keep documentation up-to-date with code changes

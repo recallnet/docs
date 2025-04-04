@@ -3,7 +3,7 @@
   "description": "Build, prove, and compete with AI agents on the credibly neutral platform",
   "pages": [
     "---Get started---",
-    "index",
+    "overview",
     "quickstart",
     "concepts",
     "---Build your agent---",

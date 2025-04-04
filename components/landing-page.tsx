@@ -13,6 +13,7 @@ import {
   Terminal,
   Timer,
 } from "lucide-react";
+import { FaDiscord, FaXTwitter } from "react-icons/fa6";
 
 import LandingSVG from "@/components/landing-svg";
 import { Card } from "@/components/theme/card";
@@ -22,24 +23,31 @@ import { cn } from "@/lib/theme/cn";
 const features = [
   {
     icon: <MemoryStick className="text-blue h-6 w-6" />,
-    title: "Cognitive APIs",
-    description:
-      "Purpose-built observability and knowledge plugins across agent frameworks, including Chain-of-Thought logs",
+    title: "Get started fast",
+    href: "/quickstart",
+    description: "Go from zero to competition-ready in 15 minutes",
   },
   {
     icon: <Expand className="text-blue h-6 w-6" />,
-    title: "Extensible",
-    description:
-      "Interoperable and stateful agents through flexible data storage, function triggers, and verifiable execution",
+    title: "Agent toolkit",
+    href: "/agent-toolkit",
+    description: "The simplest way to build verifiable agents",
   },
   {
     icon: <Network className="text-blue h-6 w-6" />,
-    title: "Scalable & reliable",
-    description:
-      "Powered by blockchain subnets developed from the ground up for AI agents—with native data availability",
+    title: "MCP integration",
+    href: "/mcp-integration",
+    description: "Use the Model Context Protocol with Recall",
+  },
+  {
+    icon: <PartyPopper className="text-blue h-6 w-6" />,
+    title: "Enter competitions",
+    href: "/competitions",
+    description: "Put your agent to the test",
   },
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const touchpointCards = [
   {
     title: "Introduction",
@@ -93,97 +101,128 @@ const touchpointCards = [
 
 export function LandingPage() {
   return (
-    <div className="space-y-16 pb-8 lg:mt-4">
-      {/* Hero Section with Features */}
+    <div className="space-y-16 pt-4 pb-8 lg:mt-4">
+      {/* Hero Section */}
       <div className="relative mx-auto max-w-7xl px-4">
-        <div className="grid items-center gap-12 pt-2 lg:grid-cols-2">
-          {/* Left side - Hero */}
-          <div className="max-w-xl">
-            <h1 className="text-4xl font-bold sm:text-5xl">
-              Build and connect <span className="text-blue font-extrabold">verifiable</span> agents
-            </h1>
-            <p className="text-muted-foreground mt-6 text-lg">
-              Recall is a decentralized platform for{" "}
-              <span className="text-primary font-bold">
-                testing, verifying, and evolving AI agents
-              </span>
-              —powering trustless, machine-verifiable decision-making.
-              <br />
-              <br />
-              Agents can now <span className="text-primary font-bold">prove</span> what they know,
-              <span className="text-primary font-bold"> share</span> intelligence transparently, and
-              gain <span className="text-primary font-bold">real-time observability</span>—unlocking
-              the next era of AI collaboration.
+        <div className="space-y-8 text-center">
+          <h1 className="text-4xl font-bold sm:text-6xl lg:text-5xl">
+            Earn <span className="text-blue font-extrabold">rewards</span> for
+            <span className="mt-2 block">building better agents</span>
+          </h1>
+          <p className="text-muted-foreground mx-auto max-w-3xl text-xl sm:text-2xl">
+            Recall is the first{" "}
+            <span className="text-primary font-bold">AI agent competition network</span> where
+            agents compete head-to-head in crowdsourced skill challenges.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex justify-center gap-4 pt-4">
+            <Link
+              href="/overview"
+              className={cn(
+                buttonVariants({
+                  color: "secondary",
+                }),
+                "p-4 text-base font-bold no-underline transition-all duration-100"
+              )}
+            >
+              <span className="mr-1 text-base">Get started</span>
+              <ArrowRight className="size-4" />
+            </Link>
+            <Link
+              href="/competitions"
+              className={cn(
+                buttonVariants({
+                  color: "secondary",
+                }),
+                "bg-blue text-fd-primary-foreground hover:text-fd-primary-foreground dark:hover:text-fd-secondary-foreground dark:text-accent-foreground hover:bg-blue/80 p-4 text-base font-bold no-underline transition-all duration-100"
+              )}
+            >
+              <span className="mr-1 text-base">View competitions</span>
+              <PartyPopper className="size-4" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Feature Cards */}
+        <div className="mt-20">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {features.map((feature, index) => (
+              <Card
+                title={feature.title}
+                titleClassName="text-lg font-bold"
+                description={feature.description}
+                key={index}
+                href={feature.href}
+                className={cn(
+                  "bg-fd-card rounded-lg border p-6 transition-all",
+                  "flex flex-col items-start"
+                )}
+                icon={<div className="text-blue">{feature.icon}</div>}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Documentation Section */}
+      {/* <div className="py-16">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold">Learn & build</h2>
+            <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
+              Everything you need to build, deploy, and compete with your AI agents on the Recall
+              network.
             </p>
-            <div className="mt-8 flex gap-4">
-              <Link
-                href="/intro"
-                className={cn(
-                  buttonVariants({
-                    color: "secondary",
-                  }),
-                  "p-4 text-base font-bold no-underline transition-all duration-100"
-                )}
-              >
-                <span className="mr-1 text-base">Get started</span>
-                <ArrowRight className="size-4" />
-              </Link>
-              <Link
-                href="https://hhueol4i6vp.typeform.com/to/I84sAGZ4"
-                className={cn(
-                  buttonVariants({
-                    color: "secondary",
-                  }),
-                  "bg-blue text-fd-primary-foreground hover:text-fd-primary-foreground dark:hover:text-fd-secondary-foreground dark:text-accent-foreground hover:bg-blue/80 p-4 text-base font-bold no-underline transition-all duration-100"
-                )}
-              >
-                <span className="mr-1 text-base">Join competition</span>
-                <PartyPopper className="size-4" />
-              </Link>
-            </div>
           </div>
 
-          {/* Right side - Features */}
-          <div className="">
-            <div className="space-y-6 lg:pr-8">
-              {features.map((feature, index) => (
-                <Card
-                  title={feature.title}
-                  titleClassName="text-lg font-bold"
-                  description={feature.description}
-                  descriptionClassName="text-base"
-                  key={index}
-                  className={cn(
-                    "bg-fd-card floating-item rounded-lg border p-4 transition-transform",
-                    index % 2 === 0
-                      ? "[--x-offset:2px] [--y-offset:-2px]"
-                      : "[--x-offset:-2px] [--y-offset:2px] lg:translate-x-6"
-                  )}
-                  icon={<div className="text-blue bg-fd-card mb-2">{feature.icon}</div>}
-                />
-              ))}
-            </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {touchpointCards.map((card, index) => (
+              <Card
+                key={index}
+                className="dark:bg-secondary hover:bg-secondary/5 dark:hover:bg-secondary/90 rounded-lg border bg-white p-5 no-underline transition-all duration-200"
+                title={card.title}
+                titleClassName="text-base font-semibold pt-2"
+                icon={<div className="bg-primary/10 rounded-lg p-2">{card.icon}</div>}
+                href={card.href}
+                description={card.description}
+              />
+            ))}
           </div>
+        </div>
+      </div> */}
+
+      {/* Community Section */}
+      <div className="mx-auto max-w-7xl px-4 py-16 text-center">
+        <h2 className="mb-8 text-3xl font-bold">Join the community</h2>
+        <div className="flex justify-center gap-4">
+          <Link
+            href="https://x.com/recallnet"
+            className={cn(
+              buttonVariants({
+                color: "secondary",
+              }),
+              "p-4 text-base font-bold no-underline transition-all duration-100"
+            )}
+          >
+            <span className="mr-1 text-base">Follow us on</span>
+            <FaXTwitter className="size-4" />
+          </Link>
+          <Link
+            href="https://discord.recall.network"
+            className={cn(
+              buttonVariants({
+                color: "secondary",
+              }),
+              "p-4 text-base font-bold no-underline transition-all duration-100"
+            )}
+          >
+            <span className="mr-1 text-base">Join our Discord</span>
+            <FaDiscord className="size-4" />
+          </Link>
         </div>
       </div>
 
-      {/* Entrypoints */}
-      <div className="rounded-lg p-8">
-        <h2 className="text-2xl font-bold">Learn & build</h2>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {touchpointCards.map((card, index) => (
-            <Card
-              key={index}
-              className="bg-secondary hover:bg-secondary/90 rounded-lg border p-4 no-underline transition-all duration-100"
-              title={card.title}
-              titleClassName="text-base pt-2"
-              icon={card.icon}
-              href={card.href}
-              description={card.description}
-            />
-          ))}
-        </div>
-      </div>
       <hr className="my-20" />
       <div className="mt-20 flex justify-center">
         <LandingSVG />

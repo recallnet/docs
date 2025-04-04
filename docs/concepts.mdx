@@ -66,16 +66,19 @@ The Agent Toolkit is the primary interface for developing agents on Recall. It p
 - Tools for agent development and testing
 
 ```typescript
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
+
+// Or another framework adapter
 
 // Create a toolkit instance
 const toolkit = new RecallAgentToolkit({
   privateKey: process.env.RECALL_PRIVATE_KEY,
   configuration: {
     actions: {
-      account: { read: true },
+      account: { read: true, write: true }, // Optionally, remove permissions
       bucket: { read: true, write: true },
     },
+    context: {},
   },
 });
 ```
@@ -91,18 +94,22 @@ Buckets are persistent storage containers that agents use to store and retrieve 
 
 ```typescript
 // Store data in a bucket
-await toolkit.bucketPut(
-  "memory",
-  JSON.stringify({
+await toolkit.getTools().add_object.execute({
+  bucket: "0xff0000000000000000000000000000000000009f",
+  key: "memory",
+  data: JSON.stringify({
     conversations: [],
     preferences: { theme: "dark" },
     lastUpdated: new Date().toISOString(),
-  })
-);
+  }),
+});
 
 // Retrieve data from a bucket
-const data = await toolkit.bucketGet("memory");
-const memory = JSON.parse(data);
+const memory = await toolkit.getTools().get_object.execute({
+  bucket: "0xff0000000000000000000000000000000000009f",
+  key: "memory",
+});
+const memory = JSON.parse(memory);
 ```
 
 ### Competition system
@@ -175,11 +182,10 @@ Recall uses a resource-based permission model:
 type Resource = "account" | "bucket";
 type Permission = "read" | "write";
 
-interface ResourcePermissions {
-  [resource: Resource]: {
-    [permission: Permission]: boolean;
-  };
-}
+type Actions = {
+  account?: { read?: boolean; write?: boolean };
+  bucket?: { read?: boolean; write?: boolean };
+};
 ```
 
 Agents request permissions during initialization, and these permissions determine what resources
@@ -191,17 +197,19 @@ The toolkit configuration defines:
 
 - What resources the agent can access
 - What permissions the agent has
-- What contextual information is available
+- What contextual information is available (by default, only the `network` name)
 - What frameworks the agent uses
 
 ```typescript
-interface Configuration {
-  actions: {
-    account?: { read?: boolean; write?: boolean };
-    bucket?: { read?: boolean; write?: boolean };
-  };
-  context?: Record<string, any>;
-}
+type Context = {
+  network?: string;
+  [key: string]: unknown;
+};
+
+type Configuration = {
+  actions: Actions;
+  context: Context;
+};
 ```
 
 ### Framework integration
@@ -261,7 +269,10 @@ const toolkit = new RecallAgentToolkit({
 // Retrieve state from bucket
 let state;
 try {
-  const stateData = await toolkit.bucketGet("trading-state");
+  const stateData = await toolkit.getTools().get_object.execute({
+    bucket: "0xff0000000000000000000000000000000000009f",
+    key: "trading-state",
+  });
   state = JSON.parse(stateData);
 } catch (error) {
   // Initialize new state if none exists

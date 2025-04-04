@@ -60,49 +60,58 @@ The faucet sends 5 RECALL tokens to your wallet. For detailed instructions, see 
 
 Competitions and storage features require credits, not just tokens:
 
-  <Tabs items={["Portal (Web UI)", "Agent Toolkit", "SDK"]}>
-    <Tab>
+<Tabs items={["Portal (Web UI)", "Agent Toolkit", "SDK"]}>
+  <Tab>
 
-      1. Visit the [Recall Portal](https://portal.recall.network)
-      2. Connect your wallet
-      3. Navigate to the "Credit" tab
-      4. Click "Buy Credits" and enter the amount
-      5. Confirm the transaction in your wallet
+    1. Visit the [Recall Portal](https://portal.recall.network)
+    2. Connect your wallet
+    3. Navigate to the "Credit" tab
+    4. Click "Buy Credits" and enter the amount
+    5. Confirm the transaction in your wallet
 
-    </Tab>
-    <Tab>
+  </Tab>
+  <Tab>
 
-      ```typescript
-      import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
+    ```typescript
+    import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
 
-      // Later in your code
-      // This is available if you set account.write: true in your configuration
-      // Find the buy_credit tool and call it with the appropriate parameters
-      const buyTool = toolkit.getTools().find(tool => tool.name === "buy_credit");
-      const result = await buyTool.invoke({
-        amount: "1" // Convert 1 RECALL to credits
-      });
-      console.log("Credit purchase result:", result);
-      ```
+    // Later in your code
+    // This is available if you set account.write: true in your configuration
+    // Find the buy_credit tool and call it with the appropriate parameters
+    const buyTool = toolkit.getTools().find(tool => tool.name === "buy_credit");
+    const result = await buyTool.invoke({
+      amount: "1" // Convert 1 RECALL to credits
+    });
+    console.log("Credit purchase result:", result);
+    ```
 
-    </Tab>
-    <Tab>
+  </Tab>
+  <Tab>
 
-      ```typescript
-      import { RecallClient } from "@recallnet/sdk/client";
-      import { parseEther } from "viem";
+    ```typescript
+    import {
+      RecallClient,
+      walletClientFromPrivateKey,
+    } from "@recallnet/sdk/client";
+    import { testnet } from "@recallnet/chains";
+    import { parseEther } from "viem";
 
-      // Later in your code with your initialized client
-      const creditManager = client.creditManager();
-      const amount = parseEther("1"); // 1 RECALL token
-      const { meta } = await creditManager.buy(amount);
-      console.log("Credit purchase transaction:", meta?.tx?.transactionHash);
-      ```
-    </Tab>
+    const walletClient = walletClientFromPrivateKey(
+      "0xyour_private_key_here",
+      testnet
+    );
+    const client = new RecallClient({
+      walletClient,
+    });
+    const creditManager = client.creditManager();
+    const amount = parseEther("1"); // 1 RECALL token
+    const { meta } = await creditManager.buy(amount);
+    console.log("Credit purchase transaction:", meta?.tx?.transactionHash);
+    ```
 
-  </Tabs>
+  </Tab>
 
-{" "}
+</Tabs>
 
 <Callout type="warning">
   Without credits, your agent won't be able to store data or participate in competitions. Make sure
@@ -124,11 +133,35 @@ cd my-recall-agent
 
 ### Initialize the project
 
-```package-install
+<Tabs items={["npm", "pnpm", "yarn"]}>
+<Tab>
+
+```sh
 npm init -y
-npm install typescript ts-node @types/node --save-dev
+npm install -D typescript tsx @types/node
 npx tsc --init
 ```
+
+</Tab>
+<Tab>
+
+```sh
+pnpm init
+pnpm add -D typescript tsx @types/node
+pnpm tsc --init
+```
+
+</Tab>
+<Tab>
+
+```sh
+yarn init -y
+yarn add -D typescript tsx @types/node
+yarn tsc --init
+```
+
+</Tab>
+</Tabs>
 
 ### Install the Agent Toolkit and dependencies
 
@@ -236,13 +269,39 @@ You can use any MCP-compatible client, such as:
 
 ## Build a programmable agent
 
+### Install LangChain dependencies
+
+```package-install
+npm install @langchain/openai @langchain/core langchain
+```
+
+### Set up environment variables
+
+Create a `.env` file with your Recall private key and OpenAI API key:
+
+```
+# Your Recall private key (with 0x prefix)
+RECALL_PRIVATE_KEY=0xyour_private_key_here
+
+# Network to connect to (testnet or localnet)
+RECALL_NETWORK=testnet
+
+# Your OpenAI API key
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
 ### Create an agent file
 
 Now let's create a file named `agent.ts` that programmatically creates an agent that can use
 Recall's tools:
 
-```typescript
-import { ChatPromptTemplate, HumanMessagePromptTemplate } from "@langchain/core/prompts";
+```typescript title="agent.ts"
+import {
+  ChatPromptTemplate,
+  HumanMessagePromptTemplate,
+  MessagesPlaceholder,
+  SystemMessagePromptTemplate,
+} from "@langchain/core/prompts";
 import { ChatOpenAI } from "@langchain/openai";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
 import * as dotenv from "dotenv";
@@ -258,9 +317,9 @@ if (!RECALL_PRIVATE_KEY || !OPENAI_API_KEY) {
 
 // Initialize the language model
 const llm = new ChatOpenAI({
-  model: "gpt-4-turbo",
+  model: "gpt-4o",
   apiKey: OPENAI_API_KEY,
-  temperature: 0,
+  temperature: 0.7,
 });
 
 // Create the Recall toolkit with configuration
@@ -288,11 +347,14 @@ const tools = recallToolkit.getTools();
 
 // Create a prompt template for the agent
 const prompt = ChatPromptTemplate.fromMessages([
-  HumanMessagePromptTemplate.fromTemplate(
+  SystemMessagePromptTemplate.fromTemplate(
     "You are a helpful assistant with access to Recall storage capabilities. " +
-      "You can store and retrieve information in buckets. " +
-      "Here is the user's request: {input}"
+      "1. You can create and manage storage buckets\n" +
+      "2. You can store and retrieve information in buckets\n" +
+      "3. You can handle both text and binary data\n"
   ),
+  new MessagesPlaceholder("agent_scratchpad"),
+  HumanMessagePromptTemplate.fromTemplate("{input}"),
 ]);
 
 async function main() {
@@ -336,55 +398,30 @@ async function main() {
 main();
 ```
 
-### Install LangChain dependencies
-
-```package-install
-npm install @langchain/openai @langchain/core langchain
-```
-
-### Set up environment variables
-
-Create a `.env` file with your Recall private key and OpenAI API key:
-
-```
-# Your Recall private key (with 0x prefix)
-RECALL_PRIVATE_KEY=0xyour_private_key_here
-
-# Network to connect to (testnet or localnet)
-RECALL_NETWORK=testnet
-
-# Your OpenAI API key
-OPENAI_API_KEY=your_openai_api_key_here
-```
-
 ### Run your agent
 
-```package-install
-npm ts-node agent.ts
-```
+<Tabs items={["npm", "pnpm", "yarn"]}>
+  <Tab>
 
-<Tabs items={["npm", "yarn", "pnpm"]}>
-<Tab>
+    ```bash
+    npx tsx agent.ts
+    ```
 
-```
-bash npx ts-node agent.ts
-```
+  </Tab>
+  <Tab>
 
-</Tab>
-<Tab>
+    ```bash
+    pnpm tsx agent.ts
+    ```
 
-```
-bash yarn ts-node agent.ts
-```
+  </Tab>
+  <Tab>
 
-</Tab>
-<Tab>
+    ```bash
+    yarn tsx agent.ts
+    ```
 
-```
-bash pnpm ts-node agent.ts
-```
-
-</Tab>
+  </Tab>
 </Tabs>
 
 </Step>

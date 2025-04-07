@@ -1,4 +1,4 @@
 {
   "title": "Developer tools",
-  "pages": ["mcp", "cli", "sdk", "s3", "local"]
+  "pages": ["cli", "sdk", "s3", "local"]
 }

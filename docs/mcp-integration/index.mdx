@@ -42,7 +42,7 @@ If you want to use the Recall MCP server with MCP-compatible clients like Cursor
 you'll set up the prepackaged MCP server binary. This is explained in more detail below and walks
 through configuration, but you can also run it with:
 
-```package-install
+```sh
 npx @recallnet/mcp --private-key=0xyour_private_key_here --network=testnet
 ```
 
@@ -140,7 +140,7 @@ For more detailed Claude Desktop setup instructions, see the
 For advanced use cases or custom implementations, you can also create a programmatic MCP server
 using the Agent Toolkit:
 
-```typescript
+```typescript title="server.ts"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
 import { Configuration } from "@recallnet/agent-toolkit/shared";
@@ -195,13 +195,13 @@ main().catch((error) => {
 Save this to a file (e.g., `server.ts`) and run it with:
 
 ```bash
-ts-node server.ts
+npx tsx server.ts
 ```
 
 <Callout type="info">
 
 The programmatic approach gives you more control over configuration but requires more setup. For
-most users, the simpler npx approach above is recommended.
+most users, the simpler `npx` approach above is recommended.
 
 </Callout>
 
@@ -216,19 +216,19 @@ leverage the MCP tools autonomously:
 import { openai } from "@ai-sdk/openai";
 import { Agent } from "@mastra/core/agent";
 import { MCPConfiguration } from "@mastra/mcp";
+import { config } from "dotenv";
+
+config();
 
 // Configure MCP with the Recall server
 const mcp = new MCPConfiguration({
   servers: {
     recall: {
-      name: "recall-storage",
-      server: {
-        command: "npx",
-        args: ["@recallnet/mcp"],
-        env: {
-          RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY,
-          RECALL_NETWORK: "testnet",
-        },
+      command: "npx",
+      args: ["-y", "@recallnet/mcp"],
+      env: {
+        RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY!,
+        RECALL_NETWORK: "testnet",
       },
     },
   },
@@ -243,55 +243,73 @@ const agent = new Agent({
 });
 
 // The agent can now autonomously use Recall tools
-const result = await agent.run("Please store my shopping list and then retrieve it");
+const result = await agent.generate([
+  {
+    role: "user",
+    content: "Please store your latest thoughts and then retrieve them",
+  },
+]);
+
+console.log(result);
 ```
 
 ### LangChain integration
 
 ```typescript
-import { PromptTemplate } from "@langchain/core/prompts";
+import { createReactAgent } from "@langchain/langgraph/prebuilt";
+import { loadMcpTools } from "@langchain/mcp-adapters";
 import { ChatOpenAI } from "@langchain/openai";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/langchain";
-import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import dotenv from "dotenv";
 
-// Set up the Recall toolkit
-const recallToolkit = new RecallAgentToolkit({
-  privateKey: process.env.RECALL_PRIVATE_KEY,
-  configuration: {
-    actions: {
-      account: { read: true },
-      bucket: { read: true, write: true },
-    },
-  },
+dotenv.config();
+// Initialize the ChatOpenAI model
+const model = new ChatOpenAI({ modelName: "gpt-4o" });
+
+// Automatically starts and connects to a MCP reference server
+const transport = new StdioClientTransport({
+  command: "npx",
+  args: [
+    "-y",
+    "@recallnet/mcp",
+    "--private-key",
+    process.env.RECALL_PRIVATE_KEY || "",
+    "--network",
+    process.env.RECALL_NETWORK || "testnet",
+  ],
 });
 
-// Get LangChain tools from the toolkit
-const recallTools = recallToolkit.getTools();
-
-// Create LLM
-const llm = new ChatOpenAI({ model: "gpt-4" });
-
-// Create a prompt
-const prompt = PromptTemplate.fromTemplate(
-  "You are an agent with access to Recall storage. {input}"
-);
-
-// Create agent with tools
-const agent = await createOpenAIFunctionsAgent({
-  llm,
-  tools: recallTools,
-  prompt,
+// Initialize the client
+const client = new Client({
+  name: "recall-client",
+  version: "1.0.0",
 });
 
-// Run the agent executor
-const executor = new AgentExecutor({ agent, tools: recallTools });
-const result = await executor.invoke({
-  input:
-    "Store my document titled 'Important Notes' with content 'Remember to check the latest updates'",
-});
+try {
+  // Connect to the transport
+  await client.connect(transport);
 
-console.log(result.output);
+  // Get tools with custom configuration
+  const tools = await loadMcpTools("recall", client);
+
+  // Create and run the agent
+  const agent = createReactAgent({ llm: model, tools });
+  const agentResponse = await agent.invoke({
+    messages: [
+      {
+        role: "user",
+        content: "create a bucket with name 'my-bucket' and store your thoughts",
+      },
+    ],
+  });
+  console.log(agentResponse);
+} catch (e) {
+  console.error(e);
+} finally {
+  // Clean up connection
+  await client.close();
+}
 ```
 
 ## Available tools
@@ -336,15 +354,10 @@ You can add custom context to your agent's configuration:
 ```typescript
 const configuration: Configuration = {
   actions: {
-    account: { read: true },
+    account: { read: true, write: true },
     bucket: { read: true, write: true },
   },
   context: {
-    agent: {
-      name: "My Recall Agent",
-      version: "1.0.0",
-      competition: "AlphaWave",
-    },
     // Custom metadata
     custom: {
       team: "Team Awesome",

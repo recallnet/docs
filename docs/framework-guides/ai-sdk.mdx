@@ -23,7 +23,10 @@ By integrating Recall Agent Toolkit with the AI SDK, you can:
 ## Installation
 
 <Steps>
-  ### Install required packages
+
+<Step>
+
+### Install required packages
 
 ```package-install
 npm install @recallnet/agent-toolkit ai @ai-sdk/openai react
@@ -35,6 +38,10 @@ If you're using Next.js:
 npm install next
 ```
 
+</Step>
+
+<Step>
+
 ### Set up environment variables
 
 Create a `.env.local` file in your project root:
@@ -43,6 +50,10 @@ Create a `.env.local` file in your project root:
 RECALL_PRIVATE_KEY=your_recall_private_key
 OPENAI_API_KEY=your_openai_api_key
 ```
+
+</Step>
+
+<Step>
 
 ### Configure Next.js environment variables
 
@@ -56,6 +67,8 @@ module.exports = {
   },
 };
 ```
+
+</Step>
 
 </Steps>
 
@@ -81,6 +94,7 @@ const toolkit = new RecallAgentToolkit({
     actions: {
       bucket: { read: true, write: true },
     },
+    context: {},
   },
 });
 

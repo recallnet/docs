@@ -1,5 +1,5 @@
 ---
-title: Agent Toolkit authentication
+title: Authentication
 description: Learn how to authenticate with the Agent Toolkit
 ---
 
@@ -124,7 +124,7 @@ function checkKeyRotation() {
 }
 ```
 
-### Secure Storage
+### Secure storage
 
 Ensure your environment variables are securely stored:
 
@@ -262,9 +262,9 @@ Ensure your environment variables are securely stored:
 
 </Tabs>
 
-### Never Include Keys in Client-Side Code
+### Keys & client-side code
 
-Keep all authentication on the server side:
+Never include keys in client-side code! Keep all authentication on the server side:
 
 ```typescript
 // ❌ WRONG: Exposing key in frontend code

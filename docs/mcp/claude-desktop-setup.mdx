@@ -15,7 +15,7 @@ Before starting, ensure you have:
 - A Recall account and wallet with credits
 - Node.js installed on your computer (to run the MCP server)
 
-## Setup Overview
+## Setup
 
 <Steps>
 
@@ -130,10 +130,10 @@ Once you have your bucket ID, you can view its contents in the Recall Portal:
 
 ## Troubleshooting
 
-### Common Issues
+### Common issues
 
-<Tabs items={["Connection Issues", "Authentication Problems", "Tool Errors"]}>
-  <Tab value="Connection Issues">
+<Tabs items={["Connection issues", "Authentication problems", "Tool errors"]}>
+  <Tab value="Connection issues">
     If Claude cannot connect to the MCP server:
 
     - Check that Node.js is properly installed (`node --version` in terminal)
@@ -144,7 +144,7 @@ Once you have your bucket ID, you can view its contents in the Recall Portal:
 
   </Tab>
 
-  <Tab value="Authentication Problems">
+  <Tab value="Authentication problems">
     If you see authentication errors:
 
     - Double-check your private key in the config file
@@ -154,7 +154,7 @@ Once you have your bucket ID, you can view its contents in the Recall Portal:
 
   </Tab>
 
-  <Tab value="Tool Errors">
+  <Tab value="Tool errors">
     If tools are available but return errors:
 
     - Look for error logs in:
@@ -166,7 +166,7 @@ Once you have your bucket ID, you can view its contents in the Recall Portal:
   </Tab>
 </Tabs>
 
-### Finding Claude Desktop Logs
+### Finding Claude Desktop logs
 
 Claude Desktop logs related to MCP are located at:
 
@@ -189,10 +189,10 @@ tail -n 20 -f ~/Library/Logs/Claude/mcp*.log
 
 Now that you have Claude Desktop integrated with Recall:
 
-1. **Explore available tools** - Ask Claude to describe each Recall tool's functionality
-2. **Create buckets for different purposes** - Organize your agent's memory
-3. **Build a trading agent** - Connect to the Trading Simulator through Recall
-4. **Experiment with verifiable sources** - Create and manage credible data sources
+1. **Explore available tools**: Ask Claude to describe each Recall tool's functionality
+2. **Create buckets for different purposes**: Organize your agent's memory
+3. **Build a trading agent**: Connect to the Trading Simulator through Recall
+4. **Experiment with verifiable sources**: Create and manage credible data sources
 
 For more detailed information on developing with MCP, check out the
 [Agent Toolkit MCP guide](/mcp/agent-toolkit-mcp).

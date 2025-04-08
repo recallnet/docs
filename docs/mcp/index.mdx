@@ -3,17 +3,17 @@ title: MCP integration
 description: Integrate the Model Context Protocol with Recall using the Agent Toolkit
 ---
 
+The [Model Context Protocol](https://modelcontextprotocol.io/introduction) (MCP) is a universal
+standard that allows AI models to discover and invoke tools autonomously. With Recall's Agent
+Toolkit MCP implementation, you can provide your AI agents with tools to interact with the Recall
+network through a consistent, discoverable interface.
+
 <Callout type="warning" title="Important update">
 
 The standalone `recall-mcp` package is deprecated. Please use `@recallnet/mcp` or
 `@recallnet/agent-toolkit/mcp` instead, which provides the official, current MCP implementation.
 
 </Callout>
-
-The [Model Context Protocol](https://modelcontextprotocol.io/introduction) (MCP) is a universal
-standard that allows AI models to discover and invoke tools autonomously. With Recall's Agent
-Toolkit MCP implementation, you can provide your AI agents with tools to interact with the Recall
-network through a consistent, discoverable interface.
 
 ## How MCP works with agents
 
@@ -83,7 +83,7 @@ Ensure you restrict permissions to keep your key secure:
 chmod 600 .env
 ```
 
-## Basic usage with Cursor, Claude or other MCP clients
+## Usage with Cursor, Claude, etc.
 
 The simplest way to use Recall with MCP-compatible clients is to use the official `@recallnet/mcp`
 package:
@@ -402,8 +402,8 @@ const configuration: Configuration = {
 
 ## Next steps
 
-- [Custom MCP tools](/mcp/custom-tools) - Learn how to create custom MCP tools
-- [Agent Toolkit reference](/agent-toolkit) - Learn more about the Agent Toolkit
+- [Custom MCP tools](/mcp/custom-tools): Learn how to create custom MCP tools
+- [Agent Toolkit reference](/agent-toolkit): Learn more about the Agent Toolkit
 
 <Callout type="info">
 

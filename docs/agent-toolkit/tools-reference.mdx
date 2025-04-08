@@ -3,8 +3,6 @@ title: Tools reference
 description: Complete reference for all Agent Toolkit tools
 ---
 
-## Overview
-
 This reference guide provides detailed information about all tools available in the Recall Agent
 Toolkit, including parameters, return values, and usage examples.
 
@@ -13,7 +11,7 @@ Toolkit, including parameters, return values, and usage examples.
 Account tools allow agents to interact with Recall accounts, including viewing account information
 and managing credits.
 
-### get_account_info
+### `get_account_info`
 
 Retrieves information about a Recall account, including token balances, address, and nonce.
 
@@ -130,7 +128,7 @@ Retrieves information about a Recall account, including token balances, address,
   </Tab>
 </Tabs>
 
-### get_credit_info
+### `get_credit_info`
 
 Gets credit information for the connected account, including available credits and used credits.
 
@@ -244,7 +242,7 @@ Gets credit information for the connected account, including available credits a
   </Tab>
 </Tabs>
 
-### buy_credit
+### `buy_credit`
 
 Buys credit for the connected account, allowing the agent to perform more operations on Recall.
 
@@ -364,7 +362,7 @@ Buys credit for the connected account, allowing the agent to perform more operat
 
 Bucket tools allow agents to create, manage, and interact with storage buckets on Recall.
 
-### list_buckets
+### `list_buckets`
 
 Lists all buckets owned by an address in Recall.
 
@@ -443,7 +441,7 @@ Lists all buckets owned by an address in Recall.
   </Tab>
 </Tabs>
 
-### create_bucket
+### `create_bucket`
 
 Creates a new bucket in Recall with the specified alias.
 
@@ -581,7 +579,7 @@ Creates a new bucket in Recall with the specified alias.
   </Tab>
 </Tabs>
 
-### get_or_create_bucket
+### `get_or_create_bucket`
 
 Gets an existing bucket by alias or creates a new one if it doesn't exist. This is often more
 convenient than separate get/create operations.
@@ -625,7 +623,7 @@ convenient than separate get/create operations.
     // Sample response:
     /*
     {
-      "bucket": "0xbucket3...",
+      "bucket": "0xff0000000000000000000000000000000000008f",
       "name": "chat-history",
       "metadata": {
         "type": "conversation",
@@ -658,7 +656,7 @@ convenient than separate get/create operations.
       }
     });
     console.log(result);
-    // { bucket: "0xbucket3...", name: "chat-history", created: true, metadata: {...} }
+    // { bucket: "0xff0000000000000000000000000000000000008f", name: "chat-history", created: true, metadata: {...} }
     ```
 
   </Tab>
@@ -722,7 +720,7 @@ convenient than separate get/create operations.
   </Tab>
 </Tabs>
 
-### add_object
+### `add_object`
 
 Adds an object to a bucket in Recall. This is how agents store data persistently.
 
@@ -867,7 +865,7 @@ Adds an object to a bucket in Recall. This is how agents store data persistently
   </Tab>
 </Tabs>
 
-### get_object
+### `get_object`
 
 Retrieves an object from a bucket in Recall. This is how agents retrieve previously stored data.
 
@@ -1004,7 +1002,7 @@ Retrieves an object from a bucket in Recall. This is how agents retrieve previou
   </Tab>
 </Tabs>
 
-### query_objects
+### `query_objects`
 
 Queries objects in a bucket based on prefix, delimiter, and other criteria. Useful for listing
 objects or finding objects with specific patterns.
@@ -1044,7 +1042,7 @@ objects or finding objects with specific patterns.
     I'll list all objects in the chat-history bucket that start with "user-":
     <function_calls>
     <invoke name="query_objects">
-    <parameter name="bucket">0xbucket3...</parameter>
+    <parameter name="bucket">0xff0000000000000000000000000000000000008f</parameter>
     <parameter name="prefix">user-</parameter>
     <parameter name="limit">10</parameter>
     </invoke>
@@ -1089,7 +1087,7 @@ objects or finding objects with specific patterns.
 
     // Later, when the agent uses the tool:
     const result = await tools.find((t) => t.name === "query_objects").invoke({
-      bucket: "0xbucket3...",
+      bucket: "0xff0000000000000000000000000000000000008f",
       prefix: "user-",
       limit: 10
     });
@@ -1117,7 +1115,7 @@ objects or finding objects with specific patterns.
       function: {
         name: queryObjectsTool.function.name,
         arguments: JSON.stringify({
-          bucket: "0xbucket3...",
+          bucket: "0xff0000000000000000000000000000000000008f",
           prefix: "user-",
           limit: 10
         }),
@@ -1140,7 +1138,7 @@ objects or finding objects with specific patterns.
     const tools = toolkit.getTools();
     const result = await tools.query_objects.execute(
       {
-        bucket: "0xbucket3...",
+        bucket: "0xff0000000000000000000000000000000000008f",
         prefix: "user-",
         limit: 10
       },

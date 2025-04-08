@@ -87,46 +87,64 @@ While each framework has its own specific integration details, they all follow a
 4. **Provide Recall tools to the AI agent**
 5. **The agent autonomously decides when to use Recall capabilities**
 
-Here's a simplified example using the MCP adapter:
+Here's a simplified example using the MCP adapter (the code won't work but demonstrates the
+pattern):
 
-```typescript
-// 1. Import the necessary packages
-import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
-import { Agent } from "@your-framework/agent";
-// Note: This is a placeholder for the actual agent framework you're using
-import { MCPConfiguration } from "@your-framework/mcp";
+1. Import the necessary packages:
 
-// 2. Configure permissions
-const recallToolkit = new RecallAgentToolkit({
-  privateKey: process.env.RECALL_PRIVATE_KEY,
-  configuration: {
-    actions: {
-      account: { read: true },
-      bucket: { read: true, write: true },
-    },
-  },
-});
+   ```typescript
+   import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+   import { Agent } from "@your-framework/agent";
+   // Note: This is a placeholder for the actual agent framework you're using
+   import { MCPConfiguration } from "@your-framework/mcp";
+   ```
 
-// 3. Initialize the adapter
-const mcp = new MCPConfiguration({
-  servers: {
-    recall: {
-      name: "recall-storage",
-      server: recallToolkit,
-    },
-  },
-});
+2. Configure permissions and context:
 
-// 4. Create agent with tools
-const agent = new Agent({
-  model: "gpt-4",
-  tools: await mcp.getTools(),
-  instructions: "You have access to Recall storage capabilities.",
-});
+   ```typescript
+   const recallToolkit = new RecallAgentToolkit({
+     privateKey: process.env.RECALL_PRIVATE_KEY,
+     configuration: {
+       actions: {
+         account: { read: true, write: true },
+         bucket: { read: true, write: true },
+       },
+       context: {
+         network: "testnet",
+       },
+     },
+   });
+   ```
 
-// 5. Agent autonomously decides when to use tools
-const result = await agent.run("Store today's meeting notes for me");
-```
+3. Initialize the adapter:
+
+   ```typescript
+   // Note: This is a placeholder for the actual agent framework you're using
+   const mcp = new MCPConfiguration({
+     servers: {
+       recall: {
+         name: "recall-storage",
+         server: recallToolkit,
+       },
+     },
+   });
+   ```
+
+4. Create agent with tools:
+
+   ```typescript
+   const agent = new Agent({
+     model: "gpt-4o",
+     tools: mcp.getTools(), // Or however you're initializing tools in your framework
+     instructions: "You have access to Recall storage capabilities.",
+   });
+   ```
+
+5. Agent autonomously decides when to use tools:
+
+   ```typescript
+   const result = await agent.run("Store today's meeting notes for me");
+   ```
 
 ## Custom integrations
 
@@ -134,4 +152,8 @@ If you're using a framework that's not directly supported, you can still use the
 Toolkit. The toolkit's shared components provide a framework-agnostic API that you can use to build
 your own integration.
 
-Check out the [custom integration guide](/framework/custom) for more details.
+<Callout type="info">
+
+We'll be adding more guides around custom integrations soon.
+
+</Callout>

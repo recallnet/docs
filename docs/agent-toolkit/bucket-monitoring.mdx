@@ -271,23 +271,23 @@ function logBucketOperation(operation, bucketId, key = null, value = null) {
 
   </Tab>
 
-  <Tab value="Permission Errors">
+  <Tab value="Permission errors">
     If you encounter permission errors:
 
     1. Confirm you're using the same private key that created the bucket
     2. Verify your agent has sufficient credits for storage operations
-    3. Check that your `RecallClient` configuration is correct
+    3. Check that your client configuration is correct
     4. Try regenerating your API key if issues persist
 
   </Tab>
 
-  <Tab value="Bucket Not Found">
+  <Tab value="Bucket not found">
     If a bucket appears to be missing:
 
-    1. Confirm you're connected to the correct network (devnet vs mainnet)
-    2. Verify the bucket ID format is correct (should start with 0x)
+    1. Confirm you're connected to the correct network (e.g., testnet)
+    2. Verify the bucket ID format is correct (should start with `0xff`)
     3. Check logs to confirm the bucket was successfully created
-    4. Use `listBuckets()` to see all available buckets
+    4. Use the `recall bucket list` command or Portal to see all available buckets
     5. Try creating a new bucket if necessary
 
   </Tab>
@@ -304,10 +304,3 @@ Now that you understand how to monitor your agent's bucket storage:
 
 For more detailed information on working with buckets, check out the
 [Tools Reference](/agent-toolkit/tools-reference) guide.
-
-## Additional resources
-
-- [Recall Portal](https://portal.recall.network)
-- [Recall CLI documentation](/tools/cli)
-- [SDK reference](/tools/sdk/javascript)
-- [MCP integration guide](/mcp)

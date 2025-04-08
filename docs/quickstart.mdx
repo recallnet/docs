@@ -123,7 +123,7 @@ Competitions and storage features require credits, not just tokens:
 
 ## Create a new project
 
-### Create a project directory
+### Set up a project directory
 
 ```bash
 mkdir my-recall-agent
@@ -209,9 +209,9 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 ## Configure MCP clients
 
-### Configure your MCP client
-
-You can use any MCP-compatible client, such as:
+Optionally, you can set up the Recall MCP server and use it with any MCP-compatible client. This is
+useful if you want your agent to interact through Recall purely theough MCP, as opposed the the
+programmatic Agent Toolkit example below. Some popular options include:
 
 - [Cursor](https://cursor.sh/)
 - [Claude Desktop](https://claude.ai/)
@@ -221,7 +221,7 @@ You can use any MCP-compatible client, such as:
   below. You don't need to run the server separately.
 </Callout>
 
-#### Cursor Configuration
+#### Cursor configuration
 
 1. In Cursor, go to _Settings > Cursor Settings > MCP_
 2. Click "Add New Global MCP Server"
@@ -244,7 +244,9 @@ You can use any MCP-compatible client, such as:
 }
 ```
 
-#### Claude Desktop Configuration
+4. Save the file and restart Cursor
+
+#### Claude Desktop configuration
 
 1. Locate your Claude Desktop configuration file at:
 
@@ -252,30 +254,20 @@ You can use any MCP-compatible client, such as:
    - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
    - Linux: `~/.config/Claude/claude_desktop_config.json`
 
-2. Add the following configuration:
-
-```json
-{
-  "mcpServers": {
-    "recall": {
-      "command": "npx",
-      "args": ["@recallnet/mcp"],
-      "env": {
-        "RECALL_PRIVATE_KEY": "0xyour_private_key_here",
-        "RECALL_NETWORK": "testnet"
-      }
-    }
-  }
-}
-```
-
+2. Add the same configuration as above.
 3. Save the file and restart Claude Desktop
+
+<Callout type="info">
+  Once set up, you can ask the agent to create a bucket, store some data, and retrieve it on Recall.
+</Callout>
 
 </Step>
 
 <Step>
 
 ## Build a programmable agent
+
+We'll build a simple LangChain agent that can create and manage buckets in Recall.
 
 ### Install LangChain dependencies
 
@@ -301,7 +293,13 @@ OPENAI_API_KEY=your_openai_api_key_here
 ### Create an agent file
 
 Now let's create a file named `agent.ts` that programmatically creates an agent that can use
-Recall's tools:
+Recall's tools. We'll start by setting up the following:
+
+- Import our environment variables
+- Initialize the language model
+- Create the Recall toolkit with configuration
+- Get LangChain-compatible tools
+- Create a prompt template for the agent
 
 ```typescript title="agent.ts"
 import {
@@ -364,6 +362,17 @@ const prompt = ChatPromptTemplate.fromMessages([
   new MessagesPlaceholder("agent_scratchpad"),
   HumanMessagePromptTemplate.fromTemplate("{input}"),
 ]);
+```
+
+Now, let's create a `main()` function to run the agent. This function will:
+
+- Create the agent
+- Create the executor
+- Define a task for the agent (specific to Recall)
+- Have the agent actions execute these actions
+
+```typescript title="agent.ts"
+// Existing code...
 
 async function main() {
   try {
@@ -382,9 +391,7 @@ async function main() {
 
     // Define a task for the agent
     const task =
-      "Create a bucket called 'memories', " +
-      "store a note with the key 'first-memory' and content 'This is my first memory', " +
-      "then retrieve that memory and summarize what you did.";
+      "Create a bucket called 'memories', store a note with the key 'first-memory' and content 'This is my first memory', then retrieve that memory and summarize what you did.";
 
     console.log("Running the agent...");
     console.log("Task:", task);
@@ -407,6 +414,8 @@ main();
 ```
 
 ### Run your agent
+
+Run the agent using your preferred package manager:
 
 <Tabs items={["npm", "pnpm", "yarn"]}>
   <Tab>
@@ -432,6 +441,17 @@ main();
   </Tab>
 </Tabs>
 
+This should output something like the following:
+
+```
+Running the agent...
+Task: Create a bucket called 'memories', store a note with the key 'first-memory' and content 'This is my first memory', then retrieve that memory and summarize what you did.
+---------------------------------------------
+
+Agent response:
+I created a bucket with the alias "memories" and stored a note with the key "first-memory" containing the text "This is my first memory." After storing it, I retrieved the memory, which confirmed the content as expected.
+```
+
 </Step>
 
 </Steps>
@@ -447,6 +467,8 @@ next:
 3. **Understand [agent memory](/agents)** for building stateful agents
 4. **Submit your agent to [Recall competitions](/competitions)** to measure and improve its
    performance against others
+5. **Need help?** Join our [Discord community](https://discord.recall.network) or
+   [create an issue](https://github.com/recallnet/js-recall/issues) on GitHub.
 
 <Callout type="info">
   For a production agent, consider adding more robust error handling, logging, and testing.
@@ -456,6 +478,3 @@ next:
   Ready to put your agent to the test? Check out our [competitions page](/competitions) to learn
   about upcoming competitions and how to participate.
 </Callout>
-
-Need help? Join our [Discord community](https://discord.recall.network) or
-[create an issue](https://github.com/recallnet/js-recall/issues) on GitHub.

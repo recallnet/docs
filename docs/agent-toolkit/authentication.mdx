@@ -4,13 +4,9 @@ description: Learn how to authenticate with the Agent Toolkit
 ---
 
 This guide explains authentication methods for the Recall Agent Toolkit, best practices for securing
-your credentials, and advanced techniques for managing authentication in different environments.
-
-## Overview
-
-The Recall Agent Toolkit authenticates with the Recall network using a private key. This private key
-is used to sign transactions and authenticate API requests. Properly securing this key is essential
-for the security of your application.
+your credentials, and advanced techniques for managing authentication in different environments. The
+Recall Agent Toolkit authenticates with the Recall network using a private key, which is used to
+sign transactions. Properly securing this key is essential for the security of your application.
 
 ## Authentication methods
 
@@ -105,23 +101,6 @@ const toolkit = new RecallAgentToolkit({
     },
   },
 });
-```
-
-### Key rotation
-
-Regularly rotate your private keys, especially in production environments:
-
-```typescript
-// Example scheduled task to check key age and notify when rotation is needed
-function checkKeyRotation() {
-  const keyCreationDate = new Date(process.env.KEY_CREATION_DATE || Date.now());
-  const daysSinceCreation = (Date.now() - keyCreationDate.getTime()) / (1000 * 60 * 60 * 24);
-
-  if (daysSinceCreation > 90) {
-    // Log or send notification that key rotation is needed
-    console.warn("Private key rotation recommended: Key is older than 90 days");
-  }
-}
 ```
 
 ### Secure storage
@@ -290,101 +269,6 @@ async function storeData(data) {
 }
 ```
 
-## Advanced authentication patterns
-
-### Credential provider pattern
-
-For more complex applications, you can implement a credential provider:
-
-```typescript
-// credentials.ts
-interface CredentialProvider {
-  getPrivateKey(): Promise<string>;
-}
-
-class EnvironmentCredentialProvider implements CredentialProvider {
-  async getPrivateKey(): Promise<string> {
-    const key = process.env.RECALL_PRIVATE_KEY;
-    if (!key) {
-      throw new Error("Private key not found in environment variables");
-    }
-    return key;
-  }
-}
-
-class VaultCredentialProvider implements CredentialProvider {
-  private vaultClient: any; // Your vault client
-
-  constructor(vaultClient: any) {
-    this.vaultClient = vaultClient;
-  }
-
-  async getPrivateKey(): Promise<string> {
-    try {
-      const secret = await this.vaultClient.getSecret("recall-private-key");
-      return secret.value;
-    } catch (error) {
-      throw new Error(`Failed to retrieve key from vault: ${error.message}`);
-    }
-  }
-}
-
-// Usage
-async function createToolkit(provider: CredentialProvider) {
-  const privateKey = await provider.getPrivateKey();
-
-  return new RecallAgentToolkit({
-    privateKey,
-    configuration: {
-      // Configuration options
-    },
-  });
-}
-
-// Example with environment variables
-const envProvider = new EnvironmentCredentialProvider();
-const toolkit = await createToolkit(envProvider);
-```
-
-### Secret rotation
-
-For automated key rotation:
-
-```typescript
-class RotatingCredentialProvider implements CredentialProvider {
-  private secretManager: any; // Your secret manager client
-  private keyCache: { value: string; expiresAt: number } | null = null;
-
-  constructor(secretManager: any) {
-    this.secretManager = secretManager;
-  }
-
-  async getPrivateKey(): Promise<string> {
-    const now = Date.now();
-
-    // Use cached key if still valid
-    if (this.keyCache && now < this.keyCache.expiresAt) {
-      return this.keyCache.value;
-    }
-
-    // Fetch new key
-    try {
-      const secret = await this.secretManager.getSecret("recall-private-key");
-
-      // Cache key with expiration
-      this.keyCache = {
-        value: secret.value,
-        expiresAt: now + 1000 * 60 * 60, // Cache for 1 hour
-      };
-
-      return secret.value;
-    } catch (error) {
-      throw new Error(`Failed to retrieve key: ${error.message}`);
-    }
-  }
-}
-```
-
 ## Authentication for different frameworks
 
 <Tabs items={["MCP", "LangChain", "OpenAI", "AI SDK"]}>
@@ -394,7 +278,6 @@ class RotatingCredentialProvider implements CredentialProvider {
     import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
     import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
 
-    // Load private key securely
     const privateKey = process.env.RECALL_PRIVATE_KEY;
 
     if (!privateKey) {
@@ -459,6 +342,9 @@ class RotatingCredentialProvider implements CredentialProvider {
     if (!privateKey) {
       throw new Error('RECALL_PRIVATE_KEY environment variable not set');
     }
+    if (!openaiKey) {
+      throw new Error('OPENAI_API_KEY environment variable not set');
+    }
 
     const toolkit = new RecallAgentToolkit({
       privateKey,
@@ -487,79 +373,31 @@ class RotatingCredentialProvider implements CredentialProvider {
     import { generateText } from "ai";
 
     // Initialize environment on server side only
-    function initializeToolkit() {
-      const recallKey = process.env.RECALL_PRIVATE_KEY;
-      const openaiKey = process.env.OPENAI_API_KEY;
+    const privateKey = process.env.RECALL_PRIVATE_KEY;
+    const openaiKey = process.env.OPENAI_API_KEY;
 
-      if (!recallKey || !openaiKey) {
-        throw new Error('Required environment variables not set');
-      }
-
-      const openai = new OpenAI({ apiKey: openaiKey });
-
-      return new RecallAgentToolkit({
-        privateKey: recallKey,
-        configuration: {
-          actions: {
-            bucket: { read: true, write: true },
-          },
-          context: {
-            // Configuration options
-          },
-        },
-      });
+    if (!privateKey) {
+      throw new Error('RECALL_PRIVATE_KEY environment variable not set');
+    }
+    if (!openaiKey) {
+      throw new Error('OPENAI_API_KEY environment variable not set');
     }
 
-    // In API route handler
-    export async function POST(req) {
-      const { openai, toolkit } = initializeToolkit();
-      const tools = toolkit.getTools();
+    const tools = toolkit.getTools();
 
-      // Use tools with OpenAI
-    }
+    // Use tools with OpenAI
     ```
 
   </Tab>
 </Tabs>
 
-## Troubleshooting authentication issues
-
-| Issue                   | Possible causes              | Solutions                                                           |
-| ----------------------- | ---------------------------- | ------------------------------------------------------------------- |
-| "Authentication failed" | Invalid private key          | Double-check the key format and value                               |
-| "Private key not found" | Environment variable not set | Ensure the environment variable is properly set in your environment |
-| "Unauthorized"          | Insufficient permissions     | Check the permissions associated with your key                      |
-| "Network error"         | Connectivity issues          | Verify your network connection and Recall API status                |
-| "Invalid signature"     | Key format issues            | Ensure the key is properly formatted without extra characters       |
-
-### Authentication error handling
-
-```typescript
-try {
-  const toolkit = new RecallAgentToolkit({
-    privateKey: process.env.RECALL_PRIVATE_KEY,
-    // Configuration
-  });
-
-  // Use toolkit
-} catch (error) {
-  if (error.message.includes("authentication") || error.message.includes("unauthorized")) {
-    console.error("Authentication error:", error.message);
-    // Handle authentication error (e.g., notify admin, fallback to alternative)
-  } else {
-    console.error("Unexpected error:", error);
-    // Handle other errors
-  }
-}
-```
-
 ## Next steps
 
-- Learn about [Bucket Monitoring](/agent-toolkit/bucket-monitoring) to track your agent's storage
-- Explore the [Tools Reference](/agent-toolkit/tools-reference) for detailed documentation on
+- Learn about [bucket monitoring](/agent-toolkit/bucket-monitoring) to track your agent's storage
+- Explore the [tools reference](/agent-toolkit/tools-reference) for detailed documentation on
   available tools
-- Check out [MCP Integration](/mcp) for using the toolkit with MCP-compatible models
-- See [Framework Integration Guides](/frameworks) for integrating with different AI frameworks
+- Check out [MCP integration](/mcp) for using the toolkit with MCP-compatible models
+- See [framework integration guides](/frameworks) for integrating with different AI frameworks
 
 <Callout>
 

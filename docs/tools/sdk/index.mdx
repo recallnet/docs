@@ -3,32 +3,39 @@ title: SDKs
 description: Low-level SDKs for complete control of Recall's functionality
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
-import { Cards, Card } from "fumadocs-ui/components/card";
-import { Tabs, Tab } from "fumadocs-ui/components/tabs";
-
-# Recall SDKs
-
-Recall SDKs provide the most complete access to the Recall platform's capabilities. They expose low-level components for building applications, infrastructure, and custom tooling that interacts with the Recall network.
+Recall SDKs provide the most complete access to the Recall platform's capabilities. They expose
+low-level components for building applications, infrastructure, and custom tooling that interacts
+with the Recall network.
 
 <Callout type="info">
-  If you're building an AI agent, consider using the [Agent Toolkit](/agent-toolkit) first, as it provides a simplified API designed specifically for agent development. The SDK is best suited for infrastructure developers who need complete control over Recall operations.
+  If you're building an AI agent, consider using the [Agent Toolkit](/agent-toolkit) first, as it
+  provides a simplified API designed specifically for agent development. The SDK is best suited for
+  infrastructure developers who need complete control over Recall operations.
 </Callout>
 
-## Language Support
+## Language support
 
-Recall currently offers SDKs in two languages:
+To determine if the SDK is right for your project, see our [Tools Comparison Guide](/tools). Recall
+currently offers SDKs in two languages:
 
 <Cards>
-  <Card title="TypeScript" href="/tools/sdk/javascript" description="Build applications with the Recall API in JS/TS">
-  </Card>
-  <Card title="Rust" href="/tools/sdk/rust" description="Build high-performance applications with the Recall API in Rust">
-  </Card>
+  <Card
+    title="JavaScript/TypeScript"
+    href="/tools/sdk/javascript"
+    description="Build Node.js or web applications with the Recall API in JS/TS"
+  ></Card>
+  <Card
+    title="Rust"
+    href="/tools/sdk/rust"
+    description="Build high-performance applications with the Recall API in Rust"
+  ></Card>
 </Cards>
 
-The Rust SDK provides the greatest API surface area since it has access to the same libraries in which the core Recall protocol is written. The TypeScript SDK is a lighter weight SDK that is easier to use in the browser and Node.js environments.
+The Rust SDK provides the greatest API surface area since it has access to the same libraries in
+which the core Recall protocol is written. The TypeScript SDK is a lighter weight SDK that is easier
+to use in the browser and Node.js environments.
 
-## When to Use the SDK
+## When to use the SDK
 
 The SDK is the right choice when:
 
@@ -41,15 +48,15 @@ The SDK is the right choice when:
 
 ## SDK vs. Agent Toolkit
 
-| SDK | Agent Toolkit |
-|-----|---------------|
-| Complete API access | Focused on agent-specific operations |
-| More complex setup | Simple framework-specific adapters |
-| Advanced configuration options | Streamlined configuration |
-| Raw data structures | Agent-friendly abstractions |
-| Manual integration with AI frameworks | Built-in framework adapters |
+| SDK                                   | Agent Toolkit                        |
+| ------------------------------------- | ------------------------------------ |
+| Complete API access                   | Focused on agent-specific operations |
+| More complex setup                    | Simple framework-specific adapters   |
+| Advanced configuration options        | Streamlined configuration            |
+| Raw data structures                   | Agent-friendly abstractions          |
+| Manual integration with AI frameworks | Built-in framework adapters          |
 
-## Core SDK Features
+## Core SDK features
 
 The SDKs provide access to all Recall functionality:
 
@@ -59,112 +66,3 @@ The SDKs provide access to all Recall functionality:
 - **Networking**: Connect to different Recall networks
 - **Serialization**: Work with Recall's data formats
 - **Configuration**: Custom configuration for all operations
-
-## Usage Examples
-
-### TypeScript SDK Basic Usage
-
-<Tabs items={["npm", "yarn", "pnpm"]}>
-  <Tab>
-    ```bash
-    npm install @recallnet/sdk
-    ```
-  </Tab>
-  <Tab>
-    ```bash
-    yarn add @recallnet/sdk
-    ```
-  </Tab>
-  <Tab>
-    ```bash
-    pnpm add @recallnet/sdk
-    ```
-  </Tab>
-</Tabs>
-
-```typescript
-import { RecallClientBuilder } from "@recallnet/sdk";
-
-// Create a client with a private key and network
-const client = await RecallClientBuilder.create()
-  .withPrivateKey(process.env.RECALL_PRIVATE_KEY)
-  .withNetwork("testnet")
-  .build();
-
-// List all buckets
-const buckets = await client.listBuckets();
-console.log("Your buckets:", buckets);
-
-// Create a new bucket
-const bucket = await client.createBucket("my-custom-bucket");
-
-// Add an object to the bucket
-const objectId = await client.addObject(
-  "my-custom-bucket",
-  {
-    type: "text/plain",
-    data: new TextEncoder().encode("Hello, Recall!")
-  }
-);
-
-// Get the object
-const object = await client.getObject("my-custom-bucket", objectId);
-console.log("Retrieved object:",
-  new TextDecoder().decode(object.data)
-);
-```
-
-### Advanced Storage Patterns
-
-```typescript
-// Advanced bucket management with metadata
-const bucket = await client.createBucket("analytics-data", {
-  metadata: {
-    purpose: "Data analytics storage",
-    team: "research",
-    retention: "90-days"
-  }
-});
-
-// Structured data storage with schema validation
-const jsonData = {
-  timestamp: Date.now(),
-  metrics: {
-    accuracy: 0.92,
-    latency: 45,
-    throughput: 125
-  },
-  source: "agent-evaluation"
-};
-
-// Store structured data with content type
-const objectId = await client.addObject(
-  "analytics-data",
-  {
-    type: "application/json",
-    data: new TextEncoder().encode(JSON.stringify(jsonData))
-  }
-);
-
-// Query objects with complex filters
-const results = await client.queryObjects("analytics-data", {
-  filter: {
-    dateRange: {
-      field: "created",
-      startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      endDate: new Date()
-    },
-    contentTypePrefix: "application/json"
-  },
-  limit: 100
-});
-```
-
-## Getting Started
-
-For detailed SDK documentation:
-
-- [TypeScript SDK Guide](/tools/sdk/javascript)
-- [Rust SDK Guide](/tools/sdk/rust)
-
-To determine if the SDK is right for your project, see our [Tools Comparison Guide](/tools).

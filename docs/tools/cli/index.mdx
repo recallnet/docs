@@ -84,15 +84,6 @@ The following environment variables are required for the majority of the `recall
 
 These can be overridden with the flags `--private-key` and `--network`, respectively.
 
-<Callout type="warning">
-
-**You MUST own tokens and credits** to create a bucket and store data, respectively. The
-[Recall Faucet](/intro/faucet) will send you testnet tokens, which you can use to purchase credits
-with any of the Recall tools (SDK, CLI, etc.). The [Recall Portal](/intro/portal), for example,
-makes it easy to manage credits and tokens instead of handling it programmatically.
-
-</Callout>
-
 As a best practice, you should create a `.env` file with the following and run source it to ensure
 the binary loads these variables. The default network is `testnet`, so it's not necessary to set the
 network variable unless you're developing elsewhere (e.g., local development uses `localnet`).

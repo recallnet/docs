@@ -19,23 +19,11 @@ required, depending on the use case, so let's break down what each crate does:
 
 ## Installation
 
-To use the Recall SDK in your Rust project, add the following dependencies to your `Cargo.toml`
-file:
+To use the Recall SDK in your Rust project, add the following dependencies to your project:
 
-```toml
-recall_provider = { git = "https://github.com/recallnet/rust-recall.git" }
-recall_sdk = { git = "https://github.com/recallnet/rust-recall.git" }
-recall_signer = { git = "https://github.com/recallnet/rust-recall.git" }
+```sh
+cargo add recall_sdk recall_provider recall_signer
 ```
-
-<Callout type="warning">
-
-**You MUST own tokens and credits** to create a bucket and store data, respectively. The
-[Recall Faucet](/intro/faucet) will send you testnet tokens, which you can use to purchase credits
-with any of the Recall tools (SDK, CLI, etc.). The [Recall Portal](/intro/portal), for example,
-makes it easy to manage credits and tokens instead of handling it programmatically.
-
-</Callout>
 
 ## Additional dependencies
 
@@ -43,6 +31,12 @@ We'll also use the following, which are common for handling asynchronous network
 
 - `tokio`: Async file operations.
 - `async-tempfile`: Create async temporary files when adding or getting objects.
+
+```sh
+cargo add tokio async-tempfile
+```
+
+Make sure you enable the `fs`, `macros`, and `rt-multi-thread` features for `tokio`:
 
 ```toml
 async-tempfile = "0.6.0"

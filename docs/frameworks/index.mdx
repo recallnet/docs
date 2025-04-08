@@ -38,14 +38,14 @@ Recall's storage capabilities based on the conversation or task.
 
 Each framework has its own strengths and use cases. Here's a quick comparison to help you decide:
 
-| Framework                                | Best For                               | Key Features                                                                          |
-| ---------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------- |
-| [MCP](/mcp-integration)                  | Claude, Cursor, direct LLM integration | Universal protocol, works with multiple clients                                       |
-| [Mastra](/framework-guides/mastra)       | Agent development with memory          | Open-source TypeScript agent framework with memory, function execution and evaluation |
-| [LangChain](/framework-guides/langchain) | Complex agent workflows, tool chaining | Extensive ecosystem, structured workflows                                             |
-| [OpenAI](/framework-guides/openai)       | GPT integration, assistant API         | Simplest integration with OpenAI models                                               |
-| [AI SDK](/framework-guides/ai-sdk)       | Web applications, Next.js              | Frontend integration, streaming responses                                             |
-| [Eliza](/framework-guides/eliza)         | Simple rule-based agents               | Lightweight, no LLM dependencies                                                      |
+| Framework                          | Best For                               | Key Features                                                                          |
+| ---------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------- |
+| [MCP](/mcp)                        | Claude, Cursor, direct LLM integration | Universal protocol, works with multiple clients                                       |
+| [Mastra](/frameworks/mastra)       | Agent development with memory          | Open-source TypeScript agent framework with memory, function execution and evaluation |
+| [LangChain](/frameworks/langchain) | Complex agent workflows, tool chaining | Extensive ecosystem, structured workflows                                             |
+| [OpenAI](/frameworks/openai)       | GPT integration, assistant API         | Simplest integration with OpenAI models                                               |
+| [AI SDK](/frameworks/ai-sdk)       | Web applications, Next.js              | Frontend integration, streaming responses                                             |
+| [Eliza](/frameworks/eliza)         | Simple rule-based agents               | Lightweight, no LLM dependencies                                                      |
 
 <Callout type="info">
 
@@ -57,22 +57,22 @@ compatibility with popular AI clients.
 ## Available frameworks
 
 <Cards>
-  <Card title="MCP" href="/mcp-integration">
+  <Card title="MCP" href="/mcp">
     Use with Claude, Cursor, and other MCP clients
   </Card>
-  <Card title="Mastra" href="/framework-guides/mastra">
+  <Card title="Mastra" href="/framework/mastra">
     TypeScript agent framework with memory and evaluation
   </Card>
-  <Card title="LangChain" href="/framework-guides/langchain">
+  <Card title="LangChain" href="/framework/langchain">
     Integrate with LangChain agents and workflows
   </Card>
-  <Card title="OpenAI" href="/framework-guides/openai">
+  <Card title="OpenAI" href="/framework/openai">
     Use with GPT models and OpenAI assistants
   </Card>
-  <Card title="AI SDK" href="/framework-guides/ai-sdk">
+  <Card title="AI SDK" href="/framework/ai-sdk">
     Integrate with Vercel AI SDK and Next.js
   </Card>
-  <Card title="Eliza" href="/framework-guides/eliza">
+  <Card title="Eliza" href="/framework/eliza">
     Create simple rule-based agents
   </Card>
 </Cards>
@@ -134,4 +134,4 @@ If you're using a framework that's not directly supported, you can still use the
 Toolkit. The toolkit's shared components provide a framework-agnostic API that you can use to build
 your own integration.
 
-Check out the [custom integration guide](/framework-guides/custom) for more details.
+Check out the [custom integration guide](/framework/custom) for more details.

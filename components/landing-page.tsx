@@ -1,18 +1,5 @@
 import Link from "fumadocs-core/link";
-import {
-  ArrowRight,
-  BookOpen,
-  Database,
-  Expand,
-  File,
-  Lock,
-  MemoryStick,
-  Network,
-  PartyPopper,
-  Plug2,
-  Terminal,
-  Timer,
-} from "lucide-react";
+import { ArrowRight, Expand, MemoryStick, Network, PartyPopper } from "lucide-react";
 import { FaDiscord, FaXTwitter } from "react-icons/fa6";
 
 import LandingSVG from "@/components/landing-svg";
@@ -36,7 +23,7 @@ const features = [
   {
     icon: <Network className="text-blue h-6 w-6" />,
     title: "MCP integration",
-    href: "/mcp-integration",
+    href: "/mcp",
     description: "Use the Model Context Protocol with Recall",
   },
   {
@@ -44,58 +31,6 @@ const features = [
     title: "Enter competitions",
     href: "/competitions",
     description: "Put your agent to the test",
-  },
-];
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const touchpointCards = [
-  {
-    title: "Introduction",
-    icon: <BookOpen className="text-primary h-5 w-5" />,
-    href: "/intro",
-    description: "Learn about Recall's core concepts and network basics",
-  },
-  {
-    title: "Quickstarts",
-    icon: <Plug2 className="text-primary h-5 w-5" />,
-    href: "/intro/quickstarts/eliza",
-    description: "Quickstarts for agents, plugins, and more",
-  },
-  {
-    title: "CLI",
-    icon: <Terminal className="text-primary h-5 w-5" />,
-    href: "/tools/cli",
-    description: "Learn how to use the Recall CLI",
-  },
-  {
-    title: "SDKs",
-    icon: <Timer className="text-primary h-5 w-5" />,
-    href: "/tools/sdk",
-    description: "Build agents with the TypeScript or Rust SDKs",
-  },
-  {
-    title: "Verifiable sources",
-    icon: <Timer className="text-primary h-5 w-5" />,
-    href: "/sources",
-    description: "Create and verify data sources that can be used by agents",
-  },
-  {
-    title: "Access control",
-    icon: <Lock className="text-primary h-5 w-5" />,
-    href: "/agents/access",
-    description: "Understand how Recall controls data access",
-  },
-  {
-    title: "Contracts",
-    icon: <File className="text-primary h-5 w-5" />,
-    href: "/protocol/contracts",
-    description: "Dive into the smart contracts that power Recall",
-  },
-  {
-    title: "Architecture",
-    icon: <Database className="text-primary h-5 w-5" />,
-    href: "/protocol/architecture",
-    description: "Review technical details like subnets and data availability",
   },
 ];
 
@@ -164,33 +99,6 @@ export function LandingPage() {
           </div>
         </div>
       </div>
-
-      {/* Documentation Section */}
-      {/* <div className="py-16">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold">Learn & build</h2>
-            <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
-              Everything you need to build, deploy, and compete with your AI agents on the Recall
-              network.
-            </p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {touchpointCards.map((card, index) => (
-              <Card
-                key={index}
-                className="dark:bg-secondary hover:bg-secondary/5 dark:hover:bg-secondary/90 rounded-lg border bg-white p-5 no-underline transition-all duration-200"
-                title={card.title}
-                titleClassName="text-base font-semibold pt-2"
-                icon={<div className="bg-primary/10 rounded-lg p-2">{card.icon}</div>}
-                href={card.href}
-                description={card.description}
-              />
-            ))}
-          </div>
-        </div>
-      </div> */}
 
       {/* Community Section */}
       <div className="mx-auto max-w-7xl px-4 py-16 text-center">

@@ -45,10 +45,10 @@ For the latest Mastra features and documentation, always refer to the official
 Ensure you have the necessary Mastra and Recall packages, along with supporting libraries:
 
 ```package-install
-npm install @mastra/core @mastra/mcp @recallnet/mcp @ai-sdk/anthropic dotenv chalk typescript ts-node @types/node
+npm install @mastra/core @mastra/mcp @recallnet/mcp @ai-sdk/anthropic dotenv chalk typescript tsx @types/node
 ```
 
-Or, replace `@ai-sdk/anthropic` with your preferred provider, e.g.,` @ai-sdk/openai`.
+Or, replace `@ai-sdk/anthropic` with your preferred provider, e.g., `@ai-sdk/openai`.
 
 _Note: `@types/node` is needed for Node.js specific types like `process`._
 
@@ -63,7 +63,7 @@ Create a `.env` file in your project root:
 ```dotenv
 RECALL_PRIVATE_KEY=your_recall_private_key_here
 RECALL_NETWORK=testnet # or mainnet
-ANTHROPIC_API_KEY=your_anthropic_api_key_here # Or OPENAI_API_KEY=... etc.
+OPENAI_API_KEY=your_openai_api_key_here # Or ANTHROPIC_API_KEY=... etc.
 ```
 
 </Step>
@@ -109,46 +109,66 @@ Ensure `"types": ["node"]` is included if you face issues with Node.js globals l
 ## Basic integration example
 
 This example shows how to create a simple agent that uses Recall tools provided by `@recallnet/mcp`.
+We'll set up the agent configuration, environment variables, and enable the Recall tools in Mastra.
 
-```typescript title="src/recall-agent.ts"
-import { anthropic } from '@ai-sdk/anthropic'; // Or your chosen LLM provider
-import { Agent } from '@mastra/core/agent';
-import { MCPConfiguration } from '@mastra/mcp';
-import chalk from 'chalk';
-import dotenv from 'dotenv';
-import { CoreMessage } from 'ai';
-import path from 'path';
-import { fileURLToPath } from 'url';
+### Scaffold the basic agent
 
-// Helper to get the directory name
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+First, create a `src/agent.ts` file and set up our basic logic.
+
+```typescript title="src/agent.ts"
+import { openai } from "@ai-sdk/openai";
+// Or your chosen LLM provider instead of `openai`
+import { Agent } from "@mastra/core/agent";
+import { MCPConfiguration } from "@mastra/mcp";
+import { CoreMessage } from "ai";
+import chalk from "chalk";
+import dotenv from "dotenv";
 
 // Load environment variables
 dotenv.config();
 
 // --- Configuration ---
-const RECALL_BUCKET_ALIAS = 'mastra-guide-bucket'; // Choose a name for your test bucket
-const OBJECT_KEY = 'greeting';
-const OBJECT_DATA = { message: 'Hello from Mastra Core + Recall!' };
+const RECALL_BUCKET_ALIAS = "mastra-guide-bucket"; // Choose a name for your test bucket
+const OBJECT_KEY = "greeting";
+const OBJECT_DATA = { message: "Hello from Mastra Core + Recall!" };
 
 // --- Main Function ---
 async function main(): Promise<void> {
-  console.log(chalk.blue('🚀 Starting Mastra Agent with Recall Integration...'));
+  console.log(chalk.blue("🚀 Starting Mastra Agent with Recall Integration..."));
+
+  // Will add code here...
+}
+
+// Run the main function
+main().catch((error) => {
+  console.error(chalk.red("Fatal error in main execution:"));
+  console.error(error);
+  process.exit(1);
+});
+```
+
+### Add the Recall tools
+
+Next, we'll initialize MCP Configuration for Recall Server, which tells Mastra how to run the
+`@recallnet/mcp` server. Then, we'll get the toolsets from the MCP server and pass them to the
+agent, before running it with pre-defined instructions.
+
+```typescript title="src/agent.ts"
+async function main(): Promise<void> {
+  // Existing code...
 
   // 1. Initialize MCP Configuration for Recall Server
-  // This tells Mastra how to run the @recallnet/mcp server
   const mcp = new MCPConfiguration({
     servers: {
-      recallMCP: { // You can name this server reference anything
-        command: 'npm', // Or 'npx'
-        // Use 'exec' with npm to run the installed package binary
-        args: ['exec', '@recallnet/mcp'],
+      recallMCP: {
+        // You can name this server reference anything
+        command: "npx", // Or 'npm' and 'exec'
+        args: ["-y", "@recallnet/mcp"],
         // Pass necessary environment variables from this process to the MCP server
         env: {
-          RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY || '',
-          RECALL_NETWORK: process.env.RECALL_NETWORK || 'testnet',
-          RECALL_TOOLS: 'all', // Expose all available Recall tools
+          RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY || "",
+          RECALL_NETWORK: process.env.RECALL_NETWORK || "testnet",
+          RECALL_TOOLS: "all", // Expose all available Recall tools
         },
       },
     },
@@ -157,23 +177,23 @@ async function main(): Promise<void> {
   try {
     // 2. Get Toolsets from MCP
     // Mastra starts the configured MCP servers and retrieves their tool definitions
-    console.log(chalk.blue('🔌 Initializing Recall MCP server and getting toolsets...'));
+    console.log(chalk.blue("🔌 Initializing Recall MCP server and getting toolsets..."));
     const toolsets = await mcp.getToolsets();
-    console.log(chalk.green('✅ Recall Toolsets obtained successfully!'));
+    console.log(chalk.green("✅ Recall Toolsets obtained successfully!"));
 
     // 3. Define the AI Model
     // Ensure the corresponding API key is in your .env file
-    const languageModel = anthropic('claude-3-5-sonnet-20240620');
+    const languageModel = openai("gpt-4o");
     // const languageModel = openai('gpt-4o'); // Example for OpenAI
 
     // 4. Create the Mastra Agent
     const agentInstructions = `You are an agent that uses Recall tools to manage persistent storage.
 Available Recall tools are provided. Use them as needed to fulfill user requests.
-When asked to store data, use the recall_get_or_create_bucket tool first, then use recall_add_object.
+When asked to store data, use get_or_create_bucket tool first, then add_object.
 Confirm success after completing the requested action.`;
 
     const agent = new Agent({
-      name: 'RecallStorageAgent',
+      name: "RecallStorageAgent",
       instructions: agentInstructions,
       model: languageModel,
       // Note: Tools are passed during the stream/generate call in this pattern
@@ -186,8 +206,8 @@ Confirm success after completing the requested action.`;
     const messages: CoreMessage[] = [
       // System instructions are often passed in the Agent constructor,
       // but can also be included here for more dynamic scenarios.
-      { role: 'system', content: agentInstructions },
-      { role: 'user', content: userRequest },
+      { role: "system", content: agentInstructions },
+      { role: "user", content: userRequest },
     ];
 
     // 6. Run the Agent and Stream Results
@@ -198,18 +218,18 @@ Confirm success after completing the requested action.`;
       temperature: 0, // Lower temperature for more deterministic tool use
     });
 
-    console.log(chalk.blue('🔄 Agent processing stream...'));
-    let finalMessage = '';
+    console.log(chalk.blue("🔄 Agent processing stream..."));
+    let finalMessage = "";
     for await (const part of stream.fullStream) {
       switch (part.type) {
-        case 'error':
+        case "error":
           console.error(chalk.red(`Error: ${part.error}`));
           break;
-        case 'text-delta':
+        case "text-delta":
           process.stdout.write(chalk.green(part.textDelta));
           finalMessage += part.textDelta;
           break;
-        case 'tool-call':
+        case "tool-call":
           console.log(
             chalk.magenta(
               `
@@ -217,7 +237,7 @@ Confirm success after completing the requested action.`;
             )
           );
           break;
-        case 'tool-result':
+        case "tool-result":
           console.log(
             chalk.cyan(`⚙️ Tool Result (${part.toolName}): ${JSON.stringify(part.result)}`)
           );
@@ -225,41 +245,32 @@ Confirm success after completing the requested action.`;
         // Other types like 'finish' could be handled here if needed
       }
     }
-    console.log(chalk.blue('
-🏁 Agent stream finished.'));
-    console.log(chalk.green(`✅ Agent's final response: ${finalMessage}`));
-
+    console.log(chalk.blue("\n🏁 Agent stream finished."));
+    console.log(chalk.green(`✅ Agent's final response\n: ${finalMessage}`));
   } catch (error) {
-    console.error(chalk.red('Agent execution failed:'));
+    console.error(chalk.red("Agent execution failed:"));
     console.error(error);
   } finally {
     // Ensure MCP servers are shut down
-    await mcp.shutdown();
-    console.log(chalk.blue('🔌 MCP servers shut down.'));
+    await mcp.disconnect();
+    console.log(chalk.blue("🔌 MCP servers shut down."));
   }
 }
-
-// Run the main function
-main().catch((error) => {
-  console.error(chalk.red('Fatal error in main execution:'));
-  console.error(error);
-  process.exit(1);
-});
 ```
 
 ## Running the agent
 
-1. Save the code above as `src/recall-agent.ts`.
+1. Save the code above as `src/agent.ts`.
 2. Ensure your `.env` file is correctly populated with your keys.
-3. Run the agent using `ts-node` (or compile with `tsc` and run the JS file):
+3. Run the agent using `tsx` (or compile with `tsc` and run the JS file):
 
    ```bash
-   npx ts-node src/recall-agent.ts
+   npx tsx src/agent.ts
    ```
 
 You should see output showing the agent starting, initializing the Recall MCP server, making tool
-calls (`recall_get_or_create_bucket`, `recall_add_object`), receiving results, and finally
-confirming the operation. You can verify the bucket and object creation in your Recall dashboard.
+calls (`get_or_create_bucket`, `add_object`), receiving results, and finally confirming the
+operation. You can verify the bucket and object creation in your Recall dashboard.
 
 ## Explanation
 

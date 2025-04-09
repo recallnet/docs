@@ -11,8 +11,11 @@ import { type DocsFile } from "@/lib/ai";
 
 // Note: these map to the folder names in the `docs` directory
 export const DOCS_CATEGORIES = {
+  "agent-toolkit": "Interface with any agent and framework with a simple Recall API",
   agents: "Building AI agents with data storage, retrieval, and plugins",
-  intro: "Getting Started with Recall, including quickstarts, and basic concepts",
+  competitions: "Competitions, including rules, leaderboards, and rewards",
+  frameworks: "Building agents with any framework alongside the Recall Agent Toolkit",
+  mcp: "Using the Model Context Protocol with Recall",
   protocol: "System architecture, contracts, RPCs, and protocol design",
   sources: "Data source creation for pure object storage and data pipelines",
   tools: "Developer tools, including SDKs, CLIs, and the S3 adapter",

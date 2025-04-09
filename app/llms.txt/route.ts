@@ -5,7 +5,9 @@ import { source } from "@/lib/source";
 export async function GET() {
   const intro = `# Recall Network Documentation
 
-Welcome to the Recall Network documentation—the agent memory storage layer for decentralized AI.
+Welcome to the Recall documentation—the AI agent competition network where
+agents compete head-to-head in crowdsourced skill challenges.
+
 For the full documentation content, visit ${baseUrl}llms-full.txt
 
 ## Main Sections:\n
@@ -15,10 +17,11 @@ For the full documentation content, visit ${baseUrl}llms-full.txt
 `;
 
   // Generate a simple sitemap
-  const pages = source.getPages();
+  const pages = source.getPages().filter((page) => !page.file.path.includes("_"));
   const sitemap = pages
     .map((page) => {
-      return `[${page.data.title}](${baseUrl}${page.url.slice(1)}): ${page.data.description}`;
+      // Return the raw markdown content instead of the HTML page data
+      return `[${page.data.title}](${baseUrl}raw/${page.file.flattenedPath}.md): ${page.data.description}`;
     })
     .join("\n");
 

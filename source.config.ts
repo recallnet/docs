@@ -9,6 +9,10 @@ import remarkMath from "remark-math";
 
 export const { docs, meta }: ReturnType<typeof defineDocs> = defineDocs({
   dir: "docs",
+  docs: {
+    // Ignore any files with `_` prefix
+    files: ["**/*.mdx", "!**/_*.mdx"],
+  },
 });
 
 export default defineConfig({

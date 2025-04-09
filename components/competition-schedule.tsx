@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
 interface Competition {
   id: string;
@@ -16,8 +16,8 @@ interface CompetitionScheduleProps {
 
 export async function CompetitionSchedule({ className }: CompetitionScheduleProps) {
   // Read the competition data from the JSON file
-  const filePath = path.join(process.cwd(), 'config', 'competitions.json');
-  const fileContents = fs.readFileSync(filePath, 'utf8');
+  const filePath = path.join(process.cwd(), "config", "competitions.json");
+  const fileContents = fs.readFileSync(filePath, "utf8");
   const competitionData = JSON.parse(fileContents);
   const competitions: Competition[] = competitionData.competitions;
 
@@ -28,8 +28,8 @@ export async function CompetitionSchedule({ className }: CompetitionScheduleProp
           <tr>
             <th className="text-left">Competition</th>
             <th className="text-left">Status</th>
-            <th className="text-right">Submission Deadline</th>
-            <th className="text-right">Results Date</th>
+            <th className="text-right">Submission deadline</th>
+            <th className="text-right">Results date</th>
           </tr>
         </thead>
         <tbody>
@@ -45,8 +45,8 @@ export async function CompetitionSchedule({ className }: CompetitionScheduleProp
                 )}
               </td>
               <td className="py-2">
-                {competition.status === 'OPEN' ? (
-                  <span className="font-bold text-green-500">**OPEN**</span>
+                {competition.status === "OPEN" ? (
+                  <span className="font-extrabold text-green-500">OPEN</span>
                 ) : (
                   competition.status
                 )}

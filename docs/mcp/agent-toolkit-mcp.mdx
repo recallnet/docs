@@ -1,0 +1,182 @@
+---
+title: Agent Toolkit MCP
+description: Using the Model Context Protocol with the Agent Toolkit
+---
+
+The Recall Agent Toolkit provides a powerful MCP implementation that gives your agents access to the
+full range of Recall's capabilities. This guide provides a deeper look at the Agent Toolkit MCP
+integration, focusing on advanced usage, configuration options, and best practices.
+
+## Understanding the `RecallAgentToolkit`
+
+The `RecallAgentToolkit` class is the core of the MCP integration. It:
+
+1. Manages authentication with Recall
+2. Controls permissions for various operations
+3. Exposes Recall tools in MCP-compatible format
+4. Handles the conversion between MCP tool calls and Recall API calls
+
+```typescript
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    actions: {
+      account: { read: true, write: true }, // Read and write account information
+      bucket: { read: true, write: true }, // Read and write bucket information
+    },
+    context: {
+      network: "testnet", // Optional network configuration
+    },
+  },
+});
+```
+
+## Available tools
+
+The Agent Toolkit MCP integration provides the following tool categories:
+
+### Bucket management
+
+Tools for creating and managing buckets:
+
+- `create_bucket` - Create a new storage bucket
+- `get_or_create_bucket` - Get or create a new storage bucket
+- `list_buckets` - List all buckets owned by the agent
+
+### Object management
+
+Tools for storing and retrieving data within buckets:
+
+- `add_object` - Store a value in a bucket with a specified key
+- `get_object` - Retrieve a value from a bucket using its key
+- `query_objects` - Query objects in a bucket
+- `delete_object` - Delete an object from a bucket
+
+### Account information
+
+Tools for managing the agent's account:
+
+- `get_account_info` - Get account information
+- `get_credit_info` - Get the amount of credits available
+
+## Detailed configuration options
+
+The `RecallAgentToolkit` constructor accepts various configuration options:
+
+- `privateKey`: The private key for the agent
+- `configuration`: The configuration for the agent with permissions and context
+
+### Configuring permissions
+
+The configuration object allows fine-grained control over what actions the agent can perform:
+
+```typescript
+type Configuration = {
+  actions: {
+    account?: {
+      read?: boolean;
+    };
+    bucket?: {
+      read?: boolean;
+      write?: boolean;
+    };
+  };
+  context?: {
+    network?: string;
+    [key: string]: unknown;
+  };
+};
+```
+
+<Callout type="warning">
+
+Always follow the principle of least privilege. Only grant the permissions your agent actually
+needs.
+
+</Callout>
+
+## Setting up MCP with different transport types
+
+The Agent Toolkit supports different MCP transport mechanisms:
+
+### Standard input/output
+
+Good for Cursor, Claude, and other MCP clients:
+
+```typescript title="index.ts"
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+
+const transport = new StdioServerTransport();
+await toolkit.connect(transport);
+```
+
+### HTTP server transport
+
+Good for web-based integrations or remote access:
+
+```typescript title="index.ts"
+import { HttpServerTransport } from "@modelcontextprotocol/sdk/server/http.js";
+
+const transport = new HttpServerTransport({
+  port: 8000,
+  host: "localhost",
+});
+await toolkit.connect(transport);
+```
+
+## Production best practices
+
+### Error handling
+
+Always implement robust error handling:
+
+```typescript title="index.ts"
+try {
+  await toolkit.connect(transport);
+} catch (error) {
+  console.error("Failed to connect toolkit:", error);
+  // Implement proper error handling here
+  process.exit(1);
+}
+```
+
+### Security considerations
+
+1. **Environment variables**: Store private keys in environment variables
+2. **Access control**: Use strict file permissions for .env files
+3. **Permission scoping**: Only grant necessary permissions
+4. **Rate limiting**: Implement rate limiting for high-volume applications
+5. **Input validation**: Validate inputs before passing to tools
+
+## Testing MCP integration
+
+MCP comes with a built-in debugging tool that allows you to test your agent's tools before
+connecting to the Recall network. After you set up your MCP server, you can start the inspector
+with:
+
+```bash
+npx @modelcontextprotocol/inspector tsx index.ts
+```
+
+## System prompts for MCP
+
+Effective system prompts help your MCP-powered agent understand how to use Recall tools:
+
+```
+You are an agent with access to Recall tools through the Model Context Protocol.
+You can use these tools to store and retrieve data, work with verifiable sources,
+and manage your account.
+
+Available tools:
+- get_or_create_bucket: Create or access a storage bucket
+- list_buckets: List all buckets
+- add_object: Store data in a bucket
+- get_object: Retrieve data from a bucket
+- query_objects: Query objects in a bucket
+- delete_object: Delete an object from a bucket
+
+When storing information, create organized bucket structures with logical naming.
+Always check if data exists before trying to retrieve it.
+```

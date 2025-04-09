@@ -8,13 +8,21 @@ The `recall_s3` binary is a simple adapter that allows you to use the Recall obj
 with S3 APIs. Let's walk through how to set it up, and subsequent pages walk through how to use it
 with ancillary tools like MinIO.
 
-### Setup
+<Callout type="info">
+
+For read-only operations, the public S3 gateway is available at the following URL:
+`https://s3.testnet.recall.chain.love`. You cannot write data to buckets through this gateway, but
+it's a great way to get started and eliminates the need to run the adapter yourself.
+
+</Callout>
+
+## Setup
 
 <Steps>
 
 <Step>
 
-### Install
+## Install
 
 First, clone the repo:
 
@@ -32,20 +40,11 @@ This should make `recall_s3` available in your path, which you can verify with
 `recall_s3 --version`. Alternatively, if you don't want to install it, you can run it directly with
 `cargo run` in the subsequent step.
 
-<Callout type="warning">
-
-**You MUST own tokens and credits** to create a bucket and store data, respectively. The
-[Recall Faucet](/intro/faucet) will send you testnet tokens, which you can use to purchase credits
-with any of the Recall tools (SDK, CLI, etc.). The [Recall Portal](/intro/portal), for example,
-makes it easy to manage credits and tokens instead of handling it programmatically.
-
-</Callout>
-
 </Step>
 
 <Step>
 
-### Run the adapter
+## Run the adapter
 
 Starting the Recall S3 adapter uses port `8014` by default. There are three required flags if you're
 doing write operations:
@@ -89,7 +88,7 @@ subnet account. Neglecting this step will lead to errors like
 
 <Step>
 
-### Create an aliased bucket
+## Create an aliased bucket
 
 Bucket usage _slightly_ deviates from how you typically would in S3. The S3 adapter uses the `alias`
 key **stored in the bucket's metadata** to identify the bucket name and its relationship with other
@@ -117,7 +116,7 @@ defined as `<hex_address>.<name>` with a period in between).
 
 <Step>
 
-### Read or write to S3
+## Read or write to S3
 
 If you're reading/writing to buckets you've created, you'll typically just use the aliased name as
 the bucket name. You _can_ opt for the expanded format, if desired, but the adapter will try to use

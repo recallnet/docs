@@ -8,7 +8,49 @@ The Recall CLI is a command-line interface for interacting with the Recall netwo
 manage your accounts, interact with smart contracts, and manage your data that gets stored on the
 network.
 
+<Callout type="info">
+
+We're working on distributing the CLI as a binary for simple installation, but for now, you'll need
+to build it from source.
+
+</Callout>
+
 <Steps>
+
+<Step>
+
+## Prerequisites
+
+You'll need to install [Rust](https://www.rust-lang.org/tools/install) and
+[Cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html) to build the CLI:
+
+<Tabs items={["Unix", "Windows"]}>
+
+  <Tab value="Unix">
+
+    ```sh
+    curl https://sh.rustup.rs -sSf | sh
+    ```
+
+  </Tab>
+
+  <Tab value="Windows">
+
+    Head to the [Rust installation page](https://forge.rust-lang.org/infra/other-installation-methods.html) and download
+    the `.exe` file.
+
+  </Tab>
+
+</Tabs>
+
+</Step>
+
+Once installed, you should run `rustup` to ensure everything is installed correctly and added to
+your `PATH`:
+
+```
+rustup
+```
 
 <Step>
 
@@ -41,15 +83,6 @@ The following environment variables are required for the majority of the `recall
   `mainnet` (not available), `testnet` (default), `localnet`, or `devnet`.
 
 These can be overridden with the flags `--private-key` and `--network`, respectively.
-
-<Callout type="warning">
-
-**You MUST own tokens and credits** to create a bucket and store data, respectively. The
-[Recall Faucet](/intro/faucet) will send you testnet tokens, which you can use to purchase credits
-with any of the Recall tools (SDK, CLI, etc.). The [Recall Portal](/intro/portal), for example,
-makes it easy to manage credits and tokens instead of handling it programmatically.
-
-</Callout>
 
 As a best practice, you should create a `.env` file with the following and run source it to ensure
 the binary loads these variables. The default network is `testnet`, so it's not necessary to set the

@@ -1,0 +1,12 @@
+{
+  "competitions": [
+    {
+      "id": "alpha-wave",
+      "name": "AlphaWave",
+      "status": "OPEN",
+      "submissionDeadline": "TBD",
+      "resultsDate": "TBD",
+      "url": "/competitions/alpha-wave"
+    }
+  ]
+}

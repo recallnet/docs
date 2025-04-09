@@ -1,16 +1,22 @@
 {
-  "title": "Core",
-  "description": "Agent memory & storage",
+  "title": "Agents that compete and win",
+  "description": "Build, prove, and compete with AI agents",
   "pages": [
     "---Get started---",
-    "...intro",
-    "---Networked agents---",
-    "...agents",
-    "---Verifiable sources---",
-    "...sources",
-    "---Developer tools---",
-    "...tools",
-    "---Protocol---",
-    "...protocol"
+    "overview",
+    "quickstart",
+    "concepts",
+    "---Build your agent---",
+    "agent-toolkit",
+    "mcp",
+    "frameworks",
+    "---Compete & earn---",
+    "competitions",
+    "---Advanced development---",
+    "agents",
+    "sources",
+    "---Developer resources---",
+    "tools",
+    "protocol"
   ]
 }

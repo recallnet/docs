@@ -1,0 +1,4 @@
+{
+  "title": "Framework guides",
+  "pages": ["ai-sdk", "langchain", "openai", "mastra", "eliza"]
+}

@@ -1,0 +1,306 @@
+---
+title: Bucket monitoring
+description: Monitor and manage your agent's storage buckets
+---
+
+## Overview
+
+When building agents with the Recall Agent Toolkit, understanding how to monitor and manage your
+agent's storage is essential. This guide provides comprehensive methods for tracking, accessing, and
+debugging the data your agents store in Recall buckets.
+
+## Understanding bucket storage
+
+Buckets are persistent storage containers used by agents in the Recall network. Each bucket:
+
+- Has a unique identifier (e.g., `0xff000000000000000000000000000000000001a0`)
+- Can contain multiple key-value pairs (objects)
+- Persists data between agent sessions
+- Can be monitored through various methods
+
+<Callout type="warning">
+  Without proper monitoring, it can be challenging to debug what your agent is storing and
+  retrieving. Always implement logging for bucket operations.
+</Callout>
+
+The most important step in monitoring bucket storage is to log bucket IDs when they're created or
+accessed. When an agent creates a bucket, it will have access to that information and can log it
+accordingly.
+
+## Methods for accessing bucket data
+
+Once you know your bucket ID, you have multiple ways to view and manage the stored data:
+
+### 1. Portal web interface
+
+The simplest way to view bucket contents is through the Recall Portal:
+
+1. Go to: `https://portal.recall.network/buckets/{YOUR_BUCKET_ID}`
+2. Replace `{YOUR_BUCKET_ID}` with your actual bucket ID (e.g.,
+   `0xff000000000000000000000000000000000001a0`)
+3. You'll see all objects stored in the bucket, their keys, and values
+
+<Callout type="info">
+
+The Portal provides a user-friendly interface to browse, search, and manage bucket contents without
+coding.
+
+</Callout>
+
+### 2. Using the Recall CLI
+
+The Recall CLI provides powerful command-line tools for viewing and managing bucket data. First,
+follow the [installation instructions](/tools/cli) to install the CLI, and then you can run the
+commands below.
+
+```bash
+export RECALL_PRIVATE_KEY=<your-private-key>
+export BUCKET_ADDRESS=<your-bucket-address>
+export OBJECT_KEY=<your-object-key>
+
+# List all your buckets
+recall bucket list
+
+# List objects in a specific bucket
+recall bucket query --address $BUCKET_ADDRESS
+
+# View a specific object in a bucket
+recall bucket get --address $BUCKET_ADDRESS $OBJECT_KEY
+
+# Delete an object
+recall bucket delete --address $BUCKET_ADDRESS $OBJECT_KEY
+```
+
+### 3. Portal login with agent's wallet
+
+If you have access to the wallet used by your agent:
+
+1. Go to the [Recall Portal](https://portal.recall.network)
+2. Connect the same wallet used by your agent
+3. Navigate to the "Storage" section
+4. You'll see all buckets owned by the wallet
+
+### 4. Programmatic monitoring
+
+You can build monitoring capabilities directly into your agent application:
+
+```typescript
+import { testnet } from "@recallnet/chains";
+import { RecallClient, walletClientFromPrivateKey } from "@recallnet/sdk/client";
+
+const walletClient = walletClientFromPrivateKey(process.env.RECALL_PRIVATE_KEY, testnet);
+const recallClient = new RecallClient({
+  walletClient,
+});
+const client = recallClient.bucketManager();
+
+async function monitorBuckets() {
+  // List all buckets
+  const { result: bucketsResponse } = await client.list();
+  console.log("All buckets:", bucketsResponse);
+
+  // For each bucket, list its contents
+  for (const bucket of bucketsResponse) {
+    console.log(`\nBucket ${bucket}:`);
+    const { result: objectsResponse } = await client.query(bucket.addr);
+    console.log("Objects:", objectsResponse.objects);
+
+    // Print each object's key and value
+    for (const object of objectsResponse.objects) {
+      const { result: objectResponse } = await client.get(bucket.addr, object.key);
+      console.log(`${object}: ${objectResponse}`);
+    }
+  }
+}
+```
+
+### 5. Querying the agent directly
+
+If you're using MCP or a similar framework, you can simply prompt your agent to show its storage:
+
+```
+Please list all buckets you've created and their contents.
+```
+
+Agents with access to Recall tools can respond with complete information about their storage.
+
+## Best practices for bucket monitoring
+
+### Implement logging hooks
+
+Always add logging for bucket operations in your agent code:
+
+```typescript
+// Example of a reusable logging middleware
+const baseUrl = "https://portal.recall.network/buckets";
+
+function logBucketOperation(operation, input, bucketId, key = null) {
+  const timestamp = new Date().toISOString();
+  const portalUrl = `${baseUrl}/${bucketId}`;
+
+  console.log(`[${timestamp}] ${operation.toUpperCase()} BUCKET: ${bucketId}`);
+  console.log(`Portal URL: ${portalUrl}`);
+
+  if (key) {
+    console.log(`Key: ${key}`);
+  }
+
+  if (input.value && operation === "store") {
+    console.log(`Stored value: ${JSON.stringify(input.value).substring(0, 100)}...`);
+  }
+
+  console.log("-".repeat(50));
+}
+
+const bucketLoggingMiddleware = {
+  afterToolCall: (tool, input, output) => {
+    // Log bucket creation/access
+    if (tool.name === "get_or_create_bucket" && output?.result?.bucket) {
+      logBucketOperation("create/access", input, output.result.bucket);
+    }
+
+    // Log object storage
+    if (tool.name === "put_object" && output?.result?.success) {
+      logBucketOperation("store", input, input.bucket, input.key);
+    }
+
+    // Log object retrieval
+    if (tool.name === "get_object" && output?.result?.value) {
+      logBucketOperation("retrieve", input, input.bucket, input.key);
+    }
+  },
+};
+```
+
+### Develop a monitoring dashboard
+
+For production agents, consider building a simple monitoring dashboard:
+
+```typescript
+import { testnet } from "@recallnet/chains";
+import { RecallClient, walletClientFromPrivateKey } from "@recallnet/sdk/client";
+import dotenv from "dotenv";
+import express from "express";
+
+dotenv.config();
+
+const app = express();
+const walletClient = walletClientFromPrivateKey(process.env.RECALL_PRIVATE_KEY, testnet);
+const recallClient = new RecallClient({
+  walletClient,
+});
+const client = recallClient.bucketManager();
+const baseUrl = "https://portal.recall.network/buckets";
+
+// Endpoint that displays all buckets and their contents
+app.get("/buckets", async (req, res) => {
+  const { result: bucketsResponse } = await client.list();
+
+  let html = "<h1>Agent Buckets Monitor</h1>";
+
+  for (const bucket of bucketsResponse) {
+    html += `<h2>Bucket: ${bucket.addr}</h2>`; // Use bucket.addr instead of bucket
+    html += `<p><a href="${baseUrl}/${bucket.addr}" target="_blank">View in Portal</a></p>`;
+
+    // Add some debug logging
+    console.log("Bucket:", bucket);
+    const { result: objectsResponse } = await client.query(bucket.addr);
+    console.log("Objects:", objectsResponse);
+
+    html += '<table border="1"><tr><th>Key</th><th>Value</th></tr>';
+
+    for (const item of objectsResponse.objects) {
+      const { result: value } = await client.get(bucket.addr, item.key);
+      console.log("Item:", item.key, value);
+      // Convert value to string if it's an object
+      const displayValue = typeof value === "object" ? JSON.stringify(value) : value;
+      html += `<tr><td>${item.key}</td><td>${displayValue}</td></tr>`;
+    }
+
+    html += "</table>";
+  }
+
+  res.send(html);
+});
+
+app.listen(3000, () => {
+  console.log("Monitoring dashboard available at http://localhost:3000/buckets");
+});
+```
+
+### Use structured logging
+
+In production environments, use structured logging for better analysis:
+
+```typescript
+import pino from "pino";
+
+const logger = pino({
+  level: "info",
+  transport: {
+    target: "pino-pretty",
+  },
+});
+
+function logBucketOperation(operation, bucketId, key = null, value = null) {
+  const baseUrl = "https://portal.recall.network/buckets";
+  logger.info({
+    operation,
+    bucketId,
+    portalUrl: `${baseUrl}/${bucketId}`,
+    key,
+    value: value ? JSON.stringify(value).substring(0, 100) : undefined,
+    timestamp: new Date().toISOString(),
+  });
+}
+```
+
+## Troubleshooting
+
+### Common issues and solutions
+
+<Tabs items={["Missing data", "Permission errors", "Bucket not found"]}>
+  <Tab value="Missing data">
+    If data appears to be missing:
+
+    1. Verify the correct bucket ID is being used
+    2. Check that the object key matches exactly (keys are case-sensitive)
+    3. Confirm the agent has permissions to access the bucket
+    4. Examine logs to see if the data was ever successfully stored
+    5. Try accessing the data through the Portal to confirm it exists
+
+  </Tab>
+
+  <Tab value="Permission errors">
+    If you encounter permission errors:
+
+    1. Confirm you're using the same private key that created the bucket
+    2. Verify your agent has sufficient credits for storage operations
+    3. Check that your client configuration is correct
+    4. Try regenerating your API key if issues persist
+
+  </Tab>
+
+  <Tab value="Bucket not found">
+    If a bucket appears to be missing:
+
+    1. Confirm you're connected to the correct network (e.g., testnet)
+    2. Verify the bucket ID format is correct (should start with `0xff`)
+    3. Check logs to confirm the bucket was successfully created
+    4. Use the `recall bucket list` command or Portal to see all available buckets
+    5. Try creating a new bucket if necessary
+
+  </Tab>
+</Tabs>
+
+## Next steps
+
+Now that you understand how to monitor your agent's bucket storage:
+
+1. **Implement logging** in your agent code
+2. **Build monitoring tools** appropriate for your use case
+3. **Develop debugging strategies** for storage-related issues
+4. **Create backup procedures** for critical data
+
+For more detailed information on working with buckets, check out the
+[Tools Reference](/agent-toolkit/tools-reference) guide.

@@ -16,7 +16,7 @@ export function MarkdownActions({ currentPath }: MarkdownActionsProps) {
   const [error, setError] = useState<string | null>(null);
 
   const getRawPath = () => {
-    // Convert paths like docs/intro/concepts.mdx to /raw/intro/concepts.md
+    // Convert paths like docs/tools/concepts.mdx to /raw/tools/concepts.md
     // This uses the `raw/[...slug]` route to serve the markdown file
     const path = currentPath.replace(/^docs\//, "").replace(/\.mdx$/, ".md");
     return `/raw/${path}`;

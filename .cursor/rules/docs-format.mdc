@@ -1,0 +1,102 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Documentation Standards and Structure
+
+## Project
+
+- This is a Next.js website for documentation.
+- It uses MDX for docs located in the `docs` folder, `components` for custom website features, `lib` for helpers, and `app` to run the main website.
+
+## File Organization
+
+- All documentation pages must be written in MDX format
+- All documentation files must be located in the `/docs` folder
+- Documentation structure should be organized logically with clear hierarchy
+
+## Frontmatter Requirements
+
+- Every MDX file must include frontmatter
+- Required frontmatter fields:
+  - `title`: Page title in sentence case
+  - `description`: Brief description in sentence case
+- Optional frontmatter fields:
+  - `keywords`: Comma-separated list of relevant terms
+
+## Header Guidelines
+
+- Never use H1 headers (single `#`) in content
+- Use only H2 (`##`), H3 (`###`), or H4 (`####`) headers
+- All headers must use sentence case formatting
+- Headers should be descriptive and follow a logical hierarchy
+
+## Links and References
+
+- Internal documentation links must use absolute routes
+- Omit the `docs` prefix in internal links
+- Example: Use `/intro/portal` instead of `docs/intro/portal.mdx`
+
+## Directory Structure
+
+- Each directory should contain a `meta.json` file if it has multiple pages
+- `meta.json` must include a `pages` array listing MDX files without extensions
+- `index.mdx` files are automatically rendered as directory landing pages
+- `index.mdx` files should not be included in `meta.json` pages array
+
+## MDX Components
+
+### Built-in Components
+
+The following components are available without imports:
+- `Accordion`, `Accordions`
+- `File`, `Folder`, `Files`
+- `Step`, `Steps`
+- `Tab`, `Tabs`
+- `TypeTable`
+- `Card`, `Cards`
+- `Callout`
+
+### Component Usage Rules
+
+- Leave a blank line after opening component tags
+- Leave a blank line before closing component tags
+- Nested components (like `Steps` > `Step`) must follow proper hierarchy
+- Each `Step` component must include an H2 header
+- Example:
+  ```
+  <Steps>
+
+  <Step>
+
+  ## First step
+
+  </Step>
+
+  <Step>
+
+  ## Second step
+
+  </Step>
+
+  </Steps>
+  ```
+
+## Code Blocks
+
+- Use language-specific syntax highlighting
+- For JavaScript package installation blocks, use `package-install` language tag to automatically render installation steps for `npm`, `pnpm`, `yarn`, and `bun`
+- To specify filenames, use the `title` key in code block metadata
+- Example filename annotation: 
+````
+```typescript title="app/index.tsx"
+```
+````
+
+## Documentation Quality
+
+- Maintain consistent formatting throughout
+- Use clear, concise language
+- Include relevant examples where appropriate
+- Keep documentation up-to-date with code changes

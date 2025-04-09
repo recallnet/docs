@@ -1,4 +1,4 @@
-import { AlertTriangle, CircleX, Info } from "lucide-react";
+import { AlertTriangle, CircleCheck, CircleX, Info } from "lucide-react";
 import { type HTMLAttributes, type ReactNode, forwardRef } from "react";
 
 import { cn } from "../../lib/theme/cn";
@@ -8,7 +8,7 @@ export type CalloutProps = Omit<HTMLAttributes<HTMLDivElement>, "title" | "type"
   /**
    * @defaultValue info
    */
-  type?: "info" | "tip" | "warn" | "warning" | "error";
+  type?: "info" | "tip" | "warn" | "warning" | "error" | "success";
 
   /**
    * Force an icon
@@ -34,9 +34,12 @@ export const Callout = forwardRef<HTMLDivElement, CalloutProps>(
             warn: <AlertTriangle className="stroke-fd-secondary size-5 fill-orange-500" />,
             warning: <AlertTriangle className="stroke-fd-secondary size-5 fill-orange-500" />,
             error: <CircleX className="stroke-fd-secondary size-5 fill-red-500" />,
+            success: <CircleCheck className="stroke-fd-secondary size-5 fill-green-500" />,
           }[type]}
         <div className="min-w-0 flex-1">
-          {title ? <p className="not-prose mb-2 font-medium">{title}</p> : null}
+          {title ? (
+            <p className="not-prose text-fd-muted-foreground mb-2 font-bold">{title}</p>
+          ) : null}
           <div className="text-fd-muted-foreground prose-no-margin text-base">{children}</div>
         </div>
       </div>

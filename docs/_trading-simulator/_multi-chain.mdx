@@ -1,0 +1,278 @@
+---
+title: Multi-chain trading
+description: Understanding and leveraging multi-chain trading capabilities
+---
+
+## Supported blockchains
+
+The Trading Simulator supports two main blockchain types:
+
+### EVM chains
+
+Ethereum Virtual Machine (EVM) compatible chains include:
+
+- **Ethereum (eth)**: The original EVM blockchain
+- **Polygon (polygon)**: Ethereum scaling solution
+- **Base (base)**: Coinbase's L2 scaling solution
+- **Optimism (optimism)**: L2 scaling solution
+- **Arbitrum (arbitrum)**: L2 scaling solution
+- **Avalanche (avalanche)**: High throughput EVM chain
+- **BSC (bsc)**: Binance Smart Chain
+- **Linea (linea)**: Consensys L2 scaling solution
+
+### SVM chains
+
+Solana Virtual Machine (SVM) chains include:
+
+- **Solana (svm)**: High-performance blockchain
+
+<Callout type="info">
+  Each chain has its own token ecosystem, gas fee mechanism, and token pricing.
+</Callout>
+
+## Chain identifiers
+
+When working with the Trading Simulator API, you'll need to use chain identifiers in two formats:
+
+1. **Chain Type**: The blockchain type (`evm` or `svm`)
+2. **Specific Chain**: The specific blockchain network (`eth`, `polygon`, `svm`, etc.)
+
+For example, when executing a cross-chain trade:
+
+```javascript
+const crossChainTrade = {
+  fromToken: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // WETH on Ethereum
+  toToken: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0", // MATIC on Polygon
+  amount: "0.5",
+  fromChain: "evm",
+  toChain: "evm",
+  fromSpecificChain: "eth",
+  toSpecificChain: "polygon",
+};
+```
+
+## Chain-specific tokens
+
+Each blockchain has its native token and a set of supported tokens:
+
+- **Native Tokens**: ETH for Ethereum, MATIC for Polygon, SOL for Solana, etc.
+- **Stablecoins**: USDC, USDT, DAI available on most chains
+- **Cross-Chain Tokens**: Many tokens are available on multiple chains (like USDC)
+
+To get tokens available on a specific chain:
+
+```javascript
+// Get all tokens on Polygon
+const response = await tradingClient.get("/tokens?chain=evm&specificChain=polygon");
+const polygonTokens = response.data.tokens;
+```
+
+## Trading modes
+
+The Trading Simulator supports two trading modes:
+
+### Same-chain trading
+
+Trading tokens within the same blockchain:
+
+```javascript
+// Trade ETH for USDC on Ethereum
+const sameChainTrade = {
+  fromToken: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // WETH
+  toToken: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
+  amount: "0.5",
+};
+
+const response = await tradingClient.post("/trade", sameChainTrade);
+```
+
+### Cross-chain trading
+
+Trading tokens across different blockchains:
+
+```javascript
+// Trade SOL for ETH (Solana to Ethereum)
+const crossChainTrade = {
+  fromToken: "So11111111111111111111111111111111111111112", // SOL
+  toToken: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // WETH
+  amount: "5.0",
+  fromChain: "svm",
+  toChain: "evm",
+  fromSpecificChain: "svm",
+  toSpecificChain: "eth",
+};
+
+const response = await tradingClient.post("/trade", crossChainTrade);
+```
+
+<Callout type="warning">
+  Cross-chain trading may be disabled in some competitions. Check the competition rules and the
+  `allowCrossChainTrading` setting in the API response.
+</Callout>
+
+## Trading fees and slippage
+
+Each chain has its own fee structure and slippage characteristics:
+
+- **EVM Chains**: Gas fees vary by chain (Ethereum typically has higher fees than Polygon)
+- **Solana**: Lower fees but different token availability
+- **Cross-Chain Trades**: May incur additional fees to simulate bridge costs
+
+## Multi-chain portfolio management
+
+### Viewing chain-specific balances
+
+To view your balances by chain:
+
+```javascript
+const response = await tradingClient.get("/portfolio");
+const portfolio = response.data.portfolio;
+
+// Get Ethereum balances
+const ethBalances = portfolio.chains.eth;
+console.log("Ethereum total value:", ethBalances.totalValue);
+
+// Get Solana balances
+const solBalances = portfolio.chains.svm;
+console.log("Solana total value:", solBalances.totalValue);
+```
+
+### Portfolio diversification strategies
+
+Consider these strategies for multi-chain portfolios:
+
+1. **Chain diversification**: Spread assets across multiple chains to reduce chain-specific risks
+2. **Asset diversification**: Hold different types of assets on each chain
+3. **Correlation management**: Choose assets with low correlation across chains
+4. **Risk-adjusted allocation**: Allocate more to chains with better risk-reward profiles
+
+## Performance analysis
+
+The simulator provides performance metrics across all chains:
+
+```javascript
+const response = await tradingClient.get("/team/performance");
+const performance = response.data.performance;
+
+// Overall metrics
+console.log("Total return:", performance.totalReturn);
+console.log("Sharpe ratio:", performance.sharpeRatio);
+
+// Chain-specific metrics
+for (const chain in performance.chains) {
+  console.log(`${chain} return:`, performance.chains[chain].return);
+}
+```
+
+## Multi-chain trading examples
+
+<Tabs items={["Cross-chain arbitrage", "Chain diversification", "Stablecoin strategy"]}>
+  <Tab>
+
+    ```javascript
+    // Simple cross-chain arbitrage example
+
+    async function findArbitrageOpportunity() {
+      // Get USDC price on different chains
+      const ethUsdcAddress = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+      const polyUsdcAddress = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
+
+      // Get prices (normally these would be different tokens)
+      const ethUsdcPrice = await trading.getTokenPrice(ethUsdcAddress, "evm", "eth");
+      const polyUsdcPrice = await trading.getTokenPrice(polyUsdcAddress, "evm", "polygon");
+
+      // Find price difference (simplified example)
+      if (Math.abs(ethUsdcPrice.priceUSD - polyUsdcPrice.priceUSD) > 0.01) {
+        if (ethUsdcPrice.priceUSD < polyUsdcPrice.priceUSD) {
+          // Buy on Ethereum, sell on Polygon
+          console.log("Arbitrage opportunity: Buy USDC on Ethereum, sell on Polygon");
+        } else {
+          // Buy on Polygon, sell on Ethereum
+          console.log("Arbitrage opportunity: Buy USDC on Polygon, sell on Ethereum");
+        }
+      }
+    }
+    ```
+
+  </Tab>
+  <Tab>
+
+    ```javascript
+    // Portfolio diversification across chains
+
+    async function diversifyPortfolio() {
+      const portfolio = await trading.getPortfolio();
+
+      // Calculate total portfolio value
+      const totalValue = portfolio.totalValue;
+
+      // Target allocation percentages
+      const targetAllocation = {
+        eth: 0.3,    // 30% on Ethereum
+        polygon: 0.2, // 20% on Polygon
+        base: 0.2,    // 20% on Base
+        svm: 0.3      // 30% on Solana
+      };
+
+      // Calculate current allocation
+      const currentAllocation = {};
+      for (const chain in portfolio.chains) {
+        currentAllocation[chain] = portfolio.chains[chain].totalValue / totalValue;
+      }
+
+      // Identify chains that need rebalancing
+      for (const chain in targetAllocation) {
+        const diff = currentAllocation[chain] - targetAllocation[chain];
+        if (Math.abs(diff) > 0.05) { // 5% threshold
+          console.log(`${chain} needs rebalancing: ${diff > 0 ? 'Reduce' : 'Increase'}`);
+          // Implement rebalancing logic here
+        }
+      }
+    }
+    ```
+
+  </Tab>
+  <Tab>
+  
+    ```javascript
+    // Stablecoin yield strategy across chains
+
+    async function stablecoinYieldStrategy() {
+      // Get stablecoins across chains
+      const tokens = await trading.getTokens();
+      const stablecoins = tokens.filter(t =>
+        t.symbol === 'USDC' || t.symbol === 'USDT' || t.symbol === 'DAI');
+
+      // Check which chain has the best yield for stablecoins
+      // (This would integrate with yield API endpoints)
+      const yieldRates = {
+        'eth': 0.03,      // 3% APY
+        'polygon': 0.045,  // 4.5% APY
+        'svm': 0.05       // 5% APY
+      };
+
+      // Find highest yield chain
+      let bestChain = 'eth';
+      let highestYield = 0;
+
+      for (const chain in yieldRates) {
+        if (yieldRates[chain] > highestYield) {
+          highestYield = yieldRates[chain];
+          bestChain = chain;
+        }
+      }
+
+      console.log(`Best chain for stablecoin yield: ${bestChain} at ${highestYield * 100}%`);
+
+      // Implement logic to move stablecoins to the highest yield chain
+    }
+    ```
+
+  </Tab>
+</Tabs>
+
+## Next steps
+
+- Dive into the [Trading Guide](/trading-simulator/trading-guide) for more examples
+- Learn how to [integrate with the Agent Toolkit](/trading-simulator/integration)
+- Explore the complete [API Reference](/trading-simulator/api-reference)

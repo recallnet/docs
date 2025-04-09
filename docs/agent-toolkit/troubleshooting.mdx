@@ -1,0 +1,137 @@
+---
+title: Troubleshooting
+description: Diagnose and resolve common issues when working with the Recall Agent Toolkit.
+---
+
+## Common issues
+
+### Authentication errors
+
+#### Invalid Private Key Format
+
+Ensure your private key is in the correct format. It should be a 64-character hexadecimal string,
+optionally with a `0x` prefix.
+
+```typescript
+// Correct format
+const privateKey = "0x1234..."; // With 0x prefix
+// or
+const privateKey = "1234...";   // Without 0x prefix (64 characters)
+```
+
+<Callout type="warning">
+  Never hardcode private keys in production code. Use environment variables or secure key management
+  solutions.
+</Callout>
+
+#### Network mismatch
+
+Verify that you're connecting to the correct network. The network in your toolkit configuration
+should match your intended environment.
+
+```typescript
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    actions: {
+      // Your actions config
+    },
+    context: {
+      network: "testnet", // Make sure this matches your intended network
+    },
+  },
+});
+```
+
+Currently supported networks are:
+
+- `testnet` - The Recall testnet environment
+- `localnet` - For local development
+
+#### Insufficient funds
+
+If transactions are failing, your account may have insufficient RECALL tokens or credit.
+
+Check your balance using:
+
+```typescript
+const accountInfo = await toolkit.getTools().get_account_info();
+console.log(accountInfo);
+```
+
+You can acquire testnet tokens through the Recall faucet or by purchasing credit through the
+`buy_credit` tool.
+
+### Permission errors
+
+#### Missing permissions
+
+If tools are unavailable or operations fail with permission errors, check that you've configured the
+correct permissions.
+
+```typescript
+const toolkit = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY,
+  configuration: {
+    actions: {
+      account: {
+        read: true, // Required for get_account_info, get_credit_info
+        write: true, // Required for buy_credit
+      },
+      bucket: {
+        read: true, // Required for list_buckets, get_object, query_objects
+        write: true, // Required for get_or_create_bucket, add_object
+      },
+    },
+    // ...
+  },
+});
+```
+
+Ensure the permissions match your use case requirements.
+
+### Bucket and object issues
+
+#### Bucket creation failures
+
+If bucket creation fails, check the following:
+
+- You have sufficient credit in your account
+- Your bucket name follows the required format (lowercase alphanumeric with optional hyphens)
+- You don't already have a bucket with the same name
+
+#### Object storage problems
+
+When storing objects, ensure:
+
+- The object contents are properly formatted (strings, JSON objects, etc.)
+- Object metadata is valid JSON
+- You have sufficient storage space and credit
+
+#### Query syntax issues
+
+If your object queries aren't returning expected results, verify your query syntax is correct. For
+example, add query filters based on object metadata fields, not the content itself.
+
+## Common error messages
+
+| Error                  | Likely cause                        | Solution                                               |
+| ---------------------- | ----------------------------------- | ------------------------------------------------------ |
+| Invalid private key    | Incorrectly formatted private key   | Ensure private key is a valid 64-character hex string  |
+| Insufficient funds     | Account lacks RECALL tokens         | Use faucet or buy tokens                               |
+| Bucket creation failed | Insufficient credit or invalid name | Check credit balance and bucket naming rules           |
+| Permission issues      | Missing required permissions        | Update toolkit configuration with required permissions |
+| Network error          | Connection issues                   | Check network settings and server status               |
+
+## Getting help
+
+If you're still experiencing issues:
+
+1. Check the [GitHub repository](https://github.com/recallnet/js-recall) for known issues
+2. Join the [Recall Discord community](https://discord.recall.network) for real-time help
+3. Open an issue on GitHub with details about your problem and environment
+
+<Callout type="success">
+  For most issues, the Recall Discord community is the fastest way to get help from the development
+  team and other users.
+</Callout>

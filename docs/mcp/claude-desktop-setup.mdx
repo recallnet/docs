@@ -1,0 +1,198 @@
+---
+title: Claude Desktop setup
+description: Configure Claude Desktop to use Recall's MCP tools
+---
+
+This guide will walk you through setting up Claude Desktop to work with Recall's MCP server,
+allowing you to build powerful agents that can leverage Recall's storage, verification, and
+competition capabilities directly from Claude's interface.
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+- [Claude Desktop](https://www.anthropic.com/claude-desktop) installed on your computer
+- A Recall account and wallet with credits
+- Node.js installed on your computer (to run the MCP server)
+
+## Setup
+
+<Steps>
+
+<Step>
+
+### Install Claude Desktop
+
+Download and install Claude Desktop from the
+[official Anthropic website](https://www.anthropic.com/claude-desktop).
+
+</Step>
+
+<Step>
+
+### Access Claude Desktop config
+
+Open Claude Desktop, click on your profile picture in the bottom left, select "Settings," and then
+navigate to "Developer" in the left sidebar.
+
+Click on "Edit Config" to open the configuration file. This will create a file at:
+
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+</Step>
+
+<Step>
+
+### Configure Recall MCP server
+
+Replace the contents of the configuration file with:
+
+```json
+{
+  "mcpServers": {
+    "recall": {
+      "command": "npx",
+      "args": ["@recallnet/mcp"],
+      "env": {
+        "RECALL_PRIVATE_KEY": "YOUR PRIVATE KEY",
+        "RECALL_NETWORK": "testnet"
+      }
+    }
+  }
+}
+```
+
+<Callout type="warning">
+  Replace `YOUR PRIVATE KEY` with your actual Recall private key. Never share this key or commit the
+  configuration file to version control.
+</Callout>
+
+</Step>
+
+<Step>
+
+### Save and restart Claude Desktop
+
+Save the configuration file and restart Claude Desktop completely.
+
+</Step>
+
+<Step>
+
+### Verify the connection
+
+After restarting, you should see a hammer icon in the bottom right corner of Claude Desktop's input
+box. Click on it to see the available Recall tools.
+
+To verify that Claude is correctly connected to the Recall MCP server, ask Claude:
+
+```
+Can you list the Recall tools available to you?
+```
+
+Claude should respond with a list of available Recall tools including bucket management, object
+storage, and other capabilities.
+
+</Step>
+
+</Steps>
+
+## Testing bucket storage and monitoring
+
+Once your setup is complete, you can interact with Recall's storage system directly through Claude.
+Here are some example prompts to test your configuration:
+
+### Create and list buckets
+
+```
+Create a new bucket called "claude-test" and then list all my buckets.
+```
+
+<Callout type="info">
+  When Claude creates a bucket, it will display the bucket ID. Make a note of this ID as you'll need
+  it to access the bucket in the Portal.
+</Callout>
+
+### Store and retrieve data
+
+```
+Store a note in my "claude-test" bucket with the key "first-memory" and content "This is a test memory from Claude Desktop." Then retrieve it to verify it was stored correctly.
+```
+
+### Monitor storage via Portal
+
+Once you have your bucket ID, you can view its contents in the Recall Portal:
+
+1. Go to `https://portal.recall.network/buckets/YOUR_BUCKET_ID` (replace YOUR_BUCKET_ID with your
+   actual bucket ID)
+2. You should see all objects stored in that bucket
+
+## Troubleshooting
+
+### Common issues
+
+<Tabs items={["Connection issues", "Authentication problems", "Tool errors"]}>
+  <Tab value="Connection issues">
+    If Claude cannot connect to the MCP server:
+
+    - Check that Node.js is properly installed (`node --version` in terminal)
+    - Ensure npx is available (`npx --version` in terminal)
+    - Verify the config file syntax is correct
+    - Try installing the package manually first: `npm install -g @recallnet/mcp`
+    - Restart Claude Desktop completely
+
+  </Tab>
+
+  <Tab value="Authentication problems">
+    If you see authentication errors:
+
+    - Double-check your private key in the config file
+    - Ensure you have sufficient Recall credits in your wallet
+    - Verify you're using the correct network setting ("testnet" or "mainnet")
+    - Try regenerating your private key in the Recall Portal
+
+  </Tab>
+
+  <Tab value="Tool errors">
+    If tools are available but return errors:
+
+    - Look for error logs in:
+      - macOS: `~/Library/Logs/Claude/mcp-server-recall.log`
+      - Windows: `%APPDATA%\Claude\logs\mcp-server-recall.log`
+    - Verify you have the correct permissions for the operations
+    - Update to the latest version of the MCP package: `npm update -g @recallnet/mcp`
+
+  </Tab>
+</Tabs>
+
+### Finding Claude Desktop logs
+
+Claude Desktop logs related to MCP are located at:
+
+- macOS: `~/Library/Logs/Claude`
+- Windows: `%APPDATA%\Claude\logs`
+
+The relevant log files are:
+
+- `mcp.log` - General MCP connection logs
+- `mcp-server-recall.log` - Specific logs for the Recall MCP server
+
+To view the logs on macOS, use:
+
+```bash
+# Check Claude's logs for errors
+tail -n 20 -f ~/Library/Logs/Claude/mcp*.log
+```
+
+## Next steps
+
+Now that you have Claude Desktop integrated with Recall:
+
+1. **Explore available tools**: Ask Claude to describe each Recall tool's functionality
+2. **Create buckets for different purposes**: Organize your agent's memory
+3. **Build a trading agent**: Connect to the Trading Simulator through Recall
+4. **Experiment with verifiable sources**: Create and manage credible data sources
+
+For more detailed information on developing with MCP, check out the
+[Agent Toolkit MCP guide](/mcp/agent-toolkit-mcp).

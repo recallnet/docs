@@ -1,0 +1,298 @@
+---
+title: Mastra
+description: Build Mastra agents with persistent storage using Recall and @mastra/core.
+---
+
+This guide demonstrates how to integrate Recall's persistent storage capabilities with the Mastra
+agent framework using the `@mastra/core` and `@mastra/mcp` packages. This approach focuses on
+directly configuring and running agents with tools provided by MCP (Model Context Protocol) servers.
+
+## Overview
+
+[Mastra](https://mastra.ai) is a TypeScript framework for building AI agents. By integrating
+Recall's decentralized storage via its MCP server (`@recallnet/mcp`), you can empower your Mastra
+agents to:
+
+- Store and retrieve data, findings, or state persistently across runs.
+- Utilize Recall buckets for organized data management.
+- Leverage Recall's verifiable storage within your agent's operations.
+
+This guide uses `@mastra/core/agent` for agent definition and `@mastra/mcp` to manage the connection
+to the `@recallnet/mcp` tool server.
+
+<Callout type="info">
+
+For the latest Mastra features and documentation, always refer to the official
+[Mastra documentation](https://mastra.ai/docs).
+
+</Callout>
+
+## Prerequisites
+
+- Node.js (v18 or later recommended)
+- pnpm (or npm/yarn)
+- A Recall Network private key (get one from [Recall](https://recall.network))
+- An API key for your chosen Language Model (e.g., Anthropic, OpenAI)
+
+## Installation
+
+<Steps>
+
+<Step>
+
+### Install required packages
+
+Ensure you have the necessary Mastra and Recall packages, along with supporting libraries:
+
+```package-install
+npm install @mastra/core @mastra/mcp @recallnet/mcp @ai-sdk/anthropic dotenv chalk typescript tsx @types/node
+```
+
+Or, replace `@ai-sdk/anthropic` with your preferred provider, e.g., `@ai-sdk/openai`.
+
+_Note: `@types/node` is needed for Node.js specific types like `process`._
+
+</Step>
+
+<Step>
+
+### Set up environment variables
+
+Create a `.env` file in your project root:
+
+```dotenv
+RECALL_PRIVATE_KEY=your_recall_private_key_here
+RECALL_NETWORK=testnet # or mainnet
+OPENAI_API_KEY=your_openai_api_key_here # Or ANTHROPIC_API_KEY=... etc.
+```
+
+</Step>
+
+<Step>
+
+### Create TypeScript Configuration
+
+Ensure you have a `tsconfig.json` file configured for your project. A basic example:
+
+```json filename="tsconfig.json"
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "declaration": true,
+    "sourceMap": true,
+    // Add this if you encounter issues with 'process' or other Node globals
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
+```
+
+<Callout type="warning">
+
+Ensure `"types": ["node"]` is included if you face issues with Node.js globals like `process`.
+
+</Callout>
+
+</Step>
+
+</Steps>
+
+## Basic integration example
+
+This example shows how to create a simple agent that uses Recall tools provided by `@recallnet/mcp`.
+We'll set up the agent configuration, environment variables, and enable the Recall tools in Mastra.
+
+### Scaffold the basic agent
+
+First, create a `src/agent.ts` file and set up our basic logic.
+
+```typescript title="src/agent.ts"
+import { openai } from "@ai-sdk/openai";
+// Or your chosen LLM provider instead of `openai`
+import { Agent } from "@mastra/core/agent";
+import { MCPConfiguration } from "@mastra/mcp";
+import { CoreMessage } from "ai";
+import chalk from "chalk";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
+
+// --- Configuration ---
+const RECALL_BUCKET_ALIAS = "mastra-guide-bucket"; // Choose a name for your test bucket
+const OBJECT_KEY = "greeting";
+const OBJECT_DATA = { message: "Hello from Mastra Core + Recall!" };
+
+// --- Main Function ---
+async function main(): Promise<void> {
+  console.log(chalk.blue("🚀 Starting Mastra Agent with Recall Integration..."));
+
+  // Will add code here...
+}
+
+// Run the main function
+main().catch((error) => {
+  console.error(chalk.red("Fatal error in main execution:"));
+  console.error(error);
+  process.exit(1);
+});
+```
+
+### Add the Recall tools
+
+Next, we'll initialize MCP Configuration for Recall Server, which tells Mastra how to run the
+`@recallnet/mcp` server. Then, we'll get the toolsets from the MCP server and pass them to the
+agent, before running it with pre-defined instructions.
+
+```typescript title="src/agent.ts"
+async function main(): Promise<void> {
+  // Existing code...
+
+  // 1. Initialize MCP Configuration for Recall Server
+  const mcp = new MCPConfiguration({
+    servers: {
+      recallMCP: {
+        // You can name this server reference anything
+        command: "npx", // Or 'npm' and 'exec'
+        args: ["-y", "@recallnet/mcp"],
+        // Pass necessary environment variables from this process to the MCP server
+        env: {
+          RECALL_PRIVATE_KEY: process.env.RECALL_PRIVATE_KEY || "",
+          RECALL_NETWORK: process.env.RECALL_NETWORK || "testnet",
+          RECALL_TOOLS: "all", // Expose all available Recall tools
+        },
+      },
+    },
+  });
+
+  try {
+    // 2. Get Toolsets from MCP
+    // Mastra starts the configured MCP servers and retrieves their tool definitions
+    console.log(chalk.blue("🔌 Initializing Recall MCP server and getting toolsets..."));
+    const toolsets = await mcp.getToolsets();
+    console.log(chalk.green("✅ Recall Toolsets obtained successfully!"));
+
+    // 3. Define the AI Model
+    // Ensure the corresponding API key is in your .env file
+    const languageModel = openai("gpt-4o");
+    // const languageModel = openai('gpt-4o'); // Example for OpenAI
+
+    // 4. Create the Mastra Agent
+    const agentInstructions = `You are an agent that uses Recall tools to manage persistent storage.
+Available Recall tools are provided. Use them as needed to fulfill user requests.
+When asked to store data, use get_or_create_bucket tool first, then add_object.
+Confirm success after completing the requested action.`;
+
+    const agent = new Agent({
+      name: "RecallStorageAgent",
+      instructions: agentInstructions,
+      model: languageModel,
+      // Note: Tools are passed during the stream/generate call in this pattern
+    });
+    console.log(chalk.blue(`🤖 Agent "${agent.name}" created.`));
+
+    // 5. Prepare the Agent Request
+    const userRequest = `Please ensure a bucket named '${RECALL_BUCKET_ALIAS}' exists, then store an object with key '${OBJECT_KEY}' and the following data: ${JSON.stringify(OBJECT_DATA)}`;
+
+    const messages: CoreMessage[] = [
+      // System instructions are often passed in the Agent constructor,
+      // but can also be included here for more dynamic scenarios.
+      { role: "system", content: agentInstructions },
+      { role: "user", content: userRequest },
+    ];
+
+    // 6. Run the Agent and Stream Results
+    console.log(chalk.yellow(`💬 Sending request to agent: "${userRequest}"`));
+
+    const stream = await agent.stream(messages, {
+      toolsets, // Provide the available tools to the agent for this run
+      temperature: 0, // Lower temperature for more deterministic tool use
+    });
+
+    console.log(chalk.blue("🔄 Agent processing stream..."));
+    let finalMessage = "";
+    for await (const part of stream.fullStream) {
+      switch (part.type) {
+        case "error":
+          console.error(chalk.red(`Error: ${part.error}`));
+          break;
+        case "text-delta":
+          process.stdout.write(chalk.green(part.textDelta));
+          finalMessage += part.textDelta;
+          break;
+        case "tool-call":
+          console.log(
+            chalk.magenta(
+              `
+🔧 Tool Call: ${part.toolName}(${JSON.stringify(part.args)})`
+            )
+          );
+          break;
+        case "tool-result":
+          console.log(
+            chalk.cyan(`⚙️ Tool Result (${part.toolName}): ${JSON.stringify(part.result)}`)
+          );
+          break;
+        // Other types like 'finish' could be handled here if needed
+      }
+    }
+    console.log(chalk.blue("\n🏁 Agent stream finished."));
+    console.log(chalk.green(`✅ Agent's final response\n: ${finalMessage}`));
+  } catch (error) {
+    console.error(chalk.red("Agent execution failed:"));
+    console.error(error);
+  } finally {
+    // Ensure MCP servers are shut down
+    await mcp.disconnect();
+    console.log(chalk.blue("🔌 MCP servers shut down."));
+  }
+}
+```
+
+## Running the agent
+
+1. Save the code above as `src/agent.ts`.
+2. Ensure your `.env` file is correctly populated with your keys.
+3. Run the agent using `tsx` (or compile with `tsc` and run the JS file):
+
+   ```bash
+   npx tsx src/agent.ts
+   ```
+
+You should see output showing the agent starting, initializing the Recall MCP server, making tool
+calls (`get_or_create_bucket`, `add_object`), receiving results, and finally confirming the
+operation. You can verify the bucket and object creation in your Recall dashboard.
+
+## Explanation
+
+- **`@mastra/core/agent`**: Provides the fundamental `Agent` class for defining the agent's
+  identity, instructions, and the model it uses.
+- **`@mastra/mcp`**: The `MCPConfiguration` class manages the lifecycle (startup, shutdown) of
+  external MCP tool servers like `@recallnet/mcp`. It retrieves the tools (`toolsets`) defined by
+  these servers.
+- **`@recallnet/mcp`**: This is the MCP server process that exposes Recall's functionalities (like
+  managing buckets and objects) as tools that the Mastra agent can call.
+- **`agent.stream(messages, { toolsets })`**: This is the core execution call. We pass the
+  conversation history (`messages`) and the available `toolsets`. The Mastra agent, guided by its
+  instructions and the user prompt, decides when to call the Recall tools provided in the
+  `toolsets`.
+
+This approach directly leverages MCP for tool integration without needing the abstractions (like
+`Task`, `Workflow`) present in the outdated guide's examples.
+
+## Next steps
+
+- Explore the different tools exposed by `@recallnet/mcp` (check its documentation or prompt the
+  agent to list available tools).
+- Build more complex prompts that require retrieving or querying data from Recall.
+- Integrate other MCP servers alongside Recall for more diverse agent capabilities.
+- Implement more robust output parsing and state management for multi-turn conversations.

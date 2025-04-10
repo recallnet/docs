@@ -400,6 +400,38 @@ const configuration: Configuration = {
 };
 ```
 
+### Add custom tools
+
+You can add custom tools to the server by extending the `RecallAgentToolkit` class through the
+`StdioServerTransport`:
+
+```typescript highlight={17-22}
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+import { Configuration } from "@recallnet/agent-toolkit/shared";
+import { z } from "zod";
+
+const configuration: Configuration = {
+  actions: {
+    account: { read: true, write: true },
+    bucket: { read: true, write: true },
+  },
+  context: {},
+};
+
+const server = new RecallAgentToolkit({
+  privateKey: process.env.RECALL_PRIVATE_KEY!,
+  configuration: configuration,
+});
+
+// Add a custom tool
+server.tool("test_tool", "A test tool", { name: z.string().min(1) }, async (args) => {
+  return {
+    content: [{ type: "text", text: `Hello, ${args.name}!` }],
+  };
+});
+```
+
 ## Next steps
 
 - [Custom MCP tools](/mcp/custom-tools): Learn how to create custom MCP tools

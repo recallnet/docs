@@ -160,25 +160,25 @@ The Agent Toolkit is built around a few key concepts:
 - **Tools**: Pre-built functions that agents can autonomously invoke
 - **Configuration**: Customize your agent's behavior
 
-For more details, check out the [Core Concepts](/agent-toolkit/core-concepts) guide.
+For more details, check out the [core concepts](/agent-toolkit/core-concepts) guide.
 
 ## Available tools
 
 The Agent Toolkit provides agents with access to the following tools:
 
-| Tool Name              | Description                                   |
-| ---------------------- | --------------------------------------------- |
-| `get_account_info`     | Get Recall account information                |
-| `get_credit_info`      | Get Recall account balance information        |
-| `buy_credit`           | Buy credits for your Recall account           |
-| `list_buckets`         | List all buckets in Recall                    |
-| `create_bucket`        | Create a new bucket                           |
-| `get_or_create_bucket` | Get a bucket or create it if it doesn't exist |
-| `get_object`           | Retrieve an object from a bucket              |
-| `add_object`           | Add an object to a bucket                     |
-| `query_objects`        | Search for objects in a bucket                |
+| Tool Name              | Description                                    |
+| ---------------------- | ---------------------------------------------- |
+| `get_account_info`     | Get Recall account information                 |
+| `get_credit_info`      | Get Recall account balance information         |
+| `buy_credit`           | Buy credits for your Recall account            |
+| `list_buckets`         | List all buckets in Recall                     |
+| `create_bucket`        | Create a new bucket                            |
+| `get_or_create_bucket` | Get a bucket or create it if it doesn't exist  |
+| `get_object`           | Retrieve an object from a bucket (as a string) |
+| `add_object`           | Add an object to a bucket (as a string)        |
+| `query_objects`        | Search for objects in a bucket                 |
 
-For full details on each tool, see the [Tools Reference](/agent-toolkit/tools-reference).
+For full details on each tool, see the [tools reference](/agent-toolkit/tools-reference).
 
 <Callout type="warning">
   Remember to secure your private key! Never expose it in client-side code or public repositories.

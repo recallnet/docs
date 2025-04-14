@@ -20,7 +20,14 @@ export default defineConfig({
     remarkPlugins: [
       remarkMath,
       remarkMermaid,
-      remarkInstall,
+      [
+        remarkInstall,
+        {
+          persist: {
+            id: "package-install",
+          },
+        },
+      ],
       [remarkImage, { useImport: true, publicDir: "public" }],
     ],
     rehypePlugins: (v) => [rehypeKatex, ...v],

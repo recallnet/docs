@@ -14,6 +14,6 @@ export const { GET } = createSearchAPI("advanced", {
     url: page.url,
     id: page.url,
     // @ts-expect-error the `page.data.structuredData` field exists
-    structuredData: page.data.structuredData,
+    structuredData: page.data?.structuredData ?? null,
   })),
 });

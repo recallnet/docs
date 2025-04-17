@@ -17,7 +17,7 @@
     "clean": "rm -rf .next .source node_modules",
     "competition:add": "npx tsx scripts/add-competition.ts",
     "competition:update": "npx tsx scripts/update-competition.ts",
-    "competition:list": "node -e \"console.log(JSON.stringify(require('./data/competitions.json'), null, 2))\""
+    "competition:list": "node -e \"console.log(JSON.stringify(require('./app/data/competitions.json'), null, 2))\""
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.1.9",

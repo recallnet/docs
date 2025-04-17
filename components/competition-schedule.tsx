@@ -1,14 +1,4 @@
-import fs from "fs";
-import path from "path";
-
-interface Competition {
-  id: string;
-  name: string;
-  status: string;
-  submissionDeadline: string;
-  resultsDate: string;
-  url: string | null;
-}
+import { getCompetitions } from "@/lib/competitions";
 
 interface CompetitionScheduleProps {
   className?: string;
@@ -16,10 +6,7 @@ interface CompetitionScheduleProps {
 
 export async function CompetitionSchedule({ className }: CompetitionScheduleProps) {
   // Read the competition data from the JSON file
-  const filePath = path.join(process.cwd(), "data", "competitions.json");
-  const fileContents = fs.readFileSync(filePath, "utf8");
-  const competitionData = JSON.parse(fileContents);
-  const competitions: Competition[] = competitionData.competitions;
+  const { competitions } = getCompetitions();
 
   return (
     <div className={className}>

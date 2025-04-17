@@ -109,7 +109,7 @@ The competition data is loaded in two ways:
 The configuration file is accessed using a relative path from the project root:
 
 ```javascript
-const filePath = path.join(process.cwd(), "data", "competitions.json");
+const filePath = path.join(process.cwd(), "public", "static", "competitions.json");
 ```
 
 This approach allows us to maintain competition information in a single source of truth, making it

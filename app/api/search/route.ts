@@ -4,8 +4,6 @@ import { source } from "@/lib/source";
 
 // Check if page has leading `_` underscore, indicating it's a hidden page
 const filteredPages = source.getPages().filter((page) => {
-  console.log(page.slugs);
-  console.log(page.file.path);
   return !page.file.path.includes("_");
 });
 

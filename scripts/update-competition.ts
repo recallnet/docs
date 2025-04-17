@@ -25,7 +25,7 @@ if (!competitionId || !field || !value) {
 
 // Path to the competitions config file
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const configPath = path.join(__dirname, "..", "config", "competitions.json");
+const configPath = path.join(__dirname, "..", "data", "competitions.json");
 
 // Read the current config
 let config;

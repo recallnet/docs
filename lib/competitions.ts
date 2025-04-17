@@ -15,7 +15,7 @@ export interface CompetitionData {
 }
 
 export const getCompetitions = () => {
-  const filePath = path.join(process.cwd(), "config", "competitions.json");
+  const filePath = path.join(process.cwd(), "data", "competitions.json");
   const fileContents = fs.readFileSync(filePath, "utf8");
   return JSON.parse(fileContents) as CompetitionData;
 };

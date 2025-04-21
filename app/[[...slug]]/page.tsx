@@ -40,6 +40,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   const MDX = page.data.body;
   // Don't show the TOC or edit button on the root page
   const isRootPage = !params.slug || params.slug.length === 0;
+  const isApiPage = params.slug?.[0] === "api";
   const githubPath = `docs/${page.file.path}`;
   const githubInfo = {
     repo: "docs",
@@ -51,7 +52,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   return (
     <DocsPage
       tableOfContent={
-        isRootPage
+        isRootPage || isApiPage
           ? undefined
           : {
               enabled: true,
@@ -63,7 +64,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
         includeRoot: false,
         includeSeparator: true,
       }}
-      toc={isRootPage ? undefined : page.data.toc}
+      toc={isRootPage || isApiPage ? undefined : page.data.toc}
       editOnGithub={isRootPage ? undefined : githubInfo}
       currentPath={isRootPage ? undefined : page.file.path}
     >

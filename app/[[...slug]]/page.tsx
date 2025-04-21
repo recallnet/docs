@@ -4,7 +4,6 @@ import { ImageZoom, type ImageZoomProps } from "fumadocs-ui/components/image-zoo
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { TypeTable } from "fumadocs-ui/components/type-table";
-import fumadocsMdxComponents from "fumadocs-ui/mdx";
 import { notFound } from "next/navigation";
 import { HTMLAttributes } from "react";
 
@@ -13,9 +12,10 @@ import { Card, CardProps, Cards } from "@/components/theme/card";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "@/components/theme/page";
 import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
+import { getMDXComponents } from "@/mdx-components";
 
 const defaultMdxComponents = {
-  ...fumadocsMdxComponents,
+  ...getMDXComponents(),
   Accordion,
   Accordions,
   File,

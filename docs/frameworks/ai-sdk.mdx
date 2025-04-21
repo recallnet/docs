@@ -76,8 +76,7 @@ module.exports = {
 
 Here's how to integrate Recall with the AI SDK in a Next.js application:
 
-```typescript
-// app/api/chat/route.ts
+```typescript title="app/api/chat/route.ts"
 import { OpenAI } from "@ai-sdk/openai";
 import { RecallAgentToolkit } from "@recallnet/agent-toolkit/ai-sdk";
 import { Message, StreamingTextResponse } from "ai";

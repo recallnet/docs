@@ -347,8 +347,8 @@ export function DocsCategory({
       {items.map((item) => (
         <Card
           key={item.url}
-          title={item.data.title}
-          description={item.data.description}
+          title={item.data.title ?? ""}
+          description={item.data.description ?? ""}
           href={item.url}
         />
       ))}

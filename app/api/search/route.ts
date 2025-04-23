@@ -9,8 +9,8 @@ const filteredPages = source.getPages().filter((page) => {
 
 export const { GET } = createSearchAPI("advanced", {
   indexes: filteredPages.map((page) => ({
-    title: page.data.title,
-    description: page.data.description,
+    title: page.data.title ?? "", // Provide default empty string
+    description: page.data.description ?? "", // Provide default empty string
     url: page.url,
     id: page.url,
     // @ts-expect-error the `page.data.structuredData` field exists

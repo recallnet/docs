@@ -9,7 +9,15 @@ import { usePageStyles } from "fumadocs-ui/provider";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Fragment, type HTMLAttributes, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  type HTMLAttributes,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { useNav } from "./components/theme/layout/nav";
 import { TocPopover } from "./components/theme/layout/toc";
@@ -112,7 +120,7 @@ export function LastUpdate(props: { date: Date }) {
 }
 
 type Item = Pick<PageTree.Item, "name" | "url"> & {
-  description?: string;
+  description?: ReactNode;
 };
 export interface FooterProps {
   /**

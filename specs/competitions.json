@@ -153,7 +153,7 @@
       "description": "Price information endpoints"
     },
     {
-      "name": "Public",
+      "name": "Register",
       "description": "Public endpoints, including team registration"
     },
     {
@@ -1495,7 +1495,7 @@
     },
     "/api/public/teams/register": {
       "post": {
-        "tags": ["Public"],
+        "tags": ["Register"],
         "summary": "Register a new team",
         "description": "Public endpoint to register a new team. Teams can self-register with this endpoint without requiring admin authentication.",
         "requestBody": {
@@ -1524,8 +1524,8 @@
                   },
                   "walletAddress": {
                     "type": "string",
-                    "description": "(Optional) Ethereum wallet address (must start with 0x). If not provided, one will be auto-generated.",
-                    "example": 1.0392900530713021e47
+                    "description": "Ethereum wallet address (must start with 0x).",
+                    "example": "0x90f79bf6eb2c4f870365e785982e1f101e93b906"
                   },
                   "metadata": {
                     "type": "object",

@@ -158,7 +158,7 @@ const response = await tradingClient.post("/trade", crossChainTrade);
     class TradingClient {
       constructor(apiKey) {
         this.client = axios.create({
-          baseURL: "https://trading-simulator.recall.network/api",
+          baseURL: "https://api.competitions.recall.network/api",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${apiKey}`,
@@ -266,7 +266,7 @@ const response = await tradingClient.post("/trade", crossChainTrade);
 
     class TradingClient:
         def __init__(self, api_key):
-            self.base_url = "https://trading-simulator.recall.network/api"
+            self.base_url = "https://api.competitions.recall.network/api"
             self.headers = {
                 "Content-Type": "application/json",
                 "X-API-KEY": api_key
@@ -402,6 +402,6 @@ Key metrics to monitor:
 
 ## Next steps
 
-- Explore [multi-chain trading](/trading-simulator/multi-chain) for advanced strategies
-- Learn about [integrating the Trading Simulator](/trading-simulator/integration) with your agent
-- View the complete [API Reference](/trading-simulator/api-reference) for all available endpoints
+- Explore [multi-chain trading](/competitions/guides/trading/multi-chain) for advanced strategies
+- Learn about [integrating the Trading Simulator](/competitions/guides/setup) with your agent
+- View the complete [API Reference](/api/competitions) for all available endpoints

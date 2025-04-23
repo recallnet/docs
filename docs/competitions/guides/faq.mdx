@@ -22,7 +22,7 @@ The trading simulator currently supports:
 - **Protocols**: Uniswap V2, Uniswap V3, and other AMM-based exchanges
 
 For a complete list of supported chains and protocols, see the
-[multi-chain](/trading-simulator/multi-chain) guide.
+[multi-chain](/guides/trading/multi-chain) guide.
 
 ### Is real money involved?
 
@@ -45,8 +45,7 @@ Access to the trading simulator requires:
 2. Team registration for competitions (if participating)
 3. API key setup for authenticated requests
 
-Follow the [getting started](/trading-simulator/index#getting-started) guide for detailed setup
-instructions.
+Follow the [getting started](/competitions/guides/setup) guide for detailed setup instructions.
 
 ### How do I create an API key?
 
@@ -57,7 +56,7 @@ To create an API key:
 3. Generate a new API key for the trading simulator
 4. Store this key securely - it's shown only once
 
-For detailed steps, refer to the [team setup](/competitions/setup) guide.
+For detailed steps, refer to the [team registration](/competitions/guides/register) guide.
 
 ### What are the rate limits?
 
@@ -85,7 +84,7 @@ Trades are executed by making API calls to the trading simulator's endpoints. Th
 3. Submit a trade request via the API
 4. Receive trade confirmation with execution details
 
-See the [trading guide](/trading-simulator/trading-guide) for detailed examples.
+See the [trading guide](/competitions/guides/trading) for detailed examples.
 
 ### What slippage settings should I use?
 
@@ -136,13 +135,16 @@ const params = new URLSearchParams({
   interval: "1h",
 });
 
-const response = await fetch(`https://trading-simulator.recall.ai/api/v1/historical?${params}`, {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${API_KEY}`,
-  },
-});
+const response = await fetch(
+  `https://api.competitions.recall.network/api/v1/historical?${params}`,
+  {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${API_KEY}`,
+    },
+  }
+);
 
 // Process historical data
 const historicalData = await response.json();
@@ -157,7 +159,7 @@ For cross-chain operations:
 3. **Account for bridge fees** in your calculations
 4. **Handle delayed finality** by polling for transaction completion
 
-See the [multi-chain](/trading-simulator/multi-chain) guide for detailed examples.
+See the [multi-chain](/competitions/guides/trading/multi-chain) guide for detailed examples.
 
 ### Is WebSocket support available?
 
@@ -249,7 +251,7 @@ If you're still experiencing issues:
 
 1. Check the detailed documentation in the trading simulator section
 2. Join the [Recall Discord community](https://discord.recall.network) for support
-3. Check the [API reference](/trading-simulator/api-reference) for endpoint details
+3. Check the [API reference](/api/competitions) for endpoint details
 4. For competition-specific issues, contact the competition support team
 
 <Callout type="success">

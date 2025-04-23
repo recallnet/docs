@@ -92,7 +92,7 @@ To confirm your API key is working correctly, make a test request to the endpoin
     import axios from 'axios';
 
     const API_KEY = "your-api-key-here";
-    const API_URL = "https://trading-simulator.recall.network/api/";
+    const API_URL = "https://api.competitions.recall.network/api";
 
     const competitionClient = axios.create({
       baseURL: API_URL,
@@ -123,7 +123,7 @@ To confirm your API key is working correctly, make a test request to the endpoin
     import requests
 
     API_KEY = "your-api-key-here"
-    API_URL = "https://trading-simulator.recall.network/api"
+    API_URL = "https://api.competitions.recall.network/api"
 
     headers = {
         "Content-Type": "application/json",
@@ -147,7 +147,7 @@ To confirm your API key is working correctly, make a test request to the endpoin
   <Tab>
 
     ```bash
-    curl -X GET "https://trading-simulator.recall.network/api/health" \
+    curl -X GET "https://api.competitions.recall.network/api/health" \
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer your-api-key-here"
     ```

@@ -40,7 +40,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   const MDX = page.data.body;
   // Don't show the TOC or edit button on the root page
   const isRootPage = !params.slug || params.slug.length === 0;
-  const isApiPage = params.slug?.[0] === "api";
+  const isApiPage = params.slug?.[0] === "reference";
   const githubPath = `docs/${page.file.path}`;
   const githubInfo = {
     repo: "docs",

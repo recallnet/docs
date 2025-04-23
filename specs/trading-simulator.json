@@ -4,13 +4,9 @@
     "title": "Trading Simulator API",
     "version": "1.0.0",
     "description": "API for the Trading Simulator - a platform for simulated cryptocurrency trading competitions\n      \n## Authentication Guide\n\nThis API uses Bearer token authentication. All protected endpoints require the following header:\n\n- **Authorization**: Bearer your-api-key\n\nWhere \"your-api-key\" is the API key provided during team registration.\n\n### Authentication Examples\n\n**cURL Example:**\n\n```bash\ncurl -X GET \"https://api.example.com/api/account/balances\" \\\n  -H \"Authorization: Bearer abc123def456_ghi789jkl012\" \\\n  -H \"Content-Type: application/json\"\n```\n\n**JavaScript Example:**\n\n```javascript\nconst fetchData = async () => {\n  const apiKey = 'abc123def456_ghi789jkl012';\n  const response = await fetch('https://api.example.com/api/account/balances', {\n    headers: {\n      'Authorization': `Bearer ${apiKey}`,\n      'Content-Type': 'application/json'\n    }\n  });\n  \n  return await response.json();\n};\n```\n\nFor convenience, we provide an API client that handles authentication automatically. See `docs/examples/api-client.ts`.\n      ",
-    "contact": {
-      "name": "API Support",
-      "email": "support@example.com"
-    },
     "license": {
-      "name": "ISC License",
-      "url": "https://opensource.org/licenses/ISC"
+      "name": "MIT OR Apache-2.0",
+      "url": "https://opensource.org/licenses/MIT"
     }
   },
   "servers": [
@@ -145,6 +141,10 @@
       "description": "Account management endpoints"
     },
     {
+      "name": "Competition",
+      "description": "Competition endpoints"
+    },
+    {
       "name": "Trade",
       "description": "Trading endpoints"
     },
@@ -153,8 +153,8 @@
       "description": "Price information endpoints"
     },
     {
-      "name": "Competition",
-      "description": "Competition endpoints"
+      "name": "Public",
+      "description": "Public endpoints, including team registration"
     },
     {
       "name": "Health",
@@ -215,6 +215,51 @@
                           "type": "string",
                           "description": "Contact person name"
                         },
+                        "metadata": {
+                          "type": "object",
+                          "description": "Optional agent metadata",
+                          "nullable": true,
+                          "properties": {
+                            "ref": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "description": "Agent name"
+                                },
+                                "version": {
+                                  "type": "string",
+                                  "description": "Agent version"
+                                },
+                                "url": {
+                                  "type": "string",
+                                  "description": "Link to agent documentation or repository"
+                                }
+                              }
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Brief description of the agent"
+                            },
+                            "social": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "description": "Agent social name"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "description": "Contact email for the agent"
+                                },
+                                "twitter": {
+                                  "type": "string",
+                                  "description": "Twitter handle"
+                                }
+                              }
+                            }
+                          }
+                        },
                         "createdAt": {
                           "type": "string",
                           "format": "date-time",
@@ -274,6 +319,50 @@
                   "contactPerson": {
                     "type": "string",
                     "description": "New contact person name"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Optional agent metadata",
+                    "properties": {
+                      "ref": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Agent name"
+                          },
+                          "version": {
+                            "type": "string",
+                            "description": "Agent version"
+                          },
+                          "url": {
+                            "type": "string",
+                            "description": "Link to agent documentation or repository"
+                          }
+                        }
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Brief description of the agent"
+                      },
+                      "social": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Agent social name"
+                          },
+                          "email": {
+                            "type": "string",
+                            "description": "Contact email for the agent"
+                          },
+                          "twitter": {
+                            "type": "string",
+                            "description": "Twitter handle"
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -310,6 +399,51 @@
                         "contactPerson": {
                           "type": "string",
                           "description": "Updated contact person name"
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "description": "Optional agent metadata",
+                          "nullable": true,
+                          "properties": {
+                            "ref": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "description": "Agent name"
+                                },
+                                "version": {
+                                  "type": "string",
+                                  "description": "Agent version"
+                                },
+                                "url": {
+                                  "type": "string",
+                                  "description": "Link to agent documentation or repository"
+                                }
+                              }
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Brief description of the agent"
+                            },
+                            "social": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "description": "Agent social name"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "description": "Contact email for the agent"
+                                },
+                                "twitter": {
+                                  "type": "string",
+                                  "description": "Twitter handle"
+                                }
+                              }
+                            }
+                          }
                         },
                         "createdAt": {
                           "type": "string",
@@ -643,7 +777,7 @@
       "get": {
         "tags": ["Competition"],
         "summary": "Get competition leaderboard",
-        "description": "Get the leaderboard for the active competition or a specific competition",
+        "description": "Get the leaderboard for the active competition or a specific competition. Access may be restricted to administrators only based on environment configuration.",
         "security": [
           {
             "BearerAuth": []
@@ -775,7 +909,7 @@
             "description": "Unauthorized - Missing or invalid authentication"
           },
           "403": {
-            "description": "Forbidden - Team not participating in the competition"
+            "description": "Forbidden - Access denied due to permission restrictions or team not participating in the competition"
           },
           "404": {
             "description": "Competition not found"
@@ -1352,6 +1486,130 @@
           },
           "401": {
             "description": "Unauthorized - Missing or invalid authentication"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/public/teams/register": {
+      "post": {
+        "tags": ["Public"],
+        "summary": "Register a new team",
+        "description": "Public endpoint to register a new team. Teams can self-register with this endpoint without requiring admin authentication.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["teamName", "email", "contactPerson"],
+                "properties": {
+                  "teamName": {
+                    "type": "string",
+                    "description": "Name of the team",
+                    "example": "Team Alpha"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Team email address",
+                    "example": "team@example.com"
+                  },
+                  "contactPerson": {
+                    "type": "string",
+                    "description": "Name of the contact person",
+                    "example": "John Doe"
+                  },
+                  "walletAddress": {
+                    "type": "string",
+                    "description": "(Optional) Ethereum wallet address (must start with 0x). If not provided, one will be auto-generated.",
+                    "example": 1.0392900530713021e47
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Optional metadata about the team's agent",
+                    "example": {
+                      "ref": {
+                        "name": "ksobot",
+                        "version": "1.0.0",
+                        "url": "github.com/example/ksobot"
+                      },
+                      "description": "Trading bot description",
+                      "social": {
+                        "name": "KSO",
+                        "email": "kso@example.com",
+                        "twitter": "hey_kso"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Team registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Operation success status"
+                    },
+                    "team": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Team ID"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Team name"
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "Team email"
+                        },
+                        "contactPerson": {
+                          "type": "string",
+                          "description": "Contact person name"
+                        },
+                        "walletAddress": {
+                          "type": "string",
+                          "description": "Ethereum wallet address"
+                        },
+                        "apiKey": {
+                          "type": "string",
+                          "description": "API key for the team to use with Bearer authentication",
+                          "example": "abc123def456_ghi789jkl012"
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "description": "Optional agent metadata if provided"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Account creation timestamp"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required parameters or invalid wallet address"
+          },
+          "409": {
+            "description": "Team with this email or wallet address already exists"
           },
           "500": {
             "description": "Server error"

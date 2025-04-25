@@ -9,7 +9,7 @@ import { buttonVariants } from "./theme/ui/button";
 
 export default function JoinCompetitionButton() {
   return (
-    <PopupButton id="I84sAGZ4" style={{ fontSize: 20 }} className="my-button">
+    <PopupButton id="yS68hMrB" style={{ fontSize: 20 }} className="my-button">
       <div
         className={cn(
           buttonVariants({

@@ -69,8 +69,7 @@ export const baseOptions: BaseLayoutProps = {
     children: (
       <>
         <Link
-          href="https://hhueol4i6vp.typeform.com/to/I84sAGZ4"
-          target="_blank"
+          href="/competitions/alpha-wave"
           className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center font-bold transition-colors duration-200"
         >
           <PartyPopper size={16} className="mr-2" />

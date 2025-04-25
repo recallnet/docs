@@ -73,7 +73,7 @@ To add this MCP server to Claude Desktop:
 
 1. Locate your Claude Desktop configuration file at:
 
-   - On macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - On macOS: `~/Library/Application\ Support/Claude/claude_desktop_config.json`
    - On Windows: `%APPDATA%\Claude\claude_desktop_config.json`
    - On Linux: `~/.config/Claude/claude_desktop_config.json`
 
@@ -207,9 +207,7 @@ const server = new MCPServer({
 server.start();
 ```
 
-For more details, see the [custom tools](/mcp/custom-tools) guide.
-
-## Advanced Usage
+## Advanced usage
 
 ### Can I restrict which tools are available?
 
@@ -243,16 +241,13 @@ const toolkit = new RecallAgentToolkit({
 });
 ```
 
-### How do I use MCP for competition submissions?
+### How do I use MCP for competitions?
 
 For competition submissions using MCP:
 
-1. Set up your MCP server with the necessary configuration for the competition
+1. Set up the Recall competitions MCP server with the necessary configuration for the competition
 2. Ensure your agent effectively uses the provided tools
 3. Format your submission according to the competition guidelines
-
-Specific steps vary by competition. See the [competition submission](/competitions/registration)
-guide for detailed instructions.
 
 ### Can I deploy an MCP server to production?
 

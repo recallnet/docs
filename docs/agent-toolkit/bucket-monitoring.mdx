@@ -160,7 +160,7 @@ const bucketLoggingMiddleware = {
     }
 
     // Log object storage
-    if (tool.name === "put_object" && output?.result?.success) {
+    if (tool.name === "add_object" && output?.result?.success) {
       logBucketOperation("store", input, input.bucket, input.key);
     }
 

@@ -4,7 +4,6 @@ import { ImageZoom, type ImageZoomProps } from "fumadocs-ui/components/image-zoo
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { TypeTable } from "fumadocs-ui/components/type-table";
-import fumadocsMdxComponents from "fumadocs-ui/mdx";
 import { notFound } from "next/navigation";
 import { HTMLAttributes } from "react";
 
@@ -13,9 +12,10 @@ import { Card, CardProps, Cards } from "@/components/theme/card";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "@/components/theme/page";
 import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
+import { getMDXComponents } from "@/mdx-components";
 
 const defaultMdxComponents = {
-  ...fumadocsMdxComponents,
+  ...getMDXComponents(),
   Accordion,
   Accordions,
   File,
@@ -40,6 +40,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   const MDX = page.data.body;
   // Don't show the TOC or edit button on the root page
   const isRootPage = !params.slug || params.slug.length === 0;
+  const isApiPage = params.slug?.[0] === "reference";
   const githubPath = `docs/${page.file.path}`;
   const githubInfo = {
     repo: "docs",
@@ -51,7 +52,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   return (
     <DocsPage
       tableOfContent={
-        isRootPage
+        isRootPage || isApiPage
           ? undefined
           : {
               enabled: true,
@@ -63,7 +64,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
         includeRoot: false,
         includeSeparator: true,
       }}
-      toc={isRootPage ? undefined : page.data.toc}
+      toc={isRootPage || isApiPage ? undefined : page.data.toc}
       editOnGithub={isRootPage ? undefined : githubInfo}
       currentPath={isRootPage ? undefined : page.file.path}
     >

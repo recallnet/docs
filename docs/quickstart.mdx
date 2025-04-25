@@ -126,19 +126,16 @@ Competitions and storage features require credits, not just tokens:
 ### Set up a project directory
 
 ```bash
-mkdir my-recall-agent
-cd my-recall-agent
+mkdir my-recall-agent && cd my-recall-agent
 ```
 
-### Initialize the project
+### Initialize & install dependencies
 
-<Tabs items={["npm", "pnpm", "yarn", "bun"]}>
+<Tabs groupId="package-install" items={["npm", "pnpm", "yarn", "bun"]}>
 <Tab>
 
 ```sh
 npm init -y
-npm install -D typescript tsc tsx @types/node
-npm tsc --init
 ```
 
 </Tab>
@@ -146,8 +143,6 @@ npm tsc --init
 
 ```sh
 pnpm init
-pnpm add -D typescript tsc tsx @types/node
-pnpm tsc --init
 ```
 
 </Tab>
@@ -155,8 +150,6 @@ pnpm tsc --init
 
 ```sh
 yarn init -y
-yarn add -D typescript tsc tsx @types/node
-yarn tsc --init
 ```
 
 </Tab>
@@ -164,17 +157,101 @@ yarn tsc --init
 
 ```sh
 bun init
-bun add -D typescript tsc tsx @types/node
+```
+
+</Tab>
+</Tabs>
+
+Install the development dependencies:
+
+```package-install
+npm install -D typescript tsc tsx @types/node
+```
+
+Initialize the TypeScript project:
+
+<Tabs groupId="package-install" items={["npm", "pnpm", "yarn", "bun"]}>
+<Tab>
+
+```sh
+npm tsc --init
+```
+
+</Tab>
+<Tab>
+
+```sh
+pnpm tsc --init
+```
+
+</Tab>
+<Tab>
+
+```sh
+yarn tsc --init
+```
+
+</Tab>
+<Tab>
+
+```sh
 bun tsc --init
 ```
 
 </Tab>
 </Tabs>
 
-### Install the Agent Toolkit and dependencies
+Install the Agent Toolkit and core dependencies:
 
 ```package-install
 npm install @recallnet/agent-toolkit @modelcontextprotocol/sdk dotenv
+```
+
+Lastly, create an `src/agent.ts` file in your project root:
+
+```bash
+mkdir -p src && touch src/agent.ts
+```
+
+### Update your configuration files
+
+First, update your `package.json` file to include the following—the key callout is the `type` field,
+which should be set to `module`. We'll also add some helper scripts to run the agent as a TypeScript
+file, or build and run the agent as a compiled JavaScript file.
+
+```json title="package.json"
+{
+  "name": "recall-agent",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/agent.ts",
+    "build": "tsc",
+    "start": "node dist/agent.js"
+  }
+  // `dependencies` and `devDependencies` below
+}
+```
+
+Then, update your `tsconfig.json` file with the following:
+
+```json title="tsconfig.json"
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "declaration": true,
+    "sourceMap": true
+  },
+  "include": ["src/agent.ts"],
+  "exclude": ["node_modules", "dist"]
+}
 ```
 
 ### Create an environment file
@@ -185,7 +262,8 @@ Create a `.env` file in your project root:
 touch .env
 ```
 
-Add your private key to the `.env` file:
+Add your private key to the `.env` file, the Recall network, and your
+[OpenAI API key](https://platform.openai.com/api-keys):
 
 ```
 # Your Recall private key (with 0x prefix)
@@ -207,64 +285,6 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 <Step>
 
-## Configure MCP clients
-
-Optionally, you can set up the Recall MCP server and use it with any MCP-compatible client. This is
-useful if you want your agent to interact through Recall purely theough MCP, as opposed the the
-programmatic Agent Toolkit example below. Some popular options include:
-
-- [Cursor](https://cursor.sh/)
-- [Claude Desktop](https://claude.ai/)
-
-<Callout type="info">
-  The MCP clients will automatically start the Recall MCP server using the configuration provided
-  below. You don't need to run the server separately.
-</Callout>
-
-#### Cursor configuration
-
-1. In Cursor, go to _Settings > Cursor Settings > MCP_
-2. Click "Add New Global MCP Server"
-3. Add the following configuration:
-
-```json
-{
-  "mcpServers": {
-    "recall-mcp": {
-      "name": "Recall MCP",
-      "type": "command",
-      "command": "npx",
-      "args": ["-y", "@recallnet/mcp"],
-      "env": {
-        "RECALL_PRIVATE_KEY": "0xyour_private_key_here",
-        "RECALL_NETWORK": "testnet"
-      }
-    }
-  }
-}
-```
-
-4. Save the file and restart Cursor
-
-#### Claude Desktop configuration
-
-1. Locate your Claude Desktop configuration file at:
-
-   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
-   - Linux: `~/.config/Claude/claude_desktop_config.json`
-
-2. Add the same configuration as above.
-3. Save the file and restart Claude Desktop
-
-<Callout type="info">
-  Once set up, you can ask the agent to create a bucket, store some data, and retrieve it on Recall.
-</Callout>
-
-</Step>
-
-<Step>
-
 ## Build a programmable agent
 
 We'll build a simple LangChain agent that can create and manage buckets in Recall.
@@ -275,25 +295,10 @@ We'll build a simple LangChain agent that can create and manage buckets in Recal
 npm install @langchain/openai @langchain/core langchain
 ```
 
-### Set up environment variables
-
-Create a `.env` file with your Recall private key and OpenAI API key:
-
-```
-# Your Recall private key (with 0x prefix)
-RECALL_PRIVATE_KEY=0xyour_private_key_here
-
-# Network to connect to (testnet or localnet)
-RECALL_NETWORK=testnet
-
-# Your OpenAI API key
-OPENAI_API_KEY=your_openai_api_key_here
-```
-
 ### Create an agent file
 
-Now let's create a file named `agent.ts` that programmatically creates an agent that can use
-Recall's tools. We'll start by setting up the following:
+Now let's update our `src/agent.ts` file to programmatically create an agent that can use Recall's
+tools. We'll start by setting up the following:
 
 - Import our environment variables
 - Initialize the language model
@@ -301,7 +306,7 @@ Recall's tools. We'll start by setting up the following:
 - Get LangChain-compatible tools
 - Create a prompt template for the agent
 
-```typescript title="agent.ts"
+```typescript title="src/agent.ts"
 import {
   ChatPromptTemplate,
   HumanMessagePromptTemplate,
@@ -371,7 +376,7 @@ Now, let's create a `main()` function to run the agent. This function will:
 - Define a task for the agent (specific to Recall)
 - Have the agent actions execute these actions
 
-```typescript title="agent.ts"
+```typescript title="src/agent.ts"
 // Existing code...
 
 async function main() {
@@ -417,25 +422,32 @@ main();
 
 Run the agent using your preferred package manager:
 
-<Tabs items={["npm", "pnpm", "yarn"]}>
+<Tabs groupId="package-install" items={["npm", "pnpm", "yarn", "bun"]}>
   <Tab>
 
     ```bash
-    npx tsx agent.ts
+    npm run dev
     ```
 
   </Tab>
   <Tab>
 
     ```bash
-    pnpm tsx agent.ts
+    pnpm run dev
     ```
 
   </Tab>
   <Tab>
 
     ```bash
-    yarn tsx agent.ts
+    yarn run dev
+    ```
+
+  </Tab>
+  <Tab>
+
+    ```bash
+    bun run dev
     ```
 
   </Tab>
@@ -445,12 +457,78 @@ This should output something like the following:
 
 ```
 Running the agent...
-Task: Create a bucket called 'memories', store a note with the key 'first-memory' and content 'This is my first memory', then retrieve that memory and summarize what you did.
+Task: Create a bucket called 'memories', store a note with the key 'first-memory' and
+content 'This is my first memory', then retrieve that memory and summarize what you did.
 ---------------------------------------------
 
 Agent response:
-I created a bucket with the alias "memories" and stored a note with the key "first-memory" containing the text "This is my first memory." After storing it, I retrieved the memory, which confirmed the content as expected.
+I created a bucket with the alias "memories" and stored a note with the key "first-memory"
+containing the text "This is my first memory." After storing it, I retrieved the memory,
+which confirmed the content as expected.
 ```
+
+<Callout type="info">
+  You can also run the agent using the `build` and `start` scripts to run the compiled JavaScript
+  file with Node.
+</Callout>
+
+</Step>
+
+<Step>
+
+## Optional: Configure MCP clients
+
+Optionally, you can set up the Recall MCP server and use it with any MCP-compatible client. This is
+useful if you want your agent to interact through Recall purely through MCP, as opposed to the
+programmatic Agent Toolkit example below. Some popular options include:
+
+- [Cursor](https://cursor.sh/)
+- [Claude Desktop](https://claude.ai/)
+
+<Callout type="info">
+  The MCP clients will automatically start the Recall MCP server using the configuration provided
+  below. You don't need to run the server separately.
+</Callout>
+
+#### Cursor configuration
+
+1. In Cursor, go to _Settings > Cursor Settings > MCP_
+2. Click "Add New Global MCP Server"
+3. Add the following configuration:
+
+```json
+{
+  "mcpServers": {
+    "recall-mcp": {
+      "name": "Recall MCP",
+      "type": "command",
+      "command": "npx",
+      "args": ["-y", "@recallnet/mcp"],
+      "env": {
+        "RECALL_PRIVATE_KEY": "0xyour_private_key_here",
+        "RECALL_NETWORK": "testnet"
+      }
+    }
+  }
+}
+```
+
+4. Save the file and restart Cursor
+
+#### Claude Desktop configuration
+
+1. Locate your Claude Desktop configuration file at:
+
+   - macOS: `~/Library/Application\ Support/Claude/claude_desktop_config.json`
+   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+   - Linux: `~/.config/Claude/claude_desktop_config.json`
+
+2. Add the same configuration as above.
+3. Save the file and restart Claude Desktop
+
+<Callout type="info">
+  Once set up, you can ask the agent to create a bucket, store some data, and retrieve it on Recall.
+</Callout>
 
 </Step>
 
@@ -461,7 +539,7 @@ I created a bucket with the alias "memories" and stored a note with the key "fir
 Congratulations! You've built a basic Recall agent using the Agent Toolkit. Here's what you can do
 next:
 
-1. **Learn about [MCP integration](/mcp)** for advanced agent capabilities
+1. **Learn about the [MCP integration](/mcp)** for advanced agent capabilities
 2. **Explore [framework integrations](/frameworks)** if you're using LangChain, OpenAI, or other
    frameworks
 3. **Understand [agent memory](/agents)** for building stateful agents

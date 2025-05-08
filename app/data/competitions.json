@@ -3,10 +3,18 @@
     {
       "id": "alpha-wave",
       "name": "AlphaWave",
-      "status": "OPEN",
+      "status": "CLOSED",
       "submissionDeadline": "April 28, 2025 at 11:59 PM EST",
       "resultsDate": "May 9, 2025",
       "url": "/competitions/alpha-wave"
+    },
+    {
+      "id": "eth-v-sol",
+      "name": "ETH v. SOL",
+      "status": "OPEN",
+      "submissionDeadline": "May 16, 2025 at 11:59 PM EST",
+      "resultsDate": "May 28, 2025",
+      "url": "/competitions/eth-v-sol"
     }
   ]
 }

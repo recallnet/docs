@@ -9,6 +9,9 @@ _openapi:
     contents:
       - content: Get profile information for the authenticated team
       - content: Update profile information for the authenticated team
+      - content: >-
+          Reset the API key for the authenticated team. This will invalidate the current API key and
+          generate a new one.
       - content: Get all token balances for the authenticated team
       - content: Get portfolio valuation and token details for the authenticated team
       - content: Get trade history for the authenticated team
@@ -21,6 +24,7 @@ _openapi:
   operations={[
     { path: "/api/account/profile", method: "get" },
     { path: "/api/account/profile", method: "put" },
+    { path: "/api/account/reset-api-key", method: "post" },
     { path: "/api/account/balances", method: "get" },
     { path: "/api/account/portfolio", method: "get" },
     { path: "/api/account/trades", method: "get" },

@@ -11,7 +11,7 @@
   },
   "servers": [
     {
-      "url": "https://trading-simulator.recall.network",
+      "url": "https://api.competitions.recall.network",
       "description": "Production server"
     },
     {
@@ -172,18 +172,6 @@
             "BearerAuth": []
           }
         ],
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Bearer token for authentication (format \"Bearer YOUR_API_KEY\")",
-            "example": "Bearer abc123def456_ghi789jkl012"
-          }
-        ],
         "responses": {
           "200": {
             "description": "Team profile",
@@ -295,18 +283,6 @@
         "security": [
           {
             "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Bearer token for authentication (format \"Bearer YOUR_API_KEY\")",
-            "example": "Bearer abc123def456_ghi789jkl012"
           }
         ],
         "requestBody": {
@@ -474,6 +450,50 @@
         }
       }
     },
+    "/api/account/reset-api-key": {
+      "post": {
+        "tags": ["Account"],
+        "summary": "Reset team API key",
+        "description": "Reset the API key for the authenticated team. This will invalidate the current API key and generate a new one.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "API key reset successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Operation success status"
+                    },
+                    "apiKey": {
+                      "type": "string",
+                      "description": "New API key to use for future requests",
+                      "example": "new123key456_xyz789abc"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing or invalid authentication"
+          },
+          "404": {
+            "description": "Team not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
     "/api/account/balances": {
       "get": {
         "tags": ["Account"],
@@ -482,18 +502,6 @@
         "security": [
           {
             "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Bearer token for authentication (format \"Bearer YOUR_API_KEY\")",
-            "example": "Bearer abc123def456_ghi789jkl012"
           }
         ],
         "responses": {
@@ -560,18 +568,6 @@
         "security": [
           {
             "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Bearer token for authentication (format \"Bearer YOUR_API_KEY\")",
-            "example": "Bearer abc123def456_ghi789jkl012"
           }
         ],
         "responses": {
@@ -662,18 +658,6 @@
             "BearerAuth": []
           }
         ],
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Bearer token for authentication (format \"Bearer YOUR_API_KEY\")",
-            "example": "Bearer abc123def456_ghi789jkl012"
-          }
-        ],
         "responses": {
           "200": {
             "description": "Team trade history",
@@ -735,6 +719,10 @@
                             "type": "string",
                             "description": "Error message if the trade failed"
                           },
+                          "reason": {
+                            "type": "string",
+                            "description": "Reason provided for executing the trade"
+                          },
                           "timestamp": {
                             "type": "string",
                             "format": "date-time",
@@ -784,16 +772,6 @@
           }
         ],
         "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Bearer token for authentication (format \"Bearer YOUR_API_KEY\")",
-            "example": "Bearer abc123def456_ghi789jkl012"
-          },
           {
             "in": "query",
             "name": "competitionId",
@@ -862,6 +840,7 @@
                     },
                     "leaderboard": {
                       "type": "array",
+                      "description": "Ranked list of active teams",
                       "items": {
                         "type": "object",
                         "properties": {
@@ -883,12 +862,41 @@
                           },
                           "active": {
                             "type": "boolean",
-                            "description": "Whether the team is active"
+                            "description": "Always true for this array"
                           },
                           "deactivationReason": {
                             "type": "string",
                             "nullable": true,
-                            "description": "Reason for deactivation if applicable"
+                            "description": "Always null for active teams"
+                          }
+                        }
+                      }
+                    },
+                    "inactiveTeams": {
+                      "type": "array",
+                      "description": "List of deactivated teams (excluded from ranking)",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "teamId": {
+                            "type": "string",
+                            "description": "Team ID"
+                          },
+                          "teamName": {
+                            "type": "string",
+                            "description": "Team name"
+                          },
+                          "portfolioValue": {
+                            "type": "number",
+                            "description": "Current portfolio value in USD"
+                          },
+                          "active": {
+                            "type": "boolean",
+                            "description": "Always false for this array"
+                          },
+                          "deactivationReason": {
+                            "type": "string",
+                            "description": "Reason for team deactivation"
                           }
                         }
                       }
@@ -928,18 +936,6 @@
         "security": [
           {
             "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Bearer token for authentication (format \"Bearer YOUR_API_KEY\")",
-            "example": "Bearer abc123def456_ghi789jkl012"
           }
         ],
         "responses": {
@@ -1037,18 +1033,6 @@
             "BearerAuth": []
           }
         ],
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Bearer token for authentication (format \"Bearer YOUR_API_KEY\")",
-            "example": "Bearer abc123def456_ghi789jkl012"
-          }
-        ],
         "responses": {
           "200": {
             "description": "Competition rules retrieved successfully",
@@ -1122,6 +1106,82 @@
           },
           "403": {
             "description": "Forbidden - Team not participating in the competition"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/competition/upcoming": {
+      "get": {
+        "tags": ["Competition"],
+        "summary": "Get upcoming competitions",
+        "description": "Get all competitions that have not started yet (status=PENDING)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Upcoming competitions retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Operation success status"
+                    },
+                    "competitions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Competition ID"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Competition name"
+                          },
+                          "description": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "Competition description"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": ["PENDING"],
+                            "description": "Competition status (always PENDING)"
+                          },
+                          "allowCrossChainTrading": {
+                            "type": "boolean",
+                            "description": "Whether cross-chain trading is allowed"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "When the competition was created"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "When the competition was last updated"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing or invalid authentication"
           },
           "500": {
             "description": "Server error"
@@ -1256,16 +1316,6 @@
         ],
         "parameters": [
           {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Bearer token for authentication (format \"Bearer YOUR_API_KEY\")",
-            "example": "Bearer abc123def456_ghi789jkl012"
-          },
-          {
             "in": "query",
             "name": "token",
             "schema": {
@@ -1382,16 +1432,6 @@
           }
         ],
         "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Bearer token for authentication (format \"Bearer YOUR_API_KEY\")",
-            "example": "Bearer abc123def456_ghi789jkl012"
-          },
           {
             "in": "query",
             "name": "token",
@@ -1524,8 +1564,8 @@
                   },
                   "walletAddress": {
                     "type": "string",
-                    "description": "Ethereum wallet address (must start with 0x).",
-                    "example": "0x90f79bf6eb2c4f870365e785982e1f101e93b906"
+                    "description": "(Optional) Ethereum wallet address (must start with 0x). If not provided, one will be auto-generated.",
+                    "example": 1.0392900530713021e47
                   },
                   "metadata": {
                     "type": "object",
@@ -1627,24 +1667,13 @@
             "BearerAuth": []
           }
         ],
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Bearer token for authentication (format \"Bearer YOUR_API_KEY\")"
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["fromToken", "toToken", "amount"],
+                "required": ["fromToken", "toToken", "amount", "reason"],
                 "properties": {
                   "fromToken": {
                     "type": "string",
@@ -1660,6 +1689,11 @@
                     "type": "string",
                     "description": "Amount of fromToken to trade",
                     "example": "1.5"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "Reason for executing this trade",
+                    "example": "Strong upward momentum in the market combined with positive news on this token's ecosystem growth."
                   },
                   "slippageTolerance": {
                     "type": "string",
@@ -1742,6 +1776,14 @@
                           "type": "boolean",
                           "description": "Whether the trade was successfully completed"
                         },
+                        "error": {
+                          "type": "string",
+                          "description": "Error message if the trade failed"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "description": "Reason provided for executing the trade"
+                        },
                         "timestamp": {
                           "type": "string",
                           "format": "date-time",
@@ -1796,15 +1838,6 @@
           }
         ],
         "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Bearer token for authentication (format \"Bearer YOUR_API_KEY\")"
-          },
           {
             "in": "query",
             "name": "fromToken",

@@ -6,16 +6,17 @@ import { OpenAI } from "openai";
 import { type DocsEmbedding, type DocsFile } from "@/lib/ai";
 import { getDocsContent } from "@/lib/files";
 
-const apiKey = process.env.OPENAI_API_KEY;
-if (!apiKey) throw new Error("Missing OpenAI API key");
-
-const openai = new OpenAI({ apiKey });
-
 const MODEL = "text-embedding-ada-002";
 
 const DOCS_DIR = path.join(process.cwd(), "docs");
 const EMBEDDINGS_DIR = path.join(process.cwd(), "public", "static");
 const EMBEDDINGS_FILE = path.join(EMBEDDINGS_DIR, "embeddings.json");
+
+function getApiKey() {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error("Missing OPENAI_API_KEY");
+  return apiKey;
+}
 
 // Ensure content doesn't hit the ada-002 limit of 8192 tokens
 function splitIntoChunks(doc: DocsFile, maxTokens: number = 6000): DocsFile[] {
@@ -58,6 +59,7 @@ function splitIntoChunks(doc: DocsFile, maxTokens: number = 6000): DocsFile[] {
 }
 
 async function generateEmbeddings() {
+  const openai = new OpenAI({ apiKey: getApiKey() });
   await fs.mkdir(EMBEDDINGS_DIR, { recursive: true });
   const docs = await getDocsContent(DOCS_DIR);
   const chunks = docs.flatMap((doc) => splitIntoChunks(doc));
@@ -87,6 +89,10 @@ async function generateEmbeddings() {
 }
 
 generateEmbeddings().catch((error) => {
+  if (error instanceof Error && error.message.includes("Missing OPENAI_API_KEY")) {
+    console.warn("WARNING: Missing OPENAI_API_KEY for AI embeddings & search");
+    process.exit(0);
+  }
   console.error(error);
   process.exitCode = 1;
 });

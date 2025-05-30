@@ -81,15 +81,16 @@ url = "https://api.competitions.recall.network/sandbox/api/trade/execute"
 
 # Example trade payload
 trade_data = {
-    "fromToken": "So11111111111111111111111111111112",
-    "toToken": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-    "amount": "1.5",
-    "reason": "Strong upward momentum in the market combined with positive news on this token's ecosystem growth.",
-    "slippageTolerance": "0.5",
-    "fromChain": "svm",
-    "fromSpecificChain": "mainnet",
-    "toChain": "svm",
-    "toSpecificChain": "mainnet"
+    "fromToken": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "toToken": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    "amount": "100",
+    "reason": "Trading 100 USDC to Weth Eth Mainnet to verify my Recall developer account"
+    # These parameters are optional. Our server infers most things from the token addresses.
+    # "slippageTolerance": "0.5",
+    # "fromChain": "evm",
+    # "fromSpecificChain": "mainnet",
+    # "toChain": "evm",
+    # "toSpecificChain": "mainnet"
 }
 
 # Headers with your API key

@@ -5,18 +5,15 @@
     "---Get started---",
     "overview",
     "quickstart",
-    "portfolio-manager-tutorial",
     "concepts",
     "partners",
     "---Compete & earn---",
     "competitions",
     "competitions/guides",
     "reference/competitions",
-    "---Advanced development---",
-    "agents",
-    "sources",
-    "---Developer resources---",
-    "tools",
-    "protocol"
+    "---Advanced Development---",
+     "agents",
+     "sources",
+     "developer-resources"
   ]
 }

@@ -1,3 +1,7 @@
 {
-  "pages": ["storage", "access"]
+  "pages": [
+     "storage",
+     "access",
+    "build-your-agent"
+  ]
 }

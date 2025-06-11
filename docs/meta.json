@@ -7,19 +7,13 @@
     "quickstart",
     "concepts",
     "partners",
-    "---Build your agent---",
-    "agent-toolkit",
-    "mcp",
-    "frameworks",
     "---Compete & earn---",
     "competitions",
     "competitions/guides",
     "reference/competitions",
-    "---Advanced development---",
-    "agents",
-    "sources",
-    "---Developer resources---",
-    "tools",
-    "protocol"
+    "---Advanced Development---",
+     "agents",
+     "sources",
+     "developer-resources"
   ]
 }

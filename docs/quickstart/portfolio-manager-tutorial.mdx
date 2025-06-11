@@ -1,0 +1,216 @@
+---
+
+title: "Portfolio Manager"
+description: This guide extends our basic trading bot tutorial into a more fully featured portfolio manager. Over time, this manager will automatically maintain your target allocation, perform periodic rebalances, and leverage AI signals to adjust strategy.
+---
+
+## Introduction
+
+In this guide, we’ll walk you step by step through building a Python-based bot that not only executes trades on Recall Network but also intelligently maintains your target allocations over time. By the end of this tutorial you will have a fully working portfolio manager that:
+
+- Reads your desired token weights from a simple JSON file
+- Fetches live prices and your current holdings
+- Calculates and executes rebalances when allocations drift outside your tolerance
+- (Optionally) Leverages OpenAI’s GPT model to suggest periodic allocation adjustments based on market outlook
+
+Whether you’re an experienced algo‑trader or just getting started with crypto portfolio automation, this hands‑on tutorial will equip you with all the code, configuration, and scheduling patterns you need to run a robust, self‑maintaining portfolio manager. Let’s dive in!
+
+## Prerequisites
+
+* Python 3.8+ or similar runtime
+* Code editor (VS Code, PyCharm, etc.)
+* Basic understanding of crypto portfolio allocation
+* An EVM wallet funded with testnet tokens
+
+## 1. Register for API access
+
+1. Visit [register.recall.network](http://register.recall.network/)
+2. Create your account and save your **RECALL\_API\_KEY**
+
+Keep your key private—it authenticates all your trades.
+
+## 2. Clone the Recall starter repo
+
+```bash
+git clone https://github.com/recallnet/recall-agent-starter.git
+cd recall-agent-starter
+```
+
+Copy and edit the environment file:
+
+```bash
+cp .env.example .env
+```
+
+Add values for:
+
+```bash
+RECALL_API_KEY=<your_recall_key>
+OPENAI_API_KEY=<your_openai_key>  # for AI allocation adjustments
+```
+
+## 3. Define your target allocation
+
+Create a JSON file `portfolio_config.json` in the repo root:
+
+```json
+{
+  "USDC": 0.25,
+  "WETH": 0.50,
+  "WBTC": 0.25
+}
+```
+
+Each key is a token symbol and each value is the target weight (summing to 1.0).
+
+## 4. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Dependencies include:
+
+* `requests` for Recall Network API calls
+* `openai` for AI-driven allocation tweaks
+* `schedule` for periodic tasks
+
+## 5. Build the portfolio manager script
+
+Create `portfolio_manager.py` with the following structure:
+
+```python
+import os
+import json
+import time
+import requests
+import schedule
+import openai
+
+# Load config
+def load_config():
+    with open('portfolio_config.json') as f:
+        return json.load(f)
+
+# Fetch current prices
+def fetch_prices(symbols):
+    ids = ','.join(symbols).lower()
+    resp = requests.get(
+        'https://api.coingecko.com/api/v3/simple/price',
+        params={'ids': ids, 'vs_currencies': 'usd'}, timeout=10
+    )
+    data = resp.json()
+    return {sym: data[sym.lower()]['usd'] for sym in symbols}
+
+# Fetch current holdings via Recall Network (sandbox)
+RECALL_URL = 'https://api.competitions.recall.network/sandbox/api/portfolio'
+RECALL_KEY = os.getenv('RECALL_API_KEY')
+
+def fetch_holdings():
+    headers = {'Authorization': f'Bearer {RECALL_KEY}'}
+    resp = requests.get(RECALL_URL, headers=headers, timeout=10)
+    return resp.json()  # expects dict {"USDC": amount, ...}
+
+# Compute trade orders to rebalance
+def compute_orders(config, prices, holdings):
+    total_value = sum(holdings[sym] * prices[sym] for sym in config)
+    orders = []
+    for sym, target_weight in config.items():
+        target_value = total_value * target_weight
+        current_value = holdings[sym] * prices[sym]
+        delta_value = target_value - current_value
+        if abs(delta_value) / total_value > 0.02:  # 2% threshold
+            amount = abs(delta_value) / prices[sym]
+            side = 'buy' if delta_value > 0 else 'sell'
+            orders.append({'symbol': sym, 'side': side, 'amount': amount})
+    return orders
+
+# Execute a trade
+TRADE_URL = 'https://api.competitions.recall.network/sandbox/api/trade/execute'
+
+def execute_trade(symbol, side, amount):
+    # Map symbol to token address
+    token_map = {
+        'USDC': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+        'WETH': '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+        'WBTC': '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
+    }
+    if side == 'sell':
+        # sell means swap token → USDC for simplicity
+        from_token, to_token = token_map[symbol], token_map['USDC']
+    else:
+        from_token, to_token = token_map['USDC'], token_map[symbol]
+
+    payload = {
+        'fromToken': from_token,
+        'toToken': to_token,
+        'amount': str(amount),
+        'reason': 'Rebalance portfolio'
+    }
+    headers = {
+        'Authorization': f'Bearer {RECALL_KEY}',
+        'Content-Type': 'application/json'
+    }
+    resp = requests.post(TRADE_URL, json=payload, headers=headers, timeout=10)
+    return resp.json()
+
+# Optional: AI adjusts allocations monthly
+def ai_adjust_allocations(config):
+    openai.api_key = os.getenv('OPENAI_API_KEY')
+    prompt = (
+        'Given my current portfolio target weights ' + json.dumps(config) +
+        ', suggest updated target weights based on market outlook. ' +
+        'Reply with JSON of symbol: weight.'
+    )
+    chat = openai.ChatCompletion.create(
+        model='gpt-4.1',
+        messages=[{'role':'user','content':prompt}]
+    )
+    return json.loads(chat.choices[0].message.content)
+
+# Main rebalance task
+def rebalance():
+    config = load_config()
+    # Uncomment next line to auto-adjust targets
+    # config = ai_adjust_allocations(config)
+    prices = fetch_prices(config.keys())
+    holdings = fetch_holdings()
+    orders = compute_orders(config, prices, holdings)
+    for order in orders:
+        res = execute_trade(order['symbol'], order['side'], order['amount'])
+        print('Executed', order, '→', res)
+    print('Rebalance complete.')
+
+# Schedule daily at market open
+schedule.every().day.at('09:00').do(rebalance)
+
+if __name__ == '__main__':
+    print('Starting portfolio manager...')
+    rebalance()  # initial run
+    while True:
+        schedule.run_pending()
+        time.sleep(60)
+```
+
+## 6. Run your portfolio manager
+
+```bash
+python3 portfolio_manager.py
+```
+
+This will:
+
+* Load your target allocation
+* Fetch prices and holdings
+* Compute and execute trades to rebalance within a 2% threshold
+* Rerun daily at 09:00
+
+## Next steps
+
+* Tweak thresholds and schedule frequency
+* Customize AI allocation prompts for seasonal strategies
+* Integrate real-time on‑chain data feeds
+* Explore advanced risk metrics and stop‑loss rules
+
+Happy portfolio managing with Recall Network!
+

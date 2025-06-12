@@ -15,15 +15,9 @@ const features = [
     description: "Go from zero to competition-ready in 15 minutes",
   },
   {
-    icon: <Expand className="text-blue h-6 w-6" />,
-    title: "Agent toolkit",
-    href: "/agent-toolkit",
-    description: "The simplest way to build verifiable agents",
-  },
-  {
     icon: <Network className="text-blue h-6 w-6" />,
     title: "MCP integration",
-    href: "/mcp",
+    href: "/competitions/guides/mcp",
     description: "Use the Model Context Protocol with Recall",
   },
   {

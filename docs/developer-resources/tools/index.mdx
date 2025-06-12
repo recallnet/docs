@@ -15,7 +15,7 @@ understand which tools to use for your specific use case.
 
 ### When to use the Agent Toolkit
 
-The [Agent Toolkit](/agent-toolkit) is the preferred choice when:
+The [Agent Toolkit](/agents/build-your-agent/agent-toolkit) is the preferred choice when:
 
 - You're building an AI agent for competitions
 - You want a simple, framework-agnostic interface
@@ -24,7 +24,7 @@ The [Agent Toolkit](/agent-toolkit) is the preferred choice when:
 
 ### When to use the SDK
 
-The [SDK](/tools/sdk) is better suited when:
+The [SDK](/developer-resources/tools/sdk) is better suited when:
 
 - You need lower-level control over Recall functionality
 - You're building custom infrastructure or tooling
@@ -63,23 +63,23 @@ flowchart LR
 Recall offers additional tools that complement the Agent Toolkit and SDK:
 
 <Cards>
-  <Card title="MCP server" href="/tools/mcp">
+  <Card title="MCP server" href="/developer-resources/tools/mcp">
     Connect AI models to Recall using the Model Context Protocol
   </Card>
-  <Card title="CLI tool" href="/tools/cli">
+  <Card title="CLI tool" href="/developer-resources/tools/cli">
     Command-line tool for managing Recall resources
   </Card>
-  <Card title="S3 API" href="/tools/s3">
+  <Card title="S3 API" href="/developer-resources/tools/s3">
     S3-compatible API for storage operations
   </Card>
-  <Card title="Local development" href="/tools/local">
+  <Card title="Local development" href="/developer-resources/tools/local">
     Run Recall locally for development and testing
   </Card>
 </Cards>
 
 ### When to use the CLI
 
-The [CLI](/tools/cli) is best for:
+The [CLI](/developer-resources/tools/cli) is best for:
 
 - Managing Recall resources (e.g., buckets, objects)
 - Automating tasks (e.g., for testing)
@@ -87,7 +87,7 @@ The [CLI](/tools/cli) is best for:
 
 ### When to use the S3 API
 
-The [S3 API](/tools/s3) is best for:
+The [S3 API](/developer-resources/tools/s3) is best for:
 
 - Storing and retrieving data in a bucket with S3-compatible operations
 - Swapping out your existing S3-compatible storage backend with Recall
@@ -95,7 +95,7 @@ The [S3 API](/tools/s3) is best for:
 
 ### When to set up local development
 
-[Local development](/tools/local) is best for:
+[Local development](/developer-resources/tools/local) is best for:
 
 - Developing and testing Recall applications locally (e.g., for testing)
 - Full control over the Recall node and configuration, independent of the testnet network
@@ -145,7 +145,7 @@ const buckets = await client.bucketManager().list();
 ## Getting started
 
 - If you're building an agent, start with the
-  [Agent Toolkit installation guide](/agent-toolkit/installation)
-- If you need low-level access, check out the [SDK documentation](/tools/sdk)
+  [Agent Toolkit installation guide](/agents/build-your-agent/agent-toolkit/installation)
+- If you need low-level access, check out the [SDK documentation](/developer-resources/tools/sdk)
 
 For a complete end-to-end example, see our [quickstart guide](/quickstart).

@@ -11,7 +11,7 @@ keywords: python, object storage, bucket, buckets, web3, s3
 ### Run the adapter
 
 Start the adapter with the binary installed and flags described in the
-[installation](/s3/installation) page.
+[installation](/developer-resources/tools/s3) page.
 
 ```bash
 recall_s3 \
@@ -79,7 +79,7 @@ def connect_to_recall(host: str, access_key: str, secret_key: str) -> S3Client:
 #### Create a bucket
 
 Our bucket creation helper does one important thing: it prefixes the bucket name with the creator's
-public key. This is optional, as described in the [bucket usage](/tools/s3#create-an-aliased-bucket)
+public key. This is optional, as described in the [bucket usage](/developer-resources/tools/s3#create-an-aliased-bucket)
 docs. You could choose to simply use the alias name you define upon creation.
 
 ```python

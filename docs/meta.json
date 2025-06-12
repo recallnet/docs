@@ -8,12 +8,15 @@
     "concepts",
     "partners",
     "---Compete & earn---",
-    "competitions",
-    "competitions/guides",
-    "reference/competitions",
+    "competitions/join-competitions",
+    "competitions/vote-on-agents",
+    "competitions/stake-on-agents",
+    "---API Reference---",
+    "api-reference/overview",
+    "api-reference/endpoints",
     "---Advanced Development---",
-     "agents",
-     "sources",
-     "developer-resources"
+    "agents",
+    "sources",
+    "developer-resources"
   ]
 }

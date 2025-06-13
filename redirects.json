@@ -1,0 +1,262 @@
+[
+  {
+    "source": "/agent-toolkit/authentication",
+    "destination": "/agents/build-your-agent/agent-toolkit/authentication",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/bucket-monitoring",
+    "destination": "/agents/build-your-agent/agent-toolkit/bucket-monitoring",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/core-concepts",
+    "destination": "/agents/build-your-agent/agent-toolkit/core-concepts",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/index",
+    "destination": "/agents/build-your-agent/agent-toolkit/index",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/installation",
+    "destination": "/agents/build-your-agent/agent-toolkit/installation",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/meta.json",
+    "destination": "/agents/build-your-agent/agent-toolkit/meta.json",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/quickstart",
+    "destination": "/agents/build-your-agent/agent-toolkit/quickstart",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/tools-reference",
+    "destination": "/agents/build-your-agent/agent-toolkit/tools-reference",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/troubleshooting",
+    "destination": "/agents/build-your-agent/agent-toolkit/troubleshooting",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/architecture/consensus",
+    "destination": "/developer-resources/protocol/architecture/consensus",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/architecture/data-availability",
+    "destination": "/developer-resources/protocol/architecture/data-availability",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/architecture/index",
+    "destination": "/developer-resources/protocol/architecture/index",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/architecture/meta.json",
+    "destination": "/developer-resources/protocol/architecture/meta.json",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/architecture/subnets",
+    "destination": "/developer-resources/protocol/architecture/subnets",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/contracts/core",
+    "destination": "/developer-resources/protocol/contracts/core",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/contracts/index",
+    "destination": "/developer-resources/protocol/contracts/index",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/contracts/meta.json",
+    "destination": "/developer-resources/protocol/contracts/meta.json",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/contracts/wrappers",
+    "destination": "/developer-resources/protocol/contracts/wrappers",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/index",
+    "destination": "/developer-resources/protocol/index",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/meta.json",
+    "destination": "/developer-resources/protocol/meta.json",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/network/api-cometbft",
+    "destination": "/developer-resources/protocol/network/api-cometbft",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/network/api-evm",
+    "destination": "/developer-resources/protocol/network/api-evm",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/network/api-object",
+    "destination": "/developer-resources/protocol/network/api-object",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/network/index",
+    "destination": "/developer-resources/protocol/network/index",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/network/meta.json",
+    "destination": "/developer-resources/protocol/network/meta.json",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/operators",
+    "destination": "/developer-resources/protocol/operators",
+    "permanent": true
+  },
+  {
+    "source": "/quickstart",
+    "destination": "/quickstart/your-first-trade",
+    "permanent": true
+  },
+  {
+    "source": "/reference/competitions/index",
+    "destination": "/api-reference/overview",
+    "permanent": true
+  },
+  {
+    "source": "/tools/cli/account",
+    "destination": "/developer-resources/tools/cli/account",
+    "permanent": true
+  },
+  {
+    "source": "/tools/cli/bucket",
+    "destination": "/developer-resources/tools/cli/bucket",
+    "permanent": true
+  },
+  {
+    "source": "/tools/cli/index",
+    "destination": "/developer-resources/tools/cli/index",
+    "permanent": true
+  },
+  {
+    "source": "/tools/cli/machine",
+    "destination": "/developer-resources/tools/cli/machine",
+    "permanent": true
+  },
+  {
+    "source": "/tools/cli/meta.json",
+    "destination": "/developer-resources/tools/cli/meta.json",
+    "permanent": true
+  },
+  {
+    "source": "/tools/cli/storage",
+    "destination": "/developer-resources/tools/cli/storage",
+    "permanent": true
+  },
+  {
+    "source": "/tools/cli/timehub",
+    "destination": "/developer-resources/tools/cli/timehub",
+    "permanent": true
+  },
+  {
+    "source": "/tools/index",
+    "destination": "/developer-resources/tools/index",
+    "permanent": true
+  },
+  {
+    "source": "/tools/local/devnet",
+    "destination": "/developer-resources/tools/local/devnet",
+    "permanent": true
+  },
+  {
+    "source": "/tools/local/index",
+    "destination": "/developer-resources/tools/local/index",
+    "permanent": true
+  },
+  {
+    "source": "/tools/local/localnet",
+    "destination": "/developer-resources/tools/local/localnet",
+    "permanent": true
+  },
+  {
+    "source": "/tools/local/meta.json",
+    "destination": "/developer-resources/tools/local/meta.json",
+    "permanent": true
+  },
+  {
+    "source": "/tools/meta.json",
+    "destination": "/developer-resources/tools/meta.json",
+    "permanent": true
+  },
+  {
+    "source": "/tools/s3/index",
+    "destination": "/developer-resources/tools/s3/index",
+    "permanent": true
+  },
+  {
+    "source": "/tools/s3/meta.json",
+    "destination": "/developer-resources/tools/s3/meta.json",
+    "permanent": true
+  },
+  {
+    "source": "/tools/s3/minio",
+    "destination": "/developer-resources/tools/s3/minio",
+    "permanent": true
+  },
+  {
+    "source": "/tools/s3/python",
+    "destination": "/developer-resources/tools/s3/python",
+    "permanent": true
+  },
+  {
+    "source": "/tools/sdk/index",
+    "destination": "/developer-resources/tools/sdk/index",
+    "permanent": true
+  },
+  {
+    "source": "/tools/sdk/javascript",
+    "destination": "/developer-resources/tools/sdk/javascript",
+    "permanent": true
+  },
+  {
+    "source": "/tools/sdk/meta.json",
+    "destination": "/developer-resources/tools/sdk/meta.json",
+    "permanent": true
+  },
+  {
+    "source": "/tools/sdk/rust/examples",
+    "destination": "/developer-resources/tools/sdk/rust/examples",
+    "permanent": true
+  },
+  {
+    "source": "/tools/sdk/rust/index",
+    "destination": "/developer-resources/tools/sdk/rust/index",
+    "permanent": true
+  },
+  {
+    "source": "/tools/sdk/rust/meta.json",
+    "destination": "/developer-resources/tools/sdk/rust/meta.json",
+    "permanent": true
+  },
+  {
+    "source": "/tools/sdk/rust/usage",
+    "destination": "/developer-resources/tools/sdk/rust/usage",
+    "permanent": true
+  }
+]

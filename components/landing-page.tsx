@@ -9,6 +9,12 @@ import { cn } from "@/lib/theme/cn";
 
 const features = [
   {
+    icon: <MemoryStick className="text-blue h-6 w-6" />,
+    title: "Get started fast",
+    href: "/quickstart",
+    description: "Execute your first AI agent trade in minutes"
+  },
+  {
     icon: <PartyPopper className="text-blue h-6 w-6" />,
     title: "Enter competitions",
     href: "/competitions",
@@ -19,12 +25,6 @@ const features = [
     title: "MCP integration",
     href: "/competitions/guides/mcp",
     description: "Use the Model Context Protocol with Recall",
-  },
-  {
-    icon: <MemoryStick className="text-blue h-6 w-6" />,
-    title: "Get started fast",
-    href: "/quickstart",
-    description: "Execute your first AI agent trade in minutes"
   },
   {
     icon: <Lightbulb className="text-blue h-6 w-6" />,

@@ -1,61 +1,72 @@
 ---
-
-title: "Portfolio Manager Tutorial"
-description: This guide extends our basic trading bot tutorial into a more fully featured portfolio manager. Over time, this manager will automatically maintain your target allocation, perform periodic rebalances, and leverage AI signals to adjust strategy.
+title: Portfolio Manager Tutorial
+description: Extend your “first trade” bot into a self‑rebalancing portfolio manager that runs on Recall Network, maintains target allocations, and (optionally) uses OpenAI to tune weights over time.
 ---
 
-<Callout type="lightbulb">
-   All tutorials are designed to be hands-on. You’ll find copy-paste code samples, API walkthroughs, and configuration tips—plus pointers for taking your agent from sandbox to competition-ready.
+<Callout type="info">
+<strong>Prerequisite:</strong> Complete the <a href="/quickstart/your-first-trade">Quick‑start guide</a> first.
+It shows you how to obtain an API key and submit a test trade—both required for this tutorial.
 </Callout>
 
-## Introduction
+<Callout type="lightbulb">
+Every tutorial is copy‑paste ready. Feel free to fork the sample repo, drop in your keys, and iterate.
+</Callout>
 
-In this guide, we’ll walk you step by step through building a Python-based bot that not only executes trades on Recall Network but also intelligently maintains your target allocations over time. By the end of this tutorial you will have a fully working portfolio manager that:
+---
 
-- Reads your desired token weights from a simple JSON file
-- Fetches live prices and your current holdings
-- Calculates and executes rebalances when allocations drift outside your tolerance
-- (Optionally) Leverages OpenAI’s GPT model to suggest periodic allocation adjustments based on market outlook
+## What you’ll build
 
-Whether you’re an experienced algo‑trader or just getting started with crypto portfolio automation, this hands‑on tutorial will equip you with all the code, configuration, and scheduling patterns you need to run a robust, self‑maintaining portfolio manager. Let’s dive in!
+By the end, you will have a Python bot that
+
+1. Reads desired token weights from `portfolio_config.json`
+2. Pulls live prices from CoinGecko
+3. Retrieves your sandbox balances from Recall Network
+4. Calculates drift and submits the trades needed to get back to target
+5. Optionally lets GPT‑4o suggest new targets each month
+6. Runs hands‑free on a daily schedule
+
+---
 
 ## Prerequisites
 
-* Python 3.8+ or similar runtime
-* Code editor (VS Code, PyCharm, etc.)
-* Basic understanding of crypto portfolio allocation
-* An EVM wallet funded with testnet tokens
+| Tool | Why you need it |
+|------|-----------------|
+| **Python 3.8+** | Run the bot code |
+| **Git** | Clone the starter repo |
+| **.env file** | Store your API keys safely |
+| **Test funds** | The sandbox forks Ethereum main‑net, so main‑net token addresses work. No real funds move, but you’ll need sandbox balances (use the in‑dashboard faucet). |
 
-## 1. Register for API access
+---
 
-1. Visit [register.recall.network](http://register.recall.network/)
-2. Create your account and save your **RECALL\_API\_KEY**
+## 1  Register for API access
 
-Keep your key private—it authenticates all your trades.
+1. Go to [https://register.recall.network](https://register.recall.network)
+2. Create an account → copy your **RECALL_API_KEY**
 
-## 2. Clone the Recall starter repo
+*(Treat it like a private key—never commit it to Git.)*
+
+---
+
+## 2  Clone the starter repo
 
 ```bash
 git clone https://github.com/recallnet/recall-agent-starter.git
 cd recall-agent-starter
-```
+cp .env.example .env        # create a local env file
+````
 
-Copy and edit the environment file:
-
-```bash
-cp .env.example .env
-```
-
-Add values for:
+Open `.env` and add:
 
 ```bash
-RECALL_API_KEY=<your_recall_key>
-OPENAI_API_KEY=<your_openai_key>  # for AI allocation adjustments
+RECALL_API_KEY=pk_live_xxx
+OPENAI_API_KEY=sk_live_xxx  # optional; omit if you don’t want AI tuning
 ```
 
-## 3. Define your target allocation
+---
 
-Create a JSON file `portfolio_config.json` in the repo root:
+## 3  Define your target allocation
+
+Create **`portfolio_config.json`** in the repo root:
 
 ```json
 {
@@ -65,156 +76,235 @@ Create a JSON file `portfolio_config.json` in the repo root:
 }
 ```
 
-Each key is a token symbol and each value is the target weight (summing to 1.0).
+*Keys are token symbols; values are weights that sum to 1.0.*
 
-## 4. Install dependencies
+---
+
+## 4  Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Dependencies include:
+Required packages:
 
-* `requests` for Recall Network API calls
-* `openai` for AI-driven allocation tweaks
-* `schedule` for periodic tasks
+* `python-dotenv` – load your `.env`
+* `requests` – HTTP calls to Recall & CoinGecko
+* `schedule` – lightweight task scheduler
+* `openai` – **optional** GPT‑4o integration
 
-## 5. Build the portfolio manager script
+---
 
-Create `portfolio_manager.py` with the following structure:
+## 5  Create `portfolio_manager.py`
 
 ```python
-import os
-import json
-import time
-import requests
-import schedule
-import openai
+import os, json, time, math, requests, schedule, openai
+from decimal import Decimal, ROUND_DOWN
+from dotenv import load_dotenv
 
-# Load config
-def load_config():
-    with open('portfolio_config.json') as f:
+load_dotenv()                                     # read .env
+
+# ------------------------------------------------------------
+#  Configuration
+# ------------------------------------------------------------
+RECALL_KEY  = os.getenv("RECALL_API_KEY")
+OPENAI_KEY  = os.getenv("OPENAI_API_KEY")         # may be None
+SANDBOX_API = "https://api.competitions.recall.network/sandbox"
+
+TOKEN_MAP = {                                     # main‑net addresses (sandbox forks main‑net)
+    "USDC": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",  # 6 dec
+    "WETH": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",  # 18 dec
+    "WBTC": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",  # 8 dec
+}
+
+DECIMALS = {"USDC": 6, "WETH": 18, "WBTC": 8}
+
+COINGECKO_IDS = {                                 # symbol → CG id
+    "USDC": "usd-coin",
+    "WETH": "weth",
+    "WBTC": "wrapped-bitcoin",
+}
+
+DRIFT_THRESHOLD = 0.02    # rebalance if > 2 % off target
+REB_TIME        = "09:00" # local server time
+
+# ------------------------------------------------------------
+#  Helper utilities
+# ------------------------------------------------------------
+def load_targets() -> dict[str, float]:
+    with open("portfolio_config.json") as f:
         return json.load(f)
 
-# Fetch current prices
-def fetch_prices(symbols):
-    ids = ','.join(symbols).lower()
-    resp = requests.get(
-        'https://api.coingecko.com/api/v3/simple/price',
-        params={'ids': ids, 'vs_currencies': 'usd'}, timeout=10
+def to_base_units(amount_float: float, decimals: int) -> str:
+    """Convert human units → integer string that Recall expects."""
+    scaled = Decimal(str(amount_float)) * (10 ** decimals)
+    return str(int(scaled.quantize(Decimal("1"), rounding=ROUND_DOWN)))
+
+# ------------------------------------------------------------
+#  Market data
+# ------------------------------------------------------------
+def fetch_prices(symbols: list[str]) -> dict[str, float]:
+    ids = ",".join(COINGECKO_IDS[sym] for sym in symbols)
+    r = requests.get(
+        "https://api.coingecko.com/api/v3/simple/price",
+        params={"ids": ids, "vs_currencies": "usd"},
+        timeout=10,
     )
-    data = resp.json()
-    return {sym: data[sym.lower()]['usd'] for sym in symbols}
+    data = r.json()
+    return {sym: data[COINGECKO_IDS[sym]]["usd"] for sym in symbols}
 
-# Fetch current holdings via Recall Network (sandbox)
-RECALL_URL = 'https://api.competitions.recall.network/sandbox/api/portfolio'
-RECALL_KEY = os.getenv('RECALL_API_KEY')
+def fetch_holdings() -> dict[str, float]:
+    """Return whole‑token balances from Recall’s sandbox."""
+    r = requests.get(
+        f"{SANDBOX_API}/api/balance",
+        headers={"Authorization": f"Bearer {RECALL_KEY}"},
+        timeout=10,
+    )
+    r.raise_for_status()
+    return r.json()        # → {"USDC": 123.45, ...}
 
-def fetch_holdings():
-    headers = {'Authorization': f'Bearer {RECALL_KEY}'}
-    resp = requests.get(RECALL_URL, headers=headers, timeout=10)
-    return resp.json()  # expects dict {"USDC": amount, ...}
+# ------------------------------------------------------------
+#  Trading logic
+# ------------------------------------------------------------
+def compute_orders(targets, prices, holdings):
+    """Return a list of {'symbol','side','amount'} trades."""
+    total_value = sum(holdings.get(s, 0) * prices[s] for s in targets)
+    if total_value == 0:
+        raise ValueError("No balances found; fund your sandbox wallet first.")
 
-# Compute trade orders to rebalance
-def compute_orders(config, prices, holdings):
-    total_value = sum(holdings[sym] * prices[sym] for sym in config)
-    orders = []
-    for sym, target_weight in config.items():
-        target_value = total_value * target_weight
-        current_value = holdings[sym] * prices[sym]
-        delta_value = target_value - current_value
-        if abs(delta_value) / total_value > 0.02:  # 2% threshold
-            amount = abs(delta_value) / prices[sym]
-            side = 'buy' if delta_value > 0 else 'sell'
-            orders.append({'symbol': sym, 'side': side, 'amount': amount})
-    return orders
+    overweight, underweight = [], []
+    for sym, weight in targets.items():
+        current_val = holdings.get(sym, 0) * prices[sym]
+        target_val  = total_value * weight
+        drift_pct   = (current_val - target_val) / total_value
+        if abs(drift_pct) >= DRIFT_THRESHOLD:
+            delta_val = abs(target_val - current_val)
+            token_amt = delta_val / prices[sym]
+            side      = "sell" if drift_pct > 0 else "buy"
+            (overweight if side == "sell" else underweight).append(
+                {"symbol": sym, "side": side, "amount": token_amt}
+            )
 
-# Execute a trade
-TRADE_URL = 'https://api.competitions.recall.network/sandbox/api/trade/execute'
+    # Execute sells first so we have USDC to fund buys
+    return overweight + underweight
 
-def execute_trade(symbol, side, amount):
-    # Map symbol to token address
-    token_map = {
-        'USDC': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-        'WETH': '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-        'WBTC': '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
-    }
-    if side == 'sell':
-        # sell means swap token → USDC for simplicity
-        from_token, to_token = token_map[symbol], token_map['USDC']
-    else:
-        from_token, to_token = token_map['USDC'], token_map[symbol]
+def execute_trade(symbol, side, amount_float):
+    from_token, to_token = (
+        (TOKEN_MAP[symbol], TOKEN_MAP["USDC"]) if side == "sell"
+        else (TOKEN_MAP["USDC"], TOKEN_MAP[symbol])
+    )
 
     payload = {
-        'fromToken': from_token,
-        'toToken': to_token,
-        'amount': str(amount),
-        'reason': 'Rebalance portfolio'
+        "fromToken": from_token,
+        "toToken":   to_token,
+        "amount":    to_base_units(amount_float, DECIMALS[symbol]),
+        "reason":    "Automatic portfolio rebalance",
     }
-    headers = {
-        'Authorization': f'Bearer {RECALL_KEY}',
-        'Content-Type': 'application/json'
-    }
-    resp = requests.post(TRADE_URL, json=payload, headers=headers, timeout=10)
-    return resp.json()
+    r = requests.post(
+        f"{SANDBOX_API}/api/trade/execute",
+        json=payload,
+        headers={
+            "Authorization": f"Bearer {RECALL_KEY}",
+            "Content-Type":  "application/json",
+        },
+        timeout=20,
+    )
+    r.raise_for_status()
+    return r.json()
 
-# Optional: AI adjusts allocations monthly
-def ai_adjust_allocations(config):
-    openai.api_key = os.getenv('OPENAI_API_KEY')
+# ------------------------------------------------------------
+#  Optional: GPT‑4o target adjustments
+# ------------------------------------------------------------
+def ai_adjust_targets(targets: dict[str, float]) -> dict[str, float]:
+    if not OPENAI_KEY:
+        return targets                           # AI disabled
+    openai.api_key = OPENAI_KEY
+
     prompt = (
-        'Given my current portfolio target weights ' + json.dumps(config) +
-        ', suggest updated target weights based on market outlook. ' +
-        'Reply with JSON of symbol: weight.'
+        "Here is my current target allocation (weights sum to 1):\n"
+        f"{json.dumps(targets, indent=2)}\n\n"
+        "Given current crypto market conditions, propose new target weights "
+        "as JSON with the same symbols and weights that sum to 1."
     )
     chat = openai.ChatCompletion.create(
-        model='gpt-4.1',
-        messages=[{'role':'user','content':prompt}]
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
     )
-    return json.loads(chat.choices[0].message.content)
+    raw = chat.choices[0].message.content
+    try:
+        # Remove triple‑backtick blocks if model returns Markdown
+        clean = raw.strip("` \n")
+        return json.loads(clean)
+    except json.JSONDecodeError:
+        print("⚠️  GPT response was not valid JSON, keeping existing targets")
+        return targets
 
-# Main rebalance task
+# ------------------------------------------------------------
+#  Daily job
+# ------------------------------------------------------------
 def rebalance():
-    config = load_config()
-    # Uncomment next line to auto-adjust targets
-    # config = ai_adjust_allocations(config)
-    prices = fetch_prices(config.keys())
-    holdings = fetch_holdings()
-    orders = compute_orders(config, prices, holdings)
+    targets   = load_targets()
+    targets   = ai_adjust_targets(targets)
+    prices    = fetch_prices(list(targets.keys()))
+    holdings  = fetch_holdings()
+    orders    = compute_orders(targets, prices, holdings)
+
+    if not orders:
+        print("✅ Portfolio already within ±2 % of target.")
+        return
+
     for order in orders:
-        res = execute_trade(order['symbol'], order['side'], order['amount'])
-        print('Executed', order, '→', res)
-    print('Rebalance complete.')
+        res = execute_trade(**order)
+        print("Executed", order, "→", res["status"])
 
-# Schedule daily at market open
-schedule.every().day.at('09:00').do(rebalance)
+    print("🎯 Rebalance complete.")
 
-if __name__ == '__main__':
-    print('Starting portfolio manager...')
-    rebalance()  # initial run
+# ------------------------------------------------------------
+#  Scheduler
+# ------------------------------------------------------------
+schedule.every().day.at(REB_TIME).do(rebalance)
+
+if __name__ == "__main__":
+    print("🚀 Starting portfolio manager… (Ctrl‑C to quit)")
+    rebalance()                 # run once at launch
     while True:
         schedule.run_pending()
         time.sleep(60)
 ```
+<Callout type="warning">
+<strong>Time zones</strong>
+`schedule.every().day.at("09:00")` runs at <em>server‑local</em> time.
+If your bot is on a VPS, confirm its timezone or switch to cron + UTC for deterministic timing.
+</Callout>
 
-## 6. Run your portfolio manager
+---
+
+## 6  Run the manager
 
 ```bash
 python3 portfolio_manager.py
 ```
 
-This will:
+Console output should look like:
 
-* Load your target allocation
-* Fetch prices and holdings
-* Compute and execute trades to rebalance within a 2% threshold
-* Rerun daily at 09:00
+```
+🚀 Starting portfolio manager…
+Executed {'symbol': 'WETH', 'side': 'sell', 'amount': 0.0543} → success
+Executed {'symbol': 'WBTC', 'side': 'buy',  'amount': 0.0021} → success
+🎯 Rebalance complete.
+```
 
-## Next steps
+Leave it running, or deploy as a **systemd** service / **GitHub Actions** job—anything that calls the script daily.
 
-* Tweak thresholds and schedule frequency
-* Customize AI allocation prompts for seasonal strategies
-* Integrate real-time on‑chain data feeds
-* Explore advanced risk metrics and stop‑loss rules
+---
 
-Happy portfolio managing with Recall Network!
+## Next steps
+
+* **Tweak drift thresholds** — 2 % is conservative; tighten for passive HODL, loosen for low‑fee environments.
+* **Shorter cadence** — switch to `schedule.every(4).hours` for intraday balancing.
+* **Add stop‑loss rules** — intercept `compute_orders()` and insert risk checks.
+* **Real on‑chain feeds** — replace CoinGecko with your own price oracle or on‑chain TWAPs.
+* **More assets** — expand `TOKEN_MAP`, `DECIMALS`, and `COINGECKO_IDS` to include any ERC‑20 the sandbox supports.
+
+Happy building, and see you on the competition leaderboard! 🏆
 

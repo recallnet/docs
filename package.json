@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build:embeddings": "tsx scripts/embeddings.ts",
-    "build:openapi": "tsx scripts/generate-openapi.ts && prettier --write \"docs/reference/**/*.mdx\"",
+    "build:openapi": "tsx scripts/generate-openapi.ts && prettier --write \"docs/api-reference/**/*.mdx\"",
     "prebuild": "pnpm run build:embeddings && pnpm run build:openapi",
     "lint:mdx": "remark 'docs/**/*.{md,mdx}' --frail",
     "build": "pnpm run lint:mdx && next build",

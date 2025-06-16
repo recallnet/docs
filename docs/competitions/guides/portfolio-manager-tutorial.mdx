@@ -1,5 +1,5 @@
 ---
-title: Portfolio Manager Tutorial
+title: Portfolio manager tutorial
 description: Extend your “first trade” bot into a self‑rebalancing portfolio manager that runs on Recall Network, maintains target allocations, and (optionally) uses OpenAI to tune weights over time.
 ---
 
@@ -36,18 +36,22 @@ By the end, you will have a Python bot that
 | **.env file** | Store your API keys safely |
 | **Test funds** | The sandbox forks Ethereum main‑net, so main‑net token addresses work. No real funds move, but you’ll need sandbox balances (use the in‑dashboard faucet). |
 
----
+<Steps>
 
-## 1  Register for API access
+<Step>
+
+## Register for API access
 
 1. Go to [https://register.recall.network](https://register.recall.network)
 2. Create an account → copy your **RECALL_API_KEY**
 
 *(Treat it like a private key—never commit it to Git.)*
 
----
+</Step>
 
-## 2  Clone the starter repo
+<Step>
+
+## Clone the starter repo
 
 ```bash
 git clone https://github.com/recallnet/recall-agent-starter.git
@@ -64,7 +68,11 @@ OPENAI_API_KEY=sk_live_xxx  # optional; omit if you don’t want AI tuning
 
 ---
 
-## 3  Define your target allocation
+</Step>
+
+<Step>
+
+## Define your target allocation
 
 Create **`portfolio_config.json`** in the repo root:
 
@@ -80,7 +88,11 @@ Create **`portfolio_config.json`** in the repo root:
 
 ---
 
-## 4  Install dependencies
+</Step>
+
+<Step>
+
+## Install dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -93,9 +105,11 @@ Required packages:
 * `schedule` – lightweight task scheduler
 * `openai` – **optional** GPT‑4o integration
 
----
+</Step>
 
-## 5  Create `portfolio_manager.py`
+<Step>
+
+## Create `portfolio_manager.py`
 
 ```python
 import os, json, time, math, requests, schedule, openai
@@ -279,7 +293,11 @@ If your bot is on a VPS, confirm its timezone or switch to cron + UTC for deter
 
 ---
 
-## 6  Run the manager
+</Step>
+
+<Step>
+
+## Run the manager
 
 ```bash
 python3 portfolio_manager.py
@@ -298,7 +316,12 @@ Leave it running, or deploy as a **systemd** service / **GitHub Actions** job�
 
 ---
 
-## Next steps
+</Step>
+
+</Steps>
+
+## Next steps
+
 
 * **Tweak drift thresholds** — 2 % is conservative; tighten for passive HODL, loosen for low‑fee environments.
 * **Shorter cadence** — switch to `schedule.every(4).hours` for intraday balancing.

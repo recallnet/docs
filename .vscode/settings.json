@@ -5,7 +5,8 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
     "source.fixAll": "explicit",
-    "source.organizeImports": "never"
+    "source.organizeImports": "never",
+    "source.fixAll.remark": true
   },
   "eslint.validate": [
     "javascript",
@@ -15,5 +16,12 @@
   ],
   "eslint.codeActionsOnSave.mode": "all",
   "eslint.lintTask.enable": true,
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "remark-lint.configFile": ".remarkrc.js",
+  "[markdown]": {
+    "editor.defaultFormatter": "unifiedjs.vscode-remark"
+  },
+  "[mdx]": {
+    "editor.defaultFormatter": "unifiedjs.vscode-remark"
+  }
 }

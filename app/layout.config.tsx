@@ -64,16 +64,16 @@ export const baseOptions: BaseLayoutProps = {
     },
   ],
   banner: {
-    id: "competition-sol-eth",
+    id: "competition-summer-challenge",
     variant: "rainbow",
     children: (
       <>
         <Link
-          href="/competitions/eth-v-sol"
+          href="/competitions/summer-challenge"
           className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center font-bold transition-colors duration-200"
         >
           <PartyPopper size={16} className="mr-2" />
-          Join the ETH v. SOL competition
+          Join the Summer Challenge! Register by June 30
           <LinkIcon size={16} className="ml-1" />
         </Link>
       </>

@@ -26,7 +26,23 @@ const defaultMdxComponents = {
   Tab,
   Tabs,
   TypeTable,
-  img: (props: ImageZoomProps) => <ImageZoom {...props} />,
+  img: (props: ImageZoomProps) => {
+    // Don't apply ImageZoom to images inside Card components
+    // This prevents the unwanted zoom behavior on partner logos and other card images
+    if (
+      props.className?.includes("object-contain") ||
+      props.alt?.includes("Network") ||
+      props.alt?.includes("Protocol") ||
+      props.alt?.includes("Terminal") ||
+      props.alt?.includes("Lit") ||
+      props.alt?.includes("Rhinestone") ||
+      props.alt?.includes("Lilypad")
+    ) {
+      // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
+      return <img {...(props as any)} />;
+    }
+    return <ImageZoom {...props} />;
+  },
   Card: (props: CardProps) => <Card {...props} />,
   Cards: (props: HTMLAttributes<HTMLDivElement>) => <Cards {...props} />,
   Callout: (props: CalloutProps) => <Callout {...props} />,

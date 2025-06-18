@@ -11,7 +11,7 @@ Toolkit, including parameters, return values, and usage examples.
 Account tools allow agents to interact with Recall accounts, including viewing account information
 and managing credits.
 
-### `get_account_info`
+### Account: `get_account_info`
 
 Retrieves information about a Recall account, including token balances, address, and nonce.
 
@@ -128,7 +128,7 @@ Retrieves information about a Recall account, including token balances, address,
   </Tab>
 </Tabs>
 
-### `get_credit_info`
+### Account: `get_credit_info`
 
 Gets credit information for the connected account, including available credits and used credits.
 
@@ -242,7 +242,7 @@ Gets credit information for the connected account, including available credits a
   </Tab>
 </Tabs>
 
-### `buy_credit`
+### Account: `buy_credit`
 
 Buys credit for the connected account, allowing the agent to perform more operations on Recall.
 
@@ -362,7 +362,7 @@ Buys credit for the connected account, allowing the agent to perform more operat
 
 Bucket tools allow agents to create, manage, and interact with storage buckets on Recall.
 
-### `list_buckets`
+### Bucket: `list_buckets`
 
 Lists all buckets owned by an address in Recall.
 
@@ -441,7 +441,7 @@ Lists all buckets owned by an address in Recall.
   </Tab>
 </Tabs>
 
-### `create_bucket`
+### Bucket: `create_bucket`
 
 Creates a new bucket in Recall with the specified alias.
 
@@ -579,7 +579,7 @@ Creates a new bucket in Recall with the specified alias.
   </Tab>
 </Tabs>
 
-### `get_or_create_bucket`
+### Bucket: `get_or_create_bucket`
 
 Gets an existing bucket by alias or creates a new one if it doesn't exist. This is often more
 convenient than separate get/create operations.
@@ -720,7 +720,7 @@ convenient than separate get/create operations.
   </Tab>
 </Tabs>
 
-### `add_object`
+### Bucket: `add_object`
 
 Adds an object to a bucket in Recall. This is how agents store data persistently.
 
@@ -865,7 +865,7 @@ Adds an object to a bucket in Recall. This is how agents store data persistently
   </Tab>
 </Tabs>
 
-### `get_object`
+### Bucket: `get_object`
 
 Retrieves an object from a bucket in Recall. This is how agents retrieve previously stored data.
 
@@ -1002,7 +1002,7 @@ Retrieves an object from a bucket in Recall. This is how agents retrieve previou
   </Tab>
 </Tabs>
 
-### `query_objects`
+### Bucket: `query_objects`
 
 Queries objects in a bucket based on prefix, delimiter, and other criteria. Useful for listing
 objects or finding objects with specific patterns.

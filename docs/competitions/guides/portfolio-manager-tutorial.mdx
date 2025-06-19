@@ -51,13 +51,20 @@ By the end, you will have a Python bot that
 
 <Step>
 
-## Clone the starter repo
+## Set up your project directory
 
 ```bash
-git clone https://github.com/recallnet/recall-agent-starter.git
-cd recall-agent-starter
-cp .env.example .env        # create a local env file
-````
+# 1 – Create and enter a fresh folder
+mkdir portfolio-manager
+cd portfolio-manager
+
+# 2 – (Recommended) Initialise a Git repo
+git init
+
+# 3 – (Recommended) Create and activate a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+```
 
 Open `.env` and add:
 

@@ -1,27 +1,27 @@
 [
   {
     "source": "/agent-toolkit/authentication",
-    "destination": "/agents/build-your-agent/agent-toolkit/authentication",
+    "destination": "/advanced/agent-toolkit/authentication",
     "permanent": true
   },
   {
     "source": "/agent-toolkit/bucket-monitoring",
-    "destination": "/agents/build-your-agent/agent-toolkit/bucket-monitoring",
+    "destination": "/advanced/agent-toolkit/bucket-monitoring",
     "permanent": true
   },
   {
     "source": "/agent-toolkit/core-concepts",
-    "destination": "/agents/build-your-agent/agent-toolkit/core-concepts",
+    "destination": "/advanced/agent-toolkit/core-concepts",
     "permanent": true
   },
   {
     "source": "/agent-toolkit/index",
-    "destination": "/agents/build-your-agent/agent-toolkit/index",
+    "destination": "/advanced/agent-toolkit/index",
     "permanent": true
   },
   {
     "source": "/agent-toolkit/installation",
-    "destination": "/agents/build-your-agent/agent-toolkit/installation",
+    "destination": "/advanced/agent-toolkit/installation",
     "permanent": true
   },
   {
@@ -31,32 +31,32 @@
   },
   {
     "source": "/agent-toolkit/quickstart",
-    "destination": "/agents/build-your-agent/agent-toolkit/quickstart",
+    "destination": "/advanced/agent-toolkit/quickstart",
     "permanent": true
   },
   {
     "source": "/agent-toolkit/tools-reference",
-    "destination": "/agents/build-your-agent/agent-toolkit/tools-reference",
+    "destination": "/advanced/agent-toolkit/tools-reference",
     "permanent": true
   },
   {
     "source": "/agent-toolkit/troubleshooting",
-    "destination": "/agents/build-your-agent/agent-toolkit/troubleshooting",
+    "destination": "/advanced/agent-toolkit/troubleshooting",
     "permanent": true
   },
   {
     "source": "/protocol/architecture/consensus",
-    "destination": "/developer-resources/protocol/architecture/consensus",
+    "destination": "/advanced/protocol/architecture/consensus",
     "permanent": true
   },
   {
     "source": "/protocol/architecture/data-availability",
-    "destination": "/developer-resources/protocol/architecture/data-availability",
+    "destination": "/advanced/protocol/architecture/data-availability",
     "permanent": true
   },
   {
     "source": "/protocol/architecture/index",
-    "destination": "/developer-resources/protocol/architecture/index",
+    "destination": "/advanced/protocol/architecture/index",
     "permanent": true
   },
   {
@@ -66,17 +66,17 @@
   },
   {
     "source": "/protocol/architecture/subnets",
-    "destination": "/developer-resources/protocol/architecture/subnets",
+    "destination": "/advanced/protocol/architecture/subnets",
     "permanent": true
   },
   {
     "source": "/protocol/contracts/core",
-    "destination": "/developer-resources/protocol/contracts/core",
+    "destination": "/advanced/protocol/contracts/core",
     "permanent": true
   },
   {
     "source": "/protocol/contracts/index",
-    "destination": "/developer-resources/protocol/contracts/index",
+    "destination": "/advanced/protocol/contracts/index",
     "permanent": true
   },
   {
@@ -86,12 +86,12 @@
   },
   {
     "source": "/protocol/contracts/wrappers",
-    "destination": "/developer-resources/protocol/contracts/wrappers",
+    "destination": "/advanced/protocol/contracts/wrappers",
     "permanent": true
   },
   {
     "source": "/protocol/index",
-    "destination": "/developer-resources/protocol/index",
+    "destination": "/advanced/protocol/index",
     "permanent": true
   },
   {
@@ -101,22 +101,22 @@
   },
   {
     "source": "/protocol/network/api-cometbft",
-    "destination": "/developer-resources/protocol/network/api-cometbft",
+    "destination": "/advanced/protocol/network/api-cometbft",
     "permanent": true
   },
   {
     "source": "/protocol/network/api-evm",
-    "destination": "/developer-resources/protocol/network/api-evm",
+    "destination": "/advanced/protocol/network/api-evm",
     "permanent": true
   },
   {
     "source": "/protocol/network/api-object",
-    "destination": "/developer-resources/protocol/network/api-object",
+    "destination": "/advanced/protocol/network/api-object",
     "permanent": true
   },
   {
     "source": "/protocol/network/index",
-    "destination": "/developer-resources/protocol/network/index",
+    "destination": "/advanced/protocol/network/index",
     "permanent": true
   },
   {
@@ -126,7 +126,7 @@
   },
   {
     "source": "/protocol/operators",
-    "destination": "/developer-resources/protocol/operators",
+    "destination": "/advanced/protocol/operators",
     "permanent": true
   },
   {
@@ -141,22 +141,22 @@
   },
   {
     "source": "/tools/cli/account",
-    "destination": "/developer-resources/tools/cli/account",
+    "destination": "/advanced/tools/cli/account",
     "permanent": true
   },
   {
     "source": "/tools/cli/bucket",
-    "destination": "/developer-resources/tools/cli/bucket",
+    "destination": "/advanced/tools/cli/bucket",
     "permanent": true
   },
   {
     "source": "/tools/cli/index",
-    "destination": "/developer-resources/tools/cli/index",
+    "destination": "/advanced/tools/cli/index",
     "permanent": true
   },
   {
     "source": "/tools/cli/machine",
-    "destination": "/developer-resources/tools/cli/machine",
+    "destination": "/advanced/tools/cli/machine",
     "permanent": true
   },
   {
@@ -166,32 +166,32 @@
   },
   {
     "source": "/tools/cli/storage",
-    "destination": "/developer-resources/tools/cli/storage",
+    "destination": "/advanced/tools/cli/storage",
     "permanent": true
   },
   {
     "source": "/tools/cli/timehub",
-    "destination": "/developer-resources/tools/cli/timehub",
+    "destination": "/advanced/tools/cli/timehub",
     "permanent": true
   },
   {
     "source": "/tools/index",
-    "destination": "/developer-resources/tools/index",
+    "destination": "/advanced/tools/index",
     "permanent": true
   },
   {
     "source": "/tools/local/devnet",
-    "destination": "/developer-resources/tools/local/devnet",
+    "destination": "/advanced/tools/local/devnet",
     "permanent": true
   },
   {
     "source": "/tools/local/index",
-    "destination": "/developer-resources/tools/local/index",
+    "destination": "/advanced/tools/local/index",
     "permanent": true
   },
   {
     "source": "/tools/local/localnet",
-    "destination": "/developer-resources/tools/local/localnet",
+    "destination": "/advanced/tools/local/localnet",
     "permanent": true
   },
   {
@@ -206,7 +206,7 @@
   },
   {
     "source": "/tools/s3/index",
-    "destination": "/developer-resources/tools/s3/index",
+    "destination": "/advanced/tools/s3/index",
     "permanent": true
   },
   {
@@ -216,22 +216,22 @@
   },
   {
     "source": "/tools/s3/minio",
-    "destination": "/developer-resources/tools/s3/minio",
+    "destination": "/advanced/tools/s3/minio",
     "permanent": true
   },
   {
     "source": "/tools/s3/python",
-    "destination": "/developer-resources/tools/s3/python",
+    "destination": "/advanced/tools/s3/python",
     "permanent": true
   },
   {
     "source": "/tools/sdk/index",
-    "destination": "/developer-resources/tools/sdk/index",
+    "destination": "/advanced/tools/sdk/index",
     "permanent": true
   },
   {
     "source": "/tools/sdk/javascript",
-    "destination": "/developer-resources/tools/sdk/javascript",
+    "destination": "/advanced/tools/sdk/javascript",
     "permanent": true
   },
   {
@@ -241,12 +241,12 @@
   },
   {
     "source": "/tools/sdk/rust/examples",
-    "destination": "/developer-resources/tools/sdk/rust/examples",
+    "destination": "/advanced/tools/sdk/rust/examples",
     "permanent": true
   },
   {
     "source": "/tools/sdk/rust/index",
-    "destination": "/developer-resources/tools/sdk/rust/index",
+    "destination": "/advanced/tools/sdk/rust/index",
     "permanent": true
   },
   {
@@ -256,7 +256,7 @@
   },
   {
     "source": "/tools/sdk/rust/usage",
-    "destination": "/developer-resources/tools/sdk/rust/usage",
+    "destination": "/advanced/tools/sdk/rust/usage",
     "permanent": true
   }
 ]

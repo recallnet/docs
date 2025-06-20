@@ -1,0 +1,257 @@
+---
+title: Installation
+description: Install and set up the Agent Toolkit
+---
+
+This guide covers the installation and initial setup of the Recall Agent Toolkit, which is the
+primary interface for building agents that interact with the Recall network.
+
+## Prerequisites
+
+Before installing the Agent Toolkit, ensure you have:
+
+- **Node.js**: Version 20 or later
+- **npm, yarn, or pnpm**: For package management
+- **TypeScript**: For type checking (recommended)
+- **A Recall Account**: With some testnet tokens
+
+<Callout type="info">
+
+Don't have tokens yet? Visit the [Recall Faucet](https://faucet.recall.network) to get some testnet
+tokens.
+
+</Callout>
+
+## Installation steps
+
+```package-install
+npm install @recallnet/agent-toolkit
+```
+
+### Framework-specific dependencies
+
+Depending on which framework you plan to use, you may need additional dependencies:
+
+| Framework | Additional dependencies     |
+| --------- | --------------------------- |
+| MCP       | `@modelcontextprotocol/sdk` |
+| LangChain | `langchain`                 |
+| OpenAI    | `openai`                    |
+| AI SDK    | `ai`                        |
+| Mastra    | (included in agent-toolkit) |
+| Eliza     | (included in agent-toolkit) |
+
+For example, to use the Agent Toolkit with LangChain:
+
+```package-install
+npm install @recallnet/agent-toolkit langchain
+```
+
+Or, if you're using MCP, you'd install the following (we'll use in this in the example below):
+
+```package-install
+npm install @recallnet/agent-toolkit @modelcontextprotocol/sdk
+```
+
+## Configuration
+
+For TypeScript projects, ensure your `tsconfig.json` includes these settings:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": true
+  }
+}
+```
+
+## Environment Setup
+
+Create a `.env` file to store your private key and other configuration:
+
+```
+RECALL_PRIVATE_KEY=your_private_key_here
+RECALL_NETWORK=testnet  # Optional, defaults to testnet
+```
+
+For security, restrict permissions on your `.env` file:
+
+```bash
+chmod 600 .env
+```
+
+Add the following to `.gitignore` to prevent committing sensitive information:
+
+```
+.env
+```
+
+## Basic setup
+
+Let's walk through a basic setup for a Recall agent using the Agent Toolkit with MCP.
+
+<Steps>
+
+<Step>
+
+### Install development dependencies
+
+If you haven't already, install `dotenv` and `tsx` to run our example agent:
+
+```package-install
+npm install -D dotenv tsx
+```
+
+</Step>
+
+<Step>
+
+### Create an agent file
+
+```typescript title="agent.ts"
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { RecallAgentToolkit } from "@recallnet/agent-toolkit/mcp";
+import { Configuration } from "@recallnet/agent-toolkit/shared";
+import * as dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
+
+// Define permissions for your agent
+const configuration: Configuration = {
+  actions: {
+    account: {
+      read: true,
+      write: true,
+    },
+    bucket: {
+      read: true,
+      write: true,
+    },
+  },
+  context: {},
+};
+
+// Get private key from environment
+const privateKey = process.env.RECALL_PRIVATE_KEY;
+
+if (!privateKey) {
+  console.error("Missing RECALL_PRIVATE_KEY environment variable");
+  process.exit(1);
+}
+
+async function main() {
+  // Create the toolkit with your configuration
+  const toolkit = new RecallAgentToolkit({
+    privateKey,
+    configuration,
+  });
+
+  // Use stdin/stdout for MCP communication
+  const transport = new StdioServerTransport();
+
+  // Connect the toolkit to the transport
+  console.error("Starting Recall Agent Toolkit MCP server...");
+  await toolkit.connect(transport);
+}
+
+main().catch((error) => {
+  console.error("Error:", error);
+  process.exit(1);
+});
+```
+
+</Step>
+<Step>
+
+### Run your agent
+
+<Tabs groupId="package-install" items={["npm", "pnpm", "yarn", "bun"]}>
+
+<Tab>
+
+```bash
+npm tsx agent.ts
+```
+
+</Tab>
+
+<Tab>
+
+```bash
+pnpm tsx agent.ts
+```
+
+</Tab>
+
+<Tab>
+
+```bash
+yarn tsx agent.ts
+```
+
+</Tab>
+
+<Tab>
+
+```bash
+bun tsx agent.ts
+```
+
+</Tab>
+
+</Tabs>
+</Step>
+
+<Step>
+
+### Test with an MCP client
+
+Configure an MCP client (like Cursor or Claude) to use your agent and try a simple command like:
+
+```
+Can you check my account information on Recall?
+```
+
+You should see a response with your account details.
+
+</Step>
+
+</Steps>
+
+## Troubleshooting
+
+### Common issues
+
+- **"Module not found" errors**: Ensure you've installed all required dependencies
+- **"Private key not found"**: Check that your `.env` file is in the correct location and has the
+  correct format
+- **Connection errors**: Verify your network settings and that you're using the correct network
+  (testnet/mainnet)
+
+### Getting help
+
+If you encounter issues, you can:
+
+- Join our [Discord community](https://discord.recall.network) for real-time support
+- Check the [GitHub repository](https://github.com/recallnet/js-recall-agent-toolkit) for known
+  issues
+
+## Next steps
+
+- [Core concepts](/advanced/agent-toolkit/core-concepts): Learn about permissions, resources, and
+  configuration
+- [Tools reference](/advanced/agent-toolkit/tools-reference): Explore the available tools
+- [Quickstart guide](/advanced/agent-toolkit/quickstart): Build your first agent
+- [Framework guides](/advanced/frameworks): Integration guides for specific frameworks
+
+<Callout type="info">
+
+For a complete end-to-end example, check out the [quickstart guide](/quickstart).
+
+</Callout>

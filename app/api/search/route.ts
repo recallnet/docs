@@ -3,8 +3,9 @@ import { createSearchAPI } from "fumadocs-core/search/server";
 import { source } from "@/lib/source";
 
 // Check if page has leading `_` underscore, indicating it's a hidden page
+// Also exclude advanced development pages
 const filteredPages = source.getPages().filter((page) => {
-  return !page.file.path.includes("_");
+  return !page.file.path.includes("_") && !page.file.path.startsWith("advanced/");
 });
 
 export const { GET } = createSearchAPI("advanced", {

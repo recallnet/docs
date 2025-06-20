@@ -1,4 +1,4 @@
-import { AlertTriangle, CircleCheck, CircleX, Info } from "lucide-react";
+import { AlertTriangle, CircleCheck, CircleX, Info, Lightbulb } from "lucide-react";
 import { type HTMLAttributes, type ReactNode, forwardRef } from "react";
 
 import { cn } from "../../lib/theme/cn";
@@ -31,6 +31,7 @@ export const Callout = forwardRef<HTMLDivElement, CalloutProps>(
           {
             info: <Info className="stroke-fd-secondary size-5 fill-blue-500" />,
             tip: <Info className="stroke-fd-secondary size-5 fill-blue-500" />,
+            lightbulb: <Lightbulb className="stroke-yellow-400 size-5 fill-yellow-100" />,
             warn: <AlertTriangle className="stroke-fd-secondary size-5 fill-orange-500" />,
             warning: <AlertTriangle className="stroke-fd-secondary size-5 fill-orange-500" />,
             error: <CircleX className="stroke-fd-secondary size-5 fill-red-500" />,

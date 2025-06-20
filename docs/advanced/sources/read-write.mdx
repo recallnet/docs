@@ -1,0 +1,134 @@
+---
+title: Read & write data
+description: Learn how to read and write data to a data source.
+keywords: sources, onchain
+---
+
+Once you've created a data source, you have full control over it. By default, only the owner of a
+bucket can write to it, but _anyone_ can read from it if they know the contract address.
+
+## Writing data
+
+To write data to a bucket, you can use the `recall bucket add` command. Executing the write
+operation will send the data to the network in two steps:
+
+1. Stage the data with the validator whose RPCs / APIs it is calling
+2. Finalize the data onchain with a transaction, which creates the key-value mapping in the bucket
+
+```sh
+recall bucket add \
+--address 0xff0000000000000000000000000000000000008f \
+--key "hello/world" \
+~/data/hello.txt
+```
+
+<Callout type="info">
+
+Note that **every object has a default TTL of 24 hours (86400 seconds)**. If you need a longer
+retention period, you can use the `--ttl` flag to set a custom TTL (in seconds).
+
+</Callout>
+
+Once executed, the output will include the object's hash and size, along with the actual
+transaction:
+
+```json
+Added object in 1 second (hash=rzghyg4z3p6vbz5jkgc75lk64fci7kieul65o6hk6xznx7lctkmq; size=6)
+
+{
+  "transactionHash": "0x6ef9...",
+  "transactionIndex": "0x0",
+  "blockHash": "0xf258...",
+  "blockNumber": "0x10a59",
+  "from": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+  "to": "0xff0000000000000000000000000000000000008f",
+  ...
+}
+```
+
+Sending the data should only take a second or two, and then the data will be available to read from
+the bucket immediately. You'll notice the `rzghyg4z3p6vbz5jkgc75lk64fci7kieul65o6hk6xznx7lctkmq`
+value was logged in the response—this is the blake3 hash of the data. Hashes uniquely identify the
+data's contents, so you can be sure that the data hasn't changed.
+
+### Metadata
+
+You can also add metadata to the object. This is optional, but it can be useful for storing
+information about the data you're storing.
+
+```sh
+recall bucket add \
+--address 0xff0000000000000000000000000000000000008f \
+--key "hello/world" \
+--metadata "name=hello" \
+~/data/hello.txt
+```
+
+It's also possible to update an object's metadata after it's been stored.
+
+```sh
+recall bucket update \
+--address 0xff0000000000000000000000000000000000008f \
+--key "hello/world" \
+--metadata "foo=bar"
+```
+
+<Callout type="info">
+
+All Recall tools (CLI, SDKs, etc.) attempt to infer the data type and automatically attach the
+`content-type` metadata, which falls back to `application/octet-stream`. For example, if you pass a
+`png` file, it will be inferred as `image/png`.
+
+</Callout>
+
+## Reading data
+
+To read data from a bucket, you can use the `recall bucket get` command by providing the bucket
+address and desired key:
+
+```sh
+recall bucket get \
+--address 0xff0000000000000000000000000000000000008f \
+--key "hello/world"
+```
+
+The contents are returned in terms of its original size and format.
+
+```
+hello
+```
+
+The download speed will depend on both your connection speed and the validator's connection speed.
+Recall has [high requirements](/advanced/protocol/operators) for the hardware and bandwidth of the validator
+nodes, so you can expect fast downloads.
+
+Alternatively, if you simply want to see which objects are available for download, the `query`
+command can be used:
+
+```sh
+recall query \
+--address 0xff0000000000000000000000000000000000008f
+```
+
+This will return a list of all the objects in the bucket, along with their size and hash.
+
+```json
+{
+  "objects": [
+    {
+      "key": "hello/world",
+      "value": {
+        "hash": "rzghyg4z3p6vbz5jkgc75lk64fci7kieul65o6hk6xznx7lctkmq",
+        "size": 6,
+        "metadata": {
+          "name": "hello",
+          "foo": "bar",
+          "content-type": "application/octet-stream"
+        }
+      }
+    }
+  ],
+  "common_prefixes": [],
+  "next_key": null
+}
+```

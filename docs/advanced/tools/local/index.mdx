@@ -1,0 +1,158 @@
+---
+title: Local development
+description: Install prerequisites and build the Recall binaries.
+---
+
+For developers looking to test and develop locally, Recall offers a couple of specialized
+development environments. This page outlines how to install the necessary dependencies that precede
+building and installing the underlying Recall binaries required to run the network. If you already
+have these installed on your machine, you can proceed to the [localnet](/advanced/tools/local/localnet) or
+[devnet](/advanced/tools/local/devnet) pages.
+
+## Background
+
+There are two primary ways to use these scripts:
+
+1. Run a local network with three nodes and Anvil as the root chain (`localnet`).
+2. Run a local network without any root chain (`devnet`).
+
+Option (1) leverages Dockerized instances of Iroh, Fendermint, CometBFT, and ancillary services. All
+of this logic is located in the `scripts` directory. Option (2) requires you to have various
+dependencies running directly on your host machine, so there's a bit of manual setup required.
+
+## Installation
+
+Clone the `ipc` repo and build the project:
+
+```sh
+git clone https://github.com/recallnet/ipc
+cd ipc
+make
+```
+
+This will generate the `ipc-cli` and `fendermint` binaries in the `target/release/` directory.
+
+## Usage
+
+Regardless of the target development environment (`localnet` or `devnet`), there are a handful of
+build dependencies you'll need to install on your machine to run the scripts.
+
+### Build dependencies
+
+You'll need the following dependencies installed on your machine:
+
+- `rustup`
+- `cargo make`
+- `toml-cli`
+- `foundry`
+- `node`
+- `docker`
+- `jq`
+
+If you run the localnet via the `make run-localnet` script, it _will_ check for the existence of
+these dependencies. For Linux machines, the script _will also_ handle installation for all build
+dependencies. For macOS, it _will not_ automatically install them. Instead, you'll have to do this
+manually, but the script _will_ log and let you know what you're missing before proceeding. The
+section below outlines how to do this for macOS.
+
+#### Linux
+
+The `make run-localnet` script will handle all the build dependencies for a Linux machine. Note this
+is specific to the `localnet` environment, and not the `devnet` environment, but the dependencies
+are generally the same.
+
+#### MacOS
+
+You'll need to install the following dependencies if they are not already available:
+
+- Xcode from App Store or terminal: `xcode-select --install`
+- Homebrew: Required for installing `jq` and possibly other dependencies. See the official Homebrew
+  docs [here](https://brew.sh/) (but it's probably already installed).
+- `docker`: Required to run the Dockerized nodes. See the official Docker docs
+  [here](https://docs.docker.com/desktop/install/mac-install).
+- `jq`: Needed for much of the JSON parsing logic when working with configuration files.
+
+  ```shell
+  brew install jq
+  ```
+
+- `rustup`: Required for building the Docker images (i.e., most of the stack is written in Rust).
+  See the official Rust docs [here](https://www.rust-lang.org/tools/install) and make sure `cargo`
+  gets installed.
+
+  ```shell
+  curl https://sh.rustup.rs -sSf | sh -s -- -y
+  ```
+
+- `cargo make`: Required for building the Docker images.
+
+  ```shell
+  cargo install cargo-make
+  ```
+
+- `toml-cli`: Needed for reading and writing various configuration files used by Docker images.
+
+  ```shell
+  cargo install toml-cli
+  ```
+
+- `foundryup`: Used for various onchain operations. See the official Foundry docs
+  [here](https://book.getfoundry.sh/getting-started/installation) and make sure `cast` gets
+  installed.
+
+  ```shell
+  curl -L https://foundry.paradigm.xyz | bash
+  foundryup
+  ```
+
+- Node.js: Needed for compiling and deploying contracts with Hardhat. See the official Node.js docs
+  [here](https://nodejs.org/en/download)—or use [nvm](https://github.com/nvm-sh/nvm) (described
+  below for `bash` shells).
+
+  ```shell
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+  source "$HOME/.bashrc" # This step will vary by OS
+  nvm install --default lts/*
+  ```
+
+### Environment variables
+
+All logic handled in the `scripts/deploy_subnet/deploy.sh` script uses the following environment
+variables, which are defined in the `env.example` file. For localnet deployments, you won't need to
+set any of the above. There are also two additional optional variables:
+
+- `SKIP_DEPENDENCIES`: Skips the installation of build dependencies.
+- `SKIP_BUILD`: Skips the build step for the entire stack. You **MUST** run this at least once
+  before starting the network. Notably, this also installs the `ipc-cli` binary that is used heavily
+  during the deployment script. After doing so, future `deploy.sh` invocations will use the existing
+  build artifacts, so you can set `SKIP_BUILD=true` to save time.
+- `FM_LOG_LEVEL`: Fendermint log level. Defaults to `info`.
+- `FM_LOG_DOMAINS`: Fendermint log domains. Defaults to
+  `Bottomup,Consensus,Execution,Mpool,System,Topdown`.
+- `RELAYER_LOG_LEVEL`: Relayer log level. Defaults to `info`.
+
+Create a `.env` file with your desired values and source it in your shell:
+
+```shell
+source .env
+```
+
+Lastly, be sure to source your shell's rc file. This step will vary by OS. For example, `bash`:
+
+```shell
+source ${HOME}/.bashrc
+```
+
+Note the `deploy.sh` script is also configured to deploy to Filecoin Calibration. There's really no
+need to use it there, but the following environment variables dictate what contracts are deployed
+during the deployment flow:
+
+- `IPC_FOLDER`: The path to the IPC folder (localnet deployments will use the root `ipc` path; else,
+  it defaults to `${HOME}/ipc`).
+- `PARENT_GATEWAY_ADDRESS`: The EVM address of the parent gateway contract (default defined in
+  `.ipc-cal/config.toml` or `.ipc-local/config.toml`).
+- `PARENT_REGISTRY_ADDRESS`: The EVM address of the parent registry contract (default defined in
+  `.ipc-cal/config.toml` or `.ipc-local/config.toml`).
+- `PARENT_HTTP_AUTH_TOKEN`: An auth token for RPC calls to a [Glif.io](https://api.node.glif.io/)
+  archive node for the rootnet (Filecoin Calibration)—only used if you are deploying to testnet.
+- `SUPPLY_SOURCE_ADDRESS`: The address of the supply source (ERC20) for all deployed subnets.

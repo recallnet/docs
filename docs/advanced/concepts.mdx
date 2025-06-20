@@ -1,0 +1,75 @@
+---
+title: Core concepts
+description: A purpose-built blockchain for high-value AI data.
+---
+
+## Recall Blockchain Infrastructure
+
+Behind the Recall protocol is a custom [Interplanetary Consensus (IPC)](https://docs.ipc.space/) blockchain optimized for data-centric AI workflows. Unlike general-purpose chains, Recall's blockchain is designed for fast, verifiable, and censorship-resistant storage at scale.
+
+## Key capabilities
+
+- **Fast finality:**  Enables low-latency data availability for agent and model workloads
+- **High throughput:** Supports large object volumes, frequent updates, and rapid retrievals
+- **Native content addressing:**  Every object is addressed by its Blake3 hash, ensuring data integrity
+- **Erasure-coded redundancy:** Data is broken into entangled fragments and stored across nodes for resiliency and availability
+
+
+## How it works
+
+When data is stored via Recall, it is chunked, hashed, and recorded to the chain with verifiable metadata. Nodes in the IPC network maintain availability by storing coded shards of the data and validating its integrity.
+
+This design allows Recall to serve as a decentralized, composable backend for AI systems where trust, transparency, and permanence matter.
+
+### Why IPC?
+
+Recall is built on the Interplanetary Consensus (IPC) framework, which enables recursively scalable subnets, high-throughput transactions, robust compute workloads, and support for both EVM and Wasm runtimes. IPC allows Recall to operate as a data-first blockchain while inheriting security and interoperability from the Filecoin L1.
+
+By running as its own IPC subnet, Recall gains:
+
+- **Recursive scalability:** Deploys hierarchically organized subnets with independent consensus
+
+- **Cross-subnet messaging:** Enables seamless communication across domains without external bridges
+
+- **Ethereum compatibility:** Full EVM support for dev-friendly integration
+- **Wasm & IPLD support:** Native compatibility with multiple runtimes and data formats
+
+This architecture allows Recall to scale with AI demand while maintaining composability with the broader decentralized ecosystem.
+
+## Stateful Agents
+
+**Agents that remember, adapt, and evolve.**
+
+Unlike stateless LLM calls, stateful agents retain memory between interactions. They use this continuity to build richer understanding, refine decision-making, and adapt over time. Memory makes agents more than prompt responders. It makes them capable systems.
+
+Modern agent frameworks are typically built on four layers: perception, decision-making, execution, and memory. Recall focuses on the latter two, providing infrastructure for agents to act and remember in verifiable, persistent ways.
+
+
+Recall supports two categories of memory:
+
+- **Short-term memory:** Working memory used for a single task or decision, like a chatbot handling a single user session or thread.
+- **Long-term memory:** Aggregated memory designed to improve the agent’s intelligence over time. This includes:
+    - **Semantic:** general facts or learned knowledge
+    - **Episodic:** past actions, events, and outcomes
+    - **Procedural:** learned behaviors or patterns
+
+By storing this memory on Recall, agents gain the ability to reason from past context, maintain alignment, and improve performance over time. Whether storing CoT traces, dialogue history, or structured data, stateful agents become more intelligent the longer they run.
+
+## Buckets
+
+
+**Verifiable, high-throughput storage for AI systems.**
+
+Buckets are Recall's core abstraction for storing and retrieving data. Each bucket holds objects, which are structured blobs of any format. These objects are hashed and verified using [blake3](https://en.wikipedia.org/wiki/BLAKE_(hash_function)) for integrity and traceability. Buckets make it simple to persist everything from model outputs and agent memories to training datasets and inference logs.
+
+
+Recall is optimized for AI-scale workloads, offering high throughput, fast access, and support for large files (up to 5GB per object). Buckets are flexible enough to store arbitrary data types, including:
+
+- Text, images, video, and audio
+- Model weights and checkpoints
+- Structured agent memory and reasoning traces
+- Synthetic and research datasets
+
+Each object is content-addressed by its blake3 hash, ensuring that stored data is tamper-proof and cryptographically verifiable. Redundancy is built in via [data availability erasure coding](https://deploy-preview-3--meek-salamander-66a264.netlify.app/developer-resources/protocol/architecture/data-availability), distributing entangled fragments across the network for resilience.
+
+Buckets are foundational for both stateful agents and any AI pipeline requiring scalable, permissionless, and verifiable storage.

@@ -36,7 +36,7 @@ export function getCategoryDisplayName(filePath: string): string {
 export async function getDocsContent(docsDir: string): Promise<DocsFile[]> {
   const files = await fg(["**/*.mdx"], {
     cwd: docsDir,
-    ignore: ["**/openapi/**", "**/_*.mdx"],
+    ignore: ["**/openapi/**", "**/_*.mdx", "advanced/**"],
     absolute: true,
     dot: false,
   });

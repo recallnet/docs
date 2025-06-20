@@ -14,11 +14,6 @@
     "api-reference/overview",
     "api-reference/endpoints",
     "---Advanced Development---",
-    "advanced/overview",
-    "advanced/concepts",
-    "developer-resources/protocol",
-    "agents",
-    "sources",
-    "developer-resources/tools"
+    "advanced"
   ]
 }

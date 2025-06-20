@@ -1,0 +1,111 @@
+---
+title: Access & collaboration
+description: Learn how to control or share access to your agent data.
+keywords: agents, access control, onchain
+---
+
+You can control access to data that is written to Recall through _credit approval_ flows, giving
+multi-writer access to your agent's bucket. For now, the data is public by default and readable by
+anyone.
+
+<Callout type="warn">
+
+In its current state, data on Recall is not private. If you do have private data, **be sure to
+encrypt the data** before storing it. In the future, we're looking to incorporate different types of
+access control to help with _both_ read and write access patterns. You can learn more in the
+[data privacy](/advanced/sources/privacy) section.
+
+</Callout>
+
+## Access control
+
+All access control patterns are handled for write operations. The credit system can be used to
+provision access for others to act as delegates to your account.
+
+For example, by creating credit approvals from your account `A`, you can:
+
+- Provision account `B` to write to `A`'s bucket and use any credits (or virtual gas) they own
+- Provision another account `C` to write to `A`'s bucket, but limit how many credits and gas they
+  can use, along with an expiration period
+
+Thus, a common pattern in agent flows is to:
+
+- Create an admin wallet `A` and purchase credits for it
+- Create an agent wallet `B` and provision it as a delegate from `A`
+- Whenever you configure agent plugins, use the bucket created by the admin wallet `A`
+
+You could imagine more complex flows as well, with multiple admins, agents, and different
+configurations.
+
+## How to manage access
+
+Practically, the Recall CLI's [`credit` subcommand](/advanced/tools/cli/account#credit) makes it easy to
+manage this process. The general flow is:
+
+1. Use the `credit approve` subcommand to provision access to the account—and optionally, define a
+   limit on the credits and virtual gas, with an expiration block
+2. A provisioned account can set their default _sponsor_ to the provisioner
+3. If you want to revoke access, use the `credit revoke` subcommand
+
+<Steps>
+
+<Step>
+
+### Create an approval
+
+You start by creating an approval from the provisioner account to the delegate account, along with
+optional constraints:
+
+```bash
+recall account credit approve \
+  --to <delegate_address> \
+  --credit-limit <amount> \
+  --gas-fee-limit <amount> \
+  --ttl <seconds>
+```
+
+</Step>
+
+<Step>
+
+### Configure a default sponsor
+
+At this point, the delegate can write to the account's bucket. Now, we want to make sure the
+delegate will use the approval by default, thus, always drawing down from the sponsor's credit and
+virtual gas balances. Execute the following from the delegate account to set the sponsor:
+
+```bash
+recall account sponsor set <sponsor_address>
+```
+
+Any time data is stored in a bucket _owned by the sponsor_, the _sponsor_ will be charged the
+credits and virtual gas. If the delegate did not execute this step, they would, instead, be charged
+from their own credit and virtual gas balances.
+
+<Callout type="warn">
+
+Buckets and data created _by_ the delegate will not use the sponsor's credit and virtual gas
+balances. The delegate is charged from their own balances.
+
+</Callout>
+
+A delegate can only have one sponsor at a time. To remove a sponsor, you must execute the
+`sponsor unset` command.
+
+</Step>
+
+<Step>
+
+### Revoke an approval
+
+To revoke an approval, you can use the `recall account credit revoke` subcommand from the sponsor's
+account. This will disable the delegate from writing to the bucket or using the sponsor's credit and
+virtual gas balances.
+
+```bash
+recall account credit revoke --to <delegate_address>
+```
+
+</Step>
+
+</Steps>

@@ -1,0 +1,178 @@
+---
+title: Running the localnet
+description: Leverage a Dockerized multi-node setup for development.
+---
+
+This page walks through how to spin up a local Recall network with Docker (`localnet`) and presumes
+you've done the steps described in the preceding [setup page](/advanced/tools/local).
+
+## Overview
+
+The localnet is a three node network that runs in Docker containers. It's a bit intensive to start
+up but allows you to quickly iterate and build without relying on the remote testnet. It starts up
+all of the services, provides you with prefunded accounts, and can be useful with any of the Recall
+developer tooling.
+
+### Docker
+
+All scripts use `cargo make` to start Docker containers, volumes, and a Docker network. Before
+getting started, make sure that Docker is running by checking the status of the Docker daemon:
+
+```sh
+docker ps
+```
+
+If it's not running, start it:
+
+<Tabs items={["macOS", "Linux"]}>
+
+  <Tab value="macOS">
+
+    Make sure the [Docker Desktop app](https://www.docker.com/products/docker-desktop/) is installed, and then open it.
+
+    ```sh
+    open /Applications/Docker.app
+    ```
+
+  </Tab>
+  <Tab value="Linux">
+
+    Use `systemctl` to start the daemon.
+
+    ```sh
+    sudo systemctl start docker
+    ```
+
+  </Tab>
+</Tabs>
+
+Make sure you're currently in the `ipc` repository's root directory (from the previous setup and
+installation step). We'll be running the local network from the `scripts` folder.
+
+All scripts use `cargo make` to start docker containers, volumes, and a docker network. You can use
+`docker ps` to check the status of each container. Also, you **must** run the scripts from the root
+of the repo!
+
+## Startup & shutdown
+
+A localnet deployments will create a subnet with `anvil` as the rootnet (parent). The scripts will
+handle localnet validator keys (using the standard `anvil` accounts) and configs in the config
+folder (defaults to `~/.ipc`). In the root of the `ipc` repo, you can run the localnet with the
+following `Makefile` command:
+
+```shell
+make run-localnet
+```
+
+If you want to, for example, skip the build and dependency installation steps, you can do so with
+the following. Namely, after you build the localnet images for the first time, it's common to skip
+the build and dependency steps (unless new changes are made to the `ipc` codebase).
+
+```shell
+SKIP_BUILD=true SKIP_DEPENDENCIES=true make run-localnet
+```
+
+Lastly, if you're ready to stop the network, you can run the stop script:
+
+```shell
+make stop-localnet
+```
+
+Also optional is the `recall` CLI, which (if installed) will pre-buy credits for all accounts in the
+localnet subnet setup. Follow the instructions in the `rust-recall` repo to install it:
+[here](https://github.com/recallnet/rust-recall).
+
+The following outlines general observations for how long the localnet deployment process takes and
+various metrics:
+
+- Deploy + build images: ~7 minutes
+- Deploy with prebuilt images: ~5 minutes (i.e., `SKIP_BUILD=true`)
+- Blocks: ~1 per second
+- Topdown messages: ~2 minutes (e.g., depositing funds from the rootnet)
+- Bottomup messages: ~15 seconds
+- Stopping the network: ~40–45 seconds
+
+## Logging
+
+Deploying a network will log various steps and summary information to the console, including the RPC
+URLs and contracts. It'll also show the available accounts, private keys, and respective balances.
+
+Once the startup process is complete, each Docker container will also log its own information to the
+console.
+
+## Docker containers
+
+Use `docker ps` to list the network's containers. Each validator has six containers, and there are a
+few others used across the full network.
+
+You can check a validator's logs with `docker logs <container-name>`. The following containers are
+created (as shown for validator `0`), and you can replace the `0` with `1` or `2` to inspect the
+other validators:
+
+- `validator-0-fendermint`
+- `validator-0-cometbft`
+- `validator-0-promtail`
+- `validator-0-objects`
+- `validator-0-ethapi`
+- `validator-0-iroh`
+- `prometheus`
+- `grafana`
+- `anvil`
+- `loki`
+
+## Usage
+
+You can test using the subnet with the
+[`recall` SDK & CLI](https://github.com/recallnet/rust-recall). Keys _are not_ logged if you're
+running a testnet. For localnet, keys _are_ logged with their corresponding balances. You'll notice
+the first three accounts correspond to the validators and marked as reserved. If you're trying to do
+non-validator actions (e.g., create a bucket or timehub), it's best to avoid these accounts since
+nonce race conditions can occur.
+
+```txt
+Contracts:
+Parent gateway:            0x9A676e781A523b5d0C0e43731313A708CB607508
+Parent registry:           0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44
+Parent supply source:      0x4A679253410272dd5232B3Ff7cF5dbB88f295319
+Parent validator gater:    0x70e0bA845a1A0F2DA3359C97E0285013525FFC49
+Parent validator rewarder: 0x09635F643e140090A9A8Dcd712eD6285858ceBef
+Subnet gateway:            0x77aa40b105843728088c0132e43fc44348881da8
+Subnet registry:           0x74539671a1d2f1c8f200826baba665179f53a1b7
+Subnet blob manager:    0xe1Aa25618fA0c7A1CFDab5d6B456af611873b629
+Subnet bucket manager:  0xf7Cd8fa9b94DB2Aa972023b379c7f72c65E4De9D
+Subnet credit manager:  0x82C6D3ed4cD33d8EC1E51d0B5Cc1d822Eaa0c3dC
+
+Account balances:
+Parent native: 10000 ETH
+Parent RECALL:   100 RECALL
+Subnet native: 5000 RECALL
+Subnet credits: 5000000000000000000000
+
+Accounts:
+(0) 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 (reserved)
+(1) 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 (reserved)
+(2) 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc (reserved)
+(3) 0x90f79bf6eb2c4f870365e785982e1f101e93b906 (available)
+...
+
+Private keys:
+(0) ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+(1) 59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+(2) 5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
+(3) 7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6
+...
+```
+
+You can use then these keys with the `recall` SDK and CLI by creating an `.env` file and sourcing
+it, or by setting the variables in your shell. Keep in mind a `NETWORK` variable is used by
+`fendermint` and `ipc-cli` but with a different value, so it's best to use separate terminal windows
+when using the `recall` CLI alongside the others.
+
+```dotenv
+export RECALL_NETWORK=localnet
+export RECALL_PRIVATE_KEY=7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6
+```
+
+Then, use `recall` as normal, e.g., `recall account info` or `recall bucket create`. Similarly, the
+Rust SDK lets you use the `localnet` by explicitly initializing it with
+`recall_sdk::network::Network::Localnet.init()`, or the JS SDK lets you import the `localnet` chain.

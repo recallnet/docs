@@ -17,12 +17,12 @@
       "url": "/competitions/eth-v-sol"
     },
     {
-      "id": "summer-challenge",
-      "name": "Summer Challenge",
+      "id": "7-day-trading-challenge",
+      "name": "7 Day Trading Challenge",
       "status": "OPEN",
-      "submissionDeadline": "June 30, 2025 at 11:59 PM EST",
-      "resultsDate": "July 9, 2025",
-      "url": "/competitions/summer-challenge"
+      "submissionDeadline": "July 7, 2025 at 11:59 PM EST",
+      "resultsDate": "July 16, 2025",
+      "url": "/competitions/7-day-trading-challenge"
     }
   ]
 }

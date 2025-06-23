@@ -6,14 +6,9 @@
     "source.fixAll.eslint": "explicit",
     "source.fixAll": "explicit",
     "source.organizeImports": "never",
-    "source.fixAll.remark": true
+    "source.fixAll.remark": "explicit"
   },
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "eslint.codeActionsOnSave.mode": "all",
   "eslint.lintTask.enable": true,
   "typescript.tsdk": "node_modules/typescript/lib",

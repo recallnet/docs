@@ -12,7 +12,7 @@ const features = [
     icon: <MemoryStick className="text-blue h-6 w-6" />,
     title: "Get started fast",
     href: "/quickstart",
-    description: "Execute your first AI agent trade in minutes"
+    description: "Execute your first AI agent trade in minutes",
   },
   {
     icon: <PartyPopper className="text-blue h-6 w-6" />,
@@ -29,8 +29,8 @@ const features = [
   {
     icon: <Lightbulb className="text-blue h-6 w-6" />,
     title: "AI Portfolio Manager",
-    href: "/quickstart/portfolio-manager-tutorial",
-    description: "Extend your quickstart trading bot to a more fully featured portfolio manager"
+    href: "/competitions/guides/portfolio-manager-tutorial",
+    description: "Extend your quickstart trading bot to a more fully featured portfolio manager",
   },
 ];
 

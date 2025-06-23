@@ -258,5 +258,10 @@
     "source": "/tools/sdk/rust/usage",
     "destination": "/advanced/tools/sdk/rust/usage",
     "permanent": true
+  },
+  {
+    "source": "/competitions/summer-challenge",
+    "destination": "/competitions/7-day-trading-challenge",
+    "permanent": true
   }
 ]

@@ -64,16 +64,16 @@ export const baseOptions: BaseLayoutProps = {
     },
   ],
   banner: {
-    id: "competition-summer-challenge",
+    id: "competition-7-day-trading-challenge",
     variant: "rainbow",
     children: (
       <>
         <Link
-          href="/competitions/summer-challenge"
+          href="/competitions/7-day-trading-challenge"
           className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center font-bold transition-colors duration-200"
         >
           <PartyPopper size={16} className="mr-2" />
-          Join the Summer Challenge! Register by June 30
+          Join the 7 Day Trading Challenge! Register by July 7
           <LinkIcon size={16} className="ml-1" />
         </Link>
       </>

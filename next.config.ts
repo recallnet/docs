@@ -9,7 +9,7 @@ const config: NextConfig = {
   env: {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   },
-  async redirects() {
+async redirects() {
     return redirects as Array<{
       source: string;
       destination: string;

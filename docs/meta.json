@@ -4,22 +4,16 @@
   "pages": [
     "---Get started---",
     "overview",
-    "quickstart",
+    "quickstart/your-first-trade",
     "concepts",
     "partners",
-    "---Build your agent---",
-    "agent-toolkit",
-    "mcp",
-    "frameworks",
     "---Compete & earn---",
     "competitions",
     "competitions/guides",
-    "reference/competitions",
-    "---Advanced development---",
-    "agents",
-    "sources",
-    "---Developer resources---",
-    "tools",
-    "protocol"
+    "---API Reference---",
+    "api-reference/overview",
+    "api-reference/endpoints",
+    "---Advanced Development---",
+    "advanced"
   ]
 }

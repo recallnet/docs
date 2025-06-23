@@ -1,4 +1,0 @@
-{
-  "title": "Protocol APIs",
-  "pages": ["api-evm", "api-object", "api-cometbft"]
-}

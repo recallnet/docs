@@ -1,5 +1,10 @@
 [
   {
+    "source": "/agent-toolkit",
+    "destination": "/advanced/agent-toolkit",
+    "permanent": true
+  },
+  {
     "source": "/agent-toolkit/authentication",
     "destination": "/advanced/agent-toolkit/authentication",
     "permanent": true
@@ -12,11 +17,6 @@
   {
     "source": "/agent-toolkit/core-concepts",
     "destination": "/advanced/agent-toolkit/core-concepts",
-    "permanent": true
-  },
-  {
-    "source": "/agent-toolkit/index",
-    "destination": "/advanced/agent-toolkit/index",
     "permanent": true
   },
   {
@@ -42,6 +42,21 @@
   {
     "source": "/agent-toolkit/troubleshooting",
     "destination": "/advanced/agent-toolkit/troubleshooting",
+    "permanent": true
+  },
+  {
+    "source": "/agents",
+    "destination": "/advanced/agents",
+    "permanent": true
+  },
+  {
+    "source": "/frameworks",
+    "destination": "/advanced/frameworks",
+    "permanent": true
+  },
+  {
+    "source": "/mcp",
+    "destination": "/advanced/mcp",
     "permanent": true
   },
   {
@@ -90,8 +105,8 @@
     "permanent": true
   },
   {
-    "source": "/protocol/index",
-    "destination": "/advanced/protocol/index",
+    "source": "/protocol",
+    "destination": "/advanced/protocol",
     "permanent": true
   },
   {
@@ -140,6 +155,11 @@
     "permanent": true
   },
   {
+    "source": "/sources",
+    "destination": "/advanced/sources",
+    "permanent": true
+  },
+  {
     "source": "/tools/cli/account",
     "destination": "/advanced/tools/cli/account",
     "permanent": true
@@ -175,8 +195,8 @@
     "permanent": true
   },
   {
-    "source": "/tools/index",
-    "destination": "/advanced/tools/index",
+    "source": "/tools",
+    "destination": "/advanced/tools",
     "permanent": true
   },
   {

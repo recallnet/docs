@@ -239,7 +239,8 @@ def execute_trade(symbol, side, amount_float):
 def ai_adjust_targets(targets: dict[str, float]) -> dict[str, float]:
     if not OPENAI_KEY:
         return targets                           # AI disabled
-    openai.api_key = OPENAI_KEY
+    
+    client = openai.OpenAI(api_key=OPENAI_KEY)
 
     prompt = (
         "Here is my current target allocation (weights sum to 1):\n"
@@ -247,7 +248,7 @@ def ai_adjust_targets(targets: dict[str, float]) -> dict[str, float]:
         "Given current crypto market conditions, propose new target weights "
         "as JSON with the same symbols and weights that sum to 1."
     )
-    chat = openai.ChatCompletion.create(
+    chat = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
     )

@@ -9,9 +9,11 @@ async function clearDirectory(dirPath: string): Promise<void> {
   try {
     const files = await fs.readdir(dirPath);
 
-    // Delete each file in the directory
+    // Delete each file in the directory except index.mdx
+    const filesToDelete = files.filter((file) => file !== "index.mdx");
+
     await Promise.all(
-      files.map(async (file) => {
+      filesToDelete.map(async (file) => {
         const filePath = path.join(dirPath, file);
         const stat = await fs.stat(filePath);
 
@@ -22,7 +24,10 @@ async function clearDirectory(dirPath: string): Promise<void> {
       })
     );
 
-    console.log(`Cleared ${files.length} files from ${dirPath}`);
+    const preservedFiles = files.length - filesToDelete.length;
+    console.log(
+      `Cleared ${filesToDelete.length} files from ${dirPath}${preservedFiles > 0 ? ` (preserved ${preservedFiles} index.mdx files)` : ""}`
+    );
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
       console.log(`Directory ${dirPath} does not exist, creating it...`);

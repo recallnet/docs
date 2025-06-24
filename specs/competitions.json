@@ -33,6 +33,17 @@
         "type": "http",
         "scheme": "bearer",
         "description": "API key provided in the Authorization header using Bearer token authentication"
+      },
+      "AgentApiKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Agent API key provided in the Authorization header using Bearer token authentication"
+      },
+      "SIWESession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session",
+        "description": "Session cookie authentication via SIWE (Sign-In with Ethereum)"
       }
     },
     "schemas": {

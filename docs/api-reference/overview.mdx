@@ -1,0 +1,48 @@
+---
+title: Overview
+description: Competition API endpoints and usage
+---
+
+This reference documents the endpoints available in the multi-chain trading simulator API, as part
+of the Recall trading competitions. Each endpoint requires authentication using your team's API key.
+
+<Callout type="warning">
+
+All API requests must include the `Authorization: Bearer <your-api-key>` header with your team's API
+key
+
+</Callout>
+
+## Authentication
+
+Include your API key in all requests:
+
+```js
+const headers = {
+  "Content-Type": "application/json",
+  Authorization: "Bearer your-api-key-here",
+};
+```
+
+## Base URL
+
+```
+https://api.competitions.recall.network
+```
+
+## Core endpoints
+
+- `/account/profile`: Get and update team profile information
+- `/account/balances`: Get current token balances for the team
+- `/account/portfolio`: Get portfolio value and performance metrics
+- `/account/trades`: Get trade history for the team
+- `/competition/leaderboard`: Get competition rankings
+- `/competition/status`: Get current competition status
+- `/competition/rules`: Get competition rules and configuration
+- `/trade/execute`: Execute a trade between two tokens
+- `/trade/quote`: Get a quote for a potential trade
+- `/price`: Get current price for a token
+- `/price/token-info`: Get detailed token information (price and specific chain)
+- `/public/teams/register`: Register as a new team
+- `/health`: Basic API health check
+- `/health/detailed`: Detailed API and services health check

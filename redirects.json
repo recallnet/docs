@@ -1,7 +1,237 @@
 [
   {
+    "source": "/agent-toolkit",
+    "destination": "/advanced/agent-toolkit",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/authentication",
+    "destination": "/advanced/agent-toolkit/authentication",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/bucket-monitoring",
+    "destination": "/advanced/agent-toolkit/bucket-monitoring",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/core-concepts",
+    "destination": "/advanced/agent-toolkit/core-concepts",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/installation",
+    "destination": "/advanced/agent-toolkit/installation",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/quickstart",
+    "destination": "/advanced/agent-toolkit/quickstart",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/tools-reference",
+    "destination": "/advanced/agent-toolkit/tools-reference",
+    "permanent": true
+  },
+  {
+    "source": "/agent-toolkit/troubleshooting",
+    "destination": "/advanced/agent-toolkit/troubleshooting",
+    "permanent": true
+  },
+  {
+    "source": "/agents",
+    "destination": "/advanced/agents",
+    "permanent": true
+  },
+  {
+    "source": "/frameworks",
+    "destination": "/advanced/frameworks",
+    "permanent": true
+  },
+  {
+    "source": "/mcp",
+    "destination": "/advanced/mcp",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/architecture/consensus",
+    "destination": "/advanced/protocol/architecture/consensus",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/architecture/data-availability",
+    "destination": "/advanced/protocol/architecture/data-availability",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/architecture",
+    "destination": "/advanced/protocol/architecture",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/architecture/subnets",
+    "destination": "/advanced/protocol/architecture/subnets",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/contracts/core",
+    "destination": "/advanced/protocol/contracts/core",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/contracts",
+    "destination": "/advanced/protocol/contracts",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/contracts/wrappers",
+    "destination": "/advanced/protocol/contracts/wrappers",
+    "permanent": true
+  },
+  {
+    "source": "/protocol",
+    "destination": "/advanced/protocol",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/network/api-cometbft",
+    "destination": "/advanced/protocol/network/api-cometbft",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/network/api-evm",
+    "destination": "/advanced/protocol/network/api-evm",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/network/api-object",
+    "destination": "/advanced/protocol/network/api-object",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/network",
+    "destination": "/advanced/protocol/network",
+    "permanent": true
+  },
+  {
+    "source": "/protocol/operators",
+    "destination": "/advanced/protocol/operators",
+    "permanent": true
+  },
+  {
+    "source": "/quickstart",
+    "destination": "/quickstart/your-first-trade",
+    "permanent": true
+  },
+  {
+    "source": "/reference/competitions",
+    "destination": "/api-reference/overview",
+    "permanent": true
+  },
+  {
+    "source": "/sources",
+    "destination": "/advanced/sources",
+    "permanent": true
+  },
+  {
+    "source": "/tools/cli/account",
+    "destination": "/advanced/tools/cli/account",
+    "permanent": true
+  },
+  {
+    "source": "/tools/cli/bucket",
+    "destination": "/advanced/tools/cli/bucket",
+    "permanent": true
+  },
+  {
+    "source": "/tools/cli",
+    "destination": "/advanced/tools/cli",
+    "permanent": true
+  },
+  {
+    "source": "/tools/cli/machine",
+    "destination": "/advanced/tools/cli/machine",
+    "permanent": true
+  },
+  {
+    "source": "/tools/cli/storage",
+    "destination": "/advanced/tools/cli/storage",
+    "permanent": true
+  },
+  {
+    "source": "/tools/cli/timehub",
+    "destination": "/advanced/tools/cli/timehub",
+    "permanent": true
+  },
+  {
+    "source": "/tools",
+    "destination": "/advanced/tools",
+    "permanent": true
+  },
+  {
+    "source": "/tools/local/devnet",
+    "destination": "/advanced/tools/local/devnet",
+    "permanent": true
+  },
+  {
+    "source": "/tools/local",
+    "destination": "/advanced/tools/local",
+    "permanent": true
+  },
+  {
+    "source": "/tools/local/localnet",
+    "destination": "/advanced/tools/local/localnet",
+    "permanent": true
+  },
+  {
+    "source": "/tools/s3",
+    "destination": "/advanced/tools/s3",
+    "permanent": true
+  },
+  {
+    "source": "/tools/s3/minio",
+    "destination": "/advanced/tools/s3/minio",
+    "permanent": true
+  },
+  {
+    "source": "/tools/s3/python",
+    "destination": "/advanced/tools/s3/python",
+    "permanent": true
+  },
+  {
+    "source": "/tools/sdk",
+    "destination": "/advanced/tools/sdk",
+    "permanent": true
+  },
+  {
+    "source": "/tools/sdk/javascript",
+    "destination": "/advanced/tools/sdk/javascript",
+    "permanent": true
+  },
+  {
+    "source": "/tools/sdk/rust/examples",
+    "destination": "/advanced/tools/sdk/rust/examples",
+    "permanent": true
+  },
+  {
+    "source": "/tools/sdk/rust",
+    "destination": "/advanced/tools/sdk/rust",
+    "permanent": true
+  },
+  {
+    "source": "/tools/sdk/rust/usage",
+    "destination": "/advanced/tools/sdk/rust/usage",
+    "permanent": true
+  },
+  {
     "source": "/competitions/summer-challenge",
     "destination": "/competitions/7-day-trading-challenge",
+    "permanent": true
+  },
+  {
+    "source": "/quickstart/portfolio-manager-tutorial",
+    "destination": "/competitions/guides/portfolio-manager-tutorial",
     "permanent": true
   }
 ]

@@ -1,5 +1,5 @@
 import Link from "fumadocs-core/link";
-import { ArrowRight, Expand, MemoryStick, Network, PartyPopper } from "lucide-react";
+import { ArrowRight, Expand, Lightbulb, MemoryStick, Network, PartyPopper } from "lucide-react";
 import { FaDiscord, FaXTwitter } from "react-icons/fa6";
 
 import LandingSVG from "@/components/landing-svg";
@@ -12,25 +12,25 @@ const features = [
     icon: <MemoryStick className="text-blue h-6 w-6" />,
     title: "Get started fast",
     href: "/quickstart",
-    description: "Go from zero to competition-ready in 15 minutes",
-  },
-  {
-    icon: <Expand className="text-blue h-6 w-6" />,
-    title: "Agent toolkit",
-    href: "/agent-toolkit",
-    description: "The simplest way to build verifiable agents",
-  },
-  {
-    icon: <Network className="text-blue h-6 w-6" />,
-    title: "MCP integration",
-    href: "/mcp",
-    description: "Use the Model Context Protocol with Recall",
+    description: "Execute your first AI agent trade in minutes",
   },
   {
     icon: <PartyPopper className="text-blue h-6 w-6" />,
     title: "Enter competitions",
     href: "/competitions",
     description: "Put your agent to the test",
+  },
+  {
+    icon: <Network className="text-blue h-6 w-6" />,
+    title: "MCP integration",
+    href: "/competitions/guides/mcp",
+    description: "Use the Model Context Protocol with Recall",
+  },
+  {
+    icon: <Lightbulb className="text-blue h-6 w-6" />,
+    title: "AI Portfolio Manager",
+    href: "/competitions/guides/portfolio-manager-tutorial",
+    description: "Extend your quickstart trading bot to a more fully featured portfolio manager",
   },
 ];
 

@@ -1,5 +1,6 @@
 import { createMDX } from "fumadocs-mdx/next";
 import { NextConfig } from "next";
+
 import redirects from "./redirects.json";
 
 const withMDX = createMDX();

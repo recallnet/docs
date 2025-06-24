@@ -65,8 +65,8 @@
     "permanent": true
   },
   {
-    "source": "/protocol/architecture/index",
-    "destination": "/advanced/protocol/architecture/index",
+    "source": "/protocol/architecture",
+    "destination": "/advanced/protocol/architecture",
     "permanent": true
   },
   {
@@ -80,8 +80,8 @@
     "permanent": true
   },
   {
-    "source": "/protocol/contracts/index",
-    "destination": "/advanced/protocol/contracts/index",
+    "source": "/protocol/contracts",
+    "destination": "/advanced/protocol/contracts",
     "permanent": true
   },
   {
@@ -110,8 +110,8 @@
     "permanent": true
   },
   {
-    "source": "/protocol/network/index",
-    "destination": "/advanced/protocol/network/index",
+    "source": "/protocol/network",
+    "destination": "/advanced/protocol/network",
     "permanent": true
   },
   {
@@ -125,7 +125,7 @@
     "permanent": true
   },
   {
-    "source": "/reference/competitions/index",
+    "source": "/reference/competitions",
     "destination": "/api-reference/overview",
     "permanent": true
   },
@@ -145,8 +145,8 @@
     "permanent": true
   },
   {
-    "source": "/tools/cli/index",
-    "destination": "/advanced/tools/cli/index",
+    "source": "/tools/cli",
+    "destination": "/advanced/tools/cli",
     "permanent": true
   },
   {
@@ -175,8 +175,8 @@
     "permanent": true
   },
   {
-    "source": "/tools/local/index",
-    "destination": "/advanced/tools/local/index",
+    "source": "/tools/local",
+    "destination": "/advanced/tools/local",
     "permanent": true
   },
   {
@@ -185,8 +185,8 @@
     "permanent": true
   },
   {
-    "source": "/tools/s3/index",
-    "destination": "/advanced/tools/s3/index",
+    "source": "/tools/s3",
+    "destination": "/advanced/tools/s3",
     "permanent": true
   },
   {
@@ -200,8 +200,8 @@
     "permanent": true
   },
   {
-    "source": "/tools/sdk/index",
-    "destination": "/advanced/tools/sdk/index",
+    "source": "/tools/sdk",
+    "destination": "/advanced/tools/sdk",
     "permanent": true
   },
   {
@@ -215,8 +215,8 @@
     "permanent": true
   },
   {
-    "source": "/tools/sdk/rust/index",
-    "destination": "/advanced/tools/sdk/rust/index",
+    "source": "/tools/sdk/rust",
+    "destination": "/advanced/tools/sdk/rust",
     "permanent": true
   },
   {

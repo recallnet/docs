@@ -29,6 +29,18 @@ const docsOptions: DocsLayoutProps = {
   tree: source.pageTree,
   sidebar: {
     collapsible: false,
+    footer: (
+      <div className="flex flex-col gap-2 p-2">
+        <a
+          href="https://flat-agustinia-3f3.notion.site/Recall-Media-Kit-H2-25-21cdfc9427de805fa9e0ee00f80e2567"
+          className="text-fd-muted-foreground hover:text-fd-accent-foreground text-sm transition-colors"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Media Kit
+        </a>
+      </div>
+    ),
   },
 };
 

@@ -25,11 +25,6 @@
     "permanent": true
   },
   {
-    "source": "/agent-toolkit/meta.json",
-    "destination": "/agents/build-your-agent/agent-toolkit/meta.json",
-    "permanent": true
-  },
-  {
     "source": "/agent-toolkit/quickstart",
     "destination": "/advanced/agent-toolkit/quickstart",
     "permanent": true
@@ -75,11 +70,6 @@
     "permanent": true
   },
   {
-    "source": "/protocol/architecture/meta.json",
-    "destination": "/developer-resources/protocol/architecture/meta.json",
-    "permanent": true
-  },
-  {
     "source": "/protocol/architecture/subnets",
     "destination": "/advanced/protocol/architecture/subnets",
     "permanent": true
@@ -95,11 +85,6 @@
     "permanent": true
   },
   {
-    "source": "/protocol/contracts/meta.json",
-    "destination": "/developer-resources/protocol/contracts/meta.json",
-    "permanent": true
-  },
-  {
     "source": "/protocol/contracts/wrappers",
     "destination": "/advanced/protocol/contracts/wrappers",
     "permanent": true
@@ -107,11 +92,6 @@
   {
     "source": "/protocol",
     "destination": "/advanced/protocol",
-    "permanent": true
-  },
-  {
-    "source": "/protocol/meta.json",
-    "destination": "/developer-resources/protocol/meta.json",
     "permanent": true
   },
   {
@@ -132,11 +112,6 @@
   {
     "source": "/protocol/network/index",
     "destination": "/advanced/protocol/network/index",
-    "permanent": true
-  },
-  {
-    "source": "/protocol/network/meta.json",
-    "destination": "/developer-resources/protocol/network/meta.json",
     "permanent": true
   },
   {
@@ -180,11 +155,6 @@
     "permanent": true
   },
   {
-    "source": "/tools/cli/meta.json",
-    "destination": "/developer-resources/tools/cli/meta.json",
-    "permanent": true
-  },
-  {
     "source": "/tools/cli/storage",
     "destination": "/advanced/tools/cli/storage",
     "permanent": true
@@ -215,23 +185,8 @@
     "permanent": true
   },
   {
-    "source": "/tools/local/meta.json",
-    "destination": "/developer-resources/tools/local/meta.json",
-    "permanent": true
-  },
-  {
-    "source": "/tools/meta.json",
-    "destination": "/developer-resources/tools/meta.json",
-    "permanent": true
-  },
-  {
     "source": "/tools/s3/index",
     "destination": "/advanced/tools/s3/index",
-    "permanent": true
-  },
-  {
-    "source": "/tools/s3/meta.json",
-    "destination": "/developer-resources/tools/s3/meta.json",
     "permanent": true
   },
   {
@@ -255,11 +210,6 @@
     "permanent": true
   },
   {
-    "source": "/tools/sdk/meta.json",
-    "destination": "/developer-resources/tools/sdk/meta.json",
-    "permanent": true
-  },
-  {
     "source": "/tools/sdk/rust/examples",
     "destination": "/advanced/tools/sdk/rust/examples",
     "permanent": true
@@ -267,11 +217,6 @@
   {
     "source": "/tools/sdk/rust/index",
     "destination": "/advanced/tools/sdk/rust/index",
-    "permanent": true
-  },
-  {
-    "source": "/tools/sdk/rust/meta.json",
-    "destination": "/developer-resources/tools/sdk/rust/meta.json",
     "permanent": true
   },
   {

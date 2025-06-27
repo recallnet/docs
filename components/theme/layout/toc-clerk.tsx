@@ -2,14 +2,18 @@
 
 import type { TOCItemType } from "fumadocs-core/server";
 import * as Primitive from "fumadocs-core/toc";
-import { useEffect, useRef, useState } from "react";
+import { useI18n } from "fumadocs-ui/contexts/i18n";
+import { type ComponentProps, useEffect, useRef, useState } from "react";
 
 import { cn } from "../../../lib/theme/cn";
-import { TocItemsEmpty } from "./toc";
+import { mergeRefs } from "../../../lib/theme/merge-refs";
+import { useTOCItems } from "./toc";
 import { TocThumb } from "./toc-thumb";
 
-export default function ClerkTOCItems({ items }: { items: TOCItemType[] }) {
+export default function ClerkTOCItems({ ref, className, ...props }: ComponentProps<"div">) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const items = useTOCItems();
+  const { text } = useI18n();
 
   const [svg, setSvg] = useState<{
     path: string;
@@ -28,12 +32,12 @@ export default function ClerkTOCItems({ items }: { items: TOCItemType[] }) {
       const d: string[] = [];
       for (let i = 0; i < items.length; i++) {
         const element: HTMLElement | null = container.querySelector(
-          `a[href="#${items[i]?.url?.slice(1)}"]`
+          `a[href="#${items[i].url.slice(1)}"]`
         );
         if (!element) continue;
 
         const styles = getComputedStyle(element);
-        const offset = getLineOffset(items[i]?.depth ?? 0) + 1,
+        const offset = getLineOffset(items[i].depth) + 1,
           top = element.offsetTop + parseFloat(styles.paddingTop),
           bottom = element.offsetTop + element.clientHeight - parseFloat(styles.paddingBottom);
 
@@ -60,7 +64,12 @@ export default function ClerkTOCItems({ items }: { items: TOCItemType[] }) {
     };
   }, [items]);
 
-  if (items.length === 0) return <TocItemsEmpty />;
+  if (items.length === 0)
+    return (
+      <div className="bg-fd-card text-fd-muted-foreground rounded-lg border p-3 text-xs">
+        {text.tocNoHeadings}
+      </div>
+    );
 
   return (
     <>
@@ -84,7 +93,7 @@ export default function ClerkTOCItems({ items }: { items: TOCItemType[] }) {
           />
         </div>
       ) : null}
-      <div className="flex flex-col" ref={containerRef}>
+      <div ref={mergeRefs(containerRef, ref)} className={cn("flex flex-col", className)} {...props}>
         {items.map((item, i) => (
           <TOCItem
             key={item.url}

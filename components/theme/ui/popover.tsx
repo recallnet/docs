@@ -3,7 +3,7 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import * as React from "react";
 
-import { cn } from "@/lib/theme/cn";
+import { cn } from "../../../lib/theme/cn";
 
 const Popover = PopoverPrimitive.Root;
 
@@ -20,7 +20,7 @@ const PopoverContent = React.forwardRef<
       sideOffset={sideOffset}
       side="bottom"
       className={cn(
-        "bg-fd-popover text-fd-popover-foreground data-[state=closed]:animate-fd-popover-out data-[state=open]:animate-fd-popover-in z-50 max-w-[98vw] min-w-[220px] rounded-lg border p-2 text-sm shadow-lg focus-visible:outline-none",
+        "bg-fd-popover/60 text-fd-popover-foreground data-[state=closed]:animate-fd-popover-out data-[state=open]:animate-fd-popover-in z-50 max-w-[98vw] min-w-[240px] origin-(--radix-popover-content-transform-origin) rounded-xl border p-2 text-sm shadow-lg backdrop-blur-lg focus-visible:outline-none",
         className
       )}
       {...props}

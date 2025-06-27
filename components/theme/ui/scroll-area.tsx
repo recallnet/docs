@@ -1,13 +1,18 @@
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import * as React from "react";
 
-import { cn } from "@/lib/theme/cn";
+import { cn } from "../../../lib/theme/cn";
 
 const ScrollArea = React.forwardRef<
   React.ComponentRef<typeof ScrollAreaPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
 >(({ className, children, ...props }, ref) => (
-  <ScrollAreaPrimitive.Root ref={ref} className={cn("overflow-hidden", className)} {...props}>
+  <ScrollAreaPrimitive.Root
+    ref={ref}
+    type="scroll"
+    className={cn("overflow-hidden", className)}
+    {...props}
+  >
     {children}
     <ScrollAreaPrimitive.Corner />
     <ScrollBar orientation="vertical" />

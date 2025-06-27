@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 import { baseOptions } from "@/app/layout.config";
 import { AISearchTrigger } from "@/components/ai";
-import { DocsLayout, type DocsLayoutProps } from "@/components/theme/notebook";
+import { DocsLayout, type DocsLayoutProps } from "@/components/theme/layouts/docs";
 import { buttonVariants } from "@/components/theme/ui/button";
 import { createMetadata, defaultMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";

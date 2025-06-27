@@ -1,41 +1,24 @@
 "use client";
 
 import { X } from "lucide-react";
-import { type HTMLAttributes, ReactNode, useCallback, useEffect, useState } from "react";
+import { type HTMLAttributes, useEffect, useState } from "react";
 
 import { cn } from "../../lib/theme/cn";
 import { buttonVariants } from "./ui/button";
 
-export type BannerProps = HTMLAttributes<HTMLDivElement> & {
-  /**
-   * @defaultValue 'normal'
-   */
-  variant?: "rainbow" | "normal";
-
-  /**
-   * Change Fumadocs layout styles
-   *
-   * @defaultValue true
-   */
-  changeLayout?: boolean;
-
-  /**
-   * @defaultValue 2rem
-   */
-  height?: string;
-
-  /**
-   * Banner content
-   */
-  children?: ReactNode;
-};
+type BannerVariant = "rainbow" | "normal";
 
 export function Banner({
   id,
   variant = "normal",
   changeLayout = true,
-  height = "2rem",
-  children,
+  height = "3rem",
+  rainbowColors = [
+    "rgba(0,149,255,0.56)",
+    "rgba(231,77,255,0.77)",
+    "rgba(255,0,0,0.73)",
+    "rgba(131,255,166,0.66)",
+  ],
   ...props
 }: HTMLAttributes<HTMLDivElement> & {
   /**
@@ -46,7 +29,12 @@ export function Banner({
   /**
    * @defaultValue 'normal'
    */
-  variant?: "rainbow" | "normal";
+  variant?: BannerVariant;
+
+  /**
+   * For rainbow variant only, customise the colors
+   */
+  rainbowColors?: string[];
 
   /**
    * Change Fumadocs layout styles
@@ -54,22 +42,12 @@ export function Banner({
    * @defaultValue true
    */
   changeLayout?: boolean;
-
-  /**
-   * Banner content
-   */
-  children?: ReactNode;
 }) {
   const [open, setOpen] = useState(true);
   const globalKey = id ? `nd-banner-${id}` : null;
 
   useEffect(() => {
     if (globalKey) setOpen(localStorage.getItem(globalKey) !== "true");
-  }, [globalKey]);
-
-  const onClick = useCallback(() => {
-    setOpen(false);
-    if (globalKey) localStorage.setItem(globalKey, "true");
   }, [globalKey]);
 
   if (!open) return null;
@@ -79,8 +57,9 @@ export function Banner({
       id={id}
       {...props}
       className={cn(
-        "bg-fd-secondary border-fd-border fixed top-0 right-0 left-0 z-50 flex flex-row items-center justify-center border-b px-4 text-center text-sm font-medium",
-        variant === "rainbow" && "dark:bg-fd-background",
+        "sticky top-0 z-40 flex flex-row items-center justify-center px-4 text-center text-sm font-medium",
+        variant === "normal" && "bg-fd-secondary",
+        variant === "rainbow" && "bg-fd-background",
         !open && "hidden",
         props.className
       )}
@@ -104,18 +83,25 @@ export function Banner({
         />
       ) : null}
 
-      {variant === "rainbow" ? rainbowLayer : null}
-      <div className="inline-flex items-center gap-2">{children}</div>
+      {variant === "rainbow"
+        ? flow({
+            colors: rainbowColors,
+          })
+        : null}
+      {props.children}
       {id ? (
         <button
           type="button"
           aria-label="Close Banner"
-          onClick={onClick}
+          onClick={() => {
+            setOpen(false);
+            if (globalKey) localStorage.setItem(globalKey, "true");
+          }}
           className={cn(
             buttonVariants({
               color: "ghost",
-              className: "text-fd-muted-foreground absolute end-2 top-1/2 -translate-y-1/2",
-              size: "icon",
+              className: "text-fd-muted-foreground/50 absolute end-2 top-1/2 -translate-y-1/2",
+              size: "icon-sm",
             })
           )}
         >
@@ -129,52 +115,28 @@ export function Banner({
 const maskImage =
   "linear-gradient(to bottom,white,transparent), radial-gradient(circle at top center, white, transparent)";
 
-const rainbowLayer = (
-  <>
-    <div
-      className="absolute inset-0 z-[-1]"
-      style={
-        {
-          maskImage,
-          maskComposite: "intersect",
-          animation: "fd-moving-banner 16s linear infinite",
-          "--start": "var(--color-blue)",
-          "--mid": "var(--color-red)",
-          "--end": "var(--color-yellow)",
-          "--via": "var(--color-green)",
-          animationDirection: "reverse",
-          backgroundImage:
-            "repeating-linear-gradient(60deg, var(--end), var(--start) 2%, var(--start) 5%, transparent 8%, transparent 14%, var(--via) 18%, var(--via) 22%, var(--mid) 28%, var(--mid) 30%, var(--via) 34%, var(--via) 36%, transparent, var(--end) calc(50% - 12px))",
-          backgroundSize: "200% 100%",
-          mixBlendMode: "difference",
-          opacity: 0.5,
-        } as object
-      }
-    />
-    <div
-      className="absolute inset-0 z-[-1]"
-      style={
-        {
-          maskImage,
-          maskComposite: "intersect",
-          animation: "fd-moving-banner 20s linear infinite",
-          "--start": "var(--color-red)",
-          "--mid": "var(--color-blue)",
-          "--end": "var(--color-green)",
-          "--via": "var(--color-yellow)",
-          backgroundImage:
-            "repeating-linear-gradient(45deg, var(--end), var(--start) 4%, var(--start) 8%, transparent 9%, transparent 14%, var(--mid) 16%, var(--mid) 20%, transparent, var(--via) 36%, var(--via) 40%, transparent 42%, var(--end) 46%, var(--end) calc(50% - 16.8px))",
-          backgroundSize: "200% 100%",
-          mixBlendMode: "color-dodge",
-          opacity: 0.45,
-        } as object
-      }
-    />
-    <style>
-      {`@keyframes fd-moving-banner {
+function flow({ colors }: { colors: string[] }) {
+  return (
+    <>
+      <div
+        className="absolute inset-0 z-[-1]"
+        style={
+          {
+            maskImage,
+            maskComposite: "intersect",
+            animation: "fd-moving-banner 20s linear infinite",
+            backgroundImage: `repeating-linear-gradient(70deg, ${[...colors, colors[0]].map((color, i) => `${color} ${(i * 50) / colors.length}%`).join(", ")})`,
+            backgroundSize: "200% 100%",
+            filter: "saturate(2)",
+          } as object
+        }
+      />
+      <style>
+        {`@keyframes fd-moving-banner {
             from { background-position: 0% 0;  }
             to { background-position: 100% 0;  }
          }`}
-    </style>
-  </>
-);
+      </style>
+    </>
+  );
+}

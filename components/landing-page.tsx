@@ -85,7 +85,7 @@ export function LandingPage() {
             {features.map((feature, index) => (
               <Card
                 title={feature.title}
-                titleClassName="text-lg font-bold"
+                // titleClassName="text-lg font-bold"
                 description={feature.description}
                 key={index}
                 href={feature.href}

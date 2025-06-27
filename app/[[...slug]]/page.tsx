@@ -8,9 +8,9 @@ import Image, { type ImageProps } from "next/image";
 import { notFound } from "next/navigation";
 import { HTMLAttributes } from "react";
 
-import { Callout, CalloutProps } from "@/components/theme/callout";
-import { Card, CardProps, Cards } from "@/components/theme/card";
-import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "@/components/theme/page";
+import { Callout, type CalloutProps } from "@/components/theme/callout";
+import { Card, type CardProps, Cards } from "@/components/theme/card";
+import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "@/components/theme/layouts/page";
 import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
@@ -74,7 +74,8 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
       }}
       toc={isRootPage || isApiPage ? undefined : page.data.toc}
       editOnGithub={isRootPage ? undefined : githubInfo}
-      currentPath={isRootPage ? undefined : page.file.path}
+
+      // currentPath={isRootPage ? undefined : page.file.path}
     >
       {!isRootPage && <DocsTitle>{page.data.title}</DocsTitle>}
       {!isRootPage && <DocsDescription className="mb-1">{page.data.description}</DocsDescription>}

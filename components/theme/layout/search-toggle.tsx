@@ -1,19 +1,23 @@
 "use client";
 
-import { useSearchContext } from "fumadocs-ui/provider";
-import { useI18n } from "fumadocs-ui/provider";
-import { SearchIcon } from "lucide-react";
-import { type ButtonHTMLAttributes } from "react";
+import { useI18n } from "fumadocs-ui/contexts/i18n";
+import { useSearchContext } from "fumadocs-ui/contexts/search";
+import { Search } from "lucide-react";
+import type { ComponentProps } from "react";
 
-import { buttonVariants } from "@/components/theme/ui/button";
-import { cn } from "@/lib/theme/cn";
+import { cn } from "../../../lib/theme/cn";
+import { type ButtonProps, buttonVariants } from "../ui/button";
+
+interface SearchToggleProps extends Omit<ComponentProps<"button">, "color">, ButtonProps {
+  hideIfDisabled?: boolean;
+}
 
 export function SearchToggle({
   hideIfDisabled,
+  size = "icon-sm",
+  color = "ghost",
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & {
-  hideIfDisabled?: boolean;
-}) {
+}: SearchToggleProps) {
   const { setOpenSearch, enabled } = useSearchContext();
   if (hideIfDisabled && !enabled) return null;
 
@@ -22,8 +26,8 @@ export function SearchToggle({
       type="button"
       className={cn(
         buttonVariants({
-          size: "icon",
-          color: "ghost",
+          size,
+          color,
         }),
         props.className
       )}
@@ -33,7 +37,7 @@ export function SearchToggle({
         setOpenSearch(true);
       }}
     >
-      <SearchIcon />
+      <Search />
     </button>
   );
 }
@@ -41,7 +45,7 @@ export function SearchToggle({
 export function LargeSearchToggle({
   hideIfDisabled,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & {
+}: ComponentProps<"button"> & {
   hideIfDisabled?: boolean;
 }) {
   const { enabled, hotKey, setOpenSearch } = useSearchContext();
@@ -54,14 +58,14 @@ export function LargeSearchToggle({
       data-search-full=""
       {...props}
       className={cn(
-        "bg-fd-secondary/50 text-fd-muted-foreground hover:bg-fd-accent hover:text-fd-accent-foreground inline-flex items-center gap-2 rounded-full border p-1.5 text-sm transition-colors",
+        "bg-fd-secondary/50 text-fd-muted-foreground hover:bg-fd-accent hover:text-fd-accent-foreground inline-flex items-center gap-2 rounded-lg border p-1.5 ps-2 text-sm transition-colors",
         props.className
       )}
       onClick={() => {
         setOpenSearch(true);
       }}
     >
-      <SearchIcon className="ms-1 size-4" />
+      <Search className="size-4" />
       {text.search}
       <div className="ms-auto inline-flex gap-0.5">
         {hotKey.map((k, i) => (

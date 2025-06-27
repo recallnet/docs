@@ -5,20 +5,18 @@ import { Airplay, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { type HTMLAttributes, useLayoutEffect, useState } from "react";
 
-import { cn } from "@/lib/theme/cn";
+import { cn } from "../../../lib/theme/cn";
 
-const itemVariants = cva("size-7 rounded-full p-1.5 text-fd-muted-foreground", {
+const itemVariants = cva("size-6.5 rounded-full p-1.5 text-fd-muted-foreground", {
   variants: {
     active: {
       true: "bg-fd-accent text-fd-accent-foreground",
       false: "text-fd-muted-foreground",
     },
-    hover: {
-      true: "hover:text-fd-accent-foreground transition-colors duration-100 hover:bg-fd-accent",
-      false: "",
-    },
   },
 });
+
+const full = [["light", Sun] as const, ["dark", Moon] as const, ["system", Airplay] as const];
 
 export function ThemeToggle({
   className,
@@ -34,7 +32,7 @@ export function ThemeToggle({
     setMounted(true);
   }, []);
 
-  const container = cn("inline-flex items-center rounded-full p-[3px]", className);
+  const container = cn("inline-flex items-center rounded-full border p-1", className);
 
   if (mode === "light-dark") {
     const value = mounted ? resolvedTheme : null;
@@ -42,15 +40,22 @@ export function ThemeToggle({
     return (
       <button
         className={container}
+        aria-label={`Toggle Theme`}
         onClick={() => setTheme(value === "light" ? "dark" : "light")}
         data-theme-toggle=""
         {...props}
       >
-        {value === "light" ? (
-          <Moon className={cn(itemVariants({ hover: true }))} />
-        ) : (
-          <Sun className={cn(itemVariants({ hover: true }))} />
-        )}
+        {full.map(([key, Icon]) => {
+          if (key === "system") return;
+
+          return (
+            <Icon
+              key={key}
+              fill="currentColor"
+              className={cn(itemVariants({ active: value === key }))}
+            />
+          );
+        })}
       </button>
     );
   }
@@ -59,18 +64,16 @@ export function ThemeToggle({
 
   return (
     <div className={container} data-theme-toggle="" {...props}>
-      {[["light", Sun] as const, ["dark", Moon] as const, ["system", Airplay] as const].map(
-        ([key, Icon]) => (
-          <button
-            key={key}
-            aria-label={key}
-            className={cn(itemVariants({ active: value === key }))}
-            onClick={() => setTheme(key)}
-          >
-            <Icon className="size-full" />
-          </button>
-        )
-      )}
+      {full.map(([key, Icon]) => (
+        <button
+          key={key}
+          aria-label={key}
+          className={cn(itemVariants({ active: value === key }))}
+          onClick={() => setTheme(key)}
+        >
+          <Icon className="size-full" fill="currentColor" />
+        </button>
+      ))}
     </div>
   );
 }

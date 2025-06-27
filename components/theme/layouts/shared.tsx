@@ -1,37 +1,52 @@
-import { Slot } from "@radix-ui/react-slot";
+import type { I18nConfig } from "fumadocs-core/i18n";
+import type { NavProviderProps } from "fumadocs-ui/contexts/layout";
 import type { ReactNode } from "react";
 
-import { BannerProps } from "./banner";
-import type { NavProviderProps, TitleProps } from "./layout/nav";
 import type { LinkItemType } from "./links";
 
-export interface NavOptions extends SharedNavProps {
+export interface NavOptions extends NavProviderProps {
   enabled: boolean;
   component: ReactNode;
-}
 
-export interface SharedNavProps extends TitleProps, NavProviderProps {
+  title?: ReactNode;
+
   /**
-   * Show/hide search toggle
-   *
-   * Note: Enable/disable search from root provider instead
+   * Redirect url of title
+   * @defaultValue '/'
    */
-  enableSearch?: boolean;
+  url?: string;
+
   children?: ReactNode;
 }
 
 export interface BaseLayoutProps {
+  themeSwitch?: {
+    enabled?: boolean;
+    component?: ReactNode;
+    mode?: "light-dark" | "light-dark-system";
+  };
+
+  searchToggle?: Partial<{
+    enabled: boolean;
+    components: Partial<{
+      sm: ReactNode;
+      lg: ReactNode;
+    }>;
+  }>;
+
   /**
    * Remove theme switcher component
+   *
+   * @deprecated Use `themeSwitch.enabled` instead.
    */
   disableThemeSwitch?: boolean;
 
   /**
-   * Enable Language Switch
+   * I18n options
    *
    * @defaultValue false
    */
-  i18n?: boolean;
+  i18n?: boolean | I18nConfig;
 
   /**
    * GitHub url
@@ -44,18 +59,15 @@ export interface BaseLayoutProps {
    */
   nav?: Partial<NavOptions>;
 
-  /**
-   * Include a closable banner
-   */
-  banner?: BannerProps;
-
   children?: ReactNode;
 }
+
+export { type LinkItemType };
 
 /**
  * Get Links Items with shortcuts
  */
-export function getLinks(links?: LinkItemType[], githubUrl?: string): LinkItemType[] {
+export function getLinks(links: LinkItemType[] = [], githubUrl?: string): LinkItemType[] {
   let result = links ?? [];
 
   if (githubUrl)
@@ -76,21 +88,4 @@ export function getLinks(links?: LinkItemType[], githubUrl?: string): LinkItemTy
     ];
 
   return result;
-}
-
-export function replaceOrDefault(
-  obj:
-    | {
-        enabled?: boolean;
-        component?: ReactNode;
-      }
-    | undefined,
-  def: ReactNode,
-  customComponentProps?: object,
-  disabled?: ReactNode
-): ReactNode {
-  if (obj?.enabled === false) return disabled;
-  if (obj?.component !== undefined) return <Slot {...customComponentProps}>{obj.component}</Slot>;
-
-  return def;
 }

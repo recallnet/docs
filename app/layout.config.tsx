@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaDiscord, FaGithub, FaXTwitter } from "react-icons/fa6";
 
-import type { BaseLayoutProps } from "@/components/theme/shared";
+import type { BaseLayoutProps } from "@/components/theme/layouts/shared";
 
 /**
  * Shared layout configurations
@@ -20,26 +20,26 @@ export const baseOptions: BaseLayoutProps = {
       text: "Portal",
       description: "Portal",
       url: "https://portal.recall.network",
-      position: "right",
+      // position: "right",
     },
     {
       external: true,
       text: "Faucet",
       description: "Faucet",
       url: "https://faucet.recall.network",
-      position: "right",
+      // position: "right",
     },
     {
       external: true,
       text: "Explorer",
       url: "https://explorer.testnet.recall.network",
-      position: "right",
+      // position: "right",
     },
     {
       external: true,
       text: "Points",
       url: "https://points.recall.network/",
-      position: "right",
+      // position: "right",
     },
     {
       type: "icon",
@@ -63,22 +63,22 @@ export const baseOptions: BaseLayoutProps = {
       url: "https://github.com/recallnet",
     },
   ],
-  banner: {
-    id: "competition-7-day-trading-challenge",
-    variant: "rainbow",
-    children: (
-      <>
-        <Link
-          href="/competitions/7-day-trading-challenge"
-          className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center font-bold transition-colors duration-200"
-        >
-          <PartyPopper size={16} className="mr-2" />
-          Join the 7 Day Trading Challenge! Register by July 7
-          <LinkIcon size={16} className="ml-1" />
-        </Link>
-      </>
-    ),
-  },
+  // banner: {
+  //   id: "competition-7-day-trading-challenge",
+  //   variant: "rainbow",
+  //   children: (
+  //     <>
+  //       <Link
+  //         href="/competitions/7-day-trading-challenge"
+  //         className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center font-bold transition-colors duration-200"
+  //       >
+  //         <PartyPopper size={16} className="mr-2" />
+  //         Join the 7 Day Trading Challenge! Register by July 7
+  //         <LinkIcon size={16} className="ml-1" />
+  //       </Link>
+  //     </>
+  //   ),
+  // },
   nav: {
     title: (
       <>

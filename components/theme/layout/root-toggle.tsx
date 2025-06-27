@@ -1,14 +1,14 @@
 "use client";
 
-import { useSidebar } from "fumadocs-ui/provider";
-import { ChevronDown } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { type HTMLAttributes, type ReactNode, useMemo, useState } from "react";
+import { usePathname } from "fumadocs-core/framework";
+import Link from "fumadocs-core/link";
+import { useSidebar } from "fumadocs-ui/contexts/sidebar";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { type ComponentProps, type ReactNode, useMemo, useState } from "react";
 
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/theme/ui/popover";
-import { cn } from "@/lib/theme/cn";
-import { isActive } from "@/lib/theme/is-active";
+import { cn } from "../../../lib/theme/cn";
+import { isActive } from "../../../lib/theme/is-active";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 export interface Option {
   /**
@@ -25,7 +25,7 @@ export interface Option {
    */
   urls?: Set<string>;
 
-  props?: HTMLAttributes<HTMLElement>;
+  props?: ComponentProps<"a">;
 }
 
 export function RootToggle({
@@ -35,17 +35,19 @@ export function RootToggle({
 }: {
   placeholder?: ReactNode;
   options: Option[];
-} & HTMLAttributes<HTMLButtonElement>) {
+} & ComponentProps<"button">) {
   const [open, setOpen] = useState(false);
   const { closeOnRedirect } = useSidebar();
   const pathname = usePathname();
 
   const selected = useMemo(() => {
-    return options.findLast((item) =>
-      item.urls
-        ? item.urls.has(pathname.endsWith("/") ? pathname.slice(0, -1) : pathname)
-        : isActive(item.url, pathname, true)
-    );
+    const lookup = pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+
+    return options.findLast((item) => {
+      if (item.urls) return item.urls.has(lookup);
+
+      return isActive(item.url, pathname, true);
+    });
   }, [options, pathname]);
 
   const onClick = () => {
@@ -53,55 +55,62 @@ export function RootToggle({
     setOpen(false);
   };
 
-  const item = selected ? <Item {...selected} /> : placeholder;
+  const item = selected ? (
+    <>
+      <div className="size-9 md:size-5">{selected.icon}</div>
+      <div>
+        <p className="text-sm font-medium">{selected.title}</p>
+        <p className="text-fd-muted-foreground text-[13px] empty:hidden md:hidden">
+          {selected.description}
+        </p>
+      </div>
+    </>
+  ) : (
+    placeholder
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      {item ? (
+      {item && (
         <PopoverTrigger
           {...props}
           className={cn(
-            "hover:bg-fd-accent/50 hover:text-fd-accent-foreground flex flex-row items-center gap-2 rounded-lg px-2 py-1.5",
+            "bg-fd-secondary/50 text-fd-secondary-foreground hover:bg-fd-accent data-[state=open]:bg-fd-accent data-[state=open]:text-fd-accent-foreground flex items-center gap-2 rounded-lg border p-2 text-start transition-colors",
             props.className
           )}
         >
           {item}
-          <ChevronDown className="text-fd-muted-foreground me-2 size-4" />
+          <ChevronsUpDown className="text-fd-muted-foreground ms-auto size-4" />
         </PopoverTrigger>
-      ) : null}
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] overflow-hidden p-0">
-        {options.map((item) => (
-          <Link
-            key={item.url}
-            href={item.url}
-            onClick={onClick}
-            {...item.props}
-            className={cn(
-              "flex w-full flex-row items-center gap-2 px-2 py-1.5",
-              selected === item
-                ? "bg-fd-accent text-fd-accent-foreground"
-                : "hover:bg-fd-accent/50",
-              item.props?.className
-            )}
-          >
-            <Item {...item} />
-          </Link>
-        ))}
+      )}
+      <PopoverContent className="flex min-w-(--radix-popover-trigger-width) flex-col gap-1 overflow-hidden p-1">
+        {options.map((item) => {
+          const isActive = item === selected;
+
+          return (
+            <Link
+              key={item.url}
+              href={item.url}
+              onClick={onClick}
+              {...item.props}
+              className={cn(
+                "hover:bg-fd-accent hover:text-fd-accent-foreground flex items-center gap-2 rounded-lg p-1.5",
+                item.props?.className
+              )}
+            >
+              <div className="size-9 md:mt-1 md:mb-auto md:size-5">{item.icon}</div>
+              <div>
+                <p className="text-sm font-medium">{item.title}</p>
+                <p className="text-fd-muted-foreground text-[13px] empty:hidden">
+                  {item.description}
+                </p>
+              </div>
+
+              <Check className={cn("text-fd-primary ms-auto size-3.5", !isActive && "invisible")} />
+            </Link>
+          );
+        })}
       </PopoverContent>
     </Popover>
-  );
-}
-
-function Item(props: Option) {
-  return (
-    <>
-      {props.icon}
-      <div className="flex-1 text-start">
-        <p className="text-sm font-medium">{props.title}</p>
-        {props.description ? (
-          <p className="text-fd-muted-foreground text-xs">{props.description}</p>
-        ) : null}
-      </div>
-    </>
   );
 }

@@ -1,11 +1,10 @@
 "use client";
 
+import { usePathname } from "fumadocs-core/framework";
 import Link from "fumadocs-core/link";
-import { usePathname } from "next/navigation";
 import { type AnchorHTMLAttributes, type HTMLAttributes, type ReactNode, forwardRef } from "react";
 
-import { cn } from "@/lib/theme/cn";
-import { isActive } from "@/lib/theme/is-active";
+import { isActive } from "../../../lib/theme/is-active";
 
 interface BaseItem {
   /**
@@ -14,7 +13,6 @@ interface BaseItem {
    * @defaultValue 'all'
    */
   on?: "menu" | "nav" | "all";
-  position?: "left" | "right";
 }
 
 export interface BaseLinkType extends BaseItem {
@@ -26,7 +24,6 @@ export interface BaseLinkType extends BaseItem {
    */
   active?: "url" | "nested-url" | "none";
   external?: boolean;
-  className?: string;
 }
 
 export interface MainItemType extends BaseLinkType {
@@ -73,7 +70,6 @@ export interface MenuItemType extends BaseItem {
          */
         menu?: HTMLAttributes<HTMLElement> & {
           banner?: ReactNode;
-          footer?: ReactNode;
         };
       })
     | CustomItem
@@ -99,20 +95,13 @@ export type LinkItemType = MainItemType | IconItemType | ButtonItem | MenuItemTy
 export const BaseLinkItem = forwardRef<
   HTMLAnchorElement,
   Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & { item: BaseLinkType }
->(({ item, className, ...props }, ref) => {
+>(({ item, ...props }, ref) => {
   const pathname = usePathname();
   const activeType = item.active ?? "url";
   const active = activeType !== "none" && isActive(item.url, pathname, activeType === "nested-url");
 
   return (
-    <Link
-      ref={ref}
-      href={item.url}
-      external={item.external}
-      {...props}
-      className={cn(item.className, className)}
-      data-active={active}
-    >
+    <Link ref={ref} href={item.url} external={item.external} {...props} data-active={active}>
       {props.children}
     </Link>
   );

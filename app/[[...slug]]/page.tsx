@@ -4,6 +4,7 @@ import { ImageZoom, type ImageZoomProps } from "fumadocs-ui/components/image-zoo
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { TypeTable } from "fumadocs-ui/components/type-table";
+import Image, { type ImageProps } from "next/image";
 import { notFound } from "next/navigation";
 import { HTMLAttributes } from "react";
 
@@ -26,6 +27,7 @@ const defaultMdxComponents = {
   Tab,
   Tabs,
   TypeTable,
+  ImageNoZoom: (props: ImageProps) => <Image {...props} />,
   img: (props: ImageZoomProps) => <ImageZoom {...props} />,
   Card: (props: CardProps) => <Card {...props} />,
   Cards: (props: HTMLAttributes<HTMLDivElement>) => <Cards {...props} />,

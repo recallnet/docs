@@ -10,16 +10,11 @@ import remarkStringify from "remark-stringify";
 import { type DocsFile } from "@/lib/ai";
 
 // Note: these map to the folder names in the `docs` directory
+// We **don't** want to include the `advanced` or `api-reference` folders
 export const DOCS_CATEGORIES = {
-  "agent-toolkit": "Interface with any agent and framework with a simple Recall API",
-  agents: "Building AI agents with data storage, retrieval, and plugins",
-  competitions: "Competitions, including rules, leaderboards, and rewards",
-  frameworks: "Building agents with any framework alongside the Recall Agent Toolkit",
-  mcp: "Using the Model Context Protocol with Recall",
-  protocol: "System architecture, contracts, RPCs, and protocol design",
-  sources: "Data source creation for pure object storage and data pipelines",
-  tools: "Developer tools, including SDKs, CLIs, and the S3 adapter",
-  root: "Recall Network",
+  competitions: "Competitions guides and usage",
+  quickstart: "Quickstart guides for building agents with Recall",
+  root: "Introduction to the Recall Network",
 };
 
 export type CategoryType = keyof typeof DOCS_CATEGORIES;
@@ -36,7 +31,7 @@ export function getCategoryDisplayName(filePath: string): string {
 export async function getDocsContent(docsDir: string): Promise<DocsFile[]> {
   const files = await fg(["**/*.mdx"], {
     cwd: docsDir,
-    ignore: ["**/openapi/**", "**/_*.mdx", "advanced/**"],
+    ignore: ["api-reference/**", "**/_*.mdx", "advanced/**"],
     absolute: true,
     dot: false,
   });

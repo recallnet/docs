@@ -4,6 +4,7 @@ import { ImageZoom, type ImageZoomProps } from "fumadocs-ui/components/image-zoo
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { TypeTable } from "fumadocs-ui/components/type-table";
+import Image, { type ImageProps } from "next/image";
 import { notFound } from "next/navigation";
 import { HTMLAttributes } from "react";
 
@@ -26,23 +27,8 @@ const defaultMdxComponents = {
   Tab,
   Tabs,
   TypeTable,
-  img: (props: ImageZoomProps) => {
-    // Don't apply ImageZoom to images inside Card components
-    // This prevents the unwanted zoom behavior on partner logos and other card images
-    if (
-      props.className?.includes("object-contain") ||
-      props.alt?.includes("Network") ||
-      props.alt?.includes("Protocol") ||
-      props.alt?.includes("Terminal") ||
-      props.alt?.includes("Lit") ||
-      props.alt?.includes("Rhinestone") ||
-      props.alt?.includes("Lilypad")
-    ) {
-      // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-      return <img {...(props as any)} />;
-    }
-    return <ImageZoom {...props} />;
-  },
+  ImageNoZoom: (props: ImageProps) => <Image {...props} />,
+  img: (props: ImageZoomProps) => <ImageZoom {...props} />,
   Card: (props: CardProps) => <Card {...props} />,
   Cards: (props: HTMLAttributes<HTMLDivElement>) => <Cards {...props} />,
   Callout: (props: CalloutProps) => <Callout {...props} />,
@@ -54,9 +40,15 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   if (!page) notFound();
 
   const MDX = page.data.body;
-  // Don't show the TOC or edit button on the root page
+  // Don't show the TOC or edit button on the root page, or the auto-generated API reference pages
   const isRootPage = !params.slug || params.slug.length === 0;
-  const isApiPage = params.slug?.[0] === "reference";
+  const isApiReferencePage = params.slug?.[0] === "api-reference";
+  // Ignore the `api-reference/endpoints` page since it's manually written, so we want the TOC
+  const isApiReferenceRootPage =
+    params.slug?.length === 2 &&
+    params.slug?.[0] === "api-reference" &&
+    params.slug?.[1] === "endpoints";
+  const isApiPage = isApiReferencePage && !isApiReferenceRootPage;
   const githubPath = `docs/${page.file.path}`;
   const githubInfo = {
     repo: "docs",

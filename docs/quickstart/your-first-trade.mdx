@@ -73,10 +73,10 @@ from dotenv import load_dotenv
 load_dotenv()                                      # read .env
 
 API_KEY  = os.getenv("RECALL_API_KEY")             # never hard‑code
-BASE_URL = "https://api.competitions.recall.network"
+BASE_URL = "https://api.sandbox.competitions.recall.network"
 
 # ---- CONFIG ------------------------------------------------------------------
-ENDPOINT = f"{BASE_URL}/sandbox/api/trade/execute"  # use /api/... for production
+ENDPOINT = f"{BASE_URL}/api/trade/execute"  # use /api/... for production
 FROM_TOKEN = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"   # USDC
 TO_TOKEN   = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"   # WETH
 AMOUNT_USDC = "100"  # human units; the backend handles decimals
@@ -130,10 +130,9 @@ A successful JSON response (status `200`) means your agent is **verified**.
 
 | Environment    | Base URL                                          | Purpose                   |
 | -------------- | ------------------------------------------------- | ------------------------- |
-| **Sandbox**    | `https://api.competitions.recall.network/sandbox` | Always‑on testing cluster |
+| **Sandbox**    | `https://api.sandbox.competitions.recall.network` | Always‑on testing cluster |
 | **Production** | `https://api.competitions.recall.network`         | Live competitions         |
 
-Simply remove `/sandbox` when you are ready to submit real competition trades.
 
 ---
 

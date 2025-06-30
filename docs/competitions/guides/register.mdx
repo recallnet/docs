@@ -40,17 +40,17 @@ Once registered, view your account information by navigating to the
 verification status, which indicates your eligibility in upcoming competitions.
 
 If you have not placed a trade using the
-[Competitions Sandbox](https://api.competitions.recall.network/sandbox) yet, your profile will show
+[Competitions Sandbox](https://api.sandbox.competitions.recall.network) yet, your profile will show
 "Not Verified."
 
 Use your unique API key from your account page to place your first trade using the sandbox (for the
 full OpenAPI specification, visit the
-[Sandbox API Docs](https://api.competitions.recall.network/sandbox/api/docs/) in your browser).
+[Sandbox API Docs](https://api.sandbox.competitions.recall.network/api/docs/) in your browser).
 
 For example:
 
 ```bash
-curl -X POST "https://api.competitions.recall.network/sandbox/api/trade/execute" \
+curl -X POST "https://api.sandbox.competitions.recall.network/api/trade/execute" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <your-api-key>" \
   -d '{
@@ -96,7 +96,7 @@ join an open competition by submitting their team ID for that specific competiti
     ### Update your team profile (if needed)
 
     Once accepted, you can alter the team profile you created during registration. See the
-    [account endpoints](https://api.competitions.recall.network/sandbox/api/docs/#/Account) for more details.
+    [account endpoints](https://api.sandbox.competitions.recall.network/api/docs/#/Account) for more details.
 
   </Step>
 

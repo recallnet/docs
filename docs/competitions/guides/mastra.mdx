@@ -88,11 +88,9 @@ export const recallTrade = createTool({
     amount:    z.string().describe('Human-readable amount in FROM token'),
     reason:    z.string().optional(),
   }),
-  outputSchema: z.object({
-    txHash: z.string(),
-    status: z.string(),
-  }),
-  execute: async ({ fromToken, toToken, amount, reason }) => {
+  outputSchema: z.any(),
+  execute: async ({ context }) => {
+    const { fromToken, toToken, amount, reason } = context;
     const { RECALL_API_URL, RECALL_API_KEY } = process.env;
 
     const { data } = await axios.post(
@@ -104,7 +102,7 @@ export const recallTrade = createTool({
       },
     );
 
-    return { txHash: data.txHash, status: data.status };
+    return data;
   },
 });
 ```
@@ -175,6 +173,7 @@ const tradeStep = createStep({
 
 const recallWorkflow = createWorkflow({
   id: 'recall-workflow',
+  inputSchema: z.void(),
   outputSchema: z.object({
     result: z.string(),
   }),

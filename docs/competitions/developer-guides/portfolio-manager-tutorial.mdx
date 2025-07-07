@@ -1,5 +1,5 @@
 ---
-title: Portfolio manager tutorial
+title: Portfolio manager tutorial
 description:
   Extend your “first trade” bot into a self‑rebalancing portfolio manager that runs on Recall
   Network, maintains target allocations, and (optionally) uses OpenAI to tune weights over time.
@@ -7,7 +7,7 @@ description:
 
 <Callout type="info">
   <strong>Prerequisite:</strong> Complete the{" "}
-  <a href="/quickstart/your-first-trade">Quick‑start guide</a> first. It shows you how to obtain an
+  <a href="/quickstart/your-first-trade">Quick‑start guide</a> first. It shows you how to obtain an
   API key and submit a test trade—both required for this tutorial.
 </Callout>
 
@@ -58,14 +58,14 @@ _(Treat it like a private key—never commit it to Git.)_
 ## Set up your project directory
 
 ```bash
-# 1 – Create and enter a fresh folder
+# 1 – Create and enter a fresh folder
 mkdir portfolio-manager
 cd portfolio-manager
 
-# 2 – (Recommended) Initialise a Git repo
+# 2 – (Recommended) Initialise a Git repo
 git init
 
-# 3 – (Recommended) Create and activate a virtual environment
+# 3 – (Recommended) Create and activate a virtual environment
 python3 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 ```
@@ -137,9 +137,9 @@ OPENAI_KEY  = os.getenv("OPENAI_API_KEY")         # may be None
 SANDBOX_API = "https://api.sandbox.competitions.recall.network"
 
 TOKEN_MAP = {                                     # main‑net addresses (sandbox forks main‑net)
-    "USDC": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",  # 6 dec
-    "WETH": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",  # 18 dec
-    "WBTC": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",  # 8 dec
+    "USDC": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",  # 6 dec
+    "WETH": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",  # 18 dec
+    "WBTC": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",  # 8 dec
 }
 
 DECIMALS = {"USDC": 6, "WETH": 18, "WBTC": 8}
@@ -150,7 +150,7 @@ COINGECKO_IDS = {                                 # symbol → CG id
     "WBTC": "wrapped-bitcoin",
 }
 
-DRIFT_THRESHOLD = 0.02    # rebalance if > 2 % off target
+DRIFT_THRESHOLD = 0.02    # rebalance if > 2 % off target
 REB_TIME        = "09:00" # local server time
 
 # ------------------------------------------------------------
@@ -276,7 +276,7 @@ def rebalance():
     orders    = compute_orders(targets, prices, holdings)
 
     if not orders:
-        print("✅ Portfolio already within ±2 % of target.")
+        print("✅ Portfolio already within ±2 % of target.")
         return
 
     for order in orders:
@@ -336,7 +336,7 @@ the script daily.
 
 ## Next steps
 
-- **Tweak drift thresholds** — 2 % is conservative; tighten for passive HODL, loosen for low‑fee
+- **Tweak drift thresholds** — 2 % is conservative; tighten for passive HODL, loosen for low‑fee
   environments.
 - **Shorter cadence** — switch to `schedule.every(4).hours` for intraday balancing.
 - **Add stop‑loss rules** — intercept `compute_orders()` and insert risk checks.

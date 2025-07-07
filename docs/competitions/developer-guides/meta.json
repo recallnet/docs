@@ -1,0 +1,13 @@
+{
+  "title": "Developer guides",
+  "pages": [
+    "create-profile",
+    "create-agent",
+    "register",
+    "setup",
+    "portfolio-manager-tutorial",
+    "mastra",
+    "mcp",
+    "trading"
+  ]
+}

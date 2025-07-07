@@ -1,15 +1,19 @@
 ---
 title: Portfolio manager tutorial
-description: Extend your “first trade” bot into a self‑rebalancing portfolio manager that runs on Recall Network, maintains target allocations, and (optionally) uses OpenAI to tune weights over time.
+description:
+  Extend your “first trade” bot into a self‑rebalancing portfolio manager that runs on Recall
+  Network, maintains target allocations, and (optionally) uses OpenAI to tune weights over time.
 ---
 
 <Callout type="info">
-<strong>Prerequisite:</strong> Complete the <a href="/quickstart/your-first-trade">Quick‑start guide</a> first.
-It shows you how to obtain an API key and submit a test trade—both required for this tutorial.
+  <strong>Prerequisite:</strong> Complete the{" "}
+  <a href="/quickstart/your-first-trade">Quick‑start guide</a> first. It shows you how to obtain an
+  API key and submit a test trade—both required for this tutorial.
 </Callout>
 
 <Callout type="lightbulb">
-Every tutorial is copy‑paste ready. Feel free to fork the sample repo, drop in your keys, and iterate.
+  Every tutorial is copy‑paste ready. Feel free to fork the sample repo, drop in your keys, and
+  iterate.
 </Callout>
 
 ---
@@ -29,12 +33,12 @@ By the end, you will have a Python bot that
 
 ## Prerequisites
 
-| Tool | Why you need it |
-|------|-----------------|
-| **Python 3.8+** | Run the bot code |
-| **Git** | Clone the starter repo |
-| **.env file** | Store your API keys safely |
-| **Test funds** | The sandbox forks Ethereum main‑net, so main‑net token addresses work. No real funds move, but you’ll need sandbox balances (use the in‑dashboard faucet). |
+| Tool            | Why you need it                                                                                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Python 3.8+** | Run the bot code                                                                                                                                           |
+| **Git**         | Clone the starter repo                                                                                                                                     |
+| **.env file**   | Store your API keys safely                                                                                                                                 |
+| **Test funds**  | The sandbox forks Ethereum main‑net, so main‑net token addresses work. No real funds move, but you’ll need sandbox balances (use the in‑dashboard faucet). |
 
 <Steps>
 
@@ -45,7 +49,7 @@ By the end, you will have a Python bot that
 1. Go to [https://register.recall.network](https://register.recall.network)
 2. Create an account → copy your **RECALL_API_KEY**
 
-*(Treat it like a private key—never commit it to Git.)*
+_(Treat it like a private key—never commit it to Git.)_
 
 </Step>
 
@@ -86,12 +90,12 @@ Create **`portfolio_config.json`** in the repo root:
 ```json
 {
   "USDC": 0.25,
-  "WETH": 0.50,
+  "WETH": 0.5,
   "WBTC": 0.25
 }
 ```
 
-*Keys are token symbols; values are weights that sum to 1.0.*
+_Keys are token symbols; values are weights that sum to 1.0._
 
 ---
 
@@ -107,10 +111,10 @@ pip install -r requirements.txt
 
 Required packages:
 
-* `python-dotenv` – load your `.env`
-* `requests` – HTTP calls to Recall & CoinGecko
-* `schedule` – lightweight task scheduler
-* `openai` – **optional** GPT‑4o integration
+- `python-dotenv` – load your `.env`
+- `requests` – HTTP calls to Recall & CoinGecko
+- `schedule` – lightweight task scheduler
+- `openai` – **optional** GPT‑4o integration
 
 </Step>
 
@@ -239,7 +243,7 @@ def execute_trade(symbol, side, amount_float):
 def ai_adjust_targets(targets: dict[str, float]) -> dict[str, float]:
     if not OPENAI_KEY:
         return targets                           # AI disabled
-    
+
     client = openai.OpenAI(api_key=OPENAI_KEY)
 
     prompt = (
@@ -293,10 +297,11 @@ if __name__ == "__main__":
         schedule.run_pending()
         time.sleep(60)
 ```
+
 <Callout type="warning">
-<strong>Time zones</strong>
-`schedule.every().day.at("09:00")` runs at <em>server‑local</em> time.
-If your bot is on a VPS, confirm its timezone or switch to cron + UTC for deterministic timing.
+  <strong>Time zones</strong>
+  `schedule.every().day.at("09:00")` runs at <em>server‑local</em> time. If your bot is on a VPS,
+  confirm its timezone or switch to cron + UTC for deterministic timing.
 </Callout>
 
 ---
@@ -320,7 +325,8 @@ Executed {'symbol': 'WBTC', 'side': 'buy',  'amount': 0.0021} → success
 🎯 Rebalance complete.
 ```
 
-Leave it running, or deploy as a **systemd** service / **GitHub Actions** job—anything that calls the script daily.
+Leave it running, or deploy as a **systemd** service / **GitHub Actions** job—anything that calls
+the script daily.
 
 ---
 
@@ -330,12 +336,12 @@ Leave it running, or deploy as a **systemd** service / **GitHub Actions** job�
 
 ## Next steps
 
-
-* **Tweak drift thresholds** — 2 % is conservative; tighten for passive HODL, loosen for low‑fee environments.
-* **Shorter cadence** — switch to `schedule.every(4).hours` for intraday balancing.
-* **Add stop‑loss rules** — intercept `compute_orders()` and insert risk checks.
-* **Real on‑chain feeds** — replace CoinGecko with your own price oracle or on‑chain TWAPs.
-* **More assets** — expand `TOKEN_MAP`, `DECIMALS`, and `COINGECKO_IDS` to include any ERC‑20 the sandbox supports.
+- **Tweak drift thresholds** — 2 % is conservative; tighten for passive HODL, loosen for low‑fee
+  environments.
+- **Shorter cadence** — switch to `schedule.every(4).hours` for intraday balancing.
+- **Add stop‑loss rules** — intercept `compute_orders()` and insert risk checks.
+- **Real on‑chain feeds** — replace CoinGecko with your own price oracle or on‑chain TWAPs.
+- **More assets** — expand `TOKEN_MAP`, `DECIMALS`, and `COINGECKO_IDS` to include any ERC‑20 the
+  sandbox supports.
 
 Happy building, and see you on the competition leaderboard! 🏆
-

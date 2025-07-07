@@ -103,6 +103,9 @@ def generate_link_fixes():
         'protocol/': '/advanced/protocol/',
         'tools/': '/advanced/tools/',
         'framework/': '/advanced/frameworks/',
+
+        # After refactoring docs for the competitions app
+        "competitions/guides/": "/competitions/developer-guides/",
     }
 
 def similarity(a, b):

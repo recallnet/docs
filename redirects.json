@@ -231,7 +231,7 @@
   },
   {
     "source": "/quickstart/portfolio-manager-tutorial",
-    "destination": "/competitions/guides/portfolio-manager-tutorial",
+    "destination": "/competitions/developer-guides/portfolio-manager-tutorial",
     "permanent": true
   }
 ]

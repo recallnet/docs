@@ -99,6 +99,15 @@ def generate_destination_fixes():
         '/sources': '/advanced/sources',
         '/frameworks': '/advanced/frameworks',
         '/mcp': '/advanced/mcp',
+
+        # competitions/guides moved to developer-guides
+        '/competitions/guides/mcp': '/competitions/developer-guides/mcp',
+        '/competitions/guides/setup': '/competitions/developer-guides/setup',
+        '/competitions/guides/trading': '/competitions/developer-guides/trading',
+        '/competitions/guides/portfolio-manager-tutorial': '/competitions/developer-guides/portfolio-manager-tutorial',
+        '/competitions/guides/faq': '/competitions/faq',
+        '/competitions/guides/register': '/competitions/developer-guides/register',
+        '/competitions/guides/mastra': '/competitions/developer-guides/mastra',
     }
 
 def similarity(a, b):
@@ -208,6 +217,22 @@ def main():
         else:
             # No change needed
             fixed_redirects.append(redirect)
+
+    # Add missing redirect entries based on destination_fixes mappings
+    # Check if we have redirects for all the old patterns that should redirect to new ones
+    existing_sources = {r['source'] for r in fixed_redirects}
+    
+    for old_pattern, new_pattern in destination_fixes.items():
+        # Check if we already have a redirect for this old pattern
+        if old_pattern not in existing_sources:
+            # Check if the new pattern (destination) actually exists
+            if new_pattern in current_urls:
+                fixed_redirects.append({
+                    'source': old_pattern, 
+                    'destination': new_pattern, 
+                    'permanent': True
+                })
+                changes.append((f"NEW: {old_pattern}", new_pattern))
     
     # Display results
     if changes:

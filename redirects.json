@@ -266,7 +266,7 @@
   },
   {
     "source": "/competitions/guides/setup",
-    "destination": "/competitions/developer-guides/setup",
+    "destination": "/competitions/developer-guides",
     "permanent": true
   },
   {

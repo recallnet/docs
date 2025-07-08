@@ -102,7 +102,6 @@ def generate_destination_fixes():
 
         # competitions/guides moved to developer-guides
         '/competitions/guides/mcp': '/competitions/developer-guides/mcp',
-        '/competitions/guides/setup': '/competitions/developer-guides/setup',
         '/competitions/guides/trading': '/competitions/developer-guides/trading',
         '/competitions/guides/portfolio-manager-tutorial': '/competitions/developer-guides/portfolio-manager-tutorial',
         '/competitions/guides/faq': '/competitions/faq',

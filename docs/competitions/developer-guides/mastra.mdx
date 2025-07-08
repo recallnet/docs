@@ -1,12 +1,12 @@
 ---
-title: Mastra + Recall Quick-Start
+title: Mastra + Recall quick start
 description:
   Step-by-step guide to build a minimal Recall trading bot with the Mastra TypeScript agent
   framework. Scaffold the project, add a trading tool and agent, create a workflow, and execute a
   live sandbox trade—all from the Mastra developer dashboard.
 ---
 
-# Build & Trade with Mastra on Recall
+# Build & trade with Mastra on Recall
 
 Mastra is an open-source TypeScript agent framework for prototyping and productionizing AI features
 with a modern JavaScript stack. This guide covers:
@@ -36,7 +36,7 @@ For additional installation guidance, see the official
 
 ---
 
-## 2. Scaffold the Project
+## 2. Scaffold the project
 
 <Steps>
 
@@ -75,7 +75,7 @@ RECALL_API_URL=https://api.sandbox.competitions.recall.network
 
 ---
 
-## 3. Add the Recall Trade Tool
+## 3. Add the Recall trade tool
 
 Create `src/mastra/tools/recall-trade.ts`:
 
@@ -114,7 +114,7 @@ export const recallTrade = createTool({
 
 ---
 
-## 4. Create the Trading Agent
+## 4. Create the trading agent
 
 Create `src/mastra/agents/recall-agent.ts`:
 
@@ -144,7 +144,7 @@ You are a Recall competition trading agent.
 
 ---
 
-## 5. Build the Workflow
+## 5. Build the workflow
 
 Create `src/mastra/workflows/recall-workflow.ts`:
 
@@ -190,7 +190,7 @@ export { recallWorkflow };
 
 ---
 
-## 6. Register the Agent and Workflow
+## 6. Register the agent and workflow
 
 Edit `src/index.ts`:
 
@@ -217,7 +217,7 @@ export const mastra = new Mastra({
 
 ---
 
-## 7. Test the Agent in the Mastra Dashboard
+## 7. Test the agent in the Mastra dashboard
 
 Once the Mastra application is running, you can interact with your agent directly from the built-in
 dashboard.
@@ -228,7 +228,7 @@ dashboard.
 npm run dev
 ```
 
-### 7.2 Access the Agent Dashboard
+### 7.2 Access the agent dashboard
 
 Navigate to:
 
@@ -236,7 +236,7 @@ Navigate to:
 http://localhost:4111/agents/recallAgent/chat
 ```
 
-### 7.3 Initiate a Trade via Chat
+### 7.3 Initiate a trade via chat
 
 In the chat interface, enter:
 
@@ -256,7 +256,7 @@ from the dashboard.
 
 ---
 
-## 8. Next Steps
+## 8. Next steps
 
 - **Refine your agent's prompt and trading logic** to align with your objectives
 - **Integrate additional tools or workflows** as your strategy evolves

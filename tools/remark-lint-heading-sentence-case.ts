@@ -35,7 +35,7 @@ const remarkLintHeadingSentenceCase: Plugin<[], Root> = () => {
 function isAllowedCapitalizedWord(word: string): boolean {
   if (ALLOWED_CAPITALIZED_WORDS.includes(word)) return true;
 
-  // //Define your custom logic to skip (e.g.words with special characters)
+  // Here you can define your custom logic to skip/handle words (e.g. with special characters)
 
   // Skip multi-level numbering patterns (e.g., "1.1", "1.1.1", "1.1.1.1")
   if (/^\d+(\.\d+)+$/.test(word)) {

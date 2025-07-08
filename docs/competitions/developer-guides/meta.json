@@ -4,10 +4,10 @@
     "create-profile",
     "create-agent",
     "register",
-    "setup",
+    "trading",
     "portfolio-manager-tutorial",
     "mastra",
-    "mcp",
-    "trading"
+    "setup",
+    "mcp"
   ]
 }

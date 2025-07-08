@@ -35,8 +35,10 @@ const remarkLintHeadingSentenceCase: Plugin<[], Root> = () => {
 function isAllowedCapitalizedWord(word: string): boolean {
   if (ALLOWED_CAPITALIZED_WORDS.includes(word)) return true;
 
-  // Skip words with special characters or numbers
-  if (word.includes(".") || word.includes("-") || word.includes("_") || /^\d+$/.test(word)) {
+  // //Define your custom logic to skip (e.g.words with special characters)
+
+  // Skip multi-level numbering patterns (e.g., "1.1", "1.1.1", "1.1.1.1")
+  if (/^\d+(\.\d+)+$/.test(word)) {
     return true;
   }
 
@@ -147,7 +149,9 @@ function processFrontmatterTitle(text: string, file: VFile, node: Heading): bool
  * Handle numbered headings (e.g., "## 5. Build the portfolio")
  */
 function handleNumberedHeading(text: string, file: VFile, node: Heading): boolean {
-  const numberedHeadingMatch = text.match(/^(\d+)\.\s+(.+)$/);
+  // Updated regex to support multi-level numbering with optional trailing dot: 1., 1.1., 1.1.1., 1.1, 1.1.1, etc.
+  // Also supports &nbsp;· format: 1&nbsp;·, 1.1&nbsp;·, etc.
+  const numberedHeadingMatch = text.match(/^(\d+(?:\.\d+)*)(?:\.?\s+|&nbsp;·\s*)(.+)$/);
   if (!numberedHeadingMatch) return false;
 
   const headingText = numberedHeadingMatch[2];

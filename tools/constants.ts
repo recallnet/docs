@@ -33,6 +33,8 @@ export const ALLOWED_CAPITALIZED_WORDS: string[] = [
   "AgentRank",
   "Recall",
   "Agent",
+  "AgentToolkit",
+  "RecallAgentToolkit",
   "Portal",
   "Hub",
   "Toolkit",

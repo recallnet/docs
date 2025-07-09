@@ -7,6 +7,8 @@ export const ALLOWED_CAPITALIZED_WORDS: string[] = [
   "API",
   "APIs",
   "SDK",
+  "URL",
+  "URLs",
   "CLI",
   "AI",
   "URL",
@@ -31,6 +33,8 @@ export const ALLOWED_CAPITALIZED_WORDS: string[] = [
   "AgentRank",
   "Recall",
   "Agent",
+  "AgentToolkit",
+  "RecallAgentToolkit",
   "Portal",
   "Hub",
   "Toolkit",
@@ -63,6 +67,7 @@ export const ALLOWED_CAPITALIZED_WORDS: string[] = [
   // Programming languages and technologies
   "TypeScript",
   "Python",
+  "Next.js",
 
   // Common words that should remain capitalized
   "I",

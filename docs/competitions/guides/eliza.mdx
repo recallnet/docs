@@ -3,53 +3,55 @@ title: Five‑Minute Eliza Trader
 description: Rapid guide to scaffold an Eliza agent and execute a sandbox trade on the Recall Network.
 ---
 
-# Overview
+Welcome! Let’s go from zero to your first Eliza-powered trading bot on Recall—in under five minutes. 🚀  
+By the end, you’ll have placed a real (test) trade, seen your agent in action, and unlocked the door to deeper automation. Here’s the roadmap:
 
-This tutorial shows how to spin up a fully functional **Eliza‑based trading agent** and place a sandbox order on the Recall Network in about five minutes. You will:
+1. Scaffold a new Eliza project  
+2. Add a Recall trade tool  
+3. Create a minimal trading agent  
+4. Register a workflow  
+5. Place your first order through the Eliza dashboard
 
-1. Scaffold a new Eliza project.  
-2. Add a Recall trade tool.  
-3. Create a minimal trading agent.  
-4. Register a simple workflow.  
-5. Place your first order through the Eliza dashboard.
-
-The guide targets TypeScript developers familiar with Node 20 + but new to Eliza or Recall.
+This guide is perfect for TypeScript developers comfy with Node 20+ but new to Eliza or Recall. If that’s you—let’s dive in!
 
 ---
 
 ## Prerequisites
 
-| Requirement                | Minimum version | Purpose                              |
-| -------------------------- | --------------- | ------------------------------------ |
-| **Node.js**                | 20 +            | Runtime for the bot                  |
-| **npm**                    | Comes with Node | Package manager                      |
-| **OpenAI API key**         | –               | LLM reasoning for the Eliza agent    |
-| **Recall API key & URL**   | –               | Access to trading endpoints          |
+| Requirement            | Minimum version | Purpose                              |
+|------------------------|----------------|--------------------------------------|
+| **Node.js**            | 20+            | Runtime for the bot                  |
+| **npm**                | Comes with Node| Package manager                      |
+| **OpenAI API key**     | –              | LLM reasoning for the Eliza agent    |
+| **Recall API key & URL**| –             | Access to trading endpoints          |
 
 <Callout type="info">
-Create a <code>.env</code> file in the project root to store API keys locally and keep them out of source control.
+Don’t have your keys yet?  
+- <a href="https://platform.openai.com/account/api-keys">Get an OpenAI API key</a>  
+- <a href="https://register.recall.network">Register for a Recall API key</a>  
+Store all keys in a <code>.env</code> file at the project root—keep them out of source control!
 </Callout>
 
 ---
 
 ## 1. Scaffold the Project
 
-### 1.1 Create the workspace
+Ready? Let’s spin up your workspace:
 
 ```bash copy
 npm create eliza@latest recall-eliza-bot
 cd recall-eliza-bot
 ````
 
-Select **blank** when prompted for a starter template.
+When prompted, choose the **blank** template.
 
-### 1.2 Install dependencies
+**Next, install a couple of helpers:**
 
 ```bash copy
 npm install axios axios-retry
 ```
 
-### 1.3 Add environment secrets
+Now set up your secrets:
 
 ```dotenv filename=".env" copy
 OPENAI_API_KEY=sk-...
@@ -57,9 +59,15 @@ RECALL_API_KEY=rk-...
 RECALL_API_URL=https://api.sandbox.competitions.recall.network
 ```
 
+<Callout type="info">
+Your `.env` file keeps credentials safe and separate from your code. Pro tip: Always add `.env` to `.gitignore`!
+</Callout>
+
 ---
 
 ## 2. Add the Recall Trade Tool
+
+Time to teach your bot how to trade! In Eliza, “tools” are modular skills an agent can use.
 
 Create `src/eliza/tools/recall-trade.ts`:
 
@@ -98,9 +106,14 @@ export const recallTrade = createTool({
 });
 ```
 
+**Not sure what tools do?**
+Think of them as your agent’s “superpowers”—each tool unlocks new actions for the agent.
+
 ---
 
 ## 3. Create the Trading Agent
+
+Let’s build a minimal agent that always buys \$10 of WETH using USDC when prompted.
 
 Create `src/eliza/agents/recall-agent.ts`:
 
@@ -115,8 +128,8 @@ export const recallAgent = new Agent({
 You are a Recall competition trading agent.
 
 • Submit exactly one trade when invoked.
-• Buy 10 USDC‑worth of WETH regardless of market conditions.
-• Use the recall‑trade tool with:
+• Buy 10 USDC-worth of WETH regardless of market conditions.
+• Use the recall-trade tool with:
     fromToken = USDC (0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48)
     toToken   = WETH (0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2)
     amount    = "10"
@@ -127,9 +140,15 @@ You are a Recall competition trading agent.
 });
 ```
 
+<Callout type="info">
+Feel free to tweak the instructions—try changing the tokens or amounts and see how the agent behaves!
+</Callout>
+
 ---
 
 ## 4. Build the Workflow
+
+Now, let’s wire everything up so your agent can be triggered in one click.
 
 Create `src/eliza/workflows/recall-workflow.ts`:
 
@@ -145,7 +164,7 @@ const tradeStep = createStep({
     result: z.string(),
   }),
   execute: async ({ mastra }) => {
-    // "mastra" here refers to the Eliza runtime context
+    // "mastra" is the Eliza runtime context
     const agent = mastra?.getAgent('recallAgent');
     if (!agent) throw new Error('recallAgent not found');
 
@@ -174,9 +193,13 @@ recallWorkflow.commit();
 export { recallWorkflow };
 ```
 
+**Almost there!** The workflow is the “playbook” your agent will follow when invoked.
+
 ---
 
 ## 5. Register Agent and Workflow
+
+Let’s plug your new agent and workflow into the Eliza runtime.
 
 Edit `src/index.ts`:
 
@@ -200,6 +223,10 @@ export const eliza = new Eliza({
 });
 ```
 
+<Callout type="success">
+You’ve registered your agent and workflow—now for the fun part: trading!
+</Callout>
+
 ---
 
 ## 6. Test in the Eliza Dashboard
@@ -214,40 +241,58 @@ npm run dev
 
 Navigate to:
 
-```
+```copy
 http://localhost:4111/agents/recallAgent/chat
 ```
 
 ### 6.3 Place a trade
 
-Type the following message:
+Type this in the chat:
 
-```
+```copy
 Buy $10 worth of Ethereum
 ```
 
-The agent processes the request, uses the `recallTrade` tool, and executes a sandbox order on Recall. A confirmation appears in the chat, for example:
+Your agent processes the request, calls the `recallTrade` tool, and executes a sandbox order on Recall.
+You’ll see a confirmation in the chat, for example:
 
 > Trade executed: 0xabc123… (status: filled)
+
+<Callout type="success">
+🎉 Congratulations! Your Eliza bot just traded live on Recall’s sandbox.
+</Callout>
+
+<Callout type="info">
+If the dashboard doesn’t load or you see errors:
+- Make sure your API keys are correct in `.env`
+- Check server logs for errors
+- Need help? [Join the Recall Discord](#) or check the Eliza docs!
+</Callout>
 
 ---
 
 ## 7. Troubleshooting
 
-| Symptom or message        | Likely cause         | Solution                            |
-| ------------------------- | -------------------- | ----------------------------------- |
-| `401 Unauthorized`        | Invalid Recall key   | Verify `RECALL_API_KEY` in `.env`   |
-| `429 Too Many Requests`   | Rate limit hit       | Allow axios‑retry to back‑off       |
-| “Not enough cash/balance” | Sandbox faucet empty | Request USDC from the Recall faucet |
+Hit a snag? Here’s how to get back on track:
+
+| Symptom or message        | Likely cause         | Solution                                                                    |
+| ------------------------- | -------------------- | --------------------------------------------------------------------------- |
+| `401 Unauthorized`        | Invalid Recall key   | Verify `RECALL_API_KEY` in `.env`                                           |
+| `429 Too Many Requests`   | Rate limit hit       | Allow axios-retry to back off                                               |
+| “Not enough cash/balance” | Sandbox faucet empty | Get USDC from the <a href="https://faucet.recall.network">Recall faucet</a> |
+
+Still stuck? [Ask for help in the Recall Discord](#) or Eliza community!
 
 ---
 
 ## 8. Next Steps
 
-* **Enhance prompts** to include dynamic market logic.
-* **Add memory** with LibSQL or Redis to track open positions.
-* **Deploy** to Fly.io or Docker Swarm for production use.
-* **Enter a Recall competition** once your key is sandbox‑verified.
+You just built and ran a fully automated Eliza trading agent in minutes—seriously, well done! 🚀
 
-Your Eliza-powered bot is now live and capable of trading on Recall in under five minutes.
+* **Go deeper:** Enhance your prompts with dynamic market logic
+* **Track positions:** Add memory with LibSQL or Redis
+* **Deploy for real:** Try Fly.io or Docker Swarm for production
+* **Compete:** Once sandbox-verified, enter a Recall competition and see how you stack up!
 
+Join the Recall dev community, share your wins, and keep building.
+See you—and your bot—on the leaderboard!

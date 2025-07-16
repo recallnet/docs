@@ -1,0 +1,247 @@
+---
+title: Serverless Trader with Next.js 13 & Recall
+description: Guide to build and deploy a Recall trading bot using Next.js 13, Vercel Functions, and the Vercel AI SDK.
+---
+
+# Introduction
+
+This tutorial demonstrates how to combine **Next.js 13**, **Vercel Functions**, and the **Vercel AI SDK** to create a fully serverless trading bot that submits orders to the Recall Network. You will:
+
+1. Scaffold a TypeScript Next.js 13 application.  
+2. Implement an edge function that decides and places trades.  
+3. Build a lightweight React UI using the AI SDK’s `useChat` hook.  
+4. Test locally, then deploy with a single `vercel --prod`.  
+
+The result is a production‑ready service that streams AI output, executes sandbox trades, and runs entirely on Vercel’s global edge.
+
+---
+
+## 1. Prerequisites
+
+| Requirement             | Minimum version | Purpose                              |
+| ----------------------- | --------------- | ------------------------------------ |
+| **Node.js**             | 20 +            | Local Next.js runtime                |
+| **npm**                 | Comes with Node | Package manager                      |
+| **Vercel CLI**          | 34 +            | Deploy & manage environment vars     |
+| **OpenAI API key**      | –               | LLM reasoning via AI SDK             |
+| **Recall API key & URL**| –               | Access to trading endpoints          |
+| **Vercel account**      | –               | Hosting & edge functions             |
+
+---
+
+## 2. Project Setup
+
+### 2.1 Create the Next.js app
+
+```bash copy
+npx create-next-app@latest recall-vercel-bot --ts --app --eslint --tailwind --src-dir
+cd recall-vercel-bot
+````
+
+### 2.2 Install runtime packages
+
+```bash copy
+npm install ai axios axios-retry
+```
+
+---
+
+## 3. Environment Variables
+
+Add variables locally in `.env.local` (automatically git‑ignored):
+
+```dotenv filename=".env.local" copy
+OPENAI_API_KEY=sk-...
+RECALL_API_KEY=rk-...
+RECALL_API_URL=https://api.sandbox.competitions.recall.network
+```
+
+Set them in Vercel later:
+
+```bash
+vercel env add OPENAI_API_KEY
+vercel env add RECALL_API_KEY
+vercel env add RECALL_API_URL
+```
+
+---
+
+## 4. Edge Function: `route.ts`
+
+Create `src/app/api/trade/route.ts`:
+
+```ts filename="src/app/api/trade/route.ts" showLineNumbers copy
+import { OpenAIStream, StreamingTextResponse } from 'ai';
+import OpenAI from 'openai';
+import axios from 'axios';
+
+export const runtime = 'edge'; // Next.js Edge Function
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+export async function POST(req: Request) {
+  const { prompt } = await req.json();
+
+  // 1. Use OpenAI to reason about a trade
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    stream: true,
+    messages: [
+      {
+        role: 'system',
+        content:
+          `Decide whether to buy WETH with 10 USDC on Recall.\n` +
+          `Return JSON with fields {execute: boolean, reason: string}.`,
+      },
+      { role: 'user', content: prompt },
+    ],
+  });
+
+  // 2. Stream tokens back to the UI
+  const stream = OpenAIStream(completion, {
+    async onFinal(chunk) {
+      try {
+        const decision = JSON.parse(chunk);
+        if (!decision.execute) return;
+
+        // 3. Execute trade on Recall
+        const { data } = await axios.post(
+          `${process.env.RECALL_API_URL}/api/trade/execute`,
+          {
+            fromToken:
+              '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+            toToken:
+              '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
+            amount: '10',
+            reason: decision.reason,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.RECALL_API_KEY}`,
+            },
+            timeout: 30_000,
+          }
+        );
+
+        console.log('Recall trade txHash:', data.txHash);
+      } catch (err) {
+        console.error('Trade execution failed:', err);
+      }
+    },
+  });
+
+  return new StreamingTextResponse(stream);
+}
+```
+
+---
+
+## 5. React Front‑End
+
+Create `src/app/page.tsx`:
+
+```tsx filename="src/app/page.tsx" showLineNumbers copy
+'use client';
+
+import { useChat } from 'ai/react';
+import { useState } from 'react';
+
+export default function Home() {
+  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+    useChat({
+      api: '/api/trade',
+    });
+
+  const [status, setStatus] = useState('');
+
+  return (
+    <main className="mx-auto max-w-xl p-6">
+      <h1 className="text-2xl font-semibold mb-4">
+        Recall Serverless Trader
+      </h1>
+
+      <form
+        onSubmit={(e) => {
+          handleSubmit(e).then(() => setStatus('Request sent.'));
+        }}
+        className="flex gap-2"
+      >
+        <input
+          className="flex-1 border p-2 rounded"
+          value={input}
+          onChange={handleInputChange}
+          placeholder="e.g. Should we buy now?"
+        />
+        <button
+          className="bg-blue-600 text-white px-4 rounded"
+          disabled={isLoading}
+        >
+          Send
+        </button>
+      </form>
+
+      {status && <p className="text-sm text-gray-500 mt-2">{status}</p>}
+
+      <section className="mt-6 space-y-2">
+        {messages.map((m) => (
+          <div key={m.id} className="whitespace-pre-wrap">
+            <strong>{m.role}:</strong> {m.content}
+          </div>
+        ))}
+      </section>
+    </main>
+  );
+}
+```
+
+---
+
+## 6. Local Test
+
+```bash copy
+npm run dev
+```
+
+Open `http://localhost:3000`, ask “Should we buy now?”.
+If the model responds with `{"execute":true,…}`, the edge function streams the decision and places a sandbox trade—visible in your console and the Recall dashboard.
+
+---
+
+## 7. Deploy to Vercel
+
+```bash copy
+vercel --prod
+```
+
+Vercel picks up environment variables, builds the Next.js app, and deploys edge functions globally. The production URL is printed at the end of the deployment.
+
+---
+
+## 8. Validate in Recall
+
+1. Log in to the Recall dashboard.
+2. Confirm the sandbox order appears in **Orders → Sandbox**.
+3. Your API key is now whitelisted for live competitions.
+
+---
+
+## 9. Troubleshooting
+
+| Message / symptom           | Likely cause               | Resolution                                      |
+| --------------------------- | -------------------------- | ----------------------------------------------- |
+| `401 Unauthorized`          | Invalid Recall key         | Regenerate key and re‑add in Vercel dashboard   |
+| `429 Too Many Requests`     | Recall rate limit          | Axios‑retry handles back‑off automatically      |
+| Edge function build error   | Unsupported Node API       | Keep only Web API–compatible code in `route.ts` |
+| “Missing env var” at deploy | Variable not set in Vercel | `vercel env add <VAR>` before deploy            |
+
+---
+
+## 10. Scalability Notes
+
+* **Vercel Cron**: schedule `/api/trade` POSTs nightly for back‑tests.
+* **Edge Middleware**: add JWT validation to protect the endpoint.
+* **Observability**: forward AI latency and trade metrics to Vercel Analytics.
+
+Your serverless trading bot is live—powered by Next.js 13, Vercel Functions, and the AI SDK, with all orders routed securely through Recall’s sandbox environment.

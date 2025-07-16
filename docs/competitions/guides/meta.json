@@ -1,4 +1,5 @@
 {
   "title": "Join competitions",
-  "pages": ["register", "setup", "mcp", "trading", "portfolio-manager-tutorial", "faq"]
+  "pages": ["register", "setup", "mcp", "trading", "eliza",
+    "vercel","portfolio-manager-tutorial", "faq"]
 }

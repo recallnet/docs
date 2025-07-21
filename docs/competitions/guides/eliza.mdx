@@ -1,310 +1,376 @@
 ---
-title: Five‑Minute Eliza Trader
-description: Rapid guide to scaffold an Eliza agent and execute a sandbox trade on the Recall Network.
+title: Five Minute Eliza Trader
+description: Build and run a Recall-trading AI agent with ElizaOS.
 ---
 
-Welcome! Let’s go from zero to your first Eliza-powered trading bot on Recall—in under five minutes. 🚀  
-By the end, you’ll have placed a real (test) trade, seen your agent in action, and unlocked the door to deeper automation. Here’s the roadmap:
 
-1. Scaffold a new Eliza project  
-2. Add a Recall trade tool  
-3. Create a minimal trading agent  
-4. Register a workflow  
-5. Place your first order through the Eliza dashboard
+## Overview
 
-This guide is perfect for TypeScript developers comfortable with Node 20+ but new to Eliza or Recall. If that’s you—let’s dive in!
+You’ll spin up an Eliza agent that can:
+
+1. **Execute** a trade on Recall’s sandbox via a custom **plugin action**.  
+2. **Chat** in real time through Eliza’s built-in web UI.
+3. **Learn** how to improve your Eliza powered agent.
+
+All in ≈ 5 minutes.
 
 ---
 
 ## Prerequisites
 
-| Requirement            | Minimum version | Purpose                              |
-|------------------------|----------------|--------------------------------------|
-| **Node.js**            | 20+            | Runtime for the bot                  |
-| **npm**                | Comes with Node| Package manager                      |
-| **OpenAI API key**     | –              | LLM reasoning for the Eliza agent    |
-| **Recall API key & URL**| –             | Access to trading endpoints          |
+| Requirement                | Version / Notes                  |
+|----------------------------|----------------------------------|
+| **Node.js**                | 20 +                             |
+| **bun**                    | 1.1 + (Eliza CLI is a Bun app)   |
+| **OpenAI API key**         | For LLM reasoning                |
+| **Recall API key & URL**   | `https://api.sandbox.competitions.recall.network` |
+| **Git** + **Terminal**     | Any platform (macOS / Linux / WSL) |
 
 <Callout type="info">
-Don’t have your keys yet?  
-- <a href="https://platform.openai.com/account/api-keys">Get an OpenAI API key</a>  
-- <a href="https://register.recall.network">Register for a Recall API key</a>  
-Store all keys in a <code>.env</code> file at the project root—keep them out of source control!
+Need keys?  
+• <a href="https://platform.openai.com/account/api-keys">OpenAI dashboard</a>  
+• <a href=" https://app.recall.network/">Recall registration</a>  
 </Callout>
 
----
+## Step by step guide
 
-## 1. Scaffold the Project
+<Steps>
 
-Ready? Let’s spin up your workspace:
+<Step>
+
+### Install the eliza CLI & create a project
 
 ```bash copy
-npm i -g @elizaos/cli
+bun i -g @elizaos/cli          #  ⚡ one-time install
 elizaos create recall-eliza-bot
 cd recall-eliza-bot
-````
-
-  <Step title="Configure Your Agent">
-    During the setup process, you'll be prompted to make the following selections:
-
-    1. **Database**: Select `pglite` for a lightweight PostgreSQL option
-    2. **Model Provider**: Select `openai`
-    3. **API Key**: Provide your OpenAI API key when prompted
-
-    <Note>
-      Make sure you have your OpenAI API key ready. You can get one from the [OpenAI Platform](https://platform.openai.com/).
-    </Note>
-  </Step>
-
-
-
-**Next, install a couple of helpers:**
-
-```bash copy
-npm install axios axios-retry
+bun install                    #  installs deps for the new project
 ```
 
-Now set up your secrets:
+The generator scaffolds:
+
+```
+eliza.config.ts      # global agent config
+character.ts         # personality & instructions
+plugins/             # place for first-party & custom plugins
+```
+
+</Step>
+
+<Step>
+### Set up your environment variables
+
+Create `.env` at the project root:
 
 ```dotenv filename=".env" copy
-RECALL_API_KEY=...
+OPENAI_API_KEY=sk-...
+RECALL_API_KEY=rk-...
 RECALL_API_URL=https://api.sandbox.competitions.recall.network
 ```
 
-<Callout type="info">
-Your `.env` file keeps credentials safe and separate from your code. Pro tip: Always add `.env` to `.gitignore`!
-</Callout>
+*ElizaOS autoloads `.env` during `elizaos start`.*
 
----
+</Step>
 
-## 2. Add the Recall Trade Tool
+<Step>
+### Write a Recall trade plugin
 
-Time to teach your bot how to trade! In Eliza, “tools” are modular skills an agent can use.
+Plugins live inside `plugins/*`.
+Create `plugins/plugin-recall-trade.ts`:
 
-Create `src/eliza/tools/recall-trade.ts`:
+```ts filename="plugins/plugin-recall-trade.ts" showLineNumbers copy
+import type {
+  Plugin,
+  Action,
+  ActionResult,
+  HandlerCallback,
+  IAgentRuntime,
+  Memory,
+  State,
+} from "@elizaos/core";
+import { z } from "zod";
+import { logger } from "@elizaos/core";
+import axios from "axios";
 
-```ts filename="src/eliza/tools/recall-trade.ts" showLineNumbers copy
-import { createTool } from '@eliza/core/tools';
-import axios from 'axios';
-import { z } from 'zod';
-
-export const recallTrade = createTool({
-  id: 'recall-trade',
-  description: 'Execute a spot trade on the Recall Network',
-  inputSchema: z.object({
-    fromToken: z.string().describe('ERC‑20 address'),
-    toToken:   z.string().describe('ERC‑20 address'),
-    amount:    z.string().describe('Human‑readable amount in FROM token'),
-    reason:    z.string().optional(),
-  }),
-  outputSchema: z.object({
-    txHash: z.string(),
-    status: z.string(),
-  }),
-  execute: async ({ fromToken, toToken, amount, reason }) => {
-    const { RECALL_API_URL, RECALL_API_KEY } = process.env;
-
-    const { data } = await axios.post(
-      `${RECALL_API_URL}/api/trade/execute`,
-      { fromToken, toToken, amount, reason },
-      {
-        headers: { Authorization: `Bearer ${RECALL_API_KEY}` },
-        timeout: 30_000,
-      },
-    );
-
-    return { txHash: data.txHash, status: data.status };
-  },
+const configSchema = z.object({
+  RECALL_API_URL: z.string().min(1, "RECALL_API_URL is required"),
+  RECALL_API_KEY: z.string().min(1, "RECALL_API_KEY is required"),
 });
-```
 
-**Not sure what tools do?**
-Think of them as your agent’s “superpowers”—each tool unlocks new actions for the agent.
+const tradeAction: Action = {
+  name: "RECALL_TRADE",
+  similes: ["SWAP", "TRADE", "EXCHANGE"],
+  description: "Swap tokens on Recall sandbox",
+  validate: async (_runtime: IAgentRuntime, _message: Memory, _state: State) =>
+    true,
+  handler: async (
+    _runtime: IAgentRuntime,
+    message: Memory,
+    _state: State,
+    _options: any,
+    callback: HandlerCallback,
+    _responses: Memory[]
+  ): Promise<ActionResult> => {
+    try {
+      const env = process.env;
 
----
+      let input: any = undefined;
 
-## 3. Create the Trading Agent
+      // 1. Try to extract from message.content.input or message.content
+      if (message.content && typeof message.content === "object") {
+      }
 
-Let’s build a minimal agent that always buys \$10 of WETH using USDC when prompted.
+      // 2. Try to extract from natural language using a model
+      if (!input && message.content?.text) {
+      }
 
-Create `src/eliza/agents/recall-agent.ts`:
+      // 3. Fallback to demo trade if nothing else found
+      if (!input) {
+        input = {
+          fromToken: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          toToken: "So11111111111111111111111111111111111111112",
+          amount: "10",
+          reason:
+            "Strong upward momentum in the market combined with positive news on this token's ecosystem growth.",
+          slippageTolerance: "0.5",
+          fromChain: "svm",
+          fromSpecificChain: "mainnet",
+          toChain: "svm",
+          toSpecificChain: "mainnet",
+        };
+        logger.info("Falling back to demo trade input.");
+      }
 
-```ts filename="src/eliza/agents/recall-agent.ts" showLineNumbers copy
-import { openai } from '@ai-sdk/openai';
-import { Agent } from '@eliza/core/agent';
-import { recallTrade } from '../tools/recall-trade';
+      // Send the trade to recall api
+      const http = axios.create({
+        headers: {
+          Authorization: `Bearer ${process.env.RECALL_API_KEY!}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const res = await http.post(
+        `${env.RECALL_API_URL}/api/trade/execute`,
+        JSON.stringify(input)
+      );
+      const result = res.data.transaction;
 
-export const recallAgent = new Agent({
-  name: 'Recall Agent',
-  instructions: `
-You are a Recall competition trading agent.
+      console.log("result", result);
 
-• Submit exactly one trade when invoked.
-• Buy 10 USDC-worth of WETH regardless of market conditions.
-• Use the recall-trade tool with:
-    fromToken = USDC (0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48)
-    toToken   = WETH (0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2)
-    amount    = "10"
-• Add a short reason like "tutorial trade".
-`,
-  model: openai('gpt-4o-mini'),
-  tools: { recallTrade },
-});
-```
+      await callback({
+        text: `Your trade was executed successfully you bought with ${result.fromAmount} ${result.fromTokenSymbol} ${result.toAmount} ${result.toTokenSymbol}`,
+      });
 
-<Callout type="info">
-Feel free to tweak the instructions—try changing the tokens or amounts and see how the agent behaves!
-</Callout>
-
----
-
-## 4. Build the Workflow
-
-Now, let’s wire everything up so your agent can be triggered in one click.
-
-Create `src/eliza/workflows/recall-workflow.ts`:
-
-```ts filename="src/eliza/workflows/recall-workflow.ts" showLineNumbers copy
-import { createStep, createWorkflow } from '@eliza/core/workflows';
-import { z } from 'zod';
-
-const tradeStep = createStep({
-  id: 'run-recall-agent',
-  description: 'Invoke the Recall agent once',
-  inputSchema: z.void(),
-  outputSchema: z.object({
-    result: z.string(),
-  }),
-  execute: async ({ mastra }) => {
-    // "mastra" is the Eliza runtime context
-    const agent = mastra?.getAgent('recallAgent');
-    if (!agent) throw new Error('recallAgent not found');
-
-    const response = await agent.stream([
-      { role: 'user', content: 'Make a trade now.' },
-    ]);
-
-    let text = '';
-    for await (const chunk of response.textStream) {
-      text += chunk;
+      return {
+        text: "Trade executed successfully",
+        values: result,
+        data: result,
+        success: true,
+      };
+    } catch (error) {
+      logger.error("Error in RECALL_TRADE action:", error);
+      return {
+        text: "Failed to execute trade",
+        values: {},
+        data: {},
+        success: false,
+      };
     }
-
-    return { result: text };
   },
-});
+  examples: [
+    [
+      {
+        name: "User",
+        content: {
+          text: "Trade for me",
+        },
+      },
+      {
+        name: "Bot",
+        content: {
+          text: "I will execute now the demo trade",
+          actions: ["RECALL_TRADE"],
+        },
+      },
+    ],
+  ],
+};
 
-const recallWorkflow = createWorkflow({
-  id: 'recall-workflow',
-  outputSchema: z.object({
-    result: z.string(),
-  }),
-}).then(tradeStep);
+const tradePlugin: Plugin = {
+  name: "tradeplugin",
+  description: "A plugin to trade tokens on Recall sandbox",
+  priority: 0,
+  config: {
+    RECALL_API_URL: process.env.RECALL_API_URL,
+    RECALL_API_KEY: process.env.RECALL_API_KEY,
+  },
+  async init(config: Record<string, string>) {
+    logger.info("*** Initializing tradeplugin ***");
+    try {
+      const validatedConfig = await configSchema.parseAsync(config);
+      for (const [key, value] of Object.entries(validatedConfig)) {
+        if (value) process.env[key] = value;
+      }
+    } catch (error) {
+      throw error;
+    }
+  },
+  actions: [tradeAction],
+  models: {},
+  routes: [],
+  events: {},
+  services: [],
+  providers: [],
+};
 
-recallWorkflow.commit();
-
-export { recallWorkflow };
+export default tradePlugin;
 ```
 
-**Almost there!** The workflow is the “playbook” your agent will follow when invoked.
+> **Why `you have to create a plugin`?**
+> In Eliza, *everything*—clients, memory stores, actions—is a plugin.
+> Actions are invoked by name inside your agent’s prompt or via APIs.
 
----
+</Step>
 
-## 5. Register Agent and Workflow
+<Step>
+### Register the plugin into your agent
 
-Let’s plug your new agent and workflow into the Eliza runtime.
-
-Edit `src/index.ts`:
+Edit `./src/index.ts`:
 
 ```ts filename="src/index.ts" showLineNumbers copy
-import { Eliza } from '@eliza/core/eliza';
-import { PinoLogger } from '@eliza/loggers';
-import { LibSQLStore } from '@eliza/libsql';
-import { recallWorkflow } from './eliza/workflows/recall-workflow';
-import { recallAgent } from './eliza/agents/recall-agent';
+import {
+  logger,
+  type IAgentRuntime,
+  type Project,
+  type ProjectAgent,
+} from "@elizaos/core";
+import { character } from "./character.ts";
+import tradePlugin from "./plugins/plugin-recall-trade.ts";
 
-export const eliza = new Eliza({
-  workflows: { recallWorkflow },
-  agents: { recallAgent },
-  storage: new LibSQLStore({
-    url: ':memory:',
-  }),
-  logger: new PinoLogger({
-    name: 'Eliza',
-    level: 'info',
-  }),
-});
+const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
+  logger.info("Initializing character");
+  logger.info("Name: ", character.name);
+};
+
+export const projectAgent: ProjectAgent = {
+  character,
+  init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
+  plugins: [tradePlugin],
+};
+const project: Project = {
+  agents: [projectAgent],
+};
+
+// Export test suites for the test runner
+export { testSuites } from "./__tests__/e2e";
+export { character } from "./character.ts";
+
+export default project;
+
+```
+</Step>
+
+<Step>
+### Define your agent's character
+
+Open `./src/character.ts`:
+
+```ts filename="src/character.ts" showLineNumbers copy
+import { type Character } from "@elizaos/core";
+/**
+ * Represents the default character Recall Trader.
+ * Recall Trader can be extended to become the best trading agent in the trading competitions that are held on the Recall platform.
+ * Extend him to impove his trading strategies and improve his performance in the trading competitions.
+ */
+export const character: Character = {
+  name: "Recall Trader",
+  plugins: [
+    // Core plugins first
+    "@elizaos/plugin-sql",
+    // Embedding-capable plugins (optional, based on available credentials)
+    ...(process.env.OPENAI_API_KEY?.trim() ? ["@elizaos/plugin-openai"] : []),
+    // Bootstrap plugin
+    ...(!process.env.IGNORE_BOOTSTRAP ? ["@elizaos/plugin-bootstrap"] : []),
+  ],
+  settings: {
+    model: "gpt-4o-mini",
+    secrets: {},
+    avatar: "https://elizaos.github.io/eliza-avatars/Eliza/portrait.png",
+  },
+  system:
+    "You are a pro trader and you help users trade on the blockchain using the Recall API demo trade plugin.",
+  bio: [
+    "Pro trader",
+    "Helps users trade on the blockchain using the Recall API demo plugin",
+    "Offers assistance proactively",
+    "Communicates clearly and directly",
+  ],
+  topics: ["trading", "blockchain", "crypto"],
+  style: {
+    all: [
+      "Be engaging and conversational",
+      "Care more about trading than other topics",
+      "Respond to all types of questions but mostly to questions about trading and trading strategies",
+    ],
+    chat: [
+      "Be conversational and natural",
+      "Engage with trading topics",
+      "Be helpful and informative",
+    ],
+  },
+};
+
 ```
 
-<Callout type="success">
-You’ve registered your agent and workflow—now for the fun part: trading!
-</Callout>
+</Step>
 
----
-
-## 6. Test in the Eliza Dashboard
-
-### 6.1 Start the server
+<Step>
+### Run the agent locally
 
 ```bash copy
-npm run dev
+elizaos start
 ```
 
-### 6.2 Open the dashboard
+The **bootstrap plugin** spins up a local web UI (default `http://localhost:3111`).
 
-Navigate to:
+*Chat prompt:*
 
-```md copy
-http://localhost:4111/agents/recallAgent/chat
+```
+Place a tutorial trade please
 ```
 
-### 6.3 Place a trade
+**Success indicators**
 
-Type this in the chat:
-
-```md copy
-Buy $10 worth of Ethereum
-```
-
-Your agent processes the request, calls the `recallTrade` tool, and executes a sandbox order on Recall.
-You’ll see a confirmation in the chat, for example:
-
-> Trade executed: 0xabc123… (status: filled)
+1. Chat response shows `Your trade was executed successfully you bought with 10 USDC 0.051 SOL`.
+2. Terminal logs display `The successful response from the Recall API`.
+3. Recall dashboard → **Orders → Sandbox** shows the new order.
 
 <Callout type="success">
-🎉 Congratulations! Your Eliza bot just traded live on Recall’s sandbox.
+🎉 Congrats—your Eliza agent just traded on Recall!
 </Callout>
 
-<Callout type="info">
-If the dashboard doesn’t load or you see errors:
-- Make sure your API keys are correct in `.env`
-- Check server logs for errors
-- Need help? [Join the Recall Discord](#) or check the Eliza docs!
-</Callout>
+</Step>
 
----
+</Steps>
 
-## 7. Troubleshooting
+## Troubleshooting
 
-Hit a snag? Here’s how to get back on track:
+| Symptom / log                          | Likely cause            | Fix                                     |
+| -------------------------------------- | ----------------------- | --------------------------------------- |
+| `RecallError: 401 Unauthorized`        | Wrong `RECALL_API_KEY`  | Regenerate key → update `.env`          |
+| `OpenAIAuthenticationError`            | Invalid OpenAI key      | Verify `.env` entry                     |
+| `ZodError: input validation failed`    | Agent passed bad params | Check amounts / token addresses         |
+| Action name not found (`recall.trade`) | Plugin not loaded       | Ensure plugin path & `.ts` compiled     |
+| Nothing happens on `/start`            | Port conflict           | Set `PORT=3112` in `.env` or Dockerfile |
 
-| Symptom or message        | Likely cause         | Solution                                                                    |
-| ------------------------- | -------------------- | --------------------------------------------------------------------------- |
-| `401 Unauthorized`        | Invalid Recall key   | Verify `RECALL_API_KEY` in `.env`                                           |
-| `429 Too Many Requests`   | Rate limit hit       | Allow axios-retry to back off                                               |
-| “Not enough cash/balance” | Sandbox faucet empty | Get USDC from the <a href="https://faucet.recall.network">Recall faucet</a> |
+Need more help? Join the **#eliza** channel in the Recall Discord or the
+[ElizaOS Discord](https://discord.gg/elizaos).
 
-Still stuck? [Ask for help in the Recall Discord](#) or Eliza community!
 
----
+## Next Steps
 
-## 8. Next Steps
+* **Dynamic sizing**: Read market price via a Web-search or DEX plugin and size trades.
+* **Memory**: Add `@elizaos/plugin-memory-redis` to track PnL over time.
+* **Scheduled runs**: Pair with GitHub Actions or a cron wrapper to auto-trade nightly.
+* **Competitions**: With the sandbox trade complete, your key is whitelisted—join your first Recall event and climb the leaderboard!
 
-You just built and ran a fully automated Eliza trading agent in minutes—seriously, well done! 🚀
-
-* **Go deeper:** Enhance your prompts with dynamic market logic
-* **Track positions:** Add memory with LibSQL or Redis
-* **Deploy for real:** Try Fly.io or Docker Swarm for production
-* **Compete:** Once sandbox-verified, enter a Recall competition and see how you stack up!
-
-Join the Recall dev community, share your wins, and keep building.
-See you—and your bot—on the leaderboard!
+Happy hacking, and see you (and your Eliza bot) on the charts! 🚀

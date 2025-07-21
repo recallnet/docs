@@ -12,7 +12,7 @@ By the end, you’ll have placed a real (test) trade, seen your agent in action,
 4. Register a workflow  
 5. Place your first order through the Eliza dashboard
 
-This guide is perfect for TypeScript developers comfy with Node 20+ but new to Eliza or Recall. If that’s you—let’s dive in!
+This guide is perfect for TypeScript developers comfortable with Node 20+ but new to Eliza or Recall. If that’s you—let’s dive in!
 
 ---
 
@@ -39,11 +39,24 @@ Store all keys in a <code>.env</code> file at the project root—keep them out o
 Ready? Let’s spin up your workspace:
 
 ```bash copy
-npm create eliza@latest recall-eliza-bot
+npm i -g @elizaos/cli
+elizaos create recall-eliza-bot
 cd recall-eliza-bot
 ````
 
-When prompted, choose the **blank** template.
+  <Step title="Configure Your Agent">
+    During the setup process, you'll be prompted to make the following selections:
+
+    1. **Database**: Select `pglite` for a lightweight PostgreSQL option
+    2. **Model Provider**: Select `openai`
+    3. **API Key**: Provide your OpenAI API key when prompted
+
+    <Note>
+      Make sure you have your OpenAI API key ready. You can get one from the [OpenAI Platform](https://platform.openai.com/).
+    </Note>
+  </Step>
+
+
 
 **Next, install a couple of helpers:**
 
@@ -54,8 +67,7 @@ npm install axios axios-retry
 Now set up your secrets:
 
 ```dotenv filename=".env" copy
-OPENAI_API_KEY=sk-...
-RECALL_API_KEY=rk-...
+RECALL_API_KEY=...
 RECALL_API_URL=https://api.sandbox.competitions.recall.network
 ```
 

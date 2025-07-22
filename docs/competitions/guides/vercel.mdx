@@ -1,24 +1,22 @@
 ---
-title: Serverless Trader with Next.js 13 and Recall
-description: Guide to build and deploy a Recall trading bot using Next.js 13, Vercel Functions, and the Vercel AI SDK.
+title: AI SDK x Recall trading bot
+description: Guide to build and deploy a Recall trading bot using Vercel AI SDK and Next.js.
 ---
 
-# Introduction
+## Introduction
 
 Ready to build and deploy a fully serverless AI trading bot—end to end—in under an hour? 🚀  
-This hands-on guide shows how to combine **Next.js 13**, **Vercel Functions**, and the **Vercel AI SDK** to create a bot that streams LLM decisions, executes sandbox trades, and runs globally on Vercel’s edge—no backend servers required.
+This hands-on guide shows how to combine **Next.js**, **Vercel Functions**, and the **Vercel AI SDK** to create a bot that streams LLM decisions, executes sandbox trades, and runs globally on Vercel’s edge—no backend servers required.
 
 Here’s what you’ll accomplish:
-1. Scaffold a Next.js 13 project  
+1. Scaffold a Next.js project  
 2. Implement an edge function for trade decisions and execution  
 3. Build a React UI with the AI SDK’s `useChat` hook  
 4. Test locally, then deploy worldwide with a single command
 
 No Recall or Vercel experience required—just bring basic Node and TypeScript skills. Let’s dive in!
 
----
-
-## 1. Prerequisites
+## Prerequisites
 
 | Requirement             | Minimum version | Purpose                              |
 |-------------------------|----------------|--------------------------------------|
@@ -37,30 +35,34 @@ Need to get set up?
 Don’t forget to add <code>.env.local</code> to <code>.gitignore</code>—keep those secrets safe!
 </Callout>
 
----
+## Step by step guide
 
-## 2. Project Setup
+<Steps>
 
-Let’s spin up your Next.js 13 app with all the right features:
+<Step>
+### Project setup
 
-### 2.1 Create the Next.js app
+Let’s spin up your Next.js app with all the right features:
+
+#### Create the Next.js app
 
 ```bash copy
 npx create-next-app@latest recall-vercel-bot --ts --app --eslint --tailwind --src-dir
 cd recall-vercel-bot
-````
+```
 
 This sets up TypeScript, app router, ESLint, Tailwind CSS, and puts your code in `src/`.
 
-### 2.2 Install runtime packages
+#### Install required packages
 
 ```bash copy
-npm install ai axios axios-retry
+npm install ai axios axios-retry @ai-sdk/openai
 ```
 
----
+</Step>
 
-## 3. Environment Variables
+<Step>
+### Set environment variables
 
 Store your keys locally in `.env.local` (already git-ignored):
 
@@ -82,77 +84,115 @@ vercel env add RECALL_API_URL
 With your environment secured, your bot’s trades and LLM prompts stay private and production-ready.
 </Callout>
 
----
+</Step>
 
-## 4. Edge Function: `route.ts`
+<Step>
+### Edge function: `route.ts`
 
 Now let’s give your bot a brain and a trading hand—with a blazing-fast edge function!
 
 Create `src/app/api/trade/route.ts`:
 
 ```ts filename="src/app/api/trade/route.ts" showLineNumbers copy
-import { OpenAIStream, StreamingTextResponse } from 'ai';
-import OpenAI from 'openai';
-import axios from 'axios';
+import { openai } from "@ai-sdk/openai";
+import { convertToCoreMessages, streamText, tool, UIMessage } from "ai";
+import axios from "axios";
+import { env } from "process";
+import { z } from "zod";
 
-export const runtime = 'edge'; // Next.js Edge Function
+// Allow streaming responses up to 30 seconds
+export const maxDuration = 30;
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const parameters = z.object({
+  fromToken: z
+    .string()
+    .describe("Address of token to trade from defaults to USDC")
+    .optional()
+    .default("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+  toToken: z
+    .string()
+    .describe("Address of token to trade to defaults to SOL")
+    .optional()
+    .default("So11111111111111111111111111111111111111112"),
+  amount: z
+    .string()
+    .describe("Amount in tokens defaults to 10")
+    .optional()
+    .default("10"),
+  reason: z
+    .string()
+    .min(10)
+    .describe("Detailed reason for the trade (required for competition)")
+    .optional()
+    .default("Big opportunity"),
+  slippageTolerance: z
+    .string()
+    .optional()
+    .default("0.5")
+    .describe("Slippage tolerance percentage (default: 0.5)"),
+  fromChain: z
+    .enum(["evm", "svm"])
+    .describe("Chain type for from token")
+    .optional()
+    .default("svm"),
+  fromSpecificChain: z
+    .string()
+    .describe("Specific chain for the from token")
+    .optional()
+    .default("svm"),
+  toChain: z
+    .enum(["evm", "svm"])
+    .describe("Chain type for to token")
+    .optional()
+    .default("svm"),
+  toSpecificChain: z
+    .string()
+    .describe("Specific chain for the to token")
+    .optional()
+    .default("svm"),
 });
 
 export async function POST(req: Request) {
-  const { prompt } = await req.json();
+  const { messages } = (await req.json()) as { messages: UIMessage[] };
 
-  // 1. Use OpenAI to reason about a trade
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    stream: true,
-    messages: [
-      {
-        role: 'system',
-        content:
-          `Decide whether to buy WETH with 10 USDC on Recall.\n` +
-          `Return JSON with fields {execute: boolean, reason: string}.`,
-      },
-      { role: 'user', content: prompt },
-    ],
-  });
-
-  // 2. Stream tokens back to the UI
-  const stream = OpenAIStream(completion, {
-    async onFinal(chunk) {
-      try {
-        const decision = JSON.parse(chunk);
-        if (!decision.execute) return;
-
-        // 3. Execute trade on Recall
-        const { data } = await axios.post(
-          `${process.env.RECALL_API_URL}/api/trade/execute`,
-          {
-            fromToken:
-              '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-            toToken:
-              '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
-            amount: '10',
-            reason: decision.reason,
-          },
-          {
+  const result = streamText({
+    model: openai("gpt-4o-mini-2024-07-18"),
+    messages: convertToCoreMessages(messages.filter((m) => m.role === "user")),
+    tools: {
+      recallTrade: tool({
+        description:
+          "Deside whether to buy or sell a given crypto asset asked by the user using Recall-api if not lot of details are provided the tool will use the default parameters. Returns the trade result",
+        parameters,
+        execute: async (params: z.infer<typeof parameters>) => {
+          // Send the trade to recall api
+          const http = axios.create({
             headers: {
-              Authorization: `Bearer ${process.env.RECALL_API_KEY}`,
+              Authorization: `Bearer ${process.env.RECALL_API_KEY!}`,
+              "Content-Type": "application/json",
             },
-            timeout: 30_000,
+          });
+          try {
+            const res = await http.post(
+              `${env.RECALL_API_URL}/api/trade/execute`,
+              JSON.stringify(params)
+            );
+            const trade = res.data.transaction;
+            console.log("Recall-api trade result:", trade);
+            return {
+              text: `Your trade was executed successfully you bought with ${trade.fromAmount} ${trade.fromTokenSymbol} ${trade.toAmount} ${trade.toTokenSymbol}`,
+            };
+          } catch (error: any) {
+            return {
+              text: `There was an error executing the trade. Please try again. ${error.message}`,
+            };
           }
-        );
-
-        console.log('Recall trade txHash:', data.txHash);
-      } catch (err) {
-        console.error('Trade execution failed:', err);
-      }
+        },
+      }),
     },
+    maxSteps: 3,
+    maxRetries: 3,
   });
-
-  return new StreamingTextResponse(stream);
+  return result.toDataStreamResponse();
 }
 ```
 
@@ -160,37 +200,37 @@ export async function POST(req: Request) {
 Edge functions run close to your users for low-latency AI and instant trades—no backend server required!
 </Callout>
 
----
+</Step>
 
-## 5. React Front‑End
+<Step>
+### React front‑end
 
 Let’s give your bot a friendly UI!
 
 Create `src/app/page.tsx`:
 
 ```tsx filename="src/app/page.tsx" showLineNumbers copy
-'use client';
+"use client";
 
-import { useChat } from 'ai/react';
-import { useState } from 'react';
+import { useChat } from "@ai-sdk/react";
+import { useState } from "react";
 
 export default function Home() {
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
-      api: '/api/trade',
+      api: "/api/trade",
     });
 
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState("");
 
   return (
     <main className="mx-auto max-w-xl p-6">
-      <h1 className="text-2xl font-semibold mb-4">
-        Recall Serverless Trader
-      </h1>
+      <h1 className="text-2xl font-semibold mb-4">Recall Serverless Trader</h1>
 
       <form
         onSubmit={(e) => {
-          handleSubmit(e).then(() => setStatus('Request sent.'));
+          handleSubmit(e);
+          setStatus("Request sent.");
         }}
         className="flex gap-2"
       >
@@ -220,15 +260,17 @@ export default function Home() {
     </main>
   );
 }
+
 ```
 
 <Callout type="success">
 Your UI is live! Try customizing the prompt or styling for your own brand.
 </Callout>
 
----
+</Step>
 
-## 6. Local Test
+<Step>
+### Local test
 
 Ready to see your bot in action?
 Start the local dev server:
@@ -237,7 +279,7 @@ Start the local dev server:
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000), and ask “Should we buy now?” in the chat box.
+Open [http://localhost:3000](http://localhost:3000), and ask “Buy SOL with 100USDC” in the chat box. Then you can ask “Sell 0.2 SOL for USDC”.
 
 **What to expect:**
 
@@ -250,9 +292,10 @@ Trouble connecting?
 - Still stuck? [Ask for help in the Recall Discord](#)
 </Callout>
 
----
+</Step>
 
-## 7. Deploy to Vercel
+<Step>
+### Deploy to Vercel
 
 Let’s go global!
 
@@ -267,21 +310,11 @@ The production URL appears at the end—share it or open it right away!
 🎉 You just shipped a serverless trading bot to the world!
 </Callout>
 
----
+</Step>
 
-## 8. Validate in Recall
+</Steps>
 
-1. Log in to your [Recall dashboard](https://recall.network).
-2. Go to **Orders → Sandbox** to confirm your bot’s trade shows up.
-3. Your API key is now whitelisted for live competitions—welcome to Recall!
-
-<Callout type="info">
-Once you’re whitelisted, you can join live competitions and start climbing the leaderboard. See you there!
-</Callout>
-
----
-
-## 9. Troubleshooting
+## Troubleshooting
 
 Hit a snag? You’re not alone—here are common fixes:
 
@@ -297,16 +330,14 @@ Still need help?
 * [Join the Recall Discord](#) or ask in the Vercel community
 * Share your code or error logs—someone’s always happy to help!
 
----
-
-## 10. Scalability & Next Steps
+## Next steps
 
 * **Vercel Cron:** Schedule `/api/trade` POSTs nightly for automated backtests or daily rebalancing.
 * **Edge Middleware:** Add JWT or session validation for endpoint security.
 * **Observability:** Pipe AI latency and trade metrics to Vercel Analytics for monitoring.
 
 **You did it!**
-You’ve built, shipped, and validated a serverless AI trading bot—fully powered by Next.js 13, Vercel Functions, the AI SDK, and Recall.
+You’ve built, shipped, and validated a serverless AI trading bot—fully powered by Next.js, Vercel Functions, the AI SDK, and Recall.
 Join the Recall community, share your build, and take your bot to the leaderboard!
 
 Happy hacking! 🚀

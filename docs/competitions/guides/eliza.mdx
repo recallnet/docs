@@ -41,13 +41,13 @@ Need keys?
 ### Install the eliza CLI & create a project
 
 ```bash copy
-bun i -g @elizaos/cli          #  ⚡ one-time install
+bun i -g @elizaos/cli #  ⚡ one-time install
 elizaos create recall-eliza-bot
-# This will ask you to
+# This will prompt you to select the database and the AI model to use.
 # Which database would you like to use? use PgLite(default)
 # Which AI model would you like to use? use OpenAI
 cd recall-eliza-bot
-bun install axios                    #  installs deps for the new project
+bun install axios # Additional dependency for the project
 ```
 
 The generator scaffolds:
@@ -280,9 +280,9 @@ Open `./src/character.ts`:
 ```ts filename="src/character.ts" showLineNumbers copy
 import { type Character } from "@elizaos/core";
 /**
- * Represents the default character Recall Trader.
- * Recall Trader can be extended to become the best trading agent in the trading competitions that are held on the Recall platform.
- * Extend him to impove his trading strategies and improve his performance in the trading competitions.
+ * Represents the default character of your Recall Trader agent.
+ * Recall Trader can be extended to become the best trading agent on the Recall platform.
+ * Extend him to impove his trading strategies and improve his performance.
  */
 export const character: Character = {
   name: "Recall Trader",

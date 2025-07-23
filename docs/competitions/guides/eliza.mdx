@@ -43,8 +43,11 @@ Need keys?
 ```bash copy
 bun i -g @elizaos/cli          #  ⚡ one-time install
 elizaos create recall-eliza-bot
+# This will ask you to
+# Which database would you like to use? use PgLite(default)
+# Which AI model would you like to use? use OpenAI
 cd recall-eliza-bot
-bun install                    #  installs deps for the new project
+bun install axios                    #  installs deps for the new project
 ```
 
 The generator scaffolds:
@@ -52,7 +55,7 @@ The generator scaffolds:
 ```
 eliza.config.ts      # global agent config
 character.ts         # personality & instructions
-plugins/             # place for first-party & custom plugins
+src/plugins/             # place for first-party & custom plugins
 ```
 
 </Step>
@@ -63,7 +66,7 @@ plugins/             # place for first-party & custom plugins
 Create `.env` at the project root:
 
 ```dotenv filename=".env" copy
-OPENAI_API_KEY=sk-...
+OPENAI_API_KEY=already-set-from-cli
 RECALL_API_KEY=rk-...
 RECALL_API_URL=https://api.sandbox.competitions.recall.network
 ```
@@ -75,10 +78,10 @@ RECALL_API_URL=https://api.sandbox.competitions.recall.network
 <Step>
 ### Write a Recall trade plugin
 
-Plugins live inside `plugins/*`.
-Create `plugins/plugin-recall-trade.ts`:
+Plugins live inside `src/plugins/*`.
+Create `src/plugins/recall-trade-plugin.ts`:
 
-```ts filename="plugins/plugin-recall-trade.ts" showLineNumbers copy
+```ts filename="src/plugins/recall-trade-plugin.ts" showLineNumbers copy
 import type {
   Plugin,
   Action,
@@ -244,7 +247,7 @@ import {
   type ProjectAgent,
 } from "@elizaos/core";
 import { character } from "./character.ts";
-import tradePlugin from "./plugins/plugin-recall-trade.ts";
+import tradePlugin from "./plugins/recall-trade-plugin.ts";
 
 const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
   logger.info("Initializing character");
@@ -292,7 +295,6 @@ export const character: Character = {
     ...(!process.env.IGNORE_BOOTSTRAP ? ["@elizaos/plugin-bootstrap"] : []),
   ],
   settings: {
-    model: "gpt-4o-mini",
     secrets: {},
     avatar: "https://elizaos.github.io/eliza-avatars/Eliza/portrait.png",
   },

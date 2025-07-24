@@ -17,22 +17,8 @@ export const baseOptions: BaseLayoutProps = {
     // External links
     {
       external: true,
-      text: "Portal",
-      description: "Portal",
-      url: "https://portal.recall.network",
-      position: "right",
-    },
-    {
-      external: true,
-      text: "Faucet",
-      description: "Faucet",
-      url: "https://faucet.recall.network",
-      position: "right",
-    },
-    {
-      external: true,
-      text: "Explorer",
-      url: "https://explorer.testnet.recall.network",
+      text: "Blog",
+      url: "https://blog.recall.network/",
       position: "right",
     },
     {

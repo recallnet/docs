@@ -11,7 +11,7 @@ interface LandingSvgProps {
 export default function LandingSvg({
   height = 325,
   width = 325,
-  text = "/cot/mem.jsonl",
+  text = "The Onchain Arena\nfor Agents",
 }: LandingSvgProps) {
   const svgWidth = 30;
   const svgHeight = 30;
@@ -22,8 +22,8 @@ export default function LandingSvg({
   // Define a ~symmetrical hole range for the text
   const rowStart = Math.floor(rows * 0.4);
   const rowEnd = Math.ceil(rows * 0.6);
-  const colStart = Math.floor(columns * 0.3);
-  const colEnd = Math.ceil(columns * 0.7);
+  const colStart = Math.floor(columns * 0.2);
+  const colEnd = Math.ceil(columns * 0.8);
 
   const [flippedIndices, setFlippedIndices] = useState<Set<number>>(new Set());
 

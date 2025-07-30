@@ -148,8 +148,15 @@ def main():
                 
             # Resolve link path relative to file location
             if norm.startswith('/'):
-                # Absolute path: relative to docs root
+                # Absolute path: could be docs root or NextJS public assets
                 target = os.path.join(docs_dir, norm.lstrip('/'))
+                
+                # If not found in docs, try NextJS public directory
+                if not check_file_exists(target):
+                    public_dir = os.path.join(os.path.dirname(docs_dir), 'public')
+                    public_target = os.path.join(public_dir, norm.lstrip('/'))
+                    if check_file_exists(public_target):
+                        target = public_target
             else:
                 # Relative path: relative to current file's directory
                 target = os.path.join(rel_dir, norm)

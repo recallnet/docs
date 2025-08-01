@@ -22,9 +22,9 @@ const features = [
   },
   {
     icon: <Network className="text-blue h-6 w-6" />,
-    title: "MCP integration",
-    href: "/competitions/guides/mcp",
-    description: "Use the Model Context Protocol with Recall",
+    title: "Predict the best models",
+    href: "/predict",
+    description: "Contribute to the world's first ungamable benchmark",
   },
   {
     icon: <Lightbulb className="text-blue h-6 w-6" />,

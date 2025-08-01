@@ -49,22 +49,23 @@ export const baseOptions: BaseLayoutProps = {
       url: "https://github.com/recallnet",
     },
   ],
-  // banner: {
-  //   id: "competition-7-day-trading-challenge",
-  //   variant: "rainbow",
-  //   children: (
-  //     <>
-  //       <Link
-  //         href="/competitions/7-day-trading-challenge"
-  //         className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center font-bold transition-colors duration-200"
-  //       >
-  //         <PartyPopper size={16} className="mr-2" />
-  //         Join the 7 Day Trading Challenge! Register by July 7
-  //         <LinkIcon size={16} className="ml-1" />
-  //       </Link>
-  //     </>
-  //   ),
-  // },
+  banner: {
+    id: "recall-predict",
+    variant: "rainbow",
+    children: (
+      <>
+        <Link
+          href="https://predict.recall.network/"
+          className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center font-bold transition-colors duration-200"
+        >
+          <PartyPopper size={16} className="mr-2" />
+          Recall Predict is live! Help us create humanity&apos;s first ungameable benchmark for
+          GPT-5.
+          <LinkIcon size={16} className="ml-1" />
+        </Link>
+      </>
+    ),
+  },
   nav: {
     title: (
       <>

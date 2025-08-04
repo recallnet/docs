@@ -174,7 +174,7 @@ export function DocsPage({
             props.article?.className
           )}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
             {replaceOrDefault(props.breadcrumb, <Breadcrumb {...props.breadcrumb} />)}
             {props.currentPath && <MarkdownActions currentPath={props.currentPath} />}
           </div>

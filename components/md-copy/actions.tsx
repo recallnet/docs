@@ -45,7 +45,7 @@ export function MarkdownActions({ currentPath }: MarkdownActionsProps) {
   };
 
   return (
-    <div className="flex">
+    <div className="hidden sm:flex">
       <button
         onClick={handleCopy}
         className={cn(

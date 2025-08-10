@@ -1,9 +1,10 @@
 #!/usr/bin/env tsx
+import { readFileSync } from "fs";
+import { glob } from "glob";
 import { remark } from "remark";
 import lint from "remark-lint";
 import mdx from "remark-mdx";
-import { glob } from "glob";
-import { readFileSync } from "fs";
+
 import sentenceCase from "../tools/remark-lint-heading-sentence-case";
 
 async function lintFiles() {
@@ -20,12 +21,12 @@ async function lintFiles() {
     try {
       const content = readFileSync(file, "utf8");
       const result = await processor.process({ value: content, path: file });
-      
+
       if (result.messages.length > 0) {
         hasErrors = true;
         console.log(`\n${file}`);
-        
-        result.messages.forEach(message => {
+
+        result.messages.forEach((message) => {
           totalErrors++;
           const line = message.line ? `:${message.line}` : "";
           const column = message.column ? `:${message.column}` : "";
@@ -49,4 +50,4 @@ async function lintFiles() {
   }
 }
 
-lintFiles().catch(console.error); 
+lintFiles().catch(console.error);

@@ -293,5 +293,15 @@
     "source": "/competitions/guides/faq",
     "destination": "/competitions/faq",
     "permanent": true
+  },
+  {
+    "source": "/competitions/guides/eliza",
+    "destination": "/competitions/developer-guides/eliza",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/guides/vercel",
+    "destination": "/competitions/developer-guides/vercel",
+    "permanent": true
   }
 ]

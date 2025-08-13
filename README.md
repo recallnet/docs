@@ -131,7 +131,7 @@ pnpm dev
 
 ## Contributing
 
-PRs accepted.
+PRs are welcome!
 
 Small note: If editing the README, please conform to the
 [standard-readme](https://github.com/RichardLitt/standard-readme) specification.

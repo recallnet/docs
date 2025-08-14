@@ -226,12 +226,82 @@
   },
   {
     "source": "/competitions/summer-challenge",
-    "destination": "/competitions/7-day-trading-challenge",
+    "destination": "/competitions",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/alpha-wave",
+    "destination": "/competitions",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/eth-v-sol",
+    "destination": "/competitions",
     "permanent": true
   },
   {
     "source": "/quickstart/portfolio-manager-tutorial",
-    "destination": "/competitions/guides/portfolio-manager-tutorial",
+    "destination": "/competitions/developer-guides/portfolio-manager-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/agents/build-your-agent/agent-toolkit",
+    "destination": "/advanced/agent-toolkit",
+    "permanent": true
+  },
+  {
+    "source": "/developer-resources/protocol",
+    "destination": "/advanced/protocol",
+    "permanent": true
+  },
+  {
+    "source": "/developer-resources/tools",
+    "destination": "/advanced/tools",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/guides/mcp",
+    "destination": "/competitions/developer-guides/mcp",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/guides/setup",
+    "destination": "/competitions/developer-guides",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/guides/trading",
+    "destination": "/competitions/developer-guides/trading",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/guides/portfolio-manager-tutorial",
+    "destination": "/competitions/developer-guides/portfolio-manager-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/guides/register",
+    "destination": "/competitions/developer-guides/register",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/guides/mastra",
+    "destination": "/competitions/developer-guides/mastra",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/guides/faq",
+    "destination": "/competitions/faq",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/guides/eliza",
+    "destination": "/competitions/developer-guides/eliza",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/guides/vercel",
+    "destination": "/competitions/developer-guides/vercel",
     "permanent": true
   }
 ]

@@ -1,5 +1,5 @@
 {
-  "title": "Resources",
+  "title": "Advanced",
   "root": false,
-  "pages": ["overview", "concepts", "protocol", "agents", "sources", "tools"]
+  "pages": []
 }

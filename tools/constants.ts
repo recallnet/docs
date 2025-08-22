@@ -30,7 +30,7 @@ export const ALLOWED_CAPITALIZED_WORDS: string[] = [
 
   // Recall-specific terms
   "MCP",
-  "AgentRank",
+  "Recall Rank",
   "Recall",
   "Agent",
   "AgentToolkit",

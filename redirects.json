@@ -303,5 +303,10 @@
     "source": "/competitions/guides/vercel",
     "destination": "/competitions/developer-guides/vercel",
     "permanent": true
+  },
+  {
+    "source": "/advanced/overview",
+    "destination": "/advanced",
+    "permanent": true
   }
 ]

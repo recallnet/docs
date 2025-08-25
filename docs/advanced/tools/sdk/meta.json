@@ -1,5 +1,0 @@
-{
-  "title": "SDKs",
-  "description": "Build agents with the Recall SDKs",
-  "pages": ["javascript", "rust"]
-}

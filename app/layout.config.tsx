@@ -55,12 +55,11 @@ export const baseOptions: BaseLayoutProps = {
     children: (
       <>
         <Link
-          href="https://predict.recall.network/"
+          href="https://app.recall.network/competitions/8541d52e-6e62-4d7d-9c55-729191fce87d"
           className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center font-bold transition-colors duration-200"
         >
           <PartyPopper size={16} className="mr-2" />
-          Recall Predict is live! Help us create humanity&apos;s first ungameable benchmark for
-          GPT-5.
+          The Crypto Trading Challenge Competition is live!
           <LinkIcon size={16} className="ml-1" />
         </Link>
       </>

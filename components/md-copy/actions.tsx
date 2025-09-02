@@ -117,8 +117,8 @@ export function MarkdownActions({
                         : "/icons/claude-light.svg"
                     }
                     alt="Claude Logo"
-                    width={20}
-                    height={20}
+                    width={16}
+                    height={16}
                   />
                 )}
               </span>
@@ -145,8 +145,8 @@ export function MarkdownActions({
                         : "/icons/chatgpt-light.svg"
                     }
                     alt="ChatGPT Logo"
-                    width={20}
-                    height={20}
+                    width={16}
+                    height={16}
                   />
                 )}
               </span>

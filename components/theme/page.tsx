@@ -83,6 +83,8 @@ interface FooterOptions extends FooterProps {
 export interface DocsPageProps {
   toc?: TableOfContents;
   currentPath?: string;
+  markdownContent?: string;
+  markdownUrl?: string;
 
   /**
    * Extend the page to fill all available space
@@ -176,7 +178,7 @@ export function DocsPage({
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
             {replaceOrDefault(props.breadcrumb, <Breadcrumb {...props.breadcrumb} />)}
-            {props.currentPath && <MarkdownActions currentPath={props.currentPath} />}
+            {props.currentPath && <MarkdownActions currentPath={props.currentPath} markdownContent={props.markdownContent} markdownUrl={props.markdownUrl} />}
           </div>
           {props.children}
           <div role="none" className="flex-1" />

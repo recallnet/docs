@@ -13,14 +13,20 @@ import {
 
 interface MarkdownActionsProps {
   currentPath: string;
+  markdownContent?: string;
+  markdownUrl?: string;
 }
 
-export function MarkdownActions({ currentPath }: MarkdownActionsProps) {
+export function MarkdownActions({
+  currentPath,
+  markdownContent,
+  markdownUrl,
+}: MarkdownActionsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { theme, resolvedTheme } = useTheme();
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
+
   // Handle hydration mismatch by waiting for client-side rendering
   useEffect(() => {
     setMounted(true);
@@ -34,51 +40,49 @@ export function MarkdownActions({ currentPath }: MarkdownActionsProps) {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  
+
   // Get current URL for generating the LLM links - safely handled for SSR
-  const [currentUrl, setCurrentUrl] = useState('');
-  const [markdownUrl, setMarkdownUrl] = useState('');
-  
+  const [currentUrl, setCurrentUrl] = useState("");
+
   // Set up URLs once we're mounted on client side
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const baseUrl = `${window.location.origin}${window.location.pathname}`;
       setCurrentUrl(baseUrl);
-      
-      // Convert paths like docs/tools/concepts.mdx to /raw/tools/concepts.md
-      const path = currentPath.replace(/^docs\//, "").replace(/\.mdx$/, ".md");
-      setMarkdownUrl(`${window.location.origin}/raw/${path}`);
     }
-  }, [currentPath]);
+  }, []);
 
   // Function to create Claude URL
   const getClaudeUrl = () => {
-    if (!mounted || typeof window === 'undefined') return '#';
+    if (!mounted || typeof window === "undefined") return "#";
     return `https://claude.ai/new?q=${encodeURIComponent(`Read from ${currentUrl} so I can ask questions about it`)}`;
   };
 
   // Function to create ChatGPT URL
   const getChatGPTUrl = () => {
-    if (!mounted || typeof window === 'undefined') return '#';
+    if (!mounted || typeof window === "undefined") return "#";
     return `https://chatgpt.com/?hints=search&q=${encodeURIComponent(`Read from ${currentUrl} so I can ask questions about it`)}`;
   };
 
-  // Function to copy markdown content
-  const copyMarkdown = async () => {
-    if (!mounted || typeof window === 'undefined') return;
-    
-    try {
-      const response = await fetch(markdownUrl);
-      const markdown = await response.text();
-      await navigator.clipboard.writeText(markdown);
-      setIsOpen(false);
-    } catch (error) {
-      console.error('Failed to copy markdown:', error);
+  // Function to copy markdown content using modern clipboard API
+  const copyMarkdown = () => {
+    if (!mounted || typeof window === "undefined") return;
+
+    if (markdownContent) {
+      navigator.clipboard
+        .writeText(markdownContent)
+        .then(() => {
+          setIsOpen(false);
+        })
+        .catch((error) => {
+          console.error("Failed to copy to clipboard:", error);
+          // Could add user-visible error state here in the future
+        });
     }
   };
 
@@ -171,9 +175,9 @@ export function MarkdownActions({ currentPath }: MarkdownActionsProps) {
                 <span className="text-fd-muted-foreground text-xs">Copy page as plaintext</span>
               </div>
             </a>
-            
-            <a 
-              href={mounted ? markdownUrl : '#'}
+
+            <a
+              href={markdownUrl || "#"}
               target="_blank"
               rel="noopener noreferrer"
               className="text-fd-foreground hover:bg-fd-accent hover:text-fd-accent-foreground flex items-center gap-2 px-3 py-2.5 text-sm no-underline"

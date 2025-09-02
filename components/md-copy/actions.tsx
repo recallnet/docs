@@ -1,121 +1,234 @@
 "use client";
 
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { Check, ChevronDown, ClipboardCopy, ExternalLink, FileText } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, ClipboardCopy, Copy, ExternalLink, FileText, Map, NotebookText } from "lucide-react";
+import { useTheme } from "next-themes";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
-import { buttonVariants } from "@/components/theme/ui/button";
-import { cn } from "@/lib/theme/cn";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/theme/ui/collapsible";
 
 interface MarkdownActionsProps {
   currentPath: string;
 }
 
 export function MarkdownActions({ currentPath }: MarkdownActionsProps) {
-  const [copied, setCopied] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const { theme, resolvedTheme } = useTheme();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  // Handle hydration mismatch by waiting for client-side rendering
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const getRawPath = () => {
-    // Convert paths like docs/tools/concepts.mdx to /raw/tools/concepts.md
-    // This uses the `raw/[...slug]` route to serve the markdown file
-    const path = currentPath.replace(/^docs\//, "").replace(/\.mdx$/, ".md");
-    return `/raw/${path}`;
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+  
+  // Get current URL for generating the LLM links - safely handled for SSR
+  const [currentUrl, setCurrentUrl] = useState('');
+  const [markdownUrl, setMarkdownUrl] = useState('');
+  
+  // Set up URLs once we're mounted on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const baseUrl = `${window.location.origin}${window.location.pathname}`;
+      setCurrentUrl(baseUrl);
+      
+      // Convert paths like docs/tools/concepts.mdx to /raw/tools/concepts.md
+      const path = currentPath.replace(/^docs\//, "").replace(/\.mdx$/, ".md");
+      setMarkdownUrl(`${window.location.origin}/raw/${path}`);
+    }
+  }, [currentPath]);
+
+  // Function to create Claude URL
+  const getClaudeUrl = () => {
+    if (!mounted || typeof window === 'undefined') return '#';
+    return `https://claude.ai/new?q=${encodeURIComponent(`Read from ${currentUrl} so I can ask questions about it`)}`;
   };
 
-  const handleCopy = async () => {
+  // Function to create ChatGPT URL
+  const getChatGPTUrl = () => {
+    if (!mounted || typeof window === 'undefined') return '#';
+    return `https://chatgpt.com/?hints=search&q=${encodeURIComponent(`Read from ${currentUrl} so I can ask questions about it`)}`;
+  };
+
+  // Function to copy markdown content
+  const copyMarkdown = async () => {
+    if (!mounted || typeof window === 'undefined') return;
+    
     try {
-      const response = await fetch(getRawPath());
-      if (!response.ok) {
-        throw new Error(`Failed to fetch markdown content: ${response.statusText}`);
-      }
-      const content = await response.text();
-      await navigator.clipboard.writeText(content);
-      setCopied(true);
-      setError(null);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy:", err);
-      setError("Failed to copy content");
-      setTimeout(() => setError(null), 2000);
+      const response = await fetch(markdownUrl);
+      const markdown = await response.text();
+      await navigator.clipboard.writeText(markdown);
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Failed to copy markdown:', error);
     }
   };
 
-  const handleView = () => {
-    window.open(getRawPath(), "_blank");
-  };
-
   return (
-    <div className="hidden sm:flex">
-      <button
-        onClick={handleCopy}
-        className={cn(
-          buttonVariants({ color: "secondary" }),
-          "gap-2 rounded-r-none border-r-0 text-sm font-normal"
-        )}
-      >
-        {copied ? (
-          <>
-            <Check className="size-4" />
-            Copied!
-          </>
-        ) : error ? (
-          <>
-            <ClipboardCopy className="size-4" />
-            {error}
-          </>
-        ) : (
-          <>
-            <ClipboardCopy className="size-4" />
+    <div ref={dropdownRef} className="relative hidden sm:flex">
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <CollapsibleTrigger asChild>
+          <button className="text-fd-muted-foreground bg-fd-secondary hover:text-fd-foreground hover:bg-fd-accent border-fd-border flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium shadow-sm transition-colors">
+            <ClipboardCopy size={18} />
             Copy page
-          </>
-        )}
-      </button>
-
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger
-          className={cn(
-            buttonVariants({ color: "secondary" }),
-            "border-l-border dark:border-l-fd-background rounded-l-none border-l px-2 focus:outline-none"
-          )}
-        >
-          <ChevronDown className="size-4" />
-        </DropdownMenu.Trigger>
-
-        <DropdownMenu.Portal>
-          <DropdownMenu.Content
-            className="bg-popover text-popover-foreground z-50 min-w-[12rem] overflow-hidden rounded-md border p-1 shadow-md"
-            align="end"
-          >
-            <DropdownMenu.Item
-              className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none"
-              onClick={handleCopy}
+            <ChevronDown
+              size={16}
+              className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="bg-fd-popover border-fd-border absolute top-full right-0 z-50 mt-1 w-64 rounded-lg border p-1 shadow-lg">
+          <div className="overflow-hidden rounded-md">
+            <a
+              href={getClaudeUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-fd-foreground hover:bg-fd-accent hover:text-fd-accent-foreground flex items-center gap-2 px-3 py-2.5 text-sm no-underline"
+              onClick={() => setIsOpen(false)}
             >
-              <ClipboardCopy className="mr-2 size-4" />
+              <span className="flex h-5 w-5 items-center justify-center">
+                {mounted && (
+                  <Image
+                    src={
+                      theme === "dark" || resolvedTheme === "dark"
+                        ? "/icons/claude-dark.svg"
+                        : "/icons/claude-light.svg"
+                    }
+                    alt="Claude Logo"
+                    width={20}
+                    height={20}
+                  />
+                )}
+              </span>
               <div className="flex flex-col">
-                <span>Copy page</span>
-                <span className="text-muted-foreground text-xs">
-                  Copy this page as markdown for LLMs
+                <span>Ask Claude</span>
+                <span className="text-fd-muted-foreground text-xs">Open this page in Claude</span>
+              </div>
+              <ExternalLink size={14} className="ml-auto opacity-70" />
+            </a>
+
+            <a
+              href={getChatGPTUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-fd-foreground hover:bg-fd-accent hover:text-fd-accent-foreground flex items-center gap-2 px-3 py-2.5 text-sm no-underline"
+              onClick={() => setIsOpen(false)}
+            >
+              <span className="flex h-5 w-5 items-center justify-center">
+                {mounted && (
+                  <Image
+                    src={
+                      theme === "dark" || resolvedTheme === "dark"
+                        ? "/icons/chatgpt-dark.svg"
+                        : "/icons/chatgpt-light.svg"
+                    }
+                    alt="ChatGPT Logo"
+                    width={20}
+                    height={20}
+                  />
+                )}
+              </span>
+              <div className="flex flex-col">
+                <span>Ask ChatGPT</span>
+                <span className="text-fd-muted-foreground text-xs">Open this page in ChatGPT</span>
+              </div>
+              <ExternalLink size={14} className="ml-auto opacity-70" />
+            </a>
+
+            <div className="bg-fd-border my-1 h-px" />
+
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                copyMarkdown();
+              }}
+              className="text-fd-foreground hover:bg-fd-accent hover:text-fd-accent-foreground flex items-center gap-2 px-3 py-2.5 text-sm no-underline"
+            >
+              <span className="flex h-5 w-5 items-center justify-center">
+                <Copy size={16} />
+              </span>
+              <div className="flex flex-col text-left">
+                <span>Copy as markdown</span>
+                <span className="text-fd-muted-foreground text-xs">Copy page as plaintext</span>
+              </div>
+            </a>
+            
+            <a 
+              href={mounted ? markdownUrl : '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-fd-foreground hover:bg-fd-accent hover:text-fd-accent-foreground flex items-center gap-2 px-3 py-2.5 text-sm no-underline"
+              onClick={() => setIsOpen(false)}
+            >
+              <span className="flex h-5 w-5 items-center justify-center">
+                <FileText size={16} />
+              </span>
+              <div className="flex flex-col">
+                <span>Open in markdown</span>
+                <span className="text-fd-muted-foreground text-xs">
+                  Open this page in plaintext
                 </span>
               </div>
-            </DropdownMenu.Item>
+              <ExternalLink size={14} className="ml-auto opacity-70" />
+            </a>
 
-            <DropdownMenu.Item
-              className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none"
-              onClick={handleView}
+            <div className="bg-fd-border my-1 h-px" />
+
+            <a
+              href="/llms.txt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-fd-foreground hover:bg-fd-accent hover:text-fd-accent-foreground flex items-center gap-2 px-3 py-2.5 text-sm no-underline"
+              onClick={() => setIsOpen(false)}
             >
-              <FileText className="mr-2 size-4" />
+              <span className="flex h-5 w-5 items-center justify-center">
+                <Map size={16} />
+              </span>
               <div className="flex flex-col">
-                <span className="flex items-center">
-                  View as markdown <ExternalLink className="ml-2 size-3" />
-                </span>
-                <span className="text-muted-foreground text-xs">
-                  View this page as plain markdown text
-                </span>
+                <span>llms.txt</span>
+                <span className="text-fd-muted-foreground text-xs">Docs index for AI</span>
               </div>
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu.Portal>
-      </DropdownMenu.Root>
+              <ExternalLink size={14} className="ml-auto opacity-70" />
+            </a>
+
+            <a
+              href="/llms-full.txt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-fd-foreground hover:bg-fd-accent hover:text-fd-accent-foreground flex items-center gap-2 px-3 py-2.5 text-sm no-underline"
+              onClick={() => setIsOpen(false)}
+            >
+              <span className="flex h-5 w-5 items-center justify-center">
+                <NotebookText size={16} />
+              </span>
+              <div className="flex flex-col">
+                <span>Full Documentation</span>
+                <span className="text-fd-muted-foreground text-xs">Complete docs as text</span>
+              </div>
+              <ExternalLink size={14} className="ml-auto opacity-70" />
+            </a>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   );
 }

@@ -5,6 +5,7 @@
     "create-agent",
     "register",
     "trading",
+    "verify-agent-wallet",
     "portfolio-manager-tutorial",
     "mastra",
     "eliza",

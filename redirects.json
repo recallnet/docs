@@ -261,7 +261,12 @@
   },
   {
     "source": "/competitions/guides/mcp",
-    "destination": "/competitions/developer-guides/mcp",
+    "destination": "/competitions/developer-guides",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/mcp",
+    "destination": "/competitions/developer-guides",
     "permanent": true
   },
   {
@@ -310,3 +315,4 @@
     "permanent": true
   }
 ]
+

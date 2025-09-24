@@ -1,6 +1,14 @@
 "use client";
 
-import { ChevronDown, ClipboardCopy, Copy, ExternalLink, FileText, Map, NotebookText } from "lucide-react";
+import {
+  ChevronDown,
+  ClipboardCopy,
+  Copy,
+  ExternalLink,
+  FileText,
+  Map,
+  NotebookText,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -17,11 +25,7 @@ interface MarkdownActionsProps {
   markdownUrl?: string;
 }
 
-export function MarkdownActions({
-  currentPath,
-  markdownContent,
-  markdownUrl,
-}: MarkdownActionsProps) {
+export function MarkdownActions({ markdownContent, markdownUrl }: MarkdownActionsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { theme, resolvedTheme } = useTheme();

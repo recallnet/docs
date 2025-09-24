@@ -6,16 +6,16 @@ import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { TypeTable } from "fumadocs-ui/components/type-table";
 import Image, { type ImageProps } from "next/image";
 import { notFound } from "next/navigation";
+import path from "path";
 import { HTMLAttributes } from "react";
 
 import { Callout, CalloutProps } from "@/components/theme/callout";
 import { Card, CardProps, Cards } from "@/components/theme/card";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "@/components/theme/page";
+import { getRawDocContent } from "@/lib/files";
 import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
-import { getRawDocContent } from "@/lib/files";
-import path from "path";
 
 const defaultMdxComponents = {
   ...getMDXComponents(),
@@ -62,24 +62,24 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   // Fetch markdown content for synchronous clipboard operations
   let markdownContent: string | undefined;
   let markdownUrl: string | undefined;
-  
+
   if (!isRootPage) {
     try {
-      // Try both potential paths - the file might be in docs/ subdirectory  
+      // Try both potential paths - the file might be in docs/ subdirectory
       let filePath = path.join(process.cwd(), page.file.path);
-      
+
       // If the path doesn't start with docs/, try prepending it
-      if (!page.file.path.startsWith('docs/')) {
-        filePath = path.join(process.cwd(), 'docs', page.file.path);
+      if (!page.file.path.startsWith("docs/")) {
+        filePath = path.join(process.cwd(), "docs", page.file.path);
       }
-      
+
       const docContent = await getRawDocContent(filePath);
       markdownContent = `# ${docContent.title}\n\n${docContent.description}\n\n${docContent.content}`;
-      
+
       // Generate markdown URL server-side
       const rawPath = page.file.path.replace(/^docs\//, "").replace(/\.mdx$/, ".md");
       markdownUrl = `/raw/${rawPath}`;
-    } catch (error) {
+    } catch {
       // Will fall back to showing error in component
     }
   }

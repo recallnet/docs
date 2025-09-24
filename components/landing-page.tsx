@@ -1,5 +1,5 @@
 import Link from "fumadocs-core/link";
-import { ArrowRight, Expand, Lightbulb, MemoryStick, Network, PartyPopper } from "lucide-react";
+import { ArrowRight, Lightbulb, MemoryStick, Network, PartyPopper } from "lucide-react";
 import { FaDiscord, FaXTwitter } from "react-icons/fa6";
 
 import LandingSVG from "@/components/landing-svg";

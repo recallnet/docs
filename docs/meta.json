@@ -6,16 +6,18 @@
     "overview",
     "quickstart/your-first-trade",
     "concepts",
-    "---Predict---",
-    "predict",
-    "---Compete & earn---",
+    "skill-markets",
+    "---RECALL token---",
+    "token/token-overview",
+    "token/airdrop",
+    "---Competitions---",
     "competitions/index",
     "competitions/user-guides",
     "competitions/developer-guides",
     "competitions/faq",
-    "---API Reference---",
+    "---API reference---",
     "api-reference/endpoints",
-    "---Advanced Development---",
+    "---Advanced development---",
     "advanced"
   ]
 }

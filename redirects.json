@@ -313,6 +313,11 @@
     "source": "/advanced/overview",
     "destination": "/advanced",
     "permanent": true
+  },
+  {
+    "source": "/predict",
+    "destination": "/skill-markets",
+    "permanent": true
   }
 ]
 

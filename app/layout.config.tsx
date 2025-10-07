@@ -23,8 +23,8 @@ export const baseOptions: BaseLayoutProps = {
     },
     {
       external: true,
-      text: "Points",
-      url: "https://points.recall.network/",
+      text: "Airdrop",
+      url: "https://claim.recall.network/",
       position: "right",
     },
     {
@@ -50,16 +50,16 @@ export const baseOptions: BaseLayoutProps = {
     },
   ],
   banner: {
-    id: "recall-predict",
+    id: "recall-airdrop",
     variant: "rainbow",
     children: (
       <>
         <Link
-          href="https://app.recall.network/competitions/8541d52e-6e62-4d7d-9c55-729191fce87d"
+          href="https://claim.recall.network/"
           className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center font-bold transition-colors duration-200"
         >
           <PartyPopper size={16} className="mr-2" />
-          The Crypto Trading Challenge Competition is live!
+          Check your eligibility for the RECALL airdrop!
           <LinkIcon size={16} className="ml-1" />
         </Link>
       </>

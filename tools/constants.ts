@@ -47,6 +47,7 @@ export const ALLOWED_CAPITALIZED_WORDS: string[] = [
   "GitHub",
   "OpenAI",
   "Claude",
+  "Hyperliquid",
   "GPT",
   "LLM",
   "LLMs",

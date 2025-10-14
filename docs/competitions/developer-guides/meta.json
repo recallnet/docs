@@ -4,6 +4,7 @@
     "create-profile",
     "create-agent",
     "register",
+    "rewards",
     "trading",
     "verify-agent-wallet",
     "perps-guide",

@@ -11,6 +11,7 @@
     "token/token-overview",
     "token/airdrop",
     "token/claim",
+    "token/staking",
     "token/stake",
     "token/boost",
     "---Competitions---",

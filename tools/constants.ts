@@ -42,6 +42,9 @@ export const ALLOWED_CAPITALIZED_WORDS: string[] = [
   "Toolkit",
   "Competition",
   "Competitions",
+  "NftReceipt",
+  "RewardAllocation",
+  "Staking",
 
   // Companies and services
   "GitHub",
@@ -58,6 +61,10 @@ export const ALLOWED_CAPITALIZED_WORDS: string[] = [
   "Cursor",
   "Vercel",
   "MinIO",
+  "Base",
+  "BSC",
+  "Ethereum",
+  "Axelar",
   "Filecoin",
   "IPFS",
 

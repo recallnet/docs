@@ -59,7 +59,7 @@ export const baseOptions: BaseLayoutProps = {
           className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center font-bold transition-colors duration-200"
         >
           <PartyPopper size={16} className="mr-2" />
-          Check your eligibility for the RECALL airdrop!
+          RECALL airdrop claims are open!
           <LinkIcon size={16} className="ml-1" />
         </Link>
       </>

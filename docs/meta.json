@@ -16,6 +16,7 @@
     "token/boost",
     "---Competitions---",
     "competitions/index",
+    "competitions/rewards",
     "competitions/create-profile",
     "competitions/user-guides",
     "competitions/developer-guides",

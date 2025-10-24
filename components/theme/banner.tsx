@@ -105,7 +105,7 @@ export function Banner({
       ) : null}
 
       {variant === "rainbow" ? rainbowLayer : null}
-      <div className="inline-flex items-center gap-2">{children}</div>
+      <div className="flex max-w-full flex-wrap items-center justify-center gap-2">{children}</div>
       {id ? (
         <button
           type="button"

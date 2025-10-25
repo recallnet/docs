@@ -44,11 +44,11 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   const MDX = page.data.body;
   // Don't show the TOC or edit button on the root page, or the auto-generated API reference pages
   const isRootPage = !params.slug || params.slug.length === 0;
-  const isApiReferencePage = params.slug?.[0] === "api-reference";
-  // Ignore the `api-reference/endpoints` page since it's manually written, so we want the TOC
+  const isApiReferencePage = params.slug?.[0] === "reference" && params.slug?.[1] === "endpoints";
+  // Ignore the `reference/endpoints` index page since it's manually written, so we want the TOC
   const isApiReferenceRootPage =
     params.slug?.length === 2 &&
-    params.slug?.[0] === "api-reference" &&
+    params.slug?.[0] === "reference" &&
     params.slug?.[1] === "endpoints";
   const isApiPage = isApiReferencePage && !isApiReferenceRootPage;
   const githubPath = `docs/${page.file.path}`;

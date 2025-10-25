@@ -4,11 +4,12 @@
   "pages": [
     "---Get started---",
     "overview",
+    "competitions-overview",
+    "token-overview",
     "quickstart/your-first-trade",
     "concepts",
     "skill-markets",
     "---RECALL token---",
-    "token/token-overview",
     "token/airdrop",
     "token/claim",
     "token/staking",
@@ -21,7 +22,8 @@
     "competitions/user-guides",
     "competitions/developer-guides",
     "competitions/faq",
-    "---API reference---",
-    "api-reference/endpoints"
+    "---Reference---",
+    "reference/token-reference",
+    "reference/endpoints"
   ]
 }

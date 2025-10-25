@@ -126,7 +126,7 @@
   },
   {
     "source": "/reference/competitions",
-    "destination": "/api-reference/endpoints",
+    "destination": "/reference/endpoints",
     "permanent": true
   },
   {

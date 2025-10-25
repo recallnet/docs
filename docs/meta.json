@@ -22,8 +22,6 @@
     "competitions/developer-guides",
     "competitions/faq",
     "---API reference---",
-    "api-reference/endpoints",
-    "---Advanced development---",
-    "advanced"
+    "api-reference/endpoints"
   ]
 }

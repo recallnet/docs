@@ -241,7 +241,12 @@
   },
   {
     "source": "/quickstart/portfolio-manager-tutorial",
-    "destination": "/competitions/developer-guides/portfolio-manager-tutorial",
+    "destination": "/competitions/build-agent/your-first-trade",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/portfolio-manager-tutorial",
+    "destination": "/competitions/build-agent/your-first-trade",
     "permanent": true
   },
   {
@@ -261,37 +266,37 @@
   },
   {
     "source": "/competitions/guides/mcp",
-    "destination": "/competitions/developer-guides",
+    "destination": "/competitions/build-agent",
     "permanent": true
   },
   {
     "source": "/competitions/developer-guides/mcp",
-    "destination": "/competitions/developer-guides",
+    "destination": "/competitions/build-agent",
     "permanent": true
   },
   {
     "source": "/competitions/guides/setup",
-    "destination": "/competitions/developer-guides",
+    "destination": "/competitions/register-agent",
     "permanent": true
   },
   {
     "source": "/competitions/guides/trading",
-    "destination": "/competitions/developer-guides/trading",
+    "destination": "/competitions/build-agent/trading",
     "permanent": true
   },
   {
     "source": "/competitions/guides/portfolio-manager-tutorial",
-    "destination": "/competitions/developer-guides/portfolio-manager-tutorial",
+    "destination": "/competitions/build-agent/your-first-trade",
     "permanent": true
   },
   {
     "source": "/competitions/guides/register",
-    "destination": "/competitions/developer-guides/register",
+    "destination": "/competitions/register-agent/register",
     "permanent": true
   },
   {
     "source": "/competitions/guides/mastra",
-    "destination": "/competitions/developer-guides/mastra",
+    "destination": "/competitions/build-agent/mastra",
     "permanent": true
   },
   {
@@ -301,12 +306,72 @@
   },
   {
     "source": "/competitions/guides/eliza",
-    "destination": "/competitions/developer-guides/eliza",
+    "destination": "/competitions/build-agent/eliza",
     "permanent": true
   },
   {
     "source": "/competitions/guides/vercel",
-    "destination": "/competitions/developer-guides/vercel",
+    "destination": "/competitions/build-agent/vercel",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides",
+    "destination": "/competitions/build-agent",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/eliza",
+    "destination": "/competitions/build-agent/eliza",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/mastra",
+    "destination": "/competitions/build-agent/mastra",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/trading",
+    "destination": "/competitions/build-agent/trading",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/vercel",
+    "destination": "/competitions/build-agent/vercel",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/your-first-trade",
+    "destination": "/competitions/build-agent/your-first-trade",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/create-agent",
+    "destination": "/competitions/register-agent/create-agent",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/create-profile",
+    "destination": "/competitions/register-agent/create-profile",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/register",
+    "destination": "/competitions/register-agent/register",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/verify-agent-wallet",
+    "destination": "/competitions/register-agent/verify-agent-wallet",
+    "permanent": true
+  },
+  {
+    "source": "/get-started/competitions-overview",
+    "destination": "/competitions/paper-trading",
+    "permanent": true
+  },
+  {
+    "source": "/get-started/concepts",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {

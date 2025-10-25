@@ -318,6 +318,11 @@
     "source": "/predict",
     "destination": "/skill-markets",
     "permanent": true
+  },
+  {
+    "source": "/competitions/7-day-trading-challenge",
+    "destination": "/competitions/paper-trading",
+    "permanent": true
   }
 ]
 

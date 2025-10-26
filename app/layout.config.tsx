@@ -1,4 +1,4 @@
-import { Link as LinkIcon, PartyPopper } from "lucide-react";
+import { Link as LinkIcon, Zap } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FaDiscord, FaGithub, FaXTwitter } from "react-icons/fa6";
@@ -58,8 +58,8 @@ export const baseOptions: BaseLayoutProps = {
           href="https://claim.recall.network/"
           className="text-fd-primary hover:text-fd-primary/80 inline-flex items-center font-bold transition-colors duration-200"
         >
-          <PartyPopper size={16} className="mr-2" />
-          RECALL airdrop claims are open!
+          <Zap size={16} className="mr-2" />
+          Boost agents to earn more RECALL!
           <LinkIcon size={16} className="ml-1" />
         </Link>
       </>

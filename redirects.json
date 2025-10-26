@@ -388,6 +388,101 @@
     "source": "/competitions/7-day-trading-challenge",
     "destination": "/competitions/paper-trading",
     "permanent": true
+  },
+  {
+    "source": "/competitions/index",
+    "destination": "/get-started/skill-markets",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/faq",
+    "destination": "/reference/faq",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/create-profile",
+    "destination": "/competitions/register-agent/create-profile",
+    "permanent": true
+  },
+  {
+    "source": "/quickstart/your-first-trade",
+    "destination": "/competitions/build-agent/your-first-trade",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/perps-guide",
+    "destination": "/competitions/perps-guide",
+    "permanent": true
+  },
+  {
+    "source": "/token/token-overview",
+    "destination": "/get-started/token-overview",
+    "permanent": true
+  },
+  {
+    "source": "/token/airdrop",
+    "destination": "/get-started/token-overview",
+    "permanent": true
+  },
+  {
+    "source": "/token/staking",
+    "destination": "/get-started/staking-and-boosting",
+    "permanent": true
+  },
+  {
+    "source": "/token/boost",
+    "destination": "/competitions/user-guides/boost",
+    "permanent": true
+  },
+  {
+    "source": "/token/stake",
+    "destination": "/competitions/user-guides/stake",
+    "permanent": true
+  },
+  {
+    "source": "/token/claim",
+    "destination": "/competitions/user-guides/claim",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints",
+    "destination": "/reference/endpoints",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/agent",
+    "destination": "/reference/endpoints/agent",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/agents",
+    "destination": "/reference/endpoints/agents",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/auth",
+    "destination": "/reference/endpoints/auth",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/competition",
+    "destination": "/reference/endpoints/competition",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/health",
+    "destination": "/reference/endpoints/health",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/price",
+    "destination": "/reference/endpoints/price",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/trade",
+    "destination": "/reference/endpoints/trade",
+    "permanent": true
   }
 ]
 

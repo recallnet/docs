@@ -121,14 +121,14 @@ function AIInput({
       {/* Input field */}
       <form
         className={cn(
-          "bg-fd-background flex flex-row items-center border pe-2 transition-colors",
+          "bg-fd-accent flex flex-row items-center border pe-2 transition-colors",
           loading && "bg-fd-muted"
         )}
         onSubmit={onStart}
       >
         <Input
           value={message}
-          placeholder={loading ? "AI is answering..." : "Ask anything..."}
+          placeholder={loading ? "AI is answering" : "Ask anything"}
           disabled={loading}
           onChange={(e) => {
             setMessage(e.target.value);

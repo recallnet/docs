@@ -79,15 +79,15 @@ function ChatView() {
   return (
     <div
       className={cn(
-        "mx-auto max-w-4xl px-4",
+        "mx-auto max-w-5xl px-4",
         hasMessages ? "flex min-h-[calc(100vh-4rem)] flex-col py-4" : "py-4"
       )}
     >
       {/* Hero Section */}
       {!hasMessages && (
-        <div className="animate-in fade-in mb-8 space-y-4 text-center duration-500">
-          <h1 className="text-5xl font-bold">Welcome to Recall</h1>
-          <p className="text-muted-foreground text-lg">
+        <div className="animate-in fade-in mb-8 space-y-3 text-center duration-500">
+          <h1 className="text-3xl font-bold">Welcome to Recall</h1>
+          <p className="text-muted-foreground text-base">
             The world's first decentralized skill market for AI
           </p>
         </div>
@@ -134,7 +134,7 @@ function ChatInput({
       {/* Input field */}
       <form
         className={cn(
-          "bg-fd-background flex flex-row items-center border pe-2 transition-colors",
+          "bg-fd-accent flex flex-row items-center border pe-2 transition-colors",
           loading && "bg-fd-muted"
         )}
         onSubmit={onStart}

@@ -3,6 +3,7 @@ import { OpenAI } from "openai";
 import path from "path";
 
 import { MessageRecord } from "@/components/ai/context";
+import { SUGGESTED_QUESTIONS } from "@/components/ai/suggestions";
 import {
   DocsEmbedding,
   REJECTION_MESSAGE,
@@ -47,6 +48,48 @@ setInterval(() => {
     }
   }
 }, MAX_SESSION_AGE);
+
+/**
+ * Generate contextual follow-up suggestions based on the conversation.
+ * Uses OpenAI to pick 3 most relevant questions from the curated pool and rephrase them
+ * to fit the conversation context.
+ */
+async function generateContextualSuggestions(
+  client: OpenAI,
+  conversationHistory: MessageRecord[]
+): Promise<string[]> {
+  try {
+    const response = await client.chat.completions.create({
+      model: MODEL,
+      messages: [
+        {
+          role: "system",
+          content: `You are helping generate follow-up questions for a user chatting with the Recall documentation AI.
+
+Here is a curated pool of key questions:
+${SUGGESTED_QUESTIONS.map((q, i) => `${i + 1}. ${q}`).join("\n")}
+
+Based on the conversation history, pick 3 most relevant questions from this pool and rephrase them to fit the conversation context as potential follow-up questions shown to the user for their next input.
+
+Return ONLY a JSON array of 3 strings, nothing else. Example: ["Question 1?", "Question 2?", "Question 3?"]`,
+        },
+        ...conversationHistory,
+      ],
+      temperature: 0.7,
+    });
+
+    const content = response.choices[0]?.message?.content?.trim();
+    if (!content) return [];
+
+    // Parse the JSON array response
+    const suggestions = JSON.parse(content) as string[];
+    return Array.isArray(suggestions) ? suggestions.slice(0, 3) : [];
+  } catch (error) {
+    console.error("Error generating suggestions:", error);
+    // Fallback to random questions if generation fails
+    return [...SUGGESTED_QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 3);
+  }
+}
 
 export async function POST(request: Request) {
   if (!openai) {
@@ -122,16 +165,51 @@ export async function POST(request: Request) {
       stream: true,
     });
 
-    // Create a transform stream to append source links
+    // Create a transform stream to capture response content and append source links and suggestions
+    let assistantResponse = "";
     const transform = new TransformStream({
       transform(chunk, controller) {
+        // Decode and capture the streaming content
+        const decoder = new TextDecoder();
+        const chunkText = decoder.decode(chunk, { stream: true });
+
+        // Parse OpenAI streaming response chunks to extract content
+        try {
+          const lines = chunkText.split("\n").filter(line => line.trim());
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const data = line.slice(6);
+              if (data === "[DONE]") continue;
+
+              const parsed = JSON.parse(data);
+              const content = parsed.choices?.[0]?.delta?.content;
+              if (content) {
+                assistantResponse += content;
+              }
+            }
+          }
+        } catch {
+          // Not a JSON chunk, might be raw content - ignore parsing errors
+        }
+
         controller.enqueue(chunk);
       },
-      flush(controller) {
+      async flush(controller) {
         // Add reference links after the stream is done
         const referenceLinks = getReferenceLinks(relevant);
-        const sourceJson = JSON.stringify({ references: referenceLinks }) + "\n"; // Match OpenAI response formatting
+        const sourceJson = JSON.stringify({ references: referenceLinks }) + "\n";
         controller.enqueue(new TextEncoder().encode(sourceJson));
+
+        // Create complete conversation history including the assistant's response
+        const completeMessages = [
+          ...messages,
+          { role: "assistant" as const, content: assistantResponse }
+        ];
+
+        // Generate contextual suggestions based on the complete conversation
+        const suggestions = await generateContextualSuggestions(openai, completeMessages);
+        const suggestionsJson = JSON.stringify({ suggestions }) + "\n";
+        controller.enqueue(new TextEncoder().encode(suggestionsJson));
       },
     });
 

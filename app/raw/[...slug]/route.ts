@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import path from "path";
+import fs from "node:fs/promises";
 
-import { getApiDocContent, getRawDocContent } from "@/lib/files";
+import { getRawDocContent } from "@/lib/files";
 
 export async function GET(_: Request, { params }: { params: Promise<{ slug: string[] }> }) {
   try {
@@ -10,27 +11,37 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
     // 1. They have the `.mdx` extension converted to `.md`
     // 2. They have the `docs` slug prefix removed (removed from the passed github file url)
     const slug = (await params).slug.map((s) => s.replace(".md", ".mdx"));
-    const filePath = path.join(process.cwd(), "docs", slug.join("/"));
 
     // Check if this is an API reference page
     const isApiReferencePage = slug.join("/").includes("reference/endpoints/");
     const isApiReferenceRootPage = slug.length === 2 && slug[0] === "reference" && slug[1] === "endpoints";
-    const specPath = path.join(process.cwd(), "specs", "competitions.json");
 
-    let docContent;
+    let content: string;
+    let filename: string;
+
     if (isApiReferencePage && !isApiReferenceRootPage) {
-      // For API pages, generate content from OpenAPI spec
-      docContent = await getApiDocContent(filePath, specPath);
+      // For API pages, serve pre-generated markdown
+      const markdownFileName = slug[slug.length - 1].replace(".mdx", ".md");
+      const markdownPath = path.join(
+        process.cwd(),
+        ".source",
+        "markdown",
+        "endpoints",
+        markdownFileName
+      );
+
+      // Read pre-generated markdown file
+      content = await fs.readFile(markdownPath, "utf8");
+      filename = markdownFileName;
     } else {
       // For regular pages, use the existing method
-      docContent = await getRawDocContent(filePath);
+      const filePath = path.join(process.cwd(), "docs", slug.join("/"));
+      const docContent = await getRawDocContent(filePath);
+      content = `# ${docContent.title}\n\n${docContent.description}\n\n${docContent.content}`;
+      filename = slug.pop() || "index.md";
     }
 
-    const { content, title, description } = docContent;
-    const merged = `# ${title}\n\n${description}\n\n${content}`;
-    const filename = slug.pop() || "index.md";
-
-    return new NextResponse(merged, {
+    return new NextResponse(content, {
       headers: {
         "Content-Type": "text/markdown",
         "Content-Disposition": `filename="${filename}"`,

@@ -12,7 +12,7 @@ import { HTMLAttributes } from "react";
 import { Callout, CalloutProps } from "@/components/theme/callout";
 import { Card, CardProps, Cards } from "@/components/theme/card";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "@/components/theme/page";
-import { getRawDocContent } from "@/lib/files";
+import { getApiDocContent, getRawDocContent } from "@/lib/files";
 import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
@@ -73,7 +73,19 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
         filePath = path.join(process.cwd(), "docs", page.file.path);
       }
 
-      const docContent = await getRawDocContent(filePath);
+      // Check if this is an API reference page
+      const isApiReferencePage = page.file.path.includes("reference/endpoints/");
+      const specPath = path.join(process.cwd(), "specs", "competitions.json");
+
+      let docContent;
+      if (isApiReferencePage && !isApiReferenceRootPage) {
+        // For API pages, generate content from OpenAPI spec
+        docContent = await getApiDocContent(filePath, specPath);
+      } else {
+        // For regular pages, use the existing method
+        docContent = await getRawDocContent(filePath);
+      }
+
       markdownContent = `# ${docContent.title}\n\n${docContent.description}\n\n${docContent.content}`;
 
       // Generate markdown URL server-side

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import path from "path";
 
-import { getRawDocContent } from "@/lib/files";
+import { getApiDocContent, getRawDocContent } from "@/lib/files";
 
 export async function GET(_: Request, { params }: { params: Promise<{ slug: string[] }> }) {
   try {
@@ -11,7 +11,22 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
     // 2. They have the `docs` slug prefix removed (removed from the passed github file url)
     const slug = (await params).slug.map((s) => s.replace(".md", ".mdx"));
     const filePath = path.join(process.cwd(), "docs", slug.join("/"));
-    const { content, title, description } = await getRawDocContent(filePath);
+
+    // Check if this is an API reference page
+    const isApiReferencePage = slug.join("/").includes("reference/endpoints/");
+    const isApiReferenceRootPage = slug.length === 2 && slug[0] === "reference" && slug[1] === "endpoints";
+    const specPath = path.join(process.cwd(), "specs", "competitions.json");
+
+    let docContent;
+    if (isApiReferencePage && !isApiReferenceRootPage) {
+      // For API pages, generate content from OpenAPI spec
+      docContent = await getApiDocContent(filePath, specPath);
+    } else {
+      // For regular pages, use the existing method
+      docContent = await getRawDocContent(filePath);
+    }
+
+    const { content, title, description } = docContent;
     const merged = `# ${title}\n\n${description}\n\n${content}`;
     const filename = slug.pop() || "index.md";
 

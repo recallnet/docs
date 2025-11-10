@@ -1,323 +1,487 @@
 [
   {
     "source": "/agent-toolkit",
-    "destination": "/advanced/agent-toolkit",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/agent-toolkit/authentication",
-    "destination": "/advanced/agent-toolkit/authentication",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/agent-toolkit/bucket-monitoring",
-    "destination": "/advanced/agent-toolkit/bucket-monitoring",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/agent-toolkit/core-concepts",
-    "destination": "/advanced/agent-toolkit/core-concepts",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/agent-toolkit/installation",
-    "destination": "/advanced/agent-toolkit/installation",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/agent-toolkit/quickstart",
-    "destination": "/advanced/agent-toolkit/quickstart",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/agent-toolkit/tools-reference",
-    "destination": "/advanced/agent-toolkit/tools-reference",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/agent-toolkit/troubleshooting",
-    "destination": "/advanced/agent-toolkit/troubleshooting",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/agents",
-    "destination": "/advanced/agents",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/frameworks",
-    "destination": "/advanced/frameworks",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/mcp",
-    "destination": "/advanced/mcp",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/protocol/architecture/consensus",
-    "destination": "/advanced/protocol/architecture/consensus",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/protocol/architecture/data-availability",
-    "destination": "/advanced/protocol/architecture/data-availability",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/protocol/architecture",
-    "destination": "/advanced/protocol/architecture",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/protocol/architecture/subnets",
-    "destination": "/advanced/protocol/architecture/subnets",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/protocol/contracts/core",
-    "destination": "/advanced/protocol/contracts/core",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/protocol/contracts",
-    "destination": "/advanced/protocol/contracts",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/protocol/contracts/wrappers",
-    "destination": "/advanced/protocol/contracts/wrappers",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/protocol",
-    "destination": "/advanced/protocol",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/protocol/network/api-cometbft",
-    "destination": "/advanced/protocol/network/api-cometbft",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/protocol/network/api-evm",
-    "destination": "/advanced/protocol/network/api-evm",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/protocol/network/api-object",
-    "destination": "/advanced/protocol/network/api-object",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/protocol/network",
-    "destination": "/advanced/protocol/network",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/protocol/operators",
-    "destination": "/advanced/protocol/operators",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/quickstart",
-    "destination": "/quickstart/your-first-trade",
+    "destination": "/competitions/build-agent/your-first-trade",
     "permanent": true
   },
   {
     "source": "/reference/competitions",
-    "destination": "/api-reference/endpoints",
+    "destination": "/reference/endpoints",
     "permanent": true
   },
   {
     "source": "/sources",
-    "destination": "/advanced/sources",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/cli/account",
-    "destination": "/advanced/tools/cli/account",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/cli/bucket",
-    "destination": "/advanced/tools/cli/bucket",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/cli",
-    "destination": "/advanced/tools/cli",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/cli/machine",
-    "destination": "/advanced/tools/cli/machine",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/cli/storage",
-    "destination": "/advanced/tools/cli/storage",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/cli/timehub",
-    "destination": "/advanced/tools/cli/timehub",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools",
-    "destination": "/advanced/tools",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/local/devnet",
-    "destination": "/advanced/tools/local/devnet",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/local",
-    "destination": "/advanced/tools/local",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/local/localnet",
-    "destination": "/advanced/tools/local/localnet",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/s3",
-    "destination": "/advanced/tools/s3",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/s3/minio",
-    "destination": "/advanced/tools/s3/minio",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/s3/python",
-    "destination": "/advanced/tools/s3/python",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/sdk",
-    "destination": "/advanced/tools/sdk",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/sdk/javascript",
-    "destination": "/advanced/tools/sdk/javascript",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/sdk/rust/examples",
-    "destination": "/advanced/tools/sdk/rust/examples",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/sdk/rust",
-    "destination": "/advanced/tools/sdk/rust",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/tools/sdk/rust/usage",
-    "destination": "/advanced/tools/sdk/rust/usage",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/competitions/summer-challenge",
-    "destination": "/competitions",
+    "destination": "/competitions/paper-trading",
     "permanent": true
   },
   {
     "source": "/competitions/alpha-wave",
-    "destination": "/competitions",
+    "destination": "/competitions/paper-trading",
     "permanent": true
   },
   {
     "source": "/competitions/eth-v-sol",
-    "destination": "/competitions",
+    "destination": "/competitions/paper-trading",
     "permanent": true
   },
   {
     "source": "/quickstart/portfolio-manager-tutorial",
-    "destination": "/competitions/developer-guides/portfolio-manager-tutorial",
+    "destination": "/competitions/build-agent/your-first-trade",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/portfolio-manager-tutorial",
+    "destination": "/competitions/build-agent/your-first-trade",
     "permanent": true
   },
   {
     "source": "/agents/build-your-agent/agent-toolkit",
-    "destination": "/advanced/agent-toolkit",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/developer-resources/protocol",
-    "destination": "/advanced/protocol",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/developer-resources/tools",
-    "destination": "/advanced/tools",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/competitions/guides/mcp",
-    "destination": "/competitions/developer-guides",
+    "destination": "/competitions/build-agent",
     "permanent": true
   },
   {
     "source": "/competitions/developer-guides/mcp",
-    "destination": "/competitions/developer-guides",
+    "destination": "/competitions/build-agent",
     "permanent": true
   },
   {
     "source": "/competitions/guides/setup",
-    "destination": "/competitions/developer-guides",
+    "destination": "/competitions/register-agent",
     "permanent": true
   },
   {
     "source": "/competitions/guides/trading",
-    "destination": "/competitions/developer-guides/trading",
+    "destination": "/competitions/build-agent/trading",
     "permanent": true
   },
   {
     "source": "/competitions/guides/portfolio-manager-tutorial",
-    "destination": "/competitions/developer-guides/portfolio-manager-tutorial",
+    "destination": "/competitions/build-agent/your-first-trade",
     "permanent": true
   },
   {
     "source": "/competitions/guides/register",
-    "destination": "/competitions/developer-guides/register",
+    "destination": "/competitions/register-agent/register",
     "permanent": true
   },
   {
     "source": "/competitions/guides/mastra",
-    "destination": "/competitions/developer-guides/mastra",
+    "destination": "/competitions/build-agent/mastra",
     "permanent": true
   },
   {
     "source": "/competitions/guides/faq",
-    "destination": "/competitions/faq",
+    "destination": "/reference/faq",
     "permanent": true
   },
   {
     "source": "/competitions/guides/eliza",
-    "destination": "/competitions/developer-guides/eliza",
+    "destination": "/competitions/build-agent/eliza",
     "permanent": true
   },
   {
     "source": "/competitions/guides/vercel",
-    "destination": "/competitions/developer-guides/vercel",
+    "destination": "/competitions/build-agent/vercel",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides",
+    "destination": "/competitions/build-agent",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/eliza",
+    "destination": "/competitions/build-agent/eliza",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/mastra",
+    "destination": "/competitions/build-agent/mastra",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/trading",
+    "destination": "/competitions/build-agent/trading",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/vercel",
+    "destination": "/competitions/build-agent/vercel",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/your-first-trade",
+    "destination": "/competitions/build-agent/your-first-trade",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/create-agent",
+    "destination": "/competitions/register-agent/create-agent",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/create-profile",
+    "destination": "/competitions/register-agent/create-profile",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/register",
+    "destination": "/competitions/register-agent/register",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/verify-agent-wallet",
+    "destination": "/competitions/register-agent/verify-agent-wallet",
+    "permanent": true
+  },
+  {
+    "source": "/get-started/competitions-overview",
+    "destination": "/competitions/paper-trading",
+    "permanent": true
+  },
+  {
+    "source": "/get-started/concepts",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/advanced/overview",
-    "destination": "/advanced",
+    "destination": "/get-started/overview",
     "permanent": true
   },
   {
     "source": "/predict",
-    "destination": "/skill-markets",
+    "destination": "/get-started/skill-markets",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/7-day-trading-challenge",
+    "destination": "/competitions/paper-trading",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/index",
+    "destination": "/get-started/skill-markets",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/faq",
+    "destination": "/reference/faq",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/create-profile",
+    "destination": "/competitions/register-agent/create-profile",
+    "permanent": true
+  },
+  {
+    "source": "/quickstart/your-first-trade",
+    "destination": "/competitions/build-agent/your-first-trade",
+    "permanent": true
+  },
+  {
+    "source": "/competitions/developer-guides/perps-guide",
+    "destination": "/competitions/perps-guide",
+    "permanent": true
+  },
+  {
+    "source": "/token/token-overview",
+    "destination": "/get-started/token-overview",
+    "permanent": true
+  },
+  {
+    "source": "/token/airdrop",
+    "destination": "/get-started/token-overview",
+    "permanent": true
+  },
+  {
+    "source": "/token/staking",
+    "destination": "/get-started/staking-and-boosting",
+    "permanent": true
+  },
+  {
+    "source": "/token/boost",
+    "destination": "/competitions/user-guides/boost",
+    "permanent": true
+  },
+  {
+    "source": "/token/stake",
+    "destination": "/competitions/user-guides/stake",
+    "permanent": true
+  },
+  {
+    "source": "/token/claim",
+    "destination": "/competitions/user-guides/claim",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints",
+    "destination": "/reference/endpoints",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/agent",
+    "destination": "/reference/endpoints/agent",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/agents",
+    "destination": "/reference/endpoints/agents",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/auth",
+    "destination": "/reference/endpoints/auth",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/competition",
+    "destination": "/reference/endpoints/competition",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/health",
+    "destination": "/reference/endpoints/health",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/price",
+    "destination": "/reference/endpoints/price",
+    "permanent": true
+  },
+  {
+    "source": "/api-reference/endpoints/trade",
+    "destination": "/reference/endpoints/trade",
     "permanent": true
   }
 ]
-

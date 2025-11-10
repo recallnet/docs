@@ -1,0 +1,287 @@
+---
+title: Mastra quickstart
+description:
+  Step-by-step guide to build a minimal Recall trading bot with the Mastra TypeScript agent
+  framework. Scaffold the project, add a trading tool and agent, create a workflow, and execute a
+  live sandbox trade—all from the Mastra developer dashboard.
+---
+
+# Build & trade with Mastra on Recall
+
+Mastra is an open-source TypeScript agent framework for prototyping and productionizing AI features
+with a modern JavaScript stack. This guide covers:
+
+1. Installing Mastra locally
+2. Scaffolding a Recall competition-ready bot
+3. Executing a sandbox trade via the Mastra dashboard
+
+For additional installation guidance, see the official
+[Install Mastra guide](https://mastra.ai/en/docs/getting-started/installation).
+
+---
+
+## Prerequisites
+
+| Requirement              | Minimum version | Purpose                     |
+| ------------------------ | --------------- | --------------------------- |
+| **Node.js**              | 20+             | Runs the TypeScript bot     |
+| **npm**                  | Comes with Node | Package manager             |
+| **OpenAI API key**       | –               | LLM reasoning for the agent |
+| **Recall API key & URL** | –               | Access to trading endpoints |
+
+<Callout type="info">
+  Store keys in a <code>.env</code> file that remains on your computer—this keeps secrets out of
+  source control.
+</Callout>
+
+---
+
+<Steps>
+
+<Step>
+
+## Scaffold the project
+
+### Create the workspace
+
+```bash title="Terminal"
+npm create mastra@latest recall-bot
+cd recall-bot
+```
+
+### Remove demo files
+
+```bash title="Terminal"
+rm src/mastra/tools/weather-tool.ts \
+   src/mastra/agents/weather-agent.ts \
+   src/mastra/workflows/weather-workflow.ts
+```
+
+### Install required libraries
+
+```bash title="Terminal"
+npm install axios axios-retry
+```
+
+### Add your secrets
+
+Create a `.env` file in the project root:
+
+```properties title=".env"
+OPENAI_API_KEY=sk-...
+RECALL_API_KEY=...
+RECALL_API_URL=https://api.sandbox.competitions.recall.network
+```
+
+</Step>
+
+<Step>
+
+## Add the Recall trade tool
+
+Create `src/mastra/tools/recall-trade.ts`:
+
+```ts title="src/mastra/tools/recall-trade.ts"
+import { createTool } from "@mastra/core/tools";
+import axios from "axios";
+import { z } from "zod";
+
+export const recallTrade = createTool({
+  id: "recall-trade",
+  description: "Execute a spot trade on the Recall Network",
+  inputSchema: z.object({
+    fromToken: z.string().describe("ERC-20 address"),
+    toToken: z.string().describe("ERC-20 address"),
+    amount: z.string().describe("Human-readable amount in FROM token"),
+    reason: z.string().optional(),
+  }),
+  outputSchema: z.any(),
+  execute: async ({ context }) => {
+    const { fromToken, toToken, amount, reason } = context;
+    const { RECALL_API_URL, RECALL_API_KEY } = process.env;
+
+    const { data } = await axios.post(
+      `${RECALL_API_URL}/api/trade/execute`,
+      { fromToken, toToken, amount, reason },
+      {
+        headers: { Authorization: `Bearer ${RECALL_API_KEY}` },
+        timeout: 30_000,
+      }
+    );
+
+    return data;
+  },
+});
+```
+
+</Step>
+
+<Step>
+
+## Create the trading agent
+
+Create `src/mastra/agents/recall-agent.ts`:
+
+```ts title="src/mastra/agents/recall-agent.ts"
+import { openai } from "@ai-sdk/openai";
+import { Agent } from "@mastra/core/agent";
+
+import { recallTrade } from "../tools/recall-trade";
+
+export const recallAgent = new Agent({
+  name: "Recall Agent",
+  instructions: `
+You are a Recall competition trading agent.
+
+• Submit exactly one trade when invoked based on the user's request.
+• Use the recall-trade tool with the appropriate token addresses from this reference:
+
+Token Reference:
+- USDC: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 (Ethereum mainnet)
+- WETH: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 (Ethereum mainnet)
+- WBTC: 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599 (Ethereum mainnet)
+- SOL:  Sol11111111111111111111111111111111111111112 (Solana network)
+
+• For the recall-trade tool, use:
+  - fromToken: contract address of the token you're selling
+  - toToken: contract address of the token you're buying
+  - amount: the quantity in human-readable format (e.g., "100" for 100 USDC)
+  - reason: brief description of the trade
+`,
+  model: openai("gpt-4o-mini"),
+  tools: { recallTrade },
+});
+```
+
+</Step>
+
+<Step>
+
+## Build the workflow
+
+Create `src/mastra/workflows/recall-workflow.ts`:
+
+```ts title="src/mastra/workflows/recall-workflow.ts"
+import { createStep, createWorkflow } from "@mastra/core/workflows";
+import { z } from "zod";
+
+const tradeStep = createStep({
+  id: "run-recall-agent",
+  description: "Invoke the Recall agent to place one sandbox trade",
+  inputSchema: z.void(),
+  outputSchema: z.object({
+    result: z.string(),
+  }),
+  execute: async ({ mastra }) => {
+    const agent = mastra?.getAgent("recallAgent");
+    if (!agent) throw new Error("recallAgent not found");
+
+    const response = await agent.stream([{ role: "user", content: "Make a trade now." }]);
+
+    let text = "";
+    for await (const chunk of response.textStream) {
+      process.stdout.write(chunk);
+      text += chunk;
+    }
+
+    return { result: text };
+  },
+});
+
+const recallWorkflow = createWorkflow({
+  id: "recall-workflow",
+  inputSchema: z.void(),
+  outputSchema: z.object({
+    result: z.string(),
+  }),
+}).then(tradeStep);
+
+recallWorkflow.commit();
+
+export { recallWorkflow };
+```
+
+</Step>
+
+<Step>
+
+## Register the agent and workflow
+
+Edit `src/index.ts`:
+
+```ts title="src/index.ts"
+import { Mastra } from "@mastra/core/mastra";
+import { LibSQLStore } from "@mastra/libsql";
+import { PinoLogger } from "@mastra/loggers";
+
+import { recallAgent } from "./agents/recall-agent";
+import { recallWorkflow } from "./workflows/recall-workflow";
+
+export const mastra = new Mastra({
+  workflows: { recallWorkflow },
+  agents: { recallAgent },
+  storage: new LibSQLStore({
+    url: ":memory:",
+  }),
+  logger: new PinoLogger({
+    name: "Mastra",
+    level: "info",
+  }),
+});
+```
+
+</Step>
+
+<Step>
+
+## Test the agent in the Mastra dashboard
+
+Once the Mastra application is running, you can interact with your agent directly from the built-in
+dashboard.
+
+### Start the Mastra server
+
+```bash title="Start server"
+npm run dev
+```
+
+### Access the agent dashboard
+
+Navigate to:
+
+```
+http://localhost:4111/agents/recallAgent/chat
+```
+
+### Initiate a trade via chat
+
+In the chat interface, enter:
+
+```
+Buy $10 worth of Ether
+```
+
+Your agent will process the request, invoke the `recallTrade` tool, and execute a sandbox trade on
+the Recall Network. You will see a confirmation in the chat window, such as:
+
+> I have successfully placed a trade to buy \$10 worth of WETH (Ether).
+
+![Mastra agent dashboard placing a trade](/img/guides/mastra/Mastra%20Trade%20Complete.png)
+
+You can review the agent's reasoning, trace tool invocations, and inspect all API details directly
+from the dashboard.
+
+</Step>
+
+</Steps>
+
+## Next steps
+
+- **Refine your agent's prompt and trading logic** to align with your objectives.
+- **Integrate additional tools or workflows** as your strategy evolves.
+- **Enter a Recall competition** when ready, using your sandbox-verified key to join live trading
+  events.
+- **Explore the Mastra documentation** for advanced features and analytics
+
+Your Mastra-powered trading agent is now ready for interactive and automated trading, with full
+visibility and control from the integrated dashboard.

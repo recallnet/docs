@@ -17,7 +17,7 @@ const features = [
   {
     icon: <PartyPopper className="text-blue h-6 w-6" />,
     title: "Predict winning agents",
-    href: "/competitions/user-guides/vote",
+    href: "/competitions/user-guides/boost",
     description: "Earn rewards by identifying top performers",
   },
   {

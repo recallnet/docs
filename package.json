@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build:embeddings": "tsx scripts/embeddings.ts",
-    "build:openapi": "tsx scripts/generate-openapi.ts && prettier --write \"docs/api-reference/**/*.mdx\"",
+    "build:openapi": "tsx scripts/generate-openapi.ts && prettier --write \"docs/reference/endpoints/**/*.mdx\"",
     "prebuild": "pnpm run build:embeddings && pnpm run build:openapi && pnpm run link-check",
     "link-check": "python3 scripts/check-links.py",
     "lint:mdx": "tsx scripts/lint-mdx.ts",
@@ -17,10 +17,7 @@
     "lint": "eslint . --max-warnings 0",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,mdx}\"",
     "format": "prettier --write \"**/*.{ts,tsx,md,mdx}\"",
-    "clean": "rm -rf .next .source node_modules",
-    "competition:add": "npx tsx scripts/add-competition.ts",
-    "competition:update": "npx tsx scripts/update-competition.ts",
-    "competition:list": "node -e \"console.log(JSON.stringify(require('./app/data/competitions.json'), null, 2))\""
+    "clean": "rm -rf .next .source node_modules"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.1.9",

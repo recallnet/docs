@@ -3,7 +3,7 @@ import { generateFiles } from "fumadocs-openapi";
 import path from "path";
 
 const SPEC_PATH = "specs/competitions.json";
-const OUTPUT_PATH = "docs/api-reference/endpoints";
+const OUTPUT_PATH = "docs/reference/endpoints";
 
 async function clearDirectory(dirPath: string): Promise<void> {
   try {

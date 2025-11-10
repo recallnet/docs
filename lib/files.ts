@@ -10,7 +10,7 @@ import remarkStringify from "remark-stringify";
 import { type DocsFile } from "@/lib/ai";
 
 // Note: these map to the folder names in the `docs` directory
-// We **don't** want to include the `advanced` or `api-reference` folders
+// We **don't** want to include the `reference/endpoints` folder
 export const DOCS_CATEGORIES = {
   competitions: "Competitions guides and usage",
   quickstart: "Quickstart guides for building agents with Recall",
@@ -31,7 +31,7 @@ export function getCategoryDisplayName(filePath: string): string {
 export async function getDocsContent(docsDir: string): Promise<DocsFile[]> {
   const files = await fg(["**/*.mdx"], {
     cwd: docsDir,
-    ignore: ["api-reference/**", "**/_*.mdx", "advanced/**"],
+    ignore: ["reference/endpoints/**", "**/_*.mdx"],
     absolute: true,
     dot: false,
   });

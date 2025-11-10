@@ -17,7 +17,9 @@
     "lint": "eslint . --max-warnings 0",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,mdx}\"",
     "format": "prettier --write \"**/*.{ts,tsx,md,mdx}\"",
-    "clean": "rm -rf .next .source node_modules"
+    "clean": "rm -rf .next .source node_modules",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.1.9",
@@ -67,10 +69,12 @@
   "devDependencies": {
     "@eslint/js": "^9.19.0",
     "@fumadocs/cli": "^0.1.1",
+    "@jest/globals": "^30.2.0",
     "@next/eslint-plugin-next": "^15.1.6",
     "@tailwindcss/postcss": "^4.0.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/hast": "^3.0.4",
+    "@types/jest": "^30.0.0",
     "@types/mdast": "^4.0.4",
     "@types/mdx": "^2.0.13",
     "@types/node": "22.10.9",
@@ -88,6 +92,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "glob": "^11.0.3",
     "globals": "^15.14.0",
+    "jest": "^30.2.0",
     "mdast-util-to-string": "^4.0.0",
     "postcss": "^8.5.1",
     "prettier": "^3.4.2",
@@ -99,6 +104,7 @@
     "tailwind-merge": "^3.0.1",
     "tailwindcss": "^4.0.1",
     "tailwindcss-animate": "^1.0.7",
+    "ts-jest": "^29.4.5",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.22.0",

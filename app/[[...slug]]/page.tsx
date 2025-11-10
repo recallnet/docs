@@ -7,12 +7,13 @@ import { TypeTable } from "fumadocs-ui/components/type-table";
 import Image, { type ImageProps } from "next/image";
 import { notFound } from "next/navigation";
 import path from "path";
+import fs from "node:fs/promises";
 import { HTMLAttributes } from "react";
 
 import { Callout, CalloutProps } from "@/components/theme/callout";
 import { Card, CardProps, Cards } from "@/components/theme/card";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "@/components/theme/page";
-import { getApiDocContent, getRawDocContent } from "@/lib/files";
+import { getRawDocContent } from "@/lib/files";
 import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
@@ -65,28 +66,37 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
 
   if (!isRootPage) {
     try {
-      // Try both potential paths - the file might be in docs/ subdirectory
-      let filePath = path.join(process.cwd(), page.file.path);
+      let content: string;
 
-      // If the path doesn't start with docs/, try prepending it
-      if (!page.file.path.startsWith("docs/")) {
-        filePath = path.join(process.cwd(), "docs", page.file.path);
-      }
-
-      // Check if this is an API reference page
-      const isApiReferencePage = page.file.path.includes("reference/endpoints/");
-      const specPath = path.join(process.cwd(), "specs", "competitions.json");
-
-      let docContent;
-      if (isApiReferencePage && !isApiReferenceRootPage) {
-        // For API pages, generate content from OpenAPI spec
-        docContent = await getApiDocContent(filePath, specPath);
+      if (isApiPage) {
+        // For API pages, read pre-generated markdown
+        const markdownFileName = page.file.path.split("/").pop()?.replace(".mdx", ".md");
+        if (markdownFileName) {
+          const markdownPath = path.join(
+            process.cwd(),
+            ".source",
+            "markdown",
+            "endpoints",
+            markdownFileName
+          );
+          content = await fs.readFile(markdownPath, "utf8");
+        } else {
+          throw new Error("Could not determine markdown filename");
+        }
       } else {
         // For regular pages, use the existing method
-        docContent = await getRawDocContent(filePath);
+        let filePath = path.join(process.cwd(), page.file.path);
+
+        // If the path doesn't start with docs/, try prepending it
+        if (!page.file.path.startsWith("docs/")) {
+          filePath = path.join(process.cwd(), "docs", page.file.path);
+        }
+
+        const docContent = await getRawDocContent(filePath);
+        content = `# ${docContent.title}\n\n${docContent.description}\n\n${docContent.content}`;
       }
 
-      markdownContent = `# ${docContent.title}\n\n${docContent.description}\n\n${docContent.content}`;
+      markdownContent = content;
 
       // Generate markdown URL server-side
       const rawPath = page.file.path.replace(/^docs\//, "").replace(/\.mdx$/, ".md");

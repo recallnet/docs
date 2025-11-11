@@ -10,8 +10,8 @@ import remarkStringify from "remark-stringify";
 import { type DocsFile } from "@/lib/ai";
 
 // Note: these map to the folder names in the `docs` directory
-// We **don't** want to include the `reference/endpoints` folder
 export const DOCS_CATEGORIES = {
+  reference: "API Reference Documentation",
   competitions: "Competitions guides and usage",
   quickstart: "Quickstart guides for building agents with Recall",
   root: "Introduction to the Recall Network",
@@ -31,27 +31,53 @@ export function getCategoryDisplayName(filePath: string): string {
 export async function getDocsContent(docsDir: string): Promise<DocsFile[]> {
   const files = await fg(["**/*.mdx"], {
     cwd: docsDir,
-    ignore: ["reference/endpoints/**", "**/_*.mdx"],
+    ignore: ["**/_*.mdx"],
     absolute: true,
     dot: false,
   });
 
   const scanned = await Promise.all(
     files.map(async (file) => {
-      const fileContent = await fs.readFile(file);
-      const { content, data } = matter(fileContent.toString());
       const relativePath = path.relative(docsDir, file);
       const category = getCategoryDisplayName(relativePath);
-      const processed = await processContent(content);
+
+      // Check if this is an API reference page (not the index page)
+      const isApiReferencePage = relativePath.includes("reference/endpoints/") &&
+                                  !relativePath.endsWith("endpoints/index.mdx");
+
+      let title: string;
+      let description: string;
+      let keywords: string;
+      let processed: string;
+
+      if (isApiReferencePage) {
+        // For API pages, read pre-generated markdown
+        const markdownFileName = path.basename(file).replace(".mdx", ".md");
+        const markdownPath = path.join(docsDir, "..", ".source", "markdown", "endpoints", markdownFileName);
+        const markdownContent = await fs.readFile(markdownPath, "utf8");
+        const lines = markdownContent.split('\n');
+        title = lines[0]?.replace('# ', '') || relativePath;  // First line is title
+        description = lines[2] || "";  // Third line is description
+        keywords = "";
+        processed = markdownContent;
+      } else {
+        // For regular pages, use the existing method
+        const fileContent = await fs.readFile(file);
+        const { content, data } = matter(fileContent.toString());
+        title = data.title || relativePath;
+        description = data.description || "";
+        keywords = data.keywords || "";
+        processed = await processContent(content);
+      }
 
       // Make sure `index` is removed from the filename and strip the suffix—creating the slug
       const filename = relativePath.replace(/\.mdx$/, "").replace(/\/index$/, "");
       return {
         file: filename,
         category,
-        title: data.title || filename,
-        description: data.description || "",
-        keywords: data.keywords || "",
+        title,
+        description,
+        keywords,
         content: processed,
       };
     })

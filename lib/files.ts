@@ -36,8 +36,6 @@ export async function getDocsContent(docsDir: string): Promise<DocsFile[]> {
     dot: false,
   });
 
-  const specPath = path.join(docsDir, "..", "specs", "competitions.json");
-
   const scanned = await Promise.all(
     files.map(async (file) => {
       const relativePath = path.relative(docsDir, file);
@@ -53,12 +51,15 @@ export async function getDocsContent(docsDir: string): Promise<DocsFile[]> {
       let processed: string;
 
       if (isApiReferencePage) {
-        // For API pages, use getApiDocContent to generate markdown from OpenAPI spec
-        const apiContent = await getApiDocContent(file, specPath);
-        title = apiContent.title;
-        description = apiContent.description;
+        // For API pages, read pre-generated markdown
+        const markdownFileName = path.basename(file).replace(".mdx", ".md");
+        const markdownPath = path.join(docsDir, "..", ".source", "markdown", "endpoints", markdownFileName);
+        const markdownContent = await fs.readFile(markdownPath, "utf8");
+        const lines = markdownContent.split('\n');
+        title = lines[0]?.replace('# ', '') || relativePath;  // First line is title
+        description = lines[2] || "";  // Third line is description
         keywords = "";
-        processed = apiContent.content;
+        processed = markdownContent;
       } else {
         // For regular pages, use the existing method
         const fileContent = await fs.readFile(file);
@@ -111,109 +112,4 @@ async function processContent(content: string): Promise<string> {
   const file = await remark().use(remarkMdx).use(remarkGfm).use(remarkStringify).process(content);
 
   return String(file);
-}
-
-interface Operation {
-  path: string;
-  method: string;
-}
-
-export async function getApiDocContent(
-  file: string,
-  specPath: string
-): Promise<{
-  title: string;
-  description: string;
-  content: string;
-}> {
-  const fileExists = await fs
-    .access(file)
-    .then(() => true)
-    .catch(() => false);
-  if (!fileExists) {
-    throw new Error("File not found");
-  }
-
-  const fileContent = await fs.readFile(file);
-  const { data, content } = matter(fileContent.toString());
-
-  // Extract operations from the JSX content
-  const operationsMatch = content.match(/operations=\{(\[[\s\S]*?\])\}/);
-  if (!operationsMatch || !operationsMatch[1]) {
-    // Fall back to regular content if no operations found
-    return getRawDocContent(file);
-  }
-
-  let operations: Operation[];
-  try {
-    // Parse the operations array (it's in JSON-like format)
-    const parsed = eval(operationsMatch[1]);
-    if (!Array.isArray(parsed)) {
-      return getRawDocContent(file);
-    }
-    operations = parsed as Operation[];
-  } catch {
-    // Fall back if parsing fails
-    return getRawDocContent(file);
-  }
-
-  // Read the OpenAPI spec
-  const specFile = await fs.readFile(specPath, "utf8");
-  const spec = JSON.parse(specFile);
-
-  // Generate markdown content from the spec
-  let markdown = "";
-
-  operations.forEach(({ path: opPath, method }) => {
-    const op = spec.paths?.[opPath]?.[method];
-    if (!op) return;
-
-    markdown += `## ${method.toUpperCase()} ${opPath}\n\n`;
-
-    if (op.summary) {
-      markdown += `**${op.summary}**\n\n`;
-    }
-
-    if (op.description) {
-      markdown += `${op.description}\n\n`;
-    }
-
-    // Parameters
-    if (op.parameters?.length) {
-      markdown += "**Parameters:**\n\n";
-      op.parameters.forEach((param: { name: string; in: string; description?: string; required?: boolean; schema?: { type: string } }) => {
-        const required = param.required ? " (required)" : "";
-        const type = param.schema?.type ? `: ${param.schema.type}` : "";
-        markdown += `- \`${param.name}\` (${param.in}${type})${required}: ${param.description || ""}\n`;
-      });
-      markdown += "\n";
-    }
-
-    // Request body
-    if (op.requestBody?.content?.["application/json"]?.schema) {
-      markdown += "**Request Body:**\n\n";
-      markdown += `\`\`\`json\n${JSON.stringify(op.requestBody.content["application/json"].schema, null, 2)}\n\`\`\`\n\n`;
-    }
-
-    // Response
-    const responses = op.responses || {};
-    const successResponse = responses["200"] || responses["201"] || responses["204"];
-    if (successResponse) {
-      markdown += "**Success Response:**\n\n";
-      if (successResponse.description) {
-        markdown += `${successResponse.description}\n\n`;
-      }
-      if (successResponse.content?.["application/json"]?.schema) {
-        markdown += `\`\`\`json\n${JSON.stringify(successResponse.content["application/json"].schema, null, 2)}\n\`\`\`\n\n`;
-      }
-    }
-
-    markdown += "---\n\n";
-  });
-
-  return {
-    title: data.title || file,
-    description: data.description || "",
-    content: markdown.trim(),
-  };
 }

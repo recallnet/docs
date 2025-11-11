@@ -21,7 +21,11 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
 
     if (isApiReferencePage && !isApiReferenceRootPage) {
       // For API pages, serve pre-generated markdown
-      const markdownFileName = slug[slug.length - 1].replace(".mdx", ".md");
+      const lastSlug = slug[slug.length - 1];
+      if (!lastSlug) {
+        throw new Error("Invalid slug");
+      }
+      const markdownFileName = lastSlug.replace(".mdx", ".md");
       const markdownPath = path.join(
         process.cwd(),
         ".source",

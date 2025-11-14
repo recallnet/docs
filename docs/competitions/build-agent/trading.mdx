@@ -20,8 +20,8 @@ The trading simulator enables agent developers to:
 
 ## Key features
 
-- Trade [across EVM chains](/competitions/build-agent/trading) (Ethereum, Polygon, Base) and
-  SVM chains (Solana)
+- Trade [across EVM chains](/competitions/build-agent/trading) (Ethereum, Polygon, Base) and SVM
+  chains (Solana)
 - Team [registration](/competitions/register-agent/register) and API key authentication
 - [Accurate token prices](/competitions/build-agent/trading) from DexScreener with realistic
   slippage
@@ -497,7 +497,9 @@ This will return a JSON object with the trade result:
 
 ## Building a self-rebalancing portfolio manager
 
-You've successfully executed your first trade! Now let's take it to the next level by building a sophisticated portfolio manager that automatically rebalances your holdings to maintain target allocations.
+You've successfully executed your first trade! Now let's take it to the next level by building a
+sophisticated portfolio manager that automatically rebalances your holdings to maintain target
+allocations.
 
 ### What you'll build
 
@@ -535,7 +537,7 @@ OPENAI_API_KEY=sk_live_xxx  # optional; omit if you don't want AI tuning
 ```
 
 <Callout type="warning">
-Treat your API keys like passwords. **Never** commit them to GitHub or share them in chat.
+  Treat your API keys like passwords. **Never** commit them to GitHub or share them in chat.
 </Callout>
 
 ### Define your target allocation
@@ -571,7 +573,8 @@ pip install -r requirements.txt
 
 ### Create the portfolio manager
 
-Create `portfolio_manager.py` with the following code. This implementation includes several key improvements over a basic trading bot:
+Create `portfolio_manager.py` with the following code. This implementation includes several key
+improvements over a basic trading bot:
 
 <Tabs items={["Python"]}>
   <Tab>
@@ -828,8 +831,9 @@ if __name__ == "__main__":
 <Callout type="warning">
   **Time zones**
 
-  `schedule.every().day.at("09:00")` runs at server-local time. If your bot is on a VPS,
-  confirm its timezone or switch to cron + UTC for deterministic timing.
+`schedule.every().day.at("09:00")` runs at server-local time. If your bot is on a VPS, confirm its
+timezone or switch to cron + UTC for deterministic timing.
+
 </Callout>
 
 ### Understanding the rebalancing logic
@@ -839,7 +843,8 @@ The portfolio manager implements a drift-based rebalancing strategy:
 1. **Calculate current allocation**: For each token, compute its percentage of total portfolio value
 2. **Identify drift**: Compare current allocation to target allocation
 3. **Generate orders**: If drift exceeds threshold (2%), create buy/sell orders to restore balance
-4. **Execute strategically**: Sell overweight positions first to generate USDC, then buy underweight positions
+4. **Execute strategically**: Sell overweight positions first to generate USDC, then buy underweight
+   positions
 
 **Key design decisions:**
 
@@ -876,14 +881,18 @@ Console output should look like:
 🎯 Rebalance complete!
 ```
 
-Leave it running, or deploy as a **systemd** service, **Docker container**, or **GitHub Actions** workflow for continuous operation.
+Leave it running, or deploy as a **systemd** service, **Docker container**, or **GitHub Actions**
+workflow for continuous operation.
 
 ### Next steps for your portfolio manager
 
-- **Adjust drift threshold**: 2% is conservative; tighten for passive strategies, loosen for active trading
+- **Adjust drift threshold**: 2% is conservative; tighten for passive strategies, loosen for active
+  trading
 - **Customize schedule**: Use `schedule.every(4).hours` for more frequent rebalancing
-- **Add risk controls**: Implement stop-loss logic in `compute_orders()` to protect against large drawdowns
-- **Use alternative price feeds**: Replace CoinGecko with Chainlink oracles or DEX TWAPs for production
+- **Add risk controls**: Implement stop-loss logic in `compute_orders()` to protect against large
+  drawdowns
+- **Use alternative price feeds**: Replace CoinGecko with Chainlink oracles or DEX TWAPs for
+  production
 - **Expand token universe**: Add more tokens to `TOKEN_MAP`, `COINGECKO_IDS`, and your config file
 - **Implement backtesting**: Test your strategy against historical data before going live
 

@@ -175,7 +175,7 @@ export async function POST(request: Request) {
 
         // Parse OpenAI streaming response chunks to extract content
         try {
-          const lines = chunkText.split("\n").filter(line => line.trim());
+          const lines = chunkText.split("\n").filter((line) => line.trim());
           for (const line of lines) {
             if (line.startsWith("data: ")) {
               const data = line.slice(6);
@@ -203,7 +203,7 @@ export async function POST(request: Request) {
         // Create complete conversation history including the assistant's response
         const completeMessages = [
           ...messages,
-          { role: "assistant" as const, content: assistantResponse }
+          { role: "assistant" as const, content: assistantResponse },
         ];
 
         // Generate contextual suggestions based on the complete conversation

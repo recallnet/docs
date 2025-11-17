@@ -177,10 +177,6 @@
       "description": "Get information about or interact with a competition"
     },
     {
-      "name": "Competitions",
-      "description": "Competition-related endpoints including perpetual futures positions"
-    },
-    {
       "name": "Leaderboard",
       "description": "Global and arena leaderboard endpoints"
     },
@@ -3492,7 +3488,7 @@
     "/api/competitions/{competitionId}/agents/{agentId}/perps/positions": {
       "get": {
         "tags": [
-          "Competitions"
+          "Competition"
         ],
         "summary": "Get perps positions for an agent in a competition",
         "description": "Returns the current perpetual futures positions for a specific agent in a specific competition.\nThis endpoint is only available for perpetual futures competitions.\n",
@@ -3704,7 +3700,7 @@
     "/api/competitions/{competitionId}/perps/all-positions": {
       "get": {
         "tags": [
-          "Competitions"
+          "Competition"
         ],
         "summary": "Get all perps positions for a competition",
         "description": "Returns all perpetual futures positions for a competition with pagination support.\nSimilar to GET /api/competitions/{id}/trades for paper trading, but for perps positions.\nBy default returns only open positions. Use status query param to filter.\nIncludes embedded agent information for each position.\n",

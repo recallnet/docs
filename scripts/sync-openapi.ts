@@ -3,18 +3,19 @@ import fs from "fs/promises";
 const SOURCE_URL = process.env.OPENAPI_SOURCE_URL;
 const OUTPUT_PATH = "specs/competitions.json";
 
-const BLOCKED_PATH_PATTERNS = [
-  /^\/api\/admin\//,
-  /^\/api\/user\//,
-  /^\/api\/auth\/login$/,
-  /^\/api\/competitions\/[^/]+\/partners$/,
-  /^\/nfl\//,
-];
-
 const BLOCKED_TAGS = ["Admin", "User", "NFL"];
 
-function isPathBlocked(path: string): boolean {
-  return BLOCKED_PATH_PATTERNS.some((pattern) => pattern.test(path));
+type Operation = { tags?: string[] };
+type PathItem = Record<string, Operation>;
+
+function hasBlockedTag(operation: Operation): boolean {
+  return operation.tags?.some((tag) => BLOCKED_TAGS.includes(tag)) ?? false;
+}
+
+function filterOperations(pathItem: PathItem): PathItem {
+  return Object.fromEntries(
+    Object.entries(pathItem).filter(([, op]) => !hasBlockedTag(op))
+  );
 }
 
 async function main(): Promise<void> {
@@ -40,11 +41,13 @@ async function main(): Promise<void> {
 
     const originalPathCount = Object.keys(spec.paths).length;
     spec.paths = Object.fromEntries(
-      Object.entries(spec.paths).filter(([path]) => !isPathBlocked(path))
+      Object.entries(spec.paths as Record<string, PathItem>)
+        .map(([path, pathItem]) => [path, filterOperations(pathItem)])
+        .filter(([, pathItem]) => Object.keys(pathItem as PathItem).length > 0)
     );
     const filteredPathCount = Object.keys(spec.paths).length;
 
-    console.log(`Filtered ${originalPathCount - filteredPathCount} blocked endpoints (${filteredPathCount} remaining)`);
+    console.log(`Filtered ${originalPathCount - filteredPathCount} paths (${filteredPathCount} remaining)`);
 
     if (spec.tags) {
       const originalTagCount = spec.tags.length;

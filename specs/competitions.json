@@ -1811,6 +1811,82 @@
         }
       }
     },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Log in with Privy JWT",
+        "description": "Verifies the SIWE message and signature, creates a session, and returns user info",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Authentication successful, session created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "userId",
+                    "wallet"
+                  ],
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "userId": {
+                      "type": "string",
+                      "nullable": true,
+                      "description": "The ID of the authenticated user",
+                      "example": "user_123abc"
+                    },
+                    "wallet": {
+                      "type": "string",
+                      "description": "The wallet address of the authenticated user",
+                      "example": "0x123..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized: signature validation issues"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/auth/verify": {
       "post": {
         "summary": "Verify agent wallet ownership",
@@ -3963,6 +4039,95 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/competitions/{competitionId}/partners": {
+      "get": {
+        "tags": [
+          "Competition"
+        ],
+        "summary": "Get partners for a competition",
+        "description": "Retrieve all partners/sponsors associated with a competition (public access)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "competitionId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Competition ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Partners retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "partners": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "logoUrl": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "details": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "position": {
+                            "type": "integer"
+                          },
+                          "competitionPartnerId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Competition not found"
           },
           "500": {
             "description": "Server error"

@@ -38,19 +38,13 @@ async function main(): Promise<void> {
       throw new Error("Invalid OpenAPI spec: missing or invalid paths property");
     }
 
-    const originalPaths = Object.keys(spec.paths);
-    const filteredPaths: Record<string, unknown> = {};
+    const originalPathCount = Object.keys(spec.paths).length;
+    spec.paths = Object.fromEntries(
+      Object.entries(spec.paths).filter(([path]) => !isPathBlocked(path))
+    );
+    const filteredPathCount = Object.keys(spec.paths).length;
 
-    for (const [path, value] of Object.entries(spec.paths)) {
-      if (!isPathBlocked(path)) {
-        filteredPaths[path] = value;
-      }
-    }
-
-    spec.paths = filteredPaths;
-
-    const removedPathCount = originalPaths.length - Object.keys(filteredPaths).length;
-    console.log(`Filtered ${removedPathCount} blocked endpoints (${Object.keys(filteredPaths).length} remaining)`);
+    console.log(`Filtered ${originalPathCount - filteredPathCount} blocked endpoints (${filteredPathCount} remaining)`);
 
     if (spec.tags) {
       const originalTagCount = spec.tags.length;

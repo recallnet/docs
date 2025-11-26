@@ -106,6 +106,10 @@ async function generateMarkdownFiles(
   }
 
   console.log(`Generated ${generatedCount} markdown files`);
+
+  if (generatedCount === 0) {
+    throw new Error("No markdown files generated - check OpenAPI spec and MDX generation");
+  }
 }
 
 async function main(): Promise<void> {

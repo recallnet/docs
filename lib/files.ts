@@ -8,6 +8,7 @@ import remarkMdx from "remark-mdx";
 import remarkStringify from "remark-stringify";
 
 import { type DocsFile } from "@/lib/ai";
+import { isApiReferencePage } from "@/lib/api-reference";
 
 // Note: these map to the folder names in the `docs` directory
 export const DOCS_CATEGORIES = {
@@ -38,19 +39,17 @@ export async function getDocsContent(docsDir: string): Promise<DocsFile[]> {
 
   const scanned = await Promise.all(
     files.map(async (file) => {
-      const relativePath = path.relative(docsDir, file);
+      const relativePath = path.relative(docsDir, file).split(path.sep).join("/");
       const category = getCategoryDisplayName(relativePath);
 
-      // Check if this is an API reference page (not the index page)
-      const isApiReferencePage = relativePath.includes("reference/endpoints/") &&
-                                  !relativePath.endsWith("endpoints/index.mdx");
+      const isApiPage = isApiReferencePage(relativePath);
 
       let title: string;
       let description: string;
       let keywords: string;
       let processed: string;
 
-      if (isApiReferencePage) {
+      if (isApiPage) {
         // For API pages, read pre-generated markdown
         const markdownFileName = path.basename(file).replace(".mdx", ".md");
         const markdownPath = path.join(docsDir, "..", ".source", "markdown", "endpoints", markdownFileName);

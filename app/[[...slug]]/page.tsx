@@ -10,6 +10,7 @@ import path from "path";
 import fs from "node:fs/promises";
 import { HTMLAttributes } from "react";
 
+import { isApiReferencePage, isApiReferenceRootPath } from "@/lib/api-reference";
 import { Callout, CalloutProps } from "@/components/theme/callout";
 import { Card, CardProps, Cards } from "@/components/theme/card";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "@/components/theme/page";
@@ -43,15 +44,9 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   if (!page) notFound();
 
   const MDX = page.data.body;
-  // Don't show the TOC or edit button on the root page, or the auto-generated API reference pages
   const isRootPage = !params.slug || params.slug.length === 0;
-  const isApiReferencePage = params.slug?.[0] === "reference" && params.slug?.[1] === "endpoints";
-  // Ignore the `reference/endpoints` index page since it's manually written, so we want the TOC
-  const isApiReferenceRootPage =
-    params.slug?.length === 2 &&
-    params.slug?.[0] === "reference" &&
-    params.slug?.[1] === "endpoints";
-  const isApiPage = isApiReferencePage && !isApiReferenceRootPage;
+  const isApiPage = params.slug ? isApiReferencePage(params.slug) : false;
+  const isApiRootPage = params.slug ? isApiReferenceRootPath(params.slug) : false;
   const githubPath = `docs/${page.file.path}`;
   const githubInfo = {
     repo: "docs",

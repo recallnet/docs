@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import path from "path";
 import fs from "node:fs/promises";
 
+import { isApiReferencePage } from "@/lib/api-reference";
 import { getRawDocContent } from "@/lib/files";
 
 export async function GET(_: Request, { params }: { params: Promise<{ slug: string[] }> }) {
@@ -12,14 +13,12 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
     // 2. They have the `docs` slug prefix removed (removed from the passed github file url)
     const slug = (await params).slug.map((s) => s.replace(".md", ".mdx"));
 
-    // Check if this is an API reference page
-    const isApiReferencePage = slug.join("/").includes("reference/endpoints/");
-    const isApiReferenceRootPage = slug.length === 2 && slug[0] === "reference" && slug[1] === "endpoints";
+    const isApiPage = isApiReferencePage(slug);
 
     let content: string;
     let filename: string;
 
-    if (isApiReferencePage && !isApiReferenceRootPage) {
+    if (isApiPage) {
       // For API pages, serve pre-generated markdown
       const lastSlug = slug[slug.length - 1];
       if (!lastSlug) {

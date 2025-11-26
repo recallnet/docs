@@ -1,21 +1,46 @@
-import fs from "fs/promises";
+import * as fs from "fs/promises";
+import SwaggerParser from "@apidevtools/swagger-parser";
+import type { OpenAPIV3 } from "openapi-types";
 
 const SOURCE_URL = process.env.OPENAPI_SOURCE_URL;
 const OUTPUT_PATH = "specs/competitions.json";
 
 const BLOCKED_TAGS = ["Admin", "User", "NFL"];
 
-type Operation = { tags?: string[] };
-type PathItem = Record<string, Operation>;
-
-function hasBlockedTag(operation: Operation): boolean {
+function hasBlockedTag(operation: OpenAPIV3.OperationObject): boolean {
   return operation.tags?.some((tag) => BLOCKED_TAGS.includes(tag)) ?? false;
 }
 
-function filterOperations(pathItem: PathItem): PathItem {
-  return Object.fromEntries(
-    Object.entries(pathItem).filter(([, op]) => !hasBlockedTag(op))
-  );
+function filterPathItem(
+  pathItem: OpenAPIV3.PathItemObject
+): OpenAPIV3.PathItemObject | null {
+  const httpMethods = [
+    "get",
+    "put",
+    "post",
+    "delete",
+    "options",
+    "head",
+    "patch",
+    "trace",
+  ] as const;
+
+  const filtered: OpenAPIV3.PathItemObject = {};
+
+  for (const method of httpMethods) {
+    const operation = pathItem[method];
+    if (operation && !hasBlockedTag(operation)) {
+      filtered[method] = operation;
+    }
+  }
+
+  if (pathItem.parameters) filtered.parameters = pathItem.parameters;
+  if (pathItem.summary) filtered.summary = pathItem.summary;
+  if (pathItem.description) filtered.description = pathItem.description;
+  if (pathItem.servers) filtered.servers = pathItem.servers;
+
+  const hasOperations = httpMethods.some((m) => filtered[m]);
+  return hasOperations ? filtered : null;
 }
 
 async function main(): Promise<void> {
@@ -23,38 +48,33 @@ async function main(): Promise<void> {
     if (!SOURCE_URL) {
       throw new Error("OPENAPI_SOURCE_URL environment variable is required");
     }
+
     console.log(`Fetching OpenAPI spec from ${SOURCE_URL}...`);
+    const spec = (await SwaggerParser.bundle(SOURCE_URL)) as OpenAPIV3.Document;
 
-    const response = await fetch(SOURCE_URL);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
+    const originalPathCount = Object.keys(spec.paths ?? {}).length;
+    const filteredPaths: OpenAPIV3.PathsObject = {};
+
+    for (const [path, pathItem] of Object.entries(spec.paths ?? {})) {
+      if (!pathItem) continue;
+      const filtered = filterPathItem(pathItem);
+      if (filtered) {
+        filteredPaths[path] = filtered;
+      }
     }
 
-    const spec = await response.json();
-
-    if (!spec || typeof spec !== "object") {
-      throw new Error("Invalid response: expected JSON object");
-    }
-    if (!spec.paths || typeof spec.paths !== "object") {
-      throw new Error("Invalid OpenAPI spec: missing or invalid paths property");
-    }
-
-    const originalPathCount = Object.keys(spec.paths).length;
-    spec.paths = Object.fromEntries(
-      Object.entries(spec.paths as Record<string, PathItem>)
-        .map(([path, pathItem]) => [path, filterOperations(pathItem)])
-        .filter(([, pathItem]) => Object.keys(pathItem as PathItem).length > 0)
+    spec.paths = filteredPaths;
+    const filteredPathCount = Object.keys(filteredPaths).length;
+    console.log(
+      `Filtered ${originalPathCount - filteredPathCount} paths (${filteredPathCount} remaining)`
     );
-    const filteredPathCount = Object.keys(spec.paths).length;
-
-    console.log(`Filtered ${originalPathCount - filteredPathCount} paths (${filteredPathCount} remaining)`);
 
     if (spec.tags) {
       const originalTagCount = spec.tags.length;
-      spec.tags = spec.tags.filter(
-        (tag: { name: string }) => !BLOCKED_TAGS.includes(tag.name)
+      spec.tags = spec.tags.filter((tag) => !BLOCKED_TAGS.includes(tag.name));
+      console.log(
+        `Filtered ${originalTagCount - spec.tags.length} blocked tags`
       );
-      console.log(`Filtered ${originalTagCount - spec.tags.length} blocked tags`);
     }
 
     await fs.writeFile(OUTPUT_PATH, JSON.stringify(spec, null, 2) + "\n");

@@ -30,6 +30,13 @@ async function main(): Promise<void> {
 
     const spec = await response.json();
 
+    if (!spec || typeof spec !== "object") {
+      throw new Error("Invalid response: expected JSON object");
+    }
+    if (!spec.paths || typeof spec.paths !== "object") {
+      throw new Error("Invalid OpenAPI spec: missing or invalid paths property");
+    }
+
     const originalPaths = Object.keys(spec.paths);
     const filteredPaths: Record<string, unknown> = {};
 

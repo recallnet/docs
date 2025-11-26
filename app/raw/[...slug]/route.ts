@@ -5,6 +5,8 @@ import fs from "node:fs/promises";
 import { isApiReferencePage } from "@/lib/api-reference";
 import { getRawDocContent } from "@/lib/files";
 
+const SAFE_FILENAME_PATTERN = /^[a-zA-Z0-9._-]+\.mdx$/;
+
 export async function GET(_: Request, { params }: { params: Promise<{ slug: string[] }> }) {
   try {
     // Slugs are passed in a way that makes the API URL a bit prettier, but we need to convert them
@@ -21,8 +23,8 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
     if (isApiPage) {
       // For API pages, serve pre-generated markdown
       const lastSlug = slug[slug.length - 1];
-      if (!lastSlug) {
-        throw new Error("Invalid slug");
+      if (!lastSlug || !SAFE_FILENAME_PATTERN.test(lastSlug)) {
+        return new NextResponse("Not found", { status: 404 });
       }
       const markdownFileName = lastSlug.replace(".mdx", ".md");
       const markdownPath = path.join(

@@ -1,7 +1,6 @@
 import fs from "fs/promises";
 
-const SOURCE_URL =
-  "https://raw.githubusercontent.com/recallnet/js-recall/main/apps/api/openapi/openapi.json";
+const SOURCE_URL = process.env.OPENAPI_SOURCE_URL;
 const OUTPUT_PATH = "specs/competitions.json";
 
 const BLOCKED_PATH_PATTERNS = [
@@ -20,6 +19,9 @@ function isPathBlocked(path: string): boolean {
 
 async function main(): Promise<void> {
   try {
+    if (!SOURCE_URL) {
+      throw new Error("OPENAPI_SOURCE_URL environment variable is required");
+    }
     console.log(`Fetching OpenAPI spec from ${SOURCE_URL}...`);
 
     const response = await fetch(SOURCE_URL);

@@ -164,10 +164,6 @@
       "description": "Authentication endpoints"
     },
     {
-      "name": "Account",
-      "description": "Account management endpoints"
-    },
-    {
       "name": "Agent",
       "description": "Agent management endpoints"
     },

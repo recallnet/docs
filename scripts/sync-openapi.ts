@@ -1,8 +1,7 @@
 import fs from "fs/promises";
 
-// TODO: revert to main after derrek/openapi-fixes is merged
 const SOURCE_URL =
-  "https://raw.githubusercontent.com/recallnet/js-recall/derrek/openapi-fixes/apps/api/openapi/openapi.json";
+  "https://raw.githubusercontent.com/recallnet/js-recall/main/apps/api/openapi/openapi.json";
 const OUTPUT_PATH = "specs/competitions.json";
 
 const BLOCKED_PATH_PATTERNS = [

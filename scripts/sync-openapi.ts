@@ -50,31 +50,6 @@ async function main(): Promise<void> {
     console.log(`Filtered ${originalTagCount - spec.tags.length} blocked tags`);
   }
 
-  spec.components ??= {};
-  spec.components.securitySchemes ??= {};
-
-  // Upstream uses AgentApiKey in /api/auth/* endpoints but doesn't define it.
-  // Inject the definition if missing. Remove this block once upstream defines AgentApiKey.
-  if (!spec.components.securitySchemes.AgentApiKey) {
-    spec.components.securitySchemes.AgentApiKey = {
-      type: "http",
-      scheme: "bearer",
-      description: "Agent API key provided as Bearer token",
-    };
-    console.log("Injected missing AgentApiKey security scheme");
-  }
-
-  // Upstream uses bearerAuth (lowercase) in some endpoints but doesn't define it.
-  // Inject the definition if missing. Remove this block once upstream defines bearerAuth.
-  if (!spec.components.securitySchemes.bearerAuth) {
-    spec.components.securitySchemes.bearerAuth = {
-      type: "http",
-      scheme: "bearer",
-      description: "Bearer token authentication",
-    };
-    console.log("Injected missing bearerAuth security scheme");
-  }
-
   await fs.writeFile(OUTPUT_PATH, JSON.stringify(spec, null, 2) + "\n");
   console.log(`Written to ${OUTPUT_PATH}`);
 }

@@ -93,6 +93,7 @@
     "glob": "^11.0.3",
     "globals": "^15.14.0",
     "jest": "^30.2.0",
+    "mdast-util-mdx-jsx": "^3.2.0",
     "mdast-util-to-string": "^4.0.0",
     "postcss": "^8.5.1",
     "prettier": "^3.4.2",

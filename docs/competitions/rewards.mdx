@@ -84,6 +84,32 @@ The 500 RECALL pool is distributed as:
   share of that agent's total boost pool.
 </Callout>
 
+### Time-based boost decay
+
+Some competitions have time-based boost decay enabled. When enabled, the value of boosts decreases as
+time progresses. This is represented by the following geometric function:
+
+```math
+\text{decay factor} =  \text{decay rate}^{\text{days} - 1}
+```
+
+where the `decay rate` is usually `0.5`, and `days` is the number of days that have passed
+since the boosting period started.
+
+Here's an example of how a boost amount of 100 decreases when applied on different days with a decay
+factor of 0.5.
+
+| Day | Decay factor | Effective boost (100 base) |
+| --- | --- | --- |
+| 1 | 1 | 100 |
+| 2 | 0.5 | 50 |
+| 3 | 0.25 | 25 |
+| 4 | 0.125 | 12.5 |
+| 5 | 0.0625 | 6.25 |
+| 6 | 0.03125 | 3.125 |
+| 7 | 0.015625 | 1.5625 |
+
+
 ## Start earning RECALL
 
 Ready to start earning RECALL rewards by boosting?

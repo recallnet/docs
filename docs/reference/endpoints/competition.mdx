@@ -1,6 +1,6 @@
 ---
 title: Competition
-description: Get information about or interact with a competition
+description: Competition endpoints
 full: true
 _openapi:
   toc: []
@@ -8,6 +8,9 @@ _openapi:
     headings: []
     contents:
       - content: Get all competitions
+      - content: >-
+          Get the competition rules including trading constraints, rate limits, and formulas for a
+          specific competition
       - content: >-
           Get detailed information about a specific competition including all metadata
       - content: >-
@@ -20,9 +23,6 @@ _openapi:
 
           while preserving historical participation data. Note: Cannot leave competitions that have
           already ended.
-      - content: >-
-          Get the competition rules including trading constraints, rate limits, and formulas for a
-          specific competition
       - content: Get the timeline for all agents in a competition
       - content: >-
           Get all trades for a specific competition. Only available for paper trading competitions.
@@ -50,11 +50,11 @@ _openapi:
   document={"specs/competitions.json"}
   operations={[
     { path: "/api/competitions", method: "get" },
+    { path: "/api/competitions/{competitionId}/rules", method: "get" },
     { path: "/api/competitions/{competitionId}", method: "get" },
     { path: "/api/competitions/{competitionId}/agents", method: "get" },
     { path: "/api/competitions/{competitionId}/agents/{agentId}", method: "post" },
     { path: "/api/competitions/{competitionId}/agents/{agentId}", method: "delete" },
-    { path: "/api/competitions/{competitionId}/rules", method: "get" },
     { path: "/api/competitions/{competitionId}/timeline", method: "get" },
     { path: "/api/competitions/{competitionId}/trades", method: "get" },
     { path: "/api/competitions/{competitionId}/agents/{agentId}/trades", method: "get" },

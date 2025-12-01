@@ -21,7 +21,7 @@ export const DOCS_CATEGORIES = {
 export type CategoryType = keyof typeof DOCS_CATEGORIES;
 
 export function getCategoryDisplayName(filePath: string): string {
-  const pathParts = filePath.split(path.sep);
+  const pathParts = filePath.split(/[/\\]/);
   const mainCategory = pathParts[0];
   if (mainCategory && mainCategory in DOCS_CATEGORIES)
     return DOCS_CATEGORIES[mainCategory as CategoryType];

@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import path from "path";
+import fs from "node:fs/promises";
 
+import { isApiReferencePage } from "@/lib/api-reference";
 import { getRawDocContent } from "@/lib/files";
+
+const SAFE_FILENAME_PATTERN = /^[a-zA-Z0-9._-]+\.mdx$/;
 
 export async function GET(_: Request, { params }: { params: Promise<{ slug: string[] }> }) {
   try {
@@ -10,12 +14,39 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
     // 1. They have the `.mdx` extension converted to `.md`
     // 2. They have the `docs` slug prefix removed (removed from the passed github file url)
     const slug = (await params).slug.map((s) => s.replace(".md", ".mdx"));
-    const filePath = path.join(process.cwd(), "docs", slug.join("/"));
-    const { content, title, description } = await getRawDocContent(filePath);
-    const merged = `# ${title}\n\n${description}\n\n${content}`;
-    const filename = slug.pop() || "index.md";
 
-    return new NextResponse(merged, {
+    const isApiPage = isApiReferencePage(slug);
+
+    let content: string;
+    let filename: string;
+
+    if (isApiPage) {
+      // For API pages, serve pre-generated markdown
+      const lastSlug = slug[slug.length - 1];
+      if (!lastSlug || !SAFE_FILENAME_PATTERN.test(lastSlug)) {
+        return new NextResponse("Not found", { status: 404 });
+      }
+      const markdownFileName = lastSlug.replace(".mdx", ".md");
+      const markdownPath = path.join(
+        process.cwd(),
+        ".source",
+        "markdown",
+        "endpoints",
+        markdownFileName
+      );
+
+      // Read pre-generated markdown file
+      content = await fs.readFile(markdownPath, "utf8");
+      filename = markdownFileName;
+    } else {
+      // For regular pages, use the existing method
+      const filePath = path.join(process.cwd(), "docs", slug.join("/"));
+      const docContent = await getRawDocContent(filePath);
+      content = `# ${docContent.title}\n\n${docContent.description}\n\n${docContent.content}`;
+      filename = slug.pop() || "index.md";
+    }
+
+    return new NextResponse(content, {
       headers: {
         "Content-Type": "text/markdown",
         "Content-Disposition": `filename="${filename}"`,

@@ -7,8 +7,10 @@ import { TypeTable } from "fumadocs-ui/components/type-table";
 import Image, { type ImageProps } from "next/image";
 import { notFound } from "next/navigation";
 import path from "path";
+import fs from "node:fs/promises";
 import { HTMLAttributes } from "react";
 
+import { isApiReferencePage, isApiReferenceRootPath } from "@/lib/api-reference";
 import { Callout, CalloutProps } from "@/components/theme/callout";
 import { Card, CardProps, Cards } from "@/components/theme/card";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "@/components/theme/page";
@@ -42,15 +44,9 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   if (!page) notFound();
 
   const MDX = page.data.body;
-  // Don't show the TOC or edit button on the root page, or the auto-generated API reference pages
   const isRootPage = !params.slug || params.slug.length === 0;
-  const isApiReferencePage = params.slug?.[0] === "reference" && params.slug?.[1] === "endpoints";
-  // Ignore the `reference/endpoints` index page since it's manually written, so we want the TOC
-  const isApiReferenceRootPage =
-    params.slug?.length === 2 &&
-    params.slug?.[0] === "reference" &&
-    params.slug?.[1] === "endpoints";
-  const isApiPage = isApiReferencePage && !isApiReferenceRootPage;
+  const isApiPage = params.slug ? isApiReferencePage(params.slug) : false;
+  const isApiRootPage = params.slug ? isApiReferenceRootPath(params.slug) : false;
   const githubPath = `docs/${page.file.path}`;
   const githubInfo = {
     repo: "docs",
@@ -65,16 +61,37 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
 
   if (!isRootPage) {
     try {
-      // Try both potential paths - the file might be in docs/ subdirectory
-      let filePath = path.join(process.cwd(), page.file.path);
+      let content: string;
 
-      // If the path doesn't start with docs/, try prepending it
-      if (!page.file.path.startsWith("docs/")) {
-        filePath = path.join(process.cwd(), "docs", page.file.path);
+      if (isApiPage) {
+        // For API pages, read pre-generated markdown
+        const markdownFileName = page.file.path.split("/").pop()?.replace(".mdx", ".md");
+        if (markdownFileName) {
+          const markdownPath = path.join(
+            process.cwd(),
+            ".source",
+            "markdown",
+            "endpoints",
+            markdownFileName
+          );
+          content = await fs.readFile(markdownPath, "utf8");
+        } else {
+          throw new Error("Could not determine markdown filename");
+        }
+      } else {
+        // For regular pages, use the existing method
+        let filePath = path.join(process.cwd(), page.file.path);
+
+        // If the path doesn't start with docs/, try prepending it
+        if (!page.file.path.startsWith("docs/")) {
+          filePath = path.join(process.cwd(), "docs", page.file.path);
+        }
+
+        const docContent = await getRawDocContent(filePath);
+        content = `# ${docContent.title}\n\n${docContent.description}\n\n${docContent.content}`;
       }
 
-      const docContent = await getRawDocContent(filePath);
-      markdownContent = `# ${docContent.title}\n\n${docContent.description}\n\n${docContent.content}`;
+      markdownContent = content;
 
       // Generate markdown URL server-side
       const rawPath = page.file.path.replace(/^docs\//, "").replace(/\.mdx$/, ".md");

@@ -6,7 +6,7 @@
   "scripts": {
     "build:embeddings": "tsx scripts/embeddings.ts",
     "build:openapi": "tsx scripts/sync-openapi.ts && tsx scripts/generate-openapi.ts && prettier --write \"docs/reference/endpoints/**/*.mdx\"",
-    "prebuild": "pnpm run build:embeddings && pnpm run build:openapi && pnpm run link-check",
+    "prebuild": "pnpm run build:openapi && pnpm run build:embeddings && pnpm run link-check",
     "link-check": "python3 scripts/check-links.py",
     "lint:mdx": "tsx scripts/lint-mdx.ts",
     "build": "pnpm run lint:mdx && next build",

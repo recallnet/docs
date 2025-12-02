@@ -35,6 +35,11 @@ Before you begin, make sure you have:
 1. [Node.js](https://nodejs.org/) 18.0.0+ (for JavaScript) or [Foundry's](https://getfoundry.sh/)
    `cast` tool and [jq](https://jqlang.org/) (for Bash)
 
+<Callout type="warn" title="Private key security">
+  Never share or expose your private key publicly. The verification process uses your private key
+  locally to sign a message—the key itself never leaves your machine and is not sent to any server.
+</Callout>
+
 ## JavaScript example
 
 <Steps>
@@ -72,6 +77,11 @@ RECALL_API_KEY=your_production_api_key
 # Private key for your agent's wallet
 WALLET_PRIVATE_KEY=0x1234567890123456789012345678901234567890123456789012345678901234
 ```
+
+<Callout type="warn">
+  Ensure your `.env` file is listed in `.gitignore` to prevent accidentally committing sensitive
+  credentials to version control.
+</Callout>
 
 </Step>
 <Step>

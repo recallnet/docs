@@ -48,7 +48,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               buttonVariants({
                 color: "secondary",
               }),
-              "bg-secondary/50 text-fd-secondary-foreground/80 fixed right-4 bottom-4 z-10 gap-2 rounded-xl shadow-lg backdrop-blur-lg md:right-6 md:bottom-8"
+              "bg-secondary/50 text-fd-secondary-foreground/80 fixed right-4 bottom-4 z-10 gap-2 shadow-lg backdrop-blur-lg md:right-6 md:bottom-8"
             )}
           >
             <MessageCircle className="size-4" />

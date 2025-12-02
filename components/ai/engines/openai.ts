@@ -21,6 +21,10 @@ type ReferencesResponse = {
   references: MessageReference[];
 };
 
+type SuggestionsResponse = {
+  suggestions: string[];
+};
+
 export async function createOpenAIEngine(): Promise<Engine> {
   const sessionId = localStorage.getItem("recallChatSessionId") || crypto.randomUUID();
   localStorage.setItem("recallChatSessionId", sessionId);
@@ -98,6 +102,11 @@ export async function createOpenAIEngine(): Promise<Engine> {
           if ("references" in json && !content.includes(REJECTION_MESSAGE)) {
             const data = json as ReferencesResponse;
             message.references = data.references;
+            onUpdate?.(content);
+          }
+          if ("suggestions" in json && !content.includes(REJECTION_MESSAGE)) {
+            const data = json as SuggestionsResponse;
+            message.suggestions = data.suggestions;
             onUpdate?.(content);
           }
         }

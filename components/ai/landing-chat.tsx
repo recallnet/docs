@@ -1,17 +1,8 @@
 "use client";
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogOverlay,
-  DialogPortal,
-  type DialogProps,
-  DialogTitle,
-} from "@radix-ui/react-dialog";
 import Link from "fumadocs-core/link";
 import defaultMdxComponents from "fumadocs-ui/mdx";
-import { Loader2, SquareArrowUp, X } from "lucide-react";
+import { Loader2, SquareArrowUp } from "lucide-react";
 import {
   type HTMLAttributes,
   type ReactNode,
@@ -35,9 +26,9 @@ function onUpdate() {
   for (const listener of listeners) listener();
 }
 
-function View() {
+function ChatView() {
   const [, update] = useState(0);
-  const shouldFocus = useRef(false); // should focus on input on next render
+  const shouldFocus = useRef(false);
   const { loading, setLoading, engine } = use(Context);
   const [initialSuggestions, setInitialSuggestions] = useState<string[]>([]);
 
@@ -50,10 +41,14 @@ function View() {
     if (!engine || message.length === 0) return;
 
     setLoading(true);
-    void engine.prompt(message, onUpdate).finally(() => {
-      setLoading(false);
-      shouldFocus.current = true;
-    });
+    void engine
+      .prompt(message, onUpdate, () => {
+        onUpdate(); // Final update to trigger markdown processing
+      })
+      .finally(() => {
+        setLoading(false);
+        shouldFocus.current = true;
+      });
   };
 
   useEffect(() => {
@@ -69,7 +64,7 @@ function View() {
 
   useEffect(() => {
     if (shouldFocus.current) {
-      document.getElementById("nd-ai-input")?.focus();
+      document.getElementById("nd-landing-chat-input")?.focus();
       shouldFocus.current = false;
     }
   });
@@ -82,16 +77,34 @@ function View() {
   const suggestions = lastAssistantMessage?.suggestions ?? (hasMessages ? [] : initialSuggestions);
 
   return (
-    <List>
-      {messages.map((item, i) => (
-        <Message key={i} message={item} />
-      ))}
-      <AIInput loading={loading} onSubmit={onSubmit} suggestions={suggestions} />
-    </List>
+    <div
+      className={cn(
+        "mx-auto max-w-5xl px-4",
+        hasMessages ? "flex min-h-[calc(100vh-4rem)] flex-col py-4" : "py-4"
+      )}
+    >
+      {/* Hero Section */}
+      {!hasMessages && (
+        <div className="animate-in fade-in mb-8 space-y-3 text-center duration-500">
+          <h1 className="text-3xl font-bold">Welcome to Recall</h1>
+          <p className="text-muted-foreground text-base">
+            The world's first decentralized skill market for AI
+          </p>
+        </div>
+      )}
+
+      {/* Chat Messages and Input */}
+      <MessageList hasMessages={hasMessages}>
+        {messages.map((item, i) => (
+          <Message key={i} message={item} />
+        ))}
+        <ChatInput loading={loading} onSubmit={onSubmit} suggestions={suggestions} />
+      </MessageList>
+    </div>
   );
 }
 
-function AIInput({
+function ChatInput({
   loading,
   onSubmit,
   suggestions,
@@ -117,7 +130,7 @@ function AIInput({
   // This would provide real-time discovery of relevant questions based on partial input
 
   return (
-    <div className="space-y-3 pt-4">
+    <div className="space-y-3">
       {/* Input field */}
       <form
         className={cn(
@@ -176,7 +189,7 @@ function AIInput({
   );
 }
 
-function List(props: HTMLAttributes<HTMLDivElement>) {
+function MessageList({ children, hasMessages }: { children: ReactNode; hasMessages: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -210,26 +223,21 @@ function List(props: HTMLAttributes<HTMLDivElement>) {
   }, []);
 
   return (
-    <div
-      {...props}
-      ref={containerRef}
-      className={cn("min-h-0 flex-1 overflow-auto p-4", props.className)}
-    >
-      <div ref={contentRef} className="flex flex-col gap-4">
-        {props.children}
+    <div ref={containerRef} className={cn(hasMessages ? "min-h-0 flex-1 overflow-y-auto" : "")}>
+      <div ref={contentRef} className="space-y-4">
+        {children}
       </div>
     </div>
   );
 }
 
 function Input(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  const ref = useRef<HTMLDivElement>(null);
   const shared = cn("col-start-1 row-start-1 max-h-60 px-4 py-2.5 leading-normal");
 
   return (
     <div className="grid flex-1 items-center">
       <textarea
-        id="nd-ai-input"
+        id="nd-landing-chat-input"
         className={cn(
           shared,
           "placeholder:text-fd-muted-foreground resize-none bg-transparent focus-visible:outline-none"
@@ -237,7 +245,7 @@ function Input(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
         rows={1}
         {...props}
       />
-      <div ref={ref} className={cn(shared, "invisible whitespace-pre-wrap")}>
+      <div className={cn(shared, "invisible whitespace-pre-wrap")}>
         {`${props.value?.toString() ?? ""}\n`}
       </div>
     </div>
@@ -246,6 +254,11 @@ function Input(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
 
 let processor: Processor | undefined;
 const map = new Map<string, ReactNode>();
+
+const roleName: Record<string, string> = {
+  user: "User",
+  assistant: "Recall Docs Agent",
+};
 
 function Message({ message }: { message: MessageRecord }) {
   const { loading } = use(Context);
@@ -372,40 +385,10 @@ function Markdown({ text }: { text: string }) {
   return rendered ?? text;
 }
 
-export default function AISearch(props: DialogProps) {
+export function LandingChat() {
   return (
-    <Dialog {...props}>
-      {props.children}
-      <AIProvider type="openai" loadEngine={props.open}>
-        <DialogPortal>
-          <DialogOverlay className="data-[state=closed]:animate-fd-fade-out data-[state=open]:animate-fd-fade-in fixed inset-0 z-50 bg-black/20 backdrop-blur-sm" />
-          <DialogContent
-            onOpenAutoFocus={(e) => {
-              document.getElementById("nd-ai-input")?.focus();
-              e.preventDefault();
-            }}
-            aria-describedby={undefined}
-            className="bg-fd-popover text-fd-popover-foreground data-[state=closed]:animate-fd-dialog-out data-[state=open]:animate-fd-dialog-in fixed left-1/2 z-50 my-[5vh] flex max-h-[90dvh] w-[98vw] max-w-[860px] -translate-x-1/2 flex-col rounded-lg border shadow-lg focus-visible:outline-none"
-          >
-            <div className="bg-fd-muted px-2.5 py-2">
-              <DialogTitle className="bg-fd-primary text-fd-primary-foreground w-fit px-1 font-mono text-sm font-medium">
-                Recall AI
-              </DialogTitle>
-              <p className="text-fd-muted-foreground mt-2 text-xs">
-                Answers from AI may be inaccurate, please verify the information.
-              </p>
-            </div>
-            <DialogClose
-              aria-label="Close Dialog"
-              tabIndex={-1}
-              className="text-fd-muted-foreground hover:bg-fd-accent hover:text-fd-accent-foreground absolute top-1 right-1 rounded-full p-1.5"
-            >
-              <X className="size-4" />
-            </DialogClose>
-            <View />
-          </DialogContent>
-        </DialogPortal>
-      </AIProvider>
-    </Dialog>
+    <AIProvider type="openai" loadEngine={true}>
+      <ChatView />
+    </AIProvider>
   );
 }

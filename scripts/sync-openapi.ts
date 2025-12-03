@@ -1,3 +1,4 @@
+import "dotenv/config";
 import * as fs from "fs/promises";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import type { OpenAPIV3 } from "openapi-types";

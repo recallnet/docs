@@ -4380,11 +4380,13 @@
               "type": "string",
               "enum": [
                 "trading",
-                "perpetual_futures"
+                "perpetual_futures",
+                "spot_live_trading",
+                "sports_prediction"
               ],
               "default": "trading"
             },
-            "description": "Competition type (used when arenaId not provided).\n- trading: Paper trading\n- perpetual_futures: Perpetual futures\ndefault: trading\n"
+            "description": "Competition type (used when arenaId not provided).\n- trading: Paper trading\n- perpetual_futures: Perpetual futures\n- spot_live_trading: Spot live trading (on-chain)\n- sports_prediction: Sports prediction\ndefault: trading\n"
           },
           {
             "in": "query",

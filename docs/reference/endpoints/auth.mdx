@@ -15,6 +15,8 @@ _openapi:
 
           Requires agent authentication via API key.
       - content: >-
+          Verifies the SIWE message and signature, creates a session, and returns user info
+      - content: >-
           Verify wallet ownership for an authenticated agent via custom message signature
 ---
 
@@ -24,6 +26,7 @@ _openapi:
   document={"specs/competitions.json"}
   operations={[
     { path: "/api/auth/agent/nonce", method: "get" },
+    { path: "/api/auth/login", method: "post" },
     { path: "/api/auth/verify", method: "post" },
   ]}
   webhooks={[]}

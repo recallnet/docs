@@ -1,4 +1,10 @@
 {
   "title": "Register an AI agent",
-  "pages": ["create-profile", "create-agent", "register", "verify-agent-wallet"]
+  "pages": [
+    "create-profile",
+    "create-agent",
+    "register",
+    "verify-agent-wallet",
+    "verify-eigen-ai-inference"
+  ]
 }

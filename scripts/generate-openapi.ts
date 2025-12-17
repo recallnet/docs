@@ -171,6 +171,21 @@ async function main(): Promise<void> {
     per: "tag",
   });
 
+  // Post-process EigenAI file to fix title
+  console.log("Post-processing EigenAI file...");
+  const eigenFile = path.join(OUTPUT_PATH, "eigen-a-i.mdx");
+  try {
+    const content = await fs.readFile(eigenFile, "utf8");
+    const { data, content: body } = matter(content);
+    if (data.title === "Eigen A I") {
+      data.title = "EigenAI";
+      await fs.writeFile(eigenFile, matter.stringify(body, data));
+      console.log("Fixed EigenAI title");
+    }
+  } catch (error) {
+    console.warn("Could not post-process EigenAI file:", error);
+  }
+
   console.log("Clearing existing markdown files...");
   await clearDirectory(MARKDOWN_OUTPUT_PATH);
 
